@@ -1,0 +1,29 @@
+@if (isAuthenticated()) {
+  <h1>
+    {{ getWeekRangeAsString() }}
+  </h1>
+  <div>
+    <mat-form-field>
+      <mat-label>Add Task</mat-label>
+      <mat-icon matPrefix>add_task</mat-icon>
+      <input matInput type="text"
+             placeholder="Add Task"
+             [formControl]="taskControl"
+             [matAutocomplete]="taskAuto">
+      <mat-autocomplete autoActiveFirstOption #taskAuto="matAutocomplete" requireSelection="true"
+                        (optionSelected)="optionSelected($event)">
+        @for (task of filteredTasks$ | async; track task.taskId) {
+          <mat-option [value]="task">
+            {{ task.name }}
+          </mat-option>
+        }
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <div style="padding: 0 1rem;">
+      @for (task of tasksFormArray.controls; track task) {
+        <app-task-line [formGroup]="task"></app-task-line>
+      }
+    </div>
+  </div>
+}

@@ -1,0 +1,15 @@
+export * from './export.service';
+import { ExportService } from './export.service';
+export * from './import.service';
+import { ImportService } from './import.service';
+export * from './login.service';
+import { LoginService } from './login.service';
+export * from './tagConfigurations.service';
+import { TagConfigurationsService } from './tagConfigurations.service';
+export * from './tagging.service';
+import { TaggingService } from './tagging.service';
+export * from './tasks.service';
+import { TasksService } from './tasks.service';
+export * from './timeRegistration.service';
+import { TimeRegistrationService } from './timeRegistration.service';
+export const APIS = [ExportService, ImportService, LoginService, TagConfigurationsService, TaggingService, TasksService, TimeRegistrationService];

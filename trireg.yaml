@@ -1,0 +1,607 @@
+openapi: 3.0.3
+info:
+  description: An OpenAPI specification for time registrations
+  title: TriReg2 API
+  version: 0.0.7
+servers:
+  - url: http://0.0.0.0:8080
+security:
+  - openId:
+      - openid
+  - basicAuth: []
+paths:
+  /login:
+    get:
+      description: Redirects to OpenId login flow
+      operationId: login
+      responses:
+        "302":
+          description: "Redirection to a login flow for the OpenId login provider.\
+            \ After completing the flow, the user will be redirected back to the application\
+            \ with a valid session token."
+      tags:
+        - Login
+  /time-registration:
+    get:
+      description: Returns time registrations for a user
+      operationId: getTimeRegistrationsForUser
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/TimeRegistrationResponse'
+                type: array
+          description: List of time registrations for the user
+        "401":
+          description: JWT is missing or invalid
+      tags:
+        - Time registration
+    post:
+      description: Registers time for a user
+      operationId: addTimeRegistrationForUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeRegistrationRequest'
+        description: A JSON object containing time registration information
+        required: true
+      responses:
+        "201":
+          content:
+            text/plain:
+              examples:
+                Example#1:
+                  value: Time registered successfully
+              schema:
+                type: string
+          description: Created
+        "401":
+          description: JWT is missing or invalid
+      tags:
+        - Time registration
+    put:
+      description: Updates the specified time registration
+      operationId: updateTimeRegistrationForUser
+      parameters:
+        - description: The id of the time registration to update
+          in: query
+          name: timeRegistrationId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeRegistrationUpdateRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            text/plain:
+              examples:
+                Success:
+                  value: Time updated successfully
+              schema:
+                type: string
+          description: Updated
+        "400":
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Bad update request
+        "401":
+          description: JWT is missing or invalid
+        "404":
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Time registration not found
+      tags:
+        - Time registration
+  /export:
+    post:
+      description: Exports time registrations for the logged in user for a specific
+        date range
+      operationId: exportTimeRegistrationsForUser
+      parameters:
+        - description: The start date of the export interval (inclusive)
+          in: query
+          name: start
+          required: true
+          schema:
+            example: 2024-03-11
+            format: date
+            type: string
+        - description: The end date of the export interval (inclusive)
+          in: query
+          name: end
+          required: true
+          schema:
+            example: 2024-03-17
+            format: date
+            type: string
+      responses:
+        "200":
+          content:
+            text/plain:
+              examples:
+                Example#1:
+                  value: Time exported successfully
+              schema:
+                type: string
+          description: OK
+        "401":
+          description: JWT is missing or invalid
+        "502":
+          description: "While acting as a gateway or proxy, this service received\
+            \ an invalid response from the upstream server."
+      tags:
+        - Export
+  /tag:
+    delete:
+      description: Deletes a tag that was added to a time registration
+      operationId: deleteTagRegistration
+      parameters:
+        - description: The ID of the tag to delete
+          in: query
+          name: tagId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Tag was successfully removed
+        "401":
+          description: JWT is missing or invalid
+        "404":
+          description: The requested tag was not found and could not be deleted
+      tags:
+        - Tagging
+    get:
+      description: Gets the tags associated with the given time registration
+      operationId: getRegistrationTags
+      parameters:
+        - description: The ID of the registration to get tags for
+          in: query
+          name: registrationId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/TagTimeRegistrationResponse'
+                type: array
+          description: List of tags for the requested registration
+        "401":
+          description: JWT is missing or invalid
+        "404":
+          description: Unable to find a time registration with the specified registrationId
+        "502":
+          description: "While acting as a gateway or proxy, this service received\
+            \ an invalid response from the upstream server."
+      tags:
+        - Tagging
+    post:
+      description: Tags a time registration with specified tag and optional tag value
+      operationId: tagRegistration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagTimeRegistrationRequest'
+        description: A JSON object containing tagging information
+        required: true
+      responses:
+        "200":
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Tag was successfully registered on the registration
+        "401":
+          description: JWT is missing or invalid
+        "400":
+          description: Tag was not added to the registration due to an issue with
+            the request
+        "404":
+          description: No registration was found to tag
+        "502":
+          description: "While acting as a gateway or proxy, this service received\
+            \ an invalid response from the upstream server."
+      tags:
+        - Tagging
+    put:
+      description: Updates a tag that was added to a time registration
+      operationId: updateTagRegistration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/updateTagRegistration_request'
+        description: A JSON object containing the updated tagging information
+        required: true
+      responses:
+        "200":
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Tag was successfully updated
+        "400":
+          description: The updated tag information yields an invalid tag
+        "401":
+          description: JWT is missing or invalid
+        "404":
+          description: The specified tag was not found
+      tags:
+        - Tagging
+  /import:
+    post:
+      description: Imports the given time registrations into the system
+      operationId: importTimeRegistrations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportRegistrationRequest'
+        description: A JSON object containing time-registration information
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportRegistrationResponse'
+          description: OK
+        "401":
+          description: JWT is missing or invalid
+        "502":
+          description: "While acting as a gateway or proxy, this service received\
+            \ an invalid response from the upstream server."
+      tags:
+        - Import
+  /task:
+    get:
+      description: Gets the tasks available to the user
+      operationId: getTasksForUser
+      parameters:
+        - description: The id of the user to get tasks for (Default is calling user)
+          in: query
+          name: user
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+          description: Successfully fetched list of tasks
+        "401":
+          description: JWT is missing or invalid
+      tags:
+        - Tasks
+  /config/tag:
+    get:
+      description: Gets all tag configurations that are applicable to the provided
+        task
+      operationId: getTagConfigurations
+      parameters:
+        - description: The id of the task to get applicable tag configurations for
+          in: query
+          name: task
+          required: true
+          schema:
+            type: string
+        - description: Include tags that are normally hidden and automatically added
+            when registering time on the task
+          in: query
+          name: includeHidden
+          required: false
+          schema:
+            type: boolean
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagConfigurationResponse'
+          description: List of valid tag configurations for the requested task
+        "401":
+          description: JWT is missing or invalid
+        "404":
+          description: Unable to find tag configurations for the specified task (Task
+            does not exist)
+      tags:
+        - TagConfigurations
+components:
+  responses:
+    UnauthorizedError:
+      description: JWT is missing or invalid
+    BadGateway:
+      description: "While acting as a gateway or proxy, this service received an invalid\
+        \ response from the upstream server."
+  schemas:
+    TimeRegistrationRequest:
+      example:
+        date: 2000-01-23
+        duration: PT1H30M
+        taskId: taskId
+        tags:
+          - tagConfigurationId: tagConfigurationId
+            value: value
+          - tagConfigurationId: tagConfigurationId
+            value: value
+      properties:
+        taskId:
+          type: string
+        date:
+          format: date
+          type: string
+        duration:
+          description: "ISO 8601 formatted duration component <PnDTnHnMn.nS>. Each\
+            \ unit is optional, but at least one must be specified"
+          example: PT1H30M
+          format: duration
+          type: string
+        tags:
+          items:
+            $ref: '#/components/schemas/TimeRegistrationRequest_tags_inner'
+          type: array
+      required:
+        - date
+        - duration
+        - taskId
+      type: object
+    TimeRegistrationResponse:
+      example:
+        date: 2000-01-23
+        duration: PT1H30M
+        registrationId: registrationId
+        registered: 0
+        userId: userId
+        taskId: taskId
+        status: status
+      properties:
+        registrationId:
+          type: string
+        registered:
+          description: The registration time as Unix milliseconds timestamp
+          format: int64
+          type: integer
+        userId:
+          type: string
+        taskId:
+          type: string
+        date:
+          format: date
+          type: string
+        duration:
+          description: "ISO 8601 formatted duration component <PnDTnHnMn.nS>. Each\
+            \ unit is optional, but at least one must be specified"
+          example: PT1H30M
+          format: duration
+          type: string
+        status:
+          type: string
+      required:
+        - date
+        - duration
+        - registered
+        - registrationId
+        - status
+        - taskId
+        - userId
+      type: object
+    TimeRegistrationUpdateRequest:
+      example:
+        date: 2000-01-23
+        duration: PT1H30M
+        status: status
+      properties:
+        date:
+          format: date
+          type: string
+        duration:
+          description: "ISO 8601 formatted duration component <PnDTnHnMn.nS>. Each\
+            \ unit is optional, but at least one must be specified"
+          example: PT1H30M
+          format: duration
+          type: string
+        status:
+          type: string
+      type: object
+    TagTimeRegistrationResponse:
+      example:
+        tagConfigurationId: tagConfigurationId
+        tagValue: tagValue
+      properties:
+        tagConfigurationId:
+          type: string
+        tagValue:
+          type: string
+      required:
+        - tagConfigurationId
+      type: object
+    TagTimeRegistrationRequest:
+      example:
+        tagConfigurationId: tagConfigurationId
+        timeRegistrationId: timeRegistrationId
+        value: value
+      properties:
+        timeRegistrationId:
+          type: string
+        tagConfigurationId:
+          type: string
+        value:
+          type: string
+      required:
+        - tagConfigurationId
+        - timeRegistrationId
+      type: object
+    ImportRegistrationRequest:
+      items:
+        $ref: '#/components/schemas/ImportRegistrationRequest_inner'
+      type: array
+    ImportRegistrationResponse:
+      items:
+        $ref: '#/components/schemas/ImportRegistrationResponse_inner'
+      type: array
+    TaskResponse:
+      items:
+        $ref: '#/components/schemas/TaskResponse_inner'
+      type: array
+    TagConfigurationResponse:
+      items:
+        $ref: '#/components/schemas/TagConfigurationResponse_inner'
+      type: array
+    Duration:
+      description: "ISO 8601 formatted duration component <PnDTnHnMn.nS>. Each unit\
+        \ is optional, but at least one must be specified"
+      example: PT1H30M
+      format: duration
+      type: string
+    updateTagRegistration_request:
+      properties:
+        tagId:
+          type: string
+        value:
+          type: string
+      required:
+        - tagId
+        - value
+      type: object
+    TimeRegistrationRequest_tags_inner:
+      example:
+        tagConfigurationId: tagConfigurationId
+        value: value
+      properties:
+        tagConfigurationId:
+          type: string
+        value:
+          type: string
+      required:
+        - tagConfigurationId
+      type: object
+    ImportRegistrationRequest_inner:
+      example:
+        date: 2000-01-23
+        duration: PT1H30M
+        userId: userId
+        taskId: taskId
+        tags:
+          - tagConfigurationId: tagConfigurationId
+            value: value
+          - tagConfigurationId: tagConfigurationId
+            value: value
+      properties:
+        userId:
+          type: string
+        taskId:
+          type: string
+        date:
+          format: date
+          type: string
+        duration:
+          description: "ISO 8601 formatted duration component <PnDTnHnMn.nS>. Each\
+            \ unit is optional, but at least one must be specified"
+          example: PT1H30M
+          format: duration
+          type: string
+        tags:
+          items:
+            $ref: '#/components/schemas/TimeRegistrationRequest_tags_inner'
+          type: array
+      required:
+        - date
+        - duration
+        - tags
+        - taskId
+        - userId
+      type: object
+    ImportRegistrationResponse_inner:
+      example:
+        registrationId: registrationId
+        message: message
+        status: status
+      properties:
+        registrationId:
+          type: string
+        status:
+          description: "Describes the status of the registration (SUCCESS, PENDING,\
+            \ FAILED)"
+          type: string
+        message:
+          description: "When status = FAILED, this will provide a description of the\
+            \ problem"
+          type: string
+      required:
+        - registrationId
+        - status
+      type: object
+    TaskResponse_inner:
+      example:
+        name: name
+        taskId: taskId
+      properties:
+        taskId:
+          type: string
+        name:
+          description: The name of the task
+          type: string
+      required:
+        - name
+        - taskId
+      type: object
+    TagConfigurationResponse_inner:
+      example:
+        tagValueType: tagValueType
+        tagConfigurationId: tagConfigurationId
+        tagConfigurationName: tagConfigurationName
+        tagDefaultValue: tagDefaultValue
+        tagTaskRelation: tagTaskRelation
+      properties:
+        tagConfigurationId:
+          type: string
+        tagConfigurationName:
+          description: The name of the tag configuration
+          type: string
+        tagValueType:
+          description: Describes the value type of the tag.
+          type: string
+        tagDefaultValue:
+          description: The default value to use when no other value is specified when
+            tagging a time registration
+          type: string
+        tagTaskRelation:
+          description: "Specifies the relation to the task. For example, whether the\
+            \ tag is optional or mandatory"
+          type: string
+      required:
+        - tagConfigurationId
+        - tagConfigurationName
+        - tagTaskRelation
+        - tagValueType
+      type: object
+  securitySchemes:
+    openId:
+      openIdConnectUrl: https://oidc.hosted.trifork.com/auth/realms/trifork/.well-known/openid-configuration
+      type: openIdConnect
+    basicAuth:
+      scheme: basic
+      type: http
