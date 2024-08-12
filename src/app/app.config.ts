@@ -3,7 +3,7 @@ import {provideRouter, withEnabledBlockingInitialNavigation} from '@angular/rout
 
 import {routes} from './app.routes';
 import {provideAuth} from "angular-auth-oidc-client";
-import {provideHttpClient, withInterceptors} from "@angular/common/http";
+import { provideHttpClient, withInterceptors } from "@angular/common/http";
 import {ApiModule, Configuration, ConfigurationParameters} from "./generated";
 import {myAuthInterceptor} from "./service/interceptor/myAuth.interceptor";
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';

@@ -1,4 +1,4 @@
-import {HttpHandlerFn, HttpInterceptorFn} from '@angular/common/http';
+import { HttpHandlerFn, HttpInterceptorFn } from '@angular/common/http';
 import {inject} from "@angular/core";
 import {OidcSecurityService} from "angular-auth-oidc-client";
 import {switchMap} from "rxjs";
