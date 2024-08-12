@@ -11,9 +11,15 @@
  */
 
 
-export interface TagTimeRegistrationRequest { 
+export interface ImportTimeRegistrationResponseInner { 
     timeRegistrationId: number;
-    tagConfigurationId: number;
-    value?: string;
+    /**
+     * Describes the status of importing the time registration (SUCCESS, PENDING, FAILED)
+     */
+    status: string;
+    /**
+     * Provides a description of the import status
+     */
+    message?: string;
 }
 

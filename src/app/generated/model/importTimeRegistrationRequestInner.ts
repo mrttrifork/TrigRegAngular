@@ -9,14 +9,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { TagConfiguration } from './tagConfiguration';
 
 
-export interface TimeRegistrationResponse { 
-    timeRegistrationId: number;
-    /**
-     * The registration time as Unix milliseconds timestamp
-     */
-    registered: number;
+export interface ImportTimeRegistrationRequestInner { 
     userId: number;
     taskId: number;
     date: string;
@@ -24,9 +20,6 @@ export interface TimeRegistrationResponse {
      * ISO 8601 formatted duration component <PnDTnHnMn.nS>. Each unit is optional, but at least one must be specified
      */
     duration: string;
-    /**
-     * Describes the status of the time registration
-     */
-    status: string;
+    tags: Array<TagConfiguration>;
 }
 

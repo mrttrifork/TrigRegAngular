@@ -11,8 +11,7 @@
  */
 
 
-export interface TagTimeRegistrationRequest { 
-    timeRegistrationId: number;
+export interface TagConfiguration { 
     tagConfigurationId: number;
     value?: string;
 }

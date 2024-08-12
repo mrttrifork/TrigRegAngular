@@ -11,21 +11,19 @@
  */
 
 
-export interface TimeRegistrationResponse { 
+export interface TimeRegistrationsByTaskResponseInnerTimeRegistrationsInner { 
     timeRegistrationId: number;
     /**
-     * The registration time as Unix milliseconds timestamp
+     * The registered time value as Unix milliseconds timestamp
      */
     registered: number;
-    userId: number;
-    taskId: number;
     date: string;
     /**
      * ISO 8601 formatted duration component <PnDTnHnMn.nS>. Each unit is optional, but at least one must be specified
      */
     duration: string;
     /**
-     * Describes the status of the time registration
+     * Describes the status of the time registration (PENDING, VALID, INVALID)
      */
     status: string;
 }
