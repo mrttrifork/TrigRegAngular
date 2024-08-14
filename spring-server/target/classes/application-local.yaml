@@ -1,0 +1,7 @@
+server:
+  port: 8125
+logging:
+  level:
+    com:
+      trifork:
+        trireg: 'DEBUG'

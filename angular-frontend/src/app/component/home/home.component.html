@@ -1,0 +1,14 @@
+<h1>
+  {{ getWeekRangeAsString() }}
+</h1>
+<div>
+  <div style="padding: 0 1rem;">
+    @for (task of tasksFormArray.controls; track task) {
+      <app-task-line [formGroup]="task"></app-task-line>
+    }
+  </div>
+  @if (timeRegistrationSignal()) {
+    {{ timeRegistrationSignal() | json }}
+  }
+</div>
+

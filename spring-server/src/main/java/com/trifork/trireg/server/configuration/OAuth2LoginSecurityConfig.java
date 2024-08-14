@@ -1,0 +1,44 @@
+package com.trifork.trireg.server.configuration;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
+import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+
+import java.net.URI;
+
+@Configuration
+@EnableWebSecurity
+public class OAuth2LoginSecurityConfig {
+
+    @Autowired
+    private ClientRegistrationRepository clientRegistrationRepository;
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        final OidcUserService triforkRegistrationUserService = new OidcUserService();
+        return http
+                .cors(Customizer.withDefaults())
+                .csrf(Customizer.withDefaults())
+                .authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
+                .oauth2Login(oauthLogin ->
+                        oauthLogin.userInfoEndpoint(userInfoEndpointConfig ->
+                                userInfoEndpointConfig.oidcUserService(triforkRegistrationUserService)))
+                .logout(logout -> logout.logoutSuccessHandler(oidcLogoutSuccessHandler()))
+                .build();
+    }
+
+
+    private LogoutSuccessHandler oidcLogoutSuccessHandler() {
+        OidcClientInitiatedLogoutSuccessHandler oidcLogoutSuccessHandler = new OidcClientInitiatedLogoutSuccessHandler(this.clientRegistrationRepository);
+        oidcLogoutSuccessHandler.setPostLogoutRedirectUri(String.valueOf(URI.create("http://localhost:8080")));
+        return oidcLogoutSuccessHandler;
+    }
+}

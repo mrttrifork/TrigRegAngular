@@ -1,0 +1,57 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          trireg:
+            client-id: "tidsreg"
+            client-secret: ""
+            scope:
+              - "openid"
+              - "offline_access"
+        provider:
+          trireg:
+            issuer-uri: "https://oidc.hosted.trifork.com/auth/realms/trifork"
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+logging:
+  level:
+    org:
+        springframework:
+          web:
+           client:
+            RestTemplate: 'DEBUG'
+        ws:
+          client:
+            MessageTracing:
+              sent: 'INFO'
+              received: 'INFO'
+    com:
+      trifork:
+        trireg: 'INFO'
+server:
+  port: 8081
+#trireg:
+#  scheme: "https"
+#  hostname: "trireg2.tcs.trifork.dev"
+#  port: 443
+#  version: ""
+#  interceptor:
+#    logging: true
+trireg:
+  scheme: "http"
+  hostname: "localhost"
+  port: 8080
+  version: ""
+  interceptor:
+    logging: true
+springdoc:
+  api-docs:
+    enabled: true
+    path: "/api-docs"
+  swagger-ui:
+    enabled: true
+    path: "/api-ui"

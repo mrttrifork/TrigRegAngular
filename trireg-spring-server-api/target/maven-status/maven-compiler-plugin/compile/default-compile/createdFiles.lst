@@ -1,0 +1,17 @@
+com\trifork\trireg\server\model\TagTimeRegistrationResponse.class
+com\trifork\trireg\server\model\TagConfiguration.class
+com\trifork\trireg\server\model\UpdateTagRegistrationRequest.class
+com\trifork\trireg\server\model\TimeRegistrationsByTaskResponseInner.class
+com\trifork\trireg\server\api\ApiUtil.class
+com\trifork\trireg\server\model\TimeRegistrationResponse.class
+com\trifork\trireg\server\api\TagApi.class
+com\trifork\trireg\server\api\TimeRegistrationApi.class
+com\trifork\trireg\server\model\ImportTimeRegistrationResponseInner.class
+com\trifork\trireg\server\api\ExportApi.class
+com\trifork\trireg\server\model\ImportTimeRegistrationRequestInner.class
+com\trifork\trireg\server\model\TimeRegistrationRequest.class
+com\trifork\trireg\server\api\ImportApi.class
+com\trifork\trireg\server\model\TagTimeRegistrationRequest.class
+com\trifork\trireg\server\api\LoginApi.class
+com\trifork\trireg\server\model\TimeRegistrationsByTaskResponseInnerTimeRegistrationsInner.class
+com\trifork\trireg\server\model\TimeRegistrationUpdateRequest.class

@@ -1,36 +1,159 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>angular</artifactId>
-  <groupId>com.trifork.trireg</groupId>
-  <version>1.0.0-SNAPSHOT</version>
+    <artifactId>trireg-angular-parent</artifactId>
+    <groupId>com.trifork.trireg</groupId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.openapitools</groupId>
-        <artifactId>openapi-generator-maven-plugin</artifactId>
-        <version>7.5.0</version>
-        <executions>
-          <execution>
-            <id>generate-typescript-angular</id>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <configuration>
-              <inputSpec>${project.basedir}/trireg.yaml</inputSpec>
-              <output>${project.basedir}/src/app/generated</output>
-              <generatorName>typescript-angular</generatorName>
-              <enablePostProcessFile>true</enablePostProcessFile>
-              <configOptions>
-                <stringEnums>true</stringEnums>
-                <supportsES6>true</supportsES6>
-              </configOptions>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+    <properties>
+        <revision>1.0.0-SNAPSHOT</revision>
+        <java.version>17</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <spring-boot-version>3.3.2</spring-boot-version>
+        <spring-version>6.3.1</spring-version>
+    </properties>
+
+    <modules>
+        <module>trireg-java-client-api</module>
+        <module>trireg-spring-server-api</module>
+        <module>spring-server</module>
+        <module>angular-frontend</module>
+    </modules>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>trifork.snapshots</id>
+            <name>Trifork internal snapshot Nexus</name>
+            <url>https://ci.fmk.netic.dk/nexus/repository/snapshots/</url>
+        </snapshotRepository>
+
+        <repository>
+            <id>trifork.releases</id>
+            <name>Trifork internal releases Nexus</name>
+            <url>https://ci.fmk.netic.dk/nexus/repository/releases</url>
+        </repository>
+    </distributionManagement>
+
+    <!--  <scm>-->
+    <!--    <connection>scm:git:git@github.com:trifork/OrdinationsAIAdaptor.git</connection>-->
+    <!--    <url>scm:git:git@github.com:trifork/OrdinationsAIAdaptor.git</url>-->
+    <!--    <developerConnection>scm:git:git@github.com:trifork/OrdinationsAIAdaptor.git</developerConnection>-->
+    <!--    <tag>HEAD</tag>-->
+    <!--  </scm>-->
+    <repositories>
+        <repository>
+            <id>maven2</id>
+            <name>Maven2 repository</name>
+            <url>https://repo1.maven.org/maven2/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>trifork-public</id>
+            <name>Trifork public Nexus</name>
+            <url>https://ci.fmk.netic.dk/nexus/content/groups/public/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>trifork.snapshots</id>
+            <name>Trifork internal snapshot Nexus</name>
+            <url>https://ci.fmk.netic.dk/nexus/content/repositories/snapshots/</url>
+            <snapshots>
+                <updatePolicy>never</updatePolicy>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </repositories>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.openapitools</groupId>
+                    <artifactId>openapi-generator-maven-plugin</artifactId>
+                    <version>7.4.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring-boot-version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.13.0</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <type>pom</type>
+                <version>${spring-boot-version}</version>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-oauth2-client</artifactId>
+                <version>${spring-boot-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-security</artifactId>
+                <version>${spring-boot-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.trifork.trireg</groupId>
+                <artifactId>trireg-java-client-api</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.trifork.trireg</groupId>
+                <artifactId>trireg-spring-server-api</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>  <!-- this dependency has the necessary transitive dependencies -->
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>2.5.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.openapitools</groupId>
+                <artifactId>jackson-databind-nullable</artifactId>
+                <version>0.2.6</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.validation</groupId>
+                <artifactId>jakarta.validation-api</artifactId>
+                <version>3.0.2</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>3.0.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                <version>6.0.0</version>
+                <scope>provided</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>
