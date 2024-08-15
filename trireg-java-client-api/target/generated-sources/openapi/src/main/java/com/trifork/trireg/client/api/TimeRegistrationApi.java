@@ -18,6 +18,7 @@ import com.trifork.trireg.client.ApiResponse;
 import com.trifork.trireg.client.Pair;
 
 import java.time.LocalDate;
+import com.trifork.trireg.client.api.PeriodEnum;
 import com.trifork.trireg.client.api.TimeRegistrationRequest;
 import com.trifork.trireg.client.api.TimeRegistrationResponse;
 import com.trifork.trireg.client.api.TimeRegistrationUpdateRequest;
@@ -48,7 +49,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-13T16:52:04.325230800+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-15T11:01:30.213196900+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 public class TimeRegistrationApi {
   private final HttpClient memberVarHttpClient;
   private final ObjectMapper memberVarObjectMapper;
@@ -357,7 +358,7 @@ public class TimeRegistrationApi {
    * @return List&lt;TimeRegistrationsByTaskResponseInner&gt;
    * @throws ApiException if fails to make API call
    */
-  public List<TimeRegistrationsByTaskResponseInner> getTaskTimeRegistrationsOverview(LocalDate date, String period) throws ApiException {
+  public List<TimeRegistrationsByTaskResponseInner> getTaskTimeRegistrationsOverview(LocalDate date, PeriodEnum period) throws ApiException {
     ApiResponse<List<TimeRegistrationsByTaskResponseInner>> localVarResponse = getTaskTimeRegistrationsOverviewWithHttpInfo(date, period);
     return localVarResponse.getData();
   }
@@ -370,7 +371,7 @@ public class TimeRegistrationApi {
    * @return ApiResponse&lt;List&lt;TimeRegistrationsByTaskResponseInner&gt;&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<List<TimeRegistrationsByTaskResponseInner>> getTaskTimeRegistrationsOverviewWithHttpInfo(LocalDate date, String period) throws ApiException {
+  public ApiResponse<List<TimeRegistrationsByTaskResponseInner>> getTaskTimeRegistrationsOverviewWithHttpInfo(LocalDate date, PeriodEnum period) throws ApiException {
     HttpRequest.Builder localVarRequestBuilder = getTaskTimeRegistrationsOverviewRequestBuilder(date, period);
     try {
       HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
@@ -399,7 +400,7 @@ public class TimeRegistrationApi {
     }
   }
 
-  private HttpRequest.Builder getTaskTimeRegistrationsOverviewRequestBuilder(LocalDate date, String period) throws ApiException {
+  private HttpRequest.Builder getTaskTimeRegistrationsOverviewRequestBuilder(LocalDate date, PeriodEnum period) throws ApiException {
     // verify the required parameter 'date' is set
     if (date == null) {
       throw new ApiException(400, "Missing the required parameter 'date' when calling getTaskTimeRegistrationsOverview");

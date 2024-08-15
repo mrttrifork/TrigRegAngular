@@ -7,6 +7,7 @@ package com.trifork.trireg.server.api;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
+import com.trifork.trireg.server.model.PeriodEnum;
 import com.trifork.trireg.server.model.TimeRegistrationRequest;
 import com.trifork.trireg.server.model.TimeRegistrationResponse;
 import com.trifork.trireg.server.model.TimeRegistrationUpdateRequest;
@@ -37,7 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-13T16:52:07.953210+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-15T11:01:35.044401800+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 @Validated
 @Tag(name = "TimeRegistration", description = "Tag for CRUD operations related to time registrations")
 public interface TimeRegistrationApi {
@@ -209,7 +210,7 @@ public interface TimeRegistrationApi {
     
     default ResponseEntity<List<TimeRegistrationsByTaskResponseInner>> getTaskTimeRegistrationsOverview(
         @NotNull @Parameter(name = "date", description = "The date to consider when fetching active tasks and time registrations", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "date", required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-        @Parameter(name = "period", description = "The time period to use when deciding in which time period tasks are considered active", in = ParameterIn.QUERY) @Valid @RequestParam(value = "period", required = false) String period
+        @Parameter(name = "period", description = "The time period to use when deciding in which time period tasks are considered active", in = ParameterIn.QUERY) @Valid @RequestParam(value = "period", required = false) PeriodEnum period
     ) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {

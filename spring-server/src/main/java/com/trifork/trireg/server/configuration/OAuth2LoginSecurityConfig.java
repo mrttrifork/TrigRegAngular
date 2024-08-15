@@ -1,11 +1,12 @@
 package com.trifork.trireg.server.configuration;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -18,15 +19,18 @@ import java.net.URI;
 @EnableWebSecurity
 public class OAuth2LoginSecurityConfig {
 
-    @Autowired
-    private ClientRegistrationRepository clientRegistrationRepository;
+    private final ClientRegistrationRepository clientRegistrationRepository;
+
+    public OAuth2LoginSecurityConfig(ClientRegistrationRepository clientRegistrationRepository) {
+        this.clientRegistrationRepository = clientRegistrationRepository;
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         final OidcUserService triforkRegistrationUserService = new OidcUserService();
         return http
                 .cors(Customizer.withDefaults())
-                .csrf(Customizer.withDefaults())
+                .csrf(AbstractHttpConfigurer::disable) // FIXME: Figure out how to do this
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
                 .oauth2Login(oauthLogin ->
                         oauthLogin.userInfoEndpoint(userInfoEndpointConfig ->

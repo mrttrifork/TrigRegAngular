@@ -1,6 +1,11 @@
 import {Component, effect, inject, OnInit, signal, WritableSignal} from '@angular/core';
 import {AsyncPipe, JsonPipe} from "@angular/common";
-import {TimeRegistrationResponse, TimeRegistrationsByTaskResponseInner, TimeRegistrationService} from "../../generated";
+import {
+  PeriodEnum, TaskCreateResponseInner, TaskService,
+  TimeRegistrationResponse,
+  TimeRegistrationsByTaskResponseInner,
+  TimeRegistrationService
+} from "../../generated";
 import {firstValueFrom} from "rxjs";
 import {MatAutocompleteModule, MatAutocompleteSelectedEvent} from "@angular/material/autocomplete";
 import {FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule} from "@angular/forms";
@@ -10,16 +15,18 @@ import {MatOptionModule} from "@angular/material/core";
 import {MatInputModule} from '@angular/material/input';
 import {TaskLineComponent, TaskLineFormGroup} from "../task-line/task-line.component";
 import {DateTime} from "luxon";
+import {MatButton} from "@angular/material/button";
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [JsonPipe, AsyncPipe, MatFormFieldModule, MatIconModule, MatInputModule, ReactiveFormsModule, MatAutocompleteModule, MatOptionModule, TaskLineComponent],
+  imports: [JsonPipe, AsyncPipe, MatFormFieldModule, MatIconModule, MatInputModule, ReactiveFormsModule, MatAutocompleteModule, MatOptionModule, TaskLineComponent, MatButton],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
 export class HomeComponent implements OnInit {
   readonly timeRegistrationService = inject(TimeRegistrationService);
+  readonly taskService = inject(TaskService);
   readonly formBuilder = inject(FormBuilder);
 
   tasksFormArray: FormArray<FormGroup<TaskLineFormGroup>> = new FormArray<FormGroup<TaskLineFormGroup>>([]);
@@ -28,6 +35,8 @@ export class HomeComponent implements OnInit {
   taskControl = new FormControl<string | TimeRegistrationsByTaskResponseInner>('');
 
   timeRegistrationSignal: WritableSignal<TimeRegistrationResponse[] | undefined> = signal(undefined);
+  activeTaskSignal: WritableSignal<TimeRegistrationsByTaskResponseInner[] | undefined> = signal(undefined);
+  tasks: WritableSignal<TaskCreateResponseInner[] | undefined> = signal(undefined);
 
   private effectRef = effect(() => {
       this.timeRegistrationService.getTimeRegistrationsForUser().subscribe({
@@ -35,6 +44,16 @@ export class HomeComponent implements OnInit {
           this.timeRegistrationSignal.set(value);
         }
       })
+    this.timeRegistrationService.getTaskTimeRegistrationsOverview(DateTime.now().toISODate(), PeriodEnum.Week).subscribe({
+      next: value => {
+        this.activeTaskSignal.set(value);
+      }
+    })
+    this.taskService.getTasksForUser().subscribe({
+      next: value => {
+        this.tasks.set(value);
+      }
+    })
   }, {allowSignalWrites: true})
 
   ngOnInit(): void {
@@ -43,7 +62,7 @@ export class HomeComponent implements OnInit {
   public async addTimeRegistration() {
     await firstValueFrom(this.timeRegistrationService.addTimeRegistrationForUser({
       taskId: 1,
-      date: "2024-05-13",
+      date: DateTime.now().toISODate(),
       duration: "PT1H30M"
     }));
   }

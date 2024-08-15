@@ -15,7 +15,7 @@ package com.trifork.trireg.client;
 
 import java.net.http.HttpHeaders;
 
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-13T16:52:04.325230800+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-15T11:01:30.213196900+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 public class ApiException extends Exception {
     private static final long serialVersionUID = 1L;
 

@@ -51,7 +51,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * <p>The setter methods of this class return the current object to facilitate
  * a fluent style of configuration.</p>
  */
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-13T16:52:04.325230800+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-15T11:01:30.213196900+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 public class ApiClient {
 
   private HttpClient.Builder builder;

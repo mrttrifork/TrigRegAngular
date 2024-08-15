@@ -7,8 +7,28 @@
       <app-task-line [formGroup]="task"></app-task-line>
     }
   </div>
-  @if (timeRegistrationSignal()) {
-    {{ timeRegistrationSignal() | json }}
-  }
+  <div>
+    <div>
+      <button (click)="addTimeRegistration()" mat-raised-button>Opret</button>
+    </div>
+  </div>
+  <div>
+    <h1>timeRegistrationSignal</h1>
+    @if (timeRegistrationSignal()) {
+      {{ timeRegistrationSignal() | json }}
+    }
+    <div>
+    </div>
+    <h1>activeTaskSignal</h1>
+    @if (activeTaskSignal()) {
+      {{ activeTaskSignal() | json }}
+    }
+    <div>
+    </div>
+    <h1>tasks</h1>
+    @if (tasks()) {
+      {{ tasks() | json }}
+    }
+  </div>
 </div>
 

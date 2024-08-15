@@ -3,57 +3,51 @@ package com.trifork.trireg.client.configuration;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trifork.trireg.client.ApiClient;
-import com.trifork.trireg.client.api.ExportApi;
-import com.trifork.trireg.client.api.ImportApi;
-import com.trifork.trireg.client.api.TagApi;
-import com.trifork.trireg.client.api.TimeRegistrationApi;
-import jakarta.annotation.Nullable;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.trifork.trireg.client.api.*;
+import com.trifork.trireg.server.service.OIDCTokenService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 
 @Configuration
 public class WSClientConfiguration {
 
-    @Nullable
-    @Value("${trireg.scheme}")
-    private String fmkAIScheme;
+    @Value("${time-registration.scheme}")
+    private String timeRegistrationScheme;
 
-    @Nullable
-    @Value("${trireg.hostname}")
-    private String fmkAIHostname;
+    @Value("${time-registration.hostname}")
+    private String timeRegistrationHostname;
 
-    @Value("${trireg.port}")
-    private int fmkAIPortName;
+    @Value("${time-registration.port}")
+    private int timeRegistrationPortName;
 
-    @Nullable
-    @Value("${trireg.version}")
-    private String fmkAIVersion;
-
-//    @Autowired
-//    OAuth2AuthorizedClientRepository oAuth2AuthorizedClientRepository;
+    @Value("${time-registration.version}")
+    private String timeRegistrationVersion;
 
     @Bean
-    public ApiClient apiClient() {
+    public ApiClient apiClient(OIDCTokenService oidcTokenService) {
         ApiClient apiClient = new ApiClient()
-                .setScheme(fmkAIScheme)
-                .setHost(fmkAIHostname)
-                .setPort(fmkAIPortName)
-                .setBasePath(fmkAIVersion);
+                .setScheme(timeRegistrationScheme)
+                .setHost(timeRegistrationHostname)
+                .setPort(timeRegistrationPortName)
+                .setBasePath(timeRegistrationVersion);
         ObjectMapper objectMapper = apiClient.getObjectMapper(); // Returns copy
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
         apiClient.setObjectMapper(objectMapper); // Need to set copy as original
         apiClient.setRequestInterceptor(builder -> {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication != null && authentication.getPrincipal() instanceof OidcUser principal) {
-                // String myClientRegistrationId = (oAuth2AuthorizedClientRepository.loadAuthorizedClient(myClientRegistrationId, authentication, apiClient)).client.getAccessToken().getTokenValue();;
-                String tokenValue = principal.getIdToken().getTokenValue();
-                builder.header("Authorization", "Bearer " + tokenValue);
+            if (authentication != null && authentication.getPrincipal() instanceof OidcUser) {
+                OAuth2AccessToken accessToken = oidcTokenService.getAccessToken(authentication);
+                if (accessToken != null) {
+                    builder.header("Authorization", "Bearer " + accessToken.getTokenValue());
+                }
+                // TODO: Throw error if access token is null
+
+                // The below code can be used in testing if we don't have to log in through OIDC
                 // builder.header("Authorization", "Basic dGVzdDp0cmlyZWdwYXNzd29yZDE=");
             }
         });
@@ -73,6 +67,11 @@ public class WSClientConfiguration {
     @Bean
     public TagApi tagApi(ApiClient client) {
         return new TagApi(client);
+    }
+
+    @Bean
+    public TaskApi taskApi(ApiClient client) {
+        return new TaskApi(client);
     }
 
     @Bean

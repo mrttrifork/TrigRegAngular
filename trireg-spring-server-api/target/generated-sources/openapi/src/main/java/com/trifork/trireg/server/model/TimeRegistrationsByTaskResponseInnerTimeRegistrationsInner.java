@@ -22,7 +22,7 @@ import jakarta.annotation.Generated;
  */
 
 @JsonTypeName("TimeRegistrationsByTaskResponse_inner_timeRegistrations_inner")
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-13T16:52:07.953210+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-15T11:01:35.044401800+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 public class TimeRegistrationsByTaskResponseInnerTimeRegistrationsInner {
 
   private Long timeRegistrationId;
