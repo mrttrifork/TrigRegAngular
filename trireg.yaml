@@ -189,13 +189,7 @@ paths:
           name: period
           required: false
           schema:
-            description: |
-              Valid values: * `day` - Only get tasks for the specified date * `week` - Get the tasks for the whole week (Monday to Sunday) of the specified date * `month` - Get the tasks for the whole month of the specified date
-            enum:
-              - day
-              - week
-              - month
-            type: string
+            $ref: '#/components/schemas/PeriodEnum'
       responses:
         "200":
           content:
@@ -247,6 +241,30 @@ paths:
           description: JWT is missing or invalid
       tags:
         - TimeRegistration
+  /task:
+    get:
+      description: Gets the tasks available to the user
+      operationId: getTasksForUser
+      parameters:
+        - description: The id of the user to get tasks for (Default is the user logged
+            in)
+          in: query
+          name: userId
+          required: false
+          schema:
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskCreateResponse'
+          description: Successfully fetched the list of tasks available
+        "401":
+          description: JWT is missing or invalid
+      tags:
+        - Task
   /export:
     post:
       description: Exports time registrations for a specific time period for the user
@@ -719,6 +737,33 @@ components:
       required:
         - status
         - timeRegistrationId
+      type: object
+    PeriodEnum:
+      type: string
+      enum:
+        - DAY
+        - WEEK
+        - MONTH
+      description: |
+       Valid values: * `day` - Only get tasks for the specified date * `week` - Get the tasks for the whole week (Monday to Sunday) of the specified date * `month` - Get the tasks for the whole month of the specified date
+    TaskCreateResponse:
+      items:
+        $ref: '#/components/schemas/TaskCreateResponse_inner'
+      type: array
+    TaskCreateResponse_inner:
+      example:
+        name: name
+        taskId: 0
+      properties:
+        taskId:
+          format: int64
+          type: integer
+        name:
+          description: The name of the task
+          type: string
+      required:
+        - name
+        - taskId
       type: object
   securitySchemes:
     openId:

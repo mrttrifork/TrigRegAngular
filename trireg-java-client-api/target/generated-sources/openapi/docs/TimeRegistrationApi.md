@@ -507,7 +507,7 @@ public class Example {
 
         TimeRegistrationApi apiInstance = new TimeRegistrationApi(defaultClient);
         LocalDate date = LocalDate.now(); // LocalDate | The date to consider when fetching active tasks and time registrations
-        String period = "day"; // String | The time period to use when deciding in which time period tasks are considered active
+        PeriodEnum period = PeriodEnum.fromValue("DAY"); // PeriodEnum | The time period to use when deciding in which time period tasks are considered active
         try {
             List<TimeRegistrationsByTaskResponseInner> result = apiInstance.getTaskTimeRegistrationsOverview(date, period);
             System.out.println(result);
@@ -528,7 +528,7 @@ public class Example {
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **date** | **LocalDate**| The date to consider when fetching active tasks and time registrations | |
-| **period** | **String**| The time period to use when deciding in which time period tasks are considered active | [optional] [enum: day, week, month] |
+| **period** | [**PeriodEnum**](.md)| The time period to use when deciding in which time period tasks are considered active | [optional] [enum: DAY, WEEK, MONTH] |
 
 ### Return type
 
@@ -584,7 +584,7 @@ public class Example {
 
         TimeRegistrationApi apiInstance = new TimeRegistrationApi(defaultClient);
         LocalDate date = LocalDate.now(); // LocalDate | The date to consider when fetching active tasks and time registrations
-        String period = "day"; // String | The time period to use when deciding in which time period tasks are considered active
+        PeriodEnum period = PeriodEnum.fromValue("DAY"); // PeriodEnum | The time period to use when deciding in which time period tasks are considered active
         try {
             ApiResponse<List<TimeRegistrationsByTaskResponseInner>> response = apiInstance.getTaskTimeRegistrationsOverviewWithHttpInfo(date, period);
             System.out.println("Status code: " + response.getStatusCode());
@@ -607,7 +607,7 @@ public class Example {
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **date** | **LocalDate**| The date to consider when fetching active tasks and time registrations | |
-| **period** | **String**| The time period to use when deciding in which time period tasks are considered active | [optional] [enum: day, week, month] |
+| **period** | [**PeriodEnum**](.md)| The time period to use when deciding in which time period tasks are considered active | [optional] [enum: DAY, WEEK, MONTH] |
 
 ### Return type
 

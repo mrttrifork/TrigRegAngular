@@ -34,20 +34,20 @@ logging:
         trireg: 'INFO'
 server:
   port: 8081
-#trireg:
-#  scheme: "https"
-#  hostname: "trireg2.tcs.trifork.dev"
-#  port: 443
-#  version: ""
-#  interceptor:
-#    logging: true
-trireg:
-  scheme: "http"
-  hostname: "localhost"
-  port: 8080
+time-registration:
+  scheme: "https"
+  hostname: "trireg2.tcs.trifork.dev"
+  port: 443
   version: ""
   interceptor:
     logging: true
+#time-registration:
+#  scheme: "http"
+#  hostname: "localhost"
+#  port: 8080
+#  version: ""
+#  interceptor:
+#    logging: true
 springdoc:
   api-docs:
     enabled: true

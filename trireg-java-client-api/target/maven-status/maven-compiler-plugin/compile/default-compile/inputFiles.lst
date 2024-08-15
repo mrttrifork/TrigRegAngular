@@ -4,10 +4,13 @@ C:\Users\Magnus\IdeaProjects\trireg-angular-parent\trireg-java-client-api\target
 C:\Users\Magnus\IdeaProjects\trireg-angular-parent\trireg-java-client-api\target\generated-sources\openapi\src\main\java\com\trifork\trireg\client\api\ImportTimeRegistrationRequestInner.java
 C:\Users\Magnus\IdeaProjects\trireg-angular-parent\trireg-java-client-api\target\generated-sources\openapi\src\main\java\com\trifork\trireg\client\api\ImportTimeRegistrationResponseInner.java
 C:\Users\Magnus\IdeaProjects\trireg-angular-parent\trireg-java-client-api\target\generated-sources\openapi\src\main\java\com\trifork\trireg\client\api\LoginApi.java
+C:\Users\Magnus\IdeaProjects\trireg-angular-parent\trireg-java-client-api\target\generated-sources\openapi\src\main\java\com\trifork\trireg\client\api\PeriodEnum.java
 C:\Users\Magnus\IdeaProjects\trireg-angular-parent\trireg-java-client-api\target\generated-sources\openapi\src\main\java\com\trifork\trireg\client\api\TagApi.java
 C:\Users\Magnus\IdeaProjects\trireg-angular-parent\trireg-java-client-api\target\generated-sources\openapi\src\main\java\com\trifork\trireg\client\api\TagConfiguration.java
 C:\Users\Magnus\IdeaProjects\trireg-angular-parent\trireg-java-client-api\target\generated-sources\openapi\src\main\java\com\trifork\trireg\client\api\TagTimeRegistrationRequest.java
 C:\Users\Magnus\IdeaProjects\trireg-angular-parent\trireg-java-client-api\target\generated-sources\openapi\src\main\java\com\trifork\trireg\client\api\TagTimeRegistrationResponse.java
+C:\Users\Magnus\IdeaProjects\trireg-angular-parent\trireg-java-client-api\target\generated-sources\openapi\src\main\java\com\trifork\trireg\client\api\TaskApi.java
+C:\Users\Magnus\IdeaProjects\trireg-angular-parent\trireg-java-client-api\target\generated-sources\openapi\src\main\java\com\trifork\trireg\client\api\TaskCreateResponseInner.java
 C:\Users\Magnus\IdeaProjects\trireg-angular-parent\trireg-java-client-api\target\generated-sources\openapi\src\main\java\com\trifork\trireg\client\api\TimeRegistrationApi.java
 C:\Users\Magnus\IdeaProjects\trireg-angular-parent\trireg-java-client-api\target\generated-sources\openapi\src\main\java\com\trifork\trireg\client\api\TimeRegistrationRequest.java
 C:\Users\Magnus\IdeaProjects\trireg-angular-parent\trireg-java-client-api\target\generated-sources\openapi\src\main\java\com\trifork\trireg\client\api\TimeRegistrationResponse.java

@@ -8,11 +8,11 @@
 */target/**
 
 # Node
-node_modules/
+*/node_modules/**
 npm-debug.log
 yarn-error.log
 
-src/app/generated/
+*/src/app/generated/**
 
 # IDEs and editors
 .idea/

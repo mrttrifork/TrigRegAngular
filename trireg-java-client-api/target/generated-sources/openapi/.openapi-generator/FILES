@@ -11,10 +11,13 @@ docs/ImportApi.md
 docs/ImportTimeRegistrationRequestInner.md
 docs/ImportTimeRegistrationResponseInner.md
 docs/LoginApi.md
+docs/PeriodEnum.md
 docs/TagApi.md
 docs/TagConfiguration.md
 docs/TagTimeRegistrationRequest.md
 docs/TagTimeRegistrationResponse.md
+docs/TaskApi.md
+docs/TaskCreateResponseInner.md
 docs/TimeRegistrationApi.md
 docs/TimeRegistrationRequest.md
 docs/TimeRegistrationResponse.md
@@ -46,10 +49,13 @@ src/main/java/com/trifork/trireg/client/api/ImportApi.java
 src/main/java/com/trifork/trireg/client/api/ImportTimeRegistrationRequestInner.java
 src/main/java/com/trifork/trireg/client/api/ImportTimeRegistrationResponseInner.java
 src/main/java/com/trifork/trireg/client/api/LoginApi.java
+src/main/java/com/trifork/trireg/client/api/PeriodEnum.java
 src/main/java/com/trifork/trireg/client/api/TagApi.java
 src/main/java/com/trifork/trireg/client/api/TagConfiguration.java
 src/main/java/com/trifork/trireg/client/api/TagTimeRegistrationRequest.java
 src/main/java/com/trifork/trireg/client/api/TagTimeRegistrationResponse.java
+src/main/java/com/trifork/trireg/client/api/TaskApi.java
+src/main/java/com/trifork/trireg/client/api/TaskCreateResponseInner.java
 src/main/java/com/trifork/trireg/client/api/TimeRegistrationApi.java
 src/main/java/com/trifork/trireg/client/api/TimeRegistrationRequest.java
 src/main/java/com/trifork/trireg/client/api/TimeRegistrationResponse.java

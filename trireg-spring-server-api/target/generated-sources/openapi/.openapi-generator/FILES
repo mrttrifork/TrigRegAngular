@@ -6,12 +6,15 @@ src/main/java/com/trifork/trireg/server/api/ExportApi.java
 src/main/java/com/trifork/trireg/server/api/ImportApi.java
 src/main/java/com/trifork/trireg/server/api/LoginApi.java
 src/main/java/com/trifork/trireg/server/api/TagApi.java
+src/main/java/com/trifork/trireg/server/api/TaskApi.java
 src/main/java/com/trifork/trireg/server/api/TimeRegistrationApi.java
 src/main/java/com/trifork/trireg/server/model/ImportTimeRegistrationRequestInner.java
 src/main/java/com/trifork/trireg/server/model/ImportTimeRegistrationResponseInner.java
+src/main/java/com/trifork/trireg/server/model/PeriodEnum.java
 src/main/java/com/trifork/trireg/server/model/TagConfiguration.java
 src/main/java/com/trifork/trireg/server/model/TagTimeRegistrationRequest.java
 src/main/java/com/trifork/trireg/server/model/TagTimeRegistrationResponse.java
+src/main/java/com/trifork/trireg/server/model/TaskCreateResponseInner.java
 src/main/java/com/trifork/trireg/server/model/TimeRegistrationRequest.java
 src/main/java/com/trifork/trireg/server/model/TimeRegistrationResponse.java
 src/main/java/com/trifork/trireg/server/model/TimeRegistrationUpdateRequest.java

@@ -4,7 +4,7 @@ TriReg2 User API
 
 - API version: 0.2.0
 
-- Build date: 2024-08-13T16:52:04.325230800+02:00[Europe/Copenhagen]
+- Build date: 2024-08-15T11:01:30.213196900+02:00[Europe/Copenhagen]
 
 - Generator version: 7.4.0
 
@@ -125,6 +125,8 @@ Class | Method | HTTP request | Description
 *TagApi* | [**tagTimeRegistrationWithHttpInfo**](docs/TagApi.md#tagTimeRegistrationWithHttpInfo) | **POST** /tag | 
 *TagApi* | [**updateTagRegistration**](docs/TagApi.md#updateTagRegistration) | **PUT** /tag | 
 *TagApi* | [**updateTagRegistrationWithHttpInfo**](docs/TagApi.md#updateTagRegistrationWithHttpInfo) | **PUT** /tag | 
+*TaskApi* | [**getTasksForUser**](docs/TaskApi.md#getTasksForUser) | **GET** /task | 
+*TaskApi* | [**getTasksForUserWithHttpInfo**](docs/TaskApi.md#getTasksForUserWithHttpInfo) | **GET** /task | 
 *TimeRegistrationApi* | [**addBulkTimeRegistrationForUser**](docs/TimeRegistrationApi.md#addBulkTimeRegistrationForUser) | **POST** /time-registration/bulk | 
 *TimeRegistrationApi* | [**addBulkTimeRegistrationForUserWithHttpInfo**](docs/TimeRegistrationApi.md#addBulkTimeRegistrationForUserWithHttpInfo) | **POST** /time-registration/bulk | 
 *TimeRegistrationApi* | [**addTimeRegistrationForUser**](docs/TimeRegistrationApi.md#addTimeRegistrationForUser) | **POST** /time-registration | 
@@ -143,9 +145,11 @@ Class | Method | HTTP request | Description
 
  - [ImportTimeRegistrationRequestInner](docs/ImportTimeRegistrationRequestInner.md)
  - [ImportTimeRegistrationResponseInner](docs/ImportTimeRegistrationResponseInner.md)
+ - [PeriodEnum](docs/PeriodEnum.md)
  - [TagConfiguration](docs/TagConfiguration.md)
  - [TagTimeRegistrationRequest](docs/TagTimeRegistrationRequest.md)
  - [TagTimeRegistrationResponse](docs/TagTimeRegistrationResponse.md)
+ - [TaskCreateResponseInner](docs/TaskCreateResponseInner.md)
  - [TimeRegistrationRequest](docs/TimeRegistrationRequest.md)
  - [TimeRegistrationResponse](docs/TimeRegistrationResponse.md)
  - [TimeRegistrationUpdateRequest](docs/TimeRegistrationUpdateRequest.md)
