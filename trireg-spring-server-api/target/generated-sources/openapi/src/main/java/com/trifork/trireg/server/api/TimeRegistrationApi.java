@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-15T11:01:35.044401800+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-19T11:41:29.305516100+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 @Validated
 @Tag(name = "TimeRegistration", description = "Tag for CRUD operations related to time registrations")
 public interface TimeRegistrationApi {
@@ -260,7 +260,7 @@ public interface TimeRegistrationApi {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "[ { \"date\" : \"2000-01-23\", \"duration\" : \"PT1H30M\", \"timeRegistrationId\" : 0, \"registered\" : 6, \"userId\" : 1, \"taskId\" : 5, \"status\" : \"status\" }, { \"date\" : \"2000-01-23\", \"duration\" : \"PT1H30M\", \"timeRegistrationId\" : 0, \"registered\" : 6, \"userId\" : 1, \"taskId\" : 5, \"status\" : \"status\" } ]";
+                    String exampleString = "[ { \"date\" : \"2000-01-23\", \"duration\" : \"PT1H30M\", \"timeRegistrationId\" : 0, \"registered\" : 6, \"description\" : \"description\", \"userId\" : 1, \"taskId\" : 5, \"status\" : null, \"tags\" : [ { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } }, { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } } ] }, { \"date\" : \"2000-01-23\", \"duration\" : \"PT1H30M\", \"timeRegistrationId\" : 0, \"registered\" : 6, \"description\" : \"description\", \"userId\" : 1, \"taskId\" : 5, \"status\" : null, \"tags\" : [ { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } }, { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } } ] } ]";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }

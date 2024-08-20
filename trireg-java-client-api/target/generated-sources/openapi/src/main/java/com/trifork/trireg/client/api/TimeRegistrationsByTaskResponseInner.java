@@ -40,7 +40,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
   TimeRegistrationsByTaskResponseInner.JSON_PROPERTY_TASK_DESCRIPTION,
   TimeRegistrationsByTaskResponseInner.JSON_PROPERTY_TIME_REGISTRATIONS
 })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-15T11:01:30.213196900+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-19T11:41:25.998809700+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 public class TimeRegistrationsByTaskResponseInner {
   public static final String JSON_PROPERTY_TASK_ID = "taskId";
   private Long taskId;

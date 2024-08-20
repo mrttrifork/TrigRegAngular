@@ -2,4 +2,8 @@
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
+
+  > mat-form-field {
+    width: 5rem;
+  }
 }

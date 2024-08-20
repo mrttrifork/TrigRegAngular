@@ -1,7 +1,9 @@
-import {Component, effect, inject, OnInit, signal, WritableSignal} from '@angular/core';
+import {Component, computed, effect, inject, Signal, signal, WritableSignal} from '@angular/core';
 import {AsyncPipe, JsonPipe} from "@angular/common";
 import {
-  PeriodEnum, TaskCreateResponseInner, TaskService,
+  PeriodEnum,
+  TaskCreateResponseInner,
+  TaskService,
   TimeRegistrationResponse,
   TimeRegistrationsByTaskResponseInner,
   TimeRegistrationService
@@ -16,52 +18,89 @@ import {MatInputModule} from '@angular/material/input';
 import {TaskLineComponent, TaskLineFormGroup} from "../task-line/task-line.component";
 import {DateTime} from "luxon";
 import {MatButton} from "@angular/material/button";
+import DurationConverter from "../../util/DurationConverter";
+import {toSignal} from "@angular/core/rxjs-interop";
+import {TotalLineComponent} from "../total-line/total-line.component";
+import {MatCardModule} from "@angular/material/card";
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [JsonPipe, AsyncPipe, MatFormFieldModule, MatIconModule, MatInputModule, ReactiveFormsModule, MatAutocompleteModule, MatOptionModule, TaskLineComponent, MatButton],
+  imports: [JsonPipe, AsyncPipe, MatFormFieldModule, MatIconModule, MatInputModule, ReactiveFormsModule, MatAutocompleteModule, MatOptionModule, TaskLineComponent, MatButton, TotalLineComponent, MatCardModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent {
   readonly timeRegistrationService = inject(TimeRegistrationService);
   readonly taskService = inject(TaskService);
   readonly formBuilder = inject(FormBuilder);
 
-  tasksFormArray: FormArray<FormGroup<TaskLineFormGroup>> = new FormArray<FormGroup<TaskLineFormGroup>>([]);
+  taskSearchControl: FormControl<string | TaskCreateResponseInner | null> = new FormControl('');
 
+  taskSearchSignal = toSignal(this.taskSearchControl.valueChanges);
+  filteredOptionsSignal: Signal<TaskCreateResponseInner[]> = computed(() => {
+    const searchedValue = this.taskSearchSignal();
+    const tasks = this.tasksSignal();
+
+    if (tasks) {
+      const searchedTaskName = typeof searchedValue === 'string' ? searchedValue : searchedValue?.name;
+      if (!searchedTaskName) {
+        return this.narrowSearch(tasks);
+      }
+      const searchedTaskNameLowerCase = searchedTaskName.toLowerCase();
+      const searchedTasksBySpace = searchedTaskNameLowerCase.split(" ");
+      const resultsFound = tasks.filter(task => {
+        const taskLowerCased = task.name.toLowerCase();
+        return searchedTasksBySpace.every(currString => taskLowerCased.includes(currString));
+      })
+      return this.narrowSearch(resultsFound);
+    }
+    return [];
+  });
+
+  private narrowSearch(tasks: TaskCreateResponseInner[]): TaskCreateResponseInner[] {
+    if (tasks.length <= 5) {
+      return tasks;
+    } else {
+      const fakeTask: TaskCreateResponseInner = {taskId: -1, name: "...", kmEligible: false}
+      return tasks.slice(0, 4).concat(fakeTask);
+    }
+  }
+
+  tasksFormArray: FormArray<FormGroup<TaskLineFormGroup>> = new FormArray<FormGroup<TaskLineFormGroup>>([]);
 
   taskControl = new FormControl<string | TimeRegistrationsByTaskResponseInner>('');
 
   timeRegistrationSignal: WritableSignal<TimeRegistrationResponse[] | undefined> = signal(undefined);
-  activeTaskSignal: WritableSignal<TimeRegistrationsByTaskResponseInner[] | undefined> = signal(undefined);
-  tasks: WritableSignal<TaskCreateResponseInner[] | undefined> = signal(undefined);
+  tasksSignal: WritableSignal<TaskCreateResponseInner[] | undefined> = signal(undefined);
 
   private effectRef = effect(() => {
-      this.timeRegistrationService.getTimeRegistrationsForUser().subscribe({
-        next: value => {
-          this.timeRegistrationSignal.set(value);
-        }
-      })
+    this.timeRegistrationService.getTimeRegistrationsForUser().subscribe({
+      next: value => {
+        this.timeRegistrationSignal.set(value);
+      }
+    })
     this.timeRegistrationService.getTaskTimeRegistrationsOverview(DateTime.now().toISODate(), PeriodEnum.Week).subscribe({
       next: value => {
-        this.activeTaskSignal.set(value);
+        for (const timeRegistrationsByTaskResponseInner of value) {
+          this.addTask(timeRegistrationsByTaskResponseInner);
+        }
       }
     })
     this.taskService.getTasksForUser().subscribe({
       next: value => {
-        this.tasks.set(value);
+        this.tasksSignal.set(value);
       }
     })
   }, {allowSignalWrites: true})
 
-  ngOnInit(): void {
+  displayFn(task: TaskCreateResponseInner): string {
+    return task?.name || '';
   }
 
-  public async addTimeRegistration() {
+  public async addTimeRegistration(timeRegistrationId?: number) {
     await firstValueFrom(this.timeRegistrationService.addTimeRegistrationForUser({
-      taskId: 1,
+      taskId: timeRegistrationId || 1,
       date: DateTime.now().toISODate(),
       duration: "PT1H30M"
     }));
@@ -87,8 +126,10 @@ export class HomeComponent implements OnInit {
   }
 
   private addTask(category: TimeRegistrationsByTaskResponseInner) {
+    const firstDuration = category.timeRegistrations?.[0].duration || "";
+    const addDuration = firstDuration ? DurationConverter.convertToHumanDuration(firstDuration) : "";
     const formGroup: FormGroup<TaskLineFormGroup> = this.formBuilder.group({
-      monday: this.formBuilder.control(''),
+      monday: this.formBuilder.control(addDuration),
       tuesday: this.formBuilder.control(''),
       wednesday: this.formBuilder.control(''),
       thursday: this.formBuilder.control(''),
@@ -108,5 +149,12 @@ export class HomeComponent implements OnInit {
     const endOfWeek = DateTime.now().endOf("week");
 
     return `Total for week: ${startOfWeek.weekNumber}; ${startOfWeek.toFormat("dd-MM-yyyy")} – ${endOfWeek.toFormat("dd-MM-yyyy")}`
+  }
+
+  public selected($event: MatAutocompleteSelectedEvent) {
+    const task = $event.option.value as TaskCreateResponseInner;
+    this.addTimeRegistration(task.taskId)
+    this.taskSearchControl.reset();
+    console.log(task);
   }
 }

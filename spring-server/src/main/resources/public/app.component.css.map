@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/app.component.scss"],
+  "sourcesContent": [":host {\r\n  display: flex;\r\n  flex-direction: column;\r\n  height: 100%;\r\n}\r\n\r\nmain {\r\n  display: flex;\r\n  flex-direction: column;\r\n  flex-grow: 1;\r\n  min-height: calc(100% - 4rem);\r\n}\r\n\r\nmat-drawer {\r\n  min-width: 18rem;\r\n  position: fixed;\r\n\r\n  .drawer-inner {\r\n    display: flex;\r\n    flex-direction: column;\r\n    height: 100%;\r\n    justify-content: space-between;\r\n\r\n    .side-nav-header {\r\n      display: flex;\r\n      padding-left: 1.5rem;\r\n      gap: 1rem;\r\n      align-items: center;\r\n      height: 4rem;\r\n    }\r\n\r\n    > .drawer-inner-footer {\r\n      display: flex;\r\n      padding: 1.5rem 1rem;\r\n    }\r\n  }\r\n}\r\n"],
+  "mappings": ";AAAA;AACE,WAAA;AACA,kBAAA;AACA,UAAA;;AAGF;AACE,WAAA;AACA,kBAAA;AACA,aAAA;AACA,cAAA,KAAA,KAAA,EAAA;;AAGF;AACE,aAAA;AACA,YAAA;;AAEA,WAAA,CAAA;AACE,WAAA;AACA,kBAAA;AACA,UAAA;AACA,mBAAA;;AAEA,WAAA,CANF,aAME,CAAA;AACE,WAAA;AACA,gBAAA;AACA,OAAA;AACA,eAAA;AACA,UAAA;;AAGF,WAAA,CAdF,aAcE,EAAA,CAAA;AACE,WAAA;AACA,WAAA,OAAA;;",
+  "names": []
+}

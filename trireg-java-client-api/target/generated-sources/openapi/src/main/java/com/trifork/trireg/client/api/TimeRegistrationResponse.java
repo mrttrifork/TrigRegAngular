@@ -24,8 +24,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.trifork.trireg.client.api.TimeRegistrationStatus;
+import com.trifork.trireg.client.api.TimeRegistrationTag;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
@@ -39,9 +43,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
   TimeRegistrationResponse.JSON_PROPERTY_TASK_ID,
   TimeRegistrationResponse.JSON_PROPERTY_DATE,
   TimeRegistrationResponse.JSON_PROPERTY_DURATION,
-  TimeRegistrationResponse.JSON_PROPERTY_STATUS
+  TimeRegistrationResponse.JSON_PROPERTY_STATUS,
+  TimeRegistrationResponse.JSON_PROPERTY_TAGS,
+  TimeRegistrationResponse.JSON_PROPERTY_DESCRIPTION
 })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-15T11:01:30.213196900+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-19T11:41:25.998809700+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 public class TimeRegistrationResponse {
   public static final String JSON_PROPERTY_TIME_REGISTRATION_ID = "timeRegistrationId";
   private Long timeRegistrationId;
@@ -62,7 +68,13 @@ public class TimeRegistrationResponse {
   private String duration;
 
   public static final String JSON_PROPERTY_STATUS = "status";
-  private String status;
+  private TimeRegistrationStatus status;
+
+  public static final String JSON_PROPERTY_TAGS = "tags";
+  private List<TimeRegistrationTag> tags = new ArrayList<>();
+
+  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  private String description;
 
   public TimeRegistrationResponse() { 
   }
@@ -151,9 +163,9 @@ public class TimeRegistrationResponse {
    * Get taskId
    * @return taskId
   **/
-  @jakarta.annotation.Nonnull
+  @jakarta.annotation.Nullable
   @JsonProperty(JSON_PROPERTY_TASK_ID)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
   public Long getTaskId() {
     return taskId;
@@ -161,7 +173,7 @@ public class TimeRegistrationResponse {
 
 
   @JsonProperty(JSON_PROPERTY_TASK_ID)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTaskId(Long taskId) {
     this.taskId = taskId;
   }
@@ -217,28 +229,86 @@ public class TimeRegistrationResponse {
   }
 
 
-  public TimeRegistrationResponse status(String status) {
+  public TimeRegistrationResponse status(TimeRegistrationStatus status) {
     this.status = status;
     return this;
   }
 
    /**
-   * Describes the status of the time registration
+   * Get status
    * @return status
   **/
   @jakarta.annotation.Nonnull
   @JsonProperty(JSON_PROPERTY_STATUS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public String getStatus() {
+  public TimeRegistrationStatus getStatus() {
     return status;
   }
 
 
   @JsonProperty(JSON_PROPERTY_STATUS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setStatus(String status) {
+  public void setStatus(TimeRegistrationStatus status) {
     this.status = status;
+  }
+
+
+  public TimeRegistrationResponse tags(List<TimeRegistrationTag> tags) {
+    this.tags = tags;
+    return this;
+  }
+
+  public TimeRegistrationResponse addTagsItem(TimeRegistrationTag tagsItem) {
+    if (this.tags == null) {
+      this.tags = new ArrayList<>();
+    }
+    this.tags.add(tagsItem);
+    return this;
+  }
+
+   /**
+   * Get tags
+   * @return tags
+  **/
+  @jakarta.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_TAGS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<TimeRegistrationTag> getTags() {
+    return tags;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_TAGS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setTags(List<TimeRegistrationTag> tags) {
+    this.tags = tags;
+  }
+
+
+  public TimeRegistrationResponse description(String description) {
+    this.description = description;
+    return this;
+  }
+
+   /**
+   * Get description
+   * @return description
+  **/
+  @jakarta.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getDescription() {
+    return description;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDescription(String description) {
+    this.description = description;
   }
 
 
@@ -260,12 +330,14 @@ public class TimeRegistrationResponse {
         Objects.equals(this.taskId, timeRegistrationResponse.taskId) &&
         Objects.equals(this.date, timeRegistrationResponse.date) &&
         Objects.equals(this.duration, timeRegistrationResponse.duration) &&
-        Objects.equals(this.status, timeRegistrationResponse.status);
+        Objects.equals(this.status, timeRegistrationResponse.status) &&
+        Objects.equals(this.tags, timeRegistrationResponse.tags) &&
+        Objects.equals(this.description, timeRegistrationResponse.description);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(timeRegistrationId, registered, userId, taskId, date, duration, status);
+    return Objects.hash(timeRegistrationId, registered, userId, taskId, date, duration, status, tags, description);
   }
 
   @Override
@@ -279,6 +351,8 @@ public class TimeRegistrationResponse {
     sb.append("    date: ").append(toIndentedString(date)).append("\n");
     sb.append("    duration: ").append(toIndentedString(duration)).append("\n");
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
+    sb.append("    tags: ").append(toIndentedString(tags)).append("\n");
+    sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -359,6 +433,21 @@ public class TimeRegistrationResponse {
     // add `status` to the URL query string
     if (getStatus() != null) {
       joiner.add(String.format("%sstatus%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getStatus()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+    }
+
+    // add `tags` to the URL query string
+    if (getTags() != null) {
+      for (int i = 0; i < getTags().size(); i++) {
+        if (getTags().get(i) != null) {
+          joiner.add(getTags().get(i).toUrlQueryString(String.format("%stags%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `description` to the URL query string
+    if (getDescription() != null) {
+      joiner.add(String.format("%sdescription%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getDescription()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     return joiner.toString();

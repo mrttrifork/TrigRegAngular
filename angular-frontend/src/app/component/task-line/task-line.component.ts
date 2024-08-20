@@ -48,7 +48,7 @@ export class TaskLineComponent implements OnInit {
       let dayOne = fromObject.startOf("week");
       if (dayOne.isValid) {
         for (let i = 0; i < 7; i++) {
-          this.dates.push(dayOne.toFormat("dd-MM-yyyy"));
+          this.dates.push(dayOne.toFormat("dd-MM"));
           dayOne = dayOne.plus({days: 1});
         }
       }

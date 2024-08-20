@@ -1,0 +1,35 @@
+<div class="flex-row justify-space-between align-items-center">
+  <div>
+    Total time
+  </div>
+  <div class="days">
+    <mat-form-field disabled="true">
+      <mat-label>Mon</mat-label>
+      <input matInput [disabled]="true" readonly [formControl]="monday">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Tue</mat-label>
+      <input matInput readonly [formControl]="tuesday">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Wed</mat-label>
+      <input matInput readonly [formControl]="wednesday">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Thu</mat-label>
+      <input matInput readonly [formControl]="thursday">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Fri</mat-label>
+      <input matInput readonly [formControl]="friday">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Sat</mat-label>
+      <input matInput readonly [formControl]="saturday">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Sun</mat-label>
+      <input matInput readonly [formControl]="sunday">
+    </mat-form-field>
+  </div>
+</div>

@@ -1,0 +1,11 @@
+.days {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  margin-right: 1rem;
+
+  > mat-form-field {
+    width: 5rem;
+  }
+}

@@ -21,7 +21,7 @@ public class LogoutController {
     @RequestMapping(
             method = RequestMethod.POST,
             value = "/logout",
-            produces = {"text/plain"},
+            produces = {"application/json"},
             consumes = {"application/json"}
     )
     public ResponseEntity<Void> logout(Authentication authentication, HttpServletRequest request, HttpServletResponse response) {

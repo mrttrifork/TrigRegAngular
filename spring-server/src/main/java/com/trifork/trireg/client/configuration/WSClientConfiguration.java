@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trifork.trireg.client.ApiClient;
 import com.trifork.trireg.client.api.*;
 import com.trifork.trireg.server.service.OIDCTokenService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +17,8 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 
 @Configuration
 public class WSClientConfiguration {
+
+    private static final Logger log = LogManager.getLogger(WSClientConfiguration.class);
 
     @Value("${time-registration.scheme}")
     private String timeRegistrationScheme;
@@ -45,7 +49,6 @@ public class WSClientConfiguration {
                 if (accessToken != null) {
                     builder.header("Authorization", "Bearer " + accessToken.getTokenValue());
                 }
-                // TODO: Throw error if access token is null
 
                 // The below code can be used in testing if we don't have to log in through OIDC
                 // builder.header("Authorization", "Basic dGVzdDp0cmlyZWdwYXNzd29yZDE=");

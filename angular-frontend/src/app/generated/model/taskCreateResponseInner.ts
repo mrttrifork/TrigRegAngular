@@ -17,5 +17,13 @@ export interface TaskCreateResponseInner {
      * The name of the task
      */
     name: string;
+    /**
+     * A description of the task
+     */
+    description?: string;
+    /**
+     * Marks if the task allows for registration of kilometres
+     */
+    kmEligible: boolean;
 }
 

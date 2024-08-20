@@ -9,6 +9,8 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { TimeRegistrationStatus } from './timeRegistrationStatus';
+import { TimeRegistrationTag } from './timeRegistrationTag';
 
 
 export interface TimeRegistrationResponse { 
@@ -18,15 +20,16 @@ export interface TimeRegistrationResponse {
      */
     registered: number;
     userId: number;
-    taskId: number;
+    taskId?: number;
     date: string;
     /**
      * ISO 8601 formatted duration component <PnDTnHnMn.nS>. Each unit is optional, but at least one must be specified
      */
     duration: string;
-    /**
-     * Describes the status of the time registration
-     */
-    status: string;
+    status: TimeRegistrationStatus;
+    tags: Array<TimeRegistrationTag>;
+    description?: string;
 }
+
+
 

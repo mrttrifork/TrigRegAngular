@@ -4,7 +4,7 @@ TriReg2 User API
 
 - API version: 0.2.0
 
-- Build date: 2024-08-15T11:01:30.213196900+02:00[Europe/Copenhagen]
+- Build date: 2024-08-19T11:41:25.998809700+02:00[Europe/Copenhagen]
 
 - Generator version: 7.4.0
 
@@ -146,12 +146,16 @@ Class | Method | HTTP request | Description
  - [ImportTimeRegistrationRequestInner](docs/ImportTimeRegistrationRequestInner.md)
  - [ImportTimeRegistrationResponseInner](docs/ImportTimeRegistrationResponseInner.md)
  - [PeriodEnum](docs/PeriodEnum.md)
+ - [Tag](docs/Tag.md)
  - [TagConfiguration](docs/TagConfiguration.md)
+ - [TagConfigurationMetadata](docs/TagConfigurationMetadata.md)
  - [TagTimeRegistrationRequest](docs/TagTimeRegistrationRequest.md)
  - [TagTimeRegistrationResponse](docs/TagTimeRegistrationResponse.md)
  - [TaskCreateResponseInner](docs/TaskCreateResponseInner.md)
  - [TimeRegistrationRequest](docs/TimeRegistrationRequest.md)
  - [TimeRegistrationResponse](docs/TimeRegistrationResponse.md)
+ - [TimeRegistrationStatus](docs/TimeRegistrationStatus.md)
+ - [TimeRegistrationTag](docs/TimeRegistrationTag.md)
  - [TimeRegistrationUpdateRequest](docs/TimeRegistrationUpdateRequest.md)
  - [TimeRegistrationsByTaskResponseInner](docs/TimeRegistrationsByTaskResponseInner.md)
  - [TimeRegistrationsByTaskResponseInnerTimeRegistrationsInner](docs/TimeRegistrationsByTaskResponseInnerTimeRegistrationsInner.md)

@@ -491,9 +491,29 @@ components:
         duration: PT1H30M
         timeRegistrationId: 0
         registered: 6
+        description: description
         userId: 1
         taskId: 5
-        status: status
+        status: null
+        tags:
+        - tagConfigurationMetadata:
+            tagConfigurationDescription: tagConfigurationDescription
+            tagConfigurationId: 5
+            tagConfigurationName: tagConfigurationName
+            valueType: STRING
+            cardinality: OPTIONAL
+          tagValue:
+            tagId: 2
+            tagValue: tagValue
+        - tagConfigurationMetadata:
+            tagConfigurationDescription: tagConfigurationDescription
+            tagConfigurationId: 5
+            tagConfigurationName: tagConfigurationName
+            valueType: STRING
+            cardinality: OPTIONAL
+          tagValue:
+            tagId: 2
+            tagValue: tagValue
       properties:
         timeRegistrationId:
           format: int64
@@ -518,16 +538,125 @@ components:
           format: duration
           type: string
         status:
-          description: Describes the status of the time registration
+          $ref: '#/components/schemas/TimeRegistrationStatus'
+        tags:
+          items:
+            $ref: '#/components/schemas/TimeRegistrationTag'
+          type: array
+        description:
           type: string
       required:
       - date
       - duration
       - registered
       - status
-      - taskId
+      - tags
       - timeRegistrationId
       - userId
+      type: object
+    TimeRegistrationStatus:
+      description: "The status of a time registration Valid values: * `VALID` - The\
+        \ time registration is valid * `PENDING` - The time registration is valid\
+        \ as such, but is awaiting the approval of the user. If this happens, it will\
+        \ become 'valid'. If it is rejected, it will become 'rejected'. * `INVALID`\
+        \ - Something is wrong with the time registration, it will need correction\
+        \ before it can become valid * `DELETED` - The time registration has existed\
+        \ at some point, but has now been deleted * `REJECTED` - The time registration\
+        \ has been rejected by the user"
+      enum:
+      - VALID
+      - PENDING
+      - INVALID
+      - DELETED
+      - REJECTED
+      type: string
+    TimeRegistrationTag:
+      description: "Composite object with information about a potential tag for a\
+        \ time registration. This consists both of tags that has\nbeen set, and tags\
+        \ that can potentially be set. Contains metadata describing the tag and the\
+        \ current tag value (if \nany). The 'tagValue' is null if no tag value has\
+        \ been set for the specific configuration.\n"
+      example:
+        tagConfigurationMetadata:
+          tagConfigurationDescription: tagConfigurationDescription
+          tagConfigurationId: 5
+          tagConfigurationName: tagConfigurationName
+          valueType: STRING
+          cardinality: OPTIONAL
+        tagValue:
+          tagId: 2
+          tagValue: tagValue
+      properties:
+        tagConfigurationMetadata:
+          $ref: '#/components/schemas/TagConfigurationMetadata'
+        tagValue:
+          $ref: '#/components/schemas/Tag'
+      required:
+      - tagConfigurationMetadata
+      type: object
+    Tag:
+      description: An existing tag with some value
+      example:
+        tagId: 2
+        tagValue: tagValue
+      properties:
+        tagId:
+          description: The id of this tag
+          format: int64
+          type: integer
+        tagValue:
+          description: "The value of this tag. This is a valid value corresponding\
+            \ to the tag configuration. For example, if the tag \nconfiguration specifies\
+            \ that the tag is an integer, then the value is a valid integer.\n"
+          type: string
+      required:
+      - tagId
+      - tagValue
+      type: object
+    TagConfigurationMetadata:
+      description: |
+        Metadata for a tag configuration in the context of a specific time registration. This can differ based on the task the
+        time registration is associated to, so a tag that is optional for one time registration can be mandatory for another.
+      example:
+        tagConfigurationDescription: tagConfigurationDescription
+        tagConfigurationId: 5
+        tagConfigurationName: tagConfigurationName
+        valueType: STRING
+        cardinality: OPTIONAL
+      properties:
+        tagConfigurationId:
+          description: An identifier for this tag configuration
+          format: int64
+          type: integer
+        tagConfigurationName:
+          description: The name of the tag configuration
+          type: string
+        tagConfigurationDescription:
+          description: An optional description of the tag configuration
+          type: string
+        cardinality:
+          description: |
+            The status of a time registration Valid values: * `OPTIONAL` - The tag can be added to this time registration, but it is not required. * `MANDATORY` - The tag must be added to this time registration. * `MANAGED` - The tag is managed by administrator configuration. It is read-only and can't be changed.
+          enum:
+          - OPTIONAL
+          - MANDATORY
+          - MANAGED
+          type: string
+        valueType:
+          description: "The value type of this configuration Valid values: * `STRING`\
+            \ - The tag value can be any string * `BOOL` - The tag value must be a\
+            \ boolean on the form 'true' or 'false' (case insensitive) * `INT` - The\
+            \ tag value must be a valid 32-bit integer"
+          enum:
+          - STRING
+          - BOOL
+          - INT
+          type: string
+      required:
+      - cardinality
+      - tagConfigurationId
+      - tagConfigurationName
+      - valueType
       type: object
     TimeRegistrationUpdateRequest:
       example:
@@ -799,7 +928,14 @@ components:
         name:
           description: The name of the task
           type: string
+        description:
+          description: A description of the task
+          type: string
+        kmEligible:
+          description: Marks if the task allows for registration of kilometres
+          type: boolean
       required:
+      - kmEligible
       - name
       - taskId
       type: object

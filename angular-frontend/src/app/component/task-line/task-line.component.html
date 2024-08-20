@@ -1,43 +1,45 @@
-<h2>
-  {{ formGroup.controls.taskName.value }}
-</h2>
 @if (tagConfigurationResponse()) {
   <pre>{{ tagConfigurationResponse() | json }}</pre>
 }
-<div class="days">
-  <mat-form-field>
-    <mat-label>{{ dates[0] }}</mat-label>
-    <input matInput placeholder="h.mm" [formControl]="formGroup.controls.monday">
-    <mat-hint>Monday</mat-hint>
-  </mat-form-field>
-  <mat-form-field>
-    <mat-label>{{ dates[1] }}</mat-label>
-    <input matInput placeholder="h.mm" [formControl]="formGroup.controls.tuesday">
-    <mat-hint>Tuesday</mat-hint>
-  </mat-form-field>
-  <mat-form-field>
-    <mat-label>{{ dates[2] }}</mat-label>
-    <input matInput placeholder="h.mm" [formControl]="formGroup.controls.wednesday">
-    <mat-hint>Wednesday</mat-hint>
-  </mat-form-field>
-  <mat-form-field>
-    <mat-label>{{ dates[3] }}</mat-label>
-    <input matInput placeholder="h.mm" [formControl]="formGroup.controls.thursday">
-    <mat-hint>Thursday</mat-hint>
-  </mat-form-field>
-  <mat-form-field>
-    <mat-label>{{ dates[4] }}</mat-label>
-    <input matInput placeholder="h.mm" [formControl]="formGroup.controls.friday">
-    <mat-hint>Friday</mat-hint>
-  </mat-form-field>
-  <mat-form-field>
-    <mat-label>{{ dates[5] }}</mat-label>
-    <input matInput placeholder="h.mm" [formControl]="formGroup.controls.saturday">
-    <mat-hint>Saturday</mat-hint>
-  </mat-form-field>
-  <mat-form-field>
-    <mat-label>{{ dates[6] }}</mat-label>
-    <input matInput placeholder="h.mm" [formControl]="formGroup.controls.sunday">
-    <mat-hint>Sunday</mat-hint>
-  </mat-form-field>
+<div class="flex-row justify-space-between align-items-center">
+  <div>
+    Task Name: {{ formGroup.controls.taskName.value ?? "-" }}
+  </div>
+  <div class="days">
+    <mat-form-field>
+      <mat-label>Mon</mat-label>
+      <input matInput placeholder="hh,mm" [formControl]="formGroup.controls.monday">
+      <mat-hint>{{ dates[0] }}</mat-hint>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Tue</mat-label>
+      <input matInput placeholder="hh,mm" [formControl]="formGroup.controls.tuesday">
+      <mat-hint>{{ dates[1] }}</mat-hint>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Wed</mat-label>
+      <input matInput placeholder="hh,mm" [formControl]="formGroup.controls.wednesday">
+      <mat-hint>{{ dates[2] }}</mat-hint>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Thu</mat-label>
+      <input matInput placeholder="hh,mm" [formControl]="formGroup.controls.thursday">
+      <mat-hint>{{ dates[3] }}</mat-hint>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Fri</mat-label>
+      <input matInput placeholder="hh,mm" [formControl]="formGroup.controls.friday">
+      <mat-hint>{{ dates[4] }}</mat-hint>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Sat</mat-label>
+      <input matInput placeholder="hh,mm" [formControl]="formGroup.controls.saturday">
+      <mat-hint>{{ dates[5] }}</mat-hint>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Sun</mat-label>
+      <input matInput placeholder="hh,mm" [formControl]="formGroup.controls.sunday">
+      <mat-hint>{{ dates[6] }}</mat-hint>
+    </mat-form-field>
+  </div>
 </div>

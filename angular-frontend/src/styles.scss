@@ -1,8 +1,109 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+@use '@angular/material' as mat;
+@use "sass:map";
 
-.example-spacer {
+@include mat.core();
+
+$angular-material-3-theme: mat.define-theme(
+    (
+      color: (
+        theme-type: light,
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      density: (
+        scale: 0,
+      ),
+    )
+);
+
+:root {
+  @include mat.all-component-themes($angular-material-3-theme);
+}
+
+
+
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.flex-spacer {
   flex: 1 1 auto;
+}
+
+.flex-row {
+  flex-direction: row;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-row, .flex-column {
+  display: flex;
+  gap: 1rem;
+
+  &.double-gap {
+    gap: 2rem;
+  }
+
+  &.no-gap {
+    gap: 0;
+  }
+
+  &.half-gap {
+    gap: 0.5rem;
+  }
+
+  &.justify-center {
+    justify-content: center;
+  }
+
+  &.justify-space-between {
+    justify-content: space-between;
+  }
+
+  &.justify-start {
+    justify-content: flex-start;
+  }
+
+  &.justify-end {
+    justify-content: flex-end;
+  }
+
+  &.align-items-flex-start {
+    align-items: flex-start;
+  }
+
+  &.align-items-center {
+    align-items: center;
+  }
+
+  &.align-items-flex-end {
+    align-items: flex-end;
+  }
+
+  &.flex-wrap-wrap {
+    flex-wrap: wrap;
+  }
+}
+
+mat-card {
+  &.mat-mdc-card {
+    &.mat-mdc-card-outlined {
+        background-color: map.get(mat.$azure-palette, 98);
+        border:none;
+
+      mat-card {
+        background-color: map.get(mat.$azure-palette, 95);
+      }
+    }
+  }
 }

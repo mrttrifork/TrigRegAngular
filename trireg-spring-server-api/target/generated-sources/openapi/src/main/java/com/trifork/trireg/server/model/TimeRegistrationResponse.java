@@ -4,7 +4,13 @@ import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.trifork.trireg.server.model.TimeRegistrationStatus;
+import com.trifork.trireg.server.model.TimeRegistrationTag;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.openapitools.jackson.nullable.JsonNullable;
 import java.time.OffsetDateTime;
@@ -20,7 +26,7 @@ import jakarta.annotation.Generated;
  * TimeRegistrationResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-15T11:01:35.044401800+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-19T11:41:29.305516100+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 public class TimeRegistrationResponse {
 
   private Long timeRegistrationId;
@@ -36,7 +42,12 @@ public class TimeRegistrationResponse {
 
   private String duration;
 
-  private String status;
+  private TimeRegistrationStatus status;
+
+  @Valid
+  private List<@Valid TimeRegistrationTag> tags = new ArrayList<>();
+
+  private String description;
 
   public TimeRegistrationResponse() {
     super();
@@ -45,14 +56,14 @@ public class TimeRegistrationResponse {
   /**
    * Constructor with only required parameters
    */
-  public TimeRegistrationResponse(Long timeRegistrationId, Long registered, Long userId, Long taskId, LocalDate date, String duration, String status) {
+  public TimeRegistrationResponse(Long timeRegistrationId, Long registered, Long userId, LocalDate date, String duration, TimeRegistrationStatus status, List<@Valid TimeRegistrationTag> tags) {
     this.timeRegistrationId = timeRegistrationId;
     this.registered = registered;
     this.userId = userId;
-    this.taskId = taskId;
     this.date = date;
     this.duration = duration;
     this.status = status;
+    this.tags = tags;
   }
 
   public TimeRegistrationResponse timeRegistrationId(Long timeRegistrationId) {
@@ -124,8 +135,8 @@ public class TimeRegistrationResponse {
    * Get taskId
    * @return taskId
   */
-  @NotNull 
-  @Schema(name = "taskId", requiredMode = Schema.RequiredMode.REQUIRED)
+  
+  @Schema(name = "taskId", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("taskId")
   public Long getTaskId() {
     return taskId;
@@ -175,24 +186,72 @@ public class TimeRegistrationResponse {
     this.duration = duration;
   }
 
-  public TimeRegistrationResponse status(String status) {
+  public TimeRegistrationResponse status(TimeRegistrationStatus status) {
     this.status = status;
     return this;
   }
 
   /**
-   * Describes the status of the time registration
+   * Get status
    * @return status
   */
-  @NotNull 
-  @Schema(name = "status", description = "Describes the status of the time registration", requiredMode = Schema.RequiredMode.REQUIRED)
+  @NotNull @Valid 
+  @Schema(name = "status", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("status")
-  public String getStatus() {
+  public TimeRegistrationStatus getStatus() {
     return status;
   }
 
-  public void setStatus(String status) {
+  public void setStatus(TimeRegistrationStatus status) {
     this.status = status;
+  }
+
+  public TimeRegistrationResponse tags(List<@Valid TimeRegistrationTag> tags) {
+    this.tags = tags;
+    return this;
+  }
+
+  public TimeRegistrationResponse addTagsItem(TimeRegistrationTag tagsItem) {
+    if (this.tags == null) {
+      this.tags = new ArrayList<>();
+    }
+    this.tags.add(tagsItem);
+    return this;
+  }
+
+  /**
+   * Get tags
+   * @return tags
+  */
+  @NotNull @Valid 
+  @Schema(name = "tags", requiredMode = Schema.RequiredMode.REQUIRED)
+  @JsonProperty("tags")
+  public List<@Valid TimeRegistrationTag> getTags() {
+    return tags;
+  }
+
+  public void setTags(List<@Valid TimeRegistrationTag> tags) {
+    this.tags = tags;
+  }
+
+  public TimeRegistrationResponse description(String description) {
+    this.description = description;
+    return this;
+  }
+
+  /**
+   * Get description
+   * @return description
+  */
+  
+  @Schema(name = "description", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("description")
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
   }
 
   @Override
@@ -210,12 +269,14 @@ public class TimeRegistrationResponse {
         Objects.equals(this.taskId, timeRegistrationResponse.taskId) &&
         Objects.equals(this.date, timeRegistrationResponse.date) &&
         Objects.equals(this.duration, timeRegistrationResponse.duration) &&
-        Objects.equals(this.status, timeRegistrationResponse.status);
+        Objects.equals(this.status, timeRegistrationResponse.status) &&
+        Objects.equals(this.tags, timeRegistrationResponse.tags) &&
+        Objects.equals(this.description, timeRegistrationResponse.description);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(timeRegistrationId, registered, userId, taskId, date, duration, status);
+    return Objects.hash(timeRegistrationId, registered, userId, taskId, date, duration, status, tags, description);
   }
 
   @Override
@@ -229,6 +290,8 @@ public class TimeRegistrationResponse {
     sb.append("    date: ").append(toIndentedString(date)).append("\n");
     sb.append("    duration: ").append(toIndentedString(duration)).append("\n");
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
+    sb.append("    tags: ").append(toIndentedString(tags)).append("\n");
+    sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("}");
     return sb.toString();
   }
