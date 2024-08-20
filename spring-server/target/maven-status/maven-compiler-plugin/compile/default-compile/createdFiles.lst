@@ -9,6 +9,7 @@ com\trifork\trireg\client\configuration\WSClientConfiguration.class
 com\trifork\trireg\server\configuration\MVCConfiguration.class
 com\trifork\trireg\server\controller\TaskController.class
 com\trifork\trireg\server\model\ErrorResponse.class
+com\trifork\trireg\server\service\TimeRegistrationService$4.class
 com\trifork\trireg\server\controller\TimeRegistrationController.class
 com\trifork\trireg\server\controller\LoginController.class
 com\trifork\trireg\server\service\TagService.class
@@ -24,5 +25,6 @@ com\trifork\trireg\server\util\ErrorResponses.class
 com\trifork\trireg\server\service\TimeRegistrationService.class
 com\trifork\trireg\client\httpClient\TriforkTagHttpClient.class
 com\trifork\trireg\server\service\OIDCTokenService.class
+com\trifork\trireg\server\configuration\RefreshAccessTokenFilter.class
 com\trifork\trireg\server\service\TimeRegistrationService$2.class
 com\trifork\trireg\server\service\TaskService.class

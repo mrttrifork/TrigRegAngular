@@ -24,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.trifork.trireg.client.api.ImportTimeRegistrationStatus;
 import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -36,13 +37,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
   ImportTimeRegistrationResponseInner.JSON_PROPERTY_STATUS,
   ImportTimeRegistrationResponseInner.JSON_PROPERTY_MESSAGE
 })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-19T11:41:25.998809700+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-20T10:30:34.295836300+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 public class ImportTimeRegistrationResponseInner {
   public static final String JSON_PROPERTY_TIME_REGISTRATION_ID = "timeRegistrationId";
   private Long timeRegistrationId;
 
   public static final String JSON_PROPERTY_STATUS = "status";
-  private String status;
+  private ImportTimeRegistrationStatus status;
 
   public static final String JSON_PROPERTY_MESSAGE = "message";
   private String message;
@@ -75,27 +76,27 @@ public class ImportTimeRegistrationResponseInner {
   }
 
 
-  public ImportTimeRegistrationResponseInner status(String status) {
+  public ImportTimeRegistrationResponseInner status(ImportTimeRegistrationStatus status) {
     this.status = status;
     return this;
   }
 
    /**
-   * Describes the status of importing the time registration (SUCCESS, PENDING, FAILED)
+   * Get status
    * @return status
   **/
   @jakarta.annotation.Nonnull
   @JsonProperty(JSON_PROPERTY_STATUS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public String getStatus() {
+  public ImportTimeRegistrationStatus getStatus() {
     return status;
   }
 
 
   @JsonProperty(JSON_PROPERTY_STATUS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setStatus(String status) {
+  public void setStatus(ImportTimeRegistrationStatus status) {
     this.status = status;
   }
 

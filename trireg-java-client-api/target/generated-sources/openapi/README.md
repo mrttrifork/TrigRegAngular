@@ -4,7 +4,7 @@ TriReg2 User API
 
 - API version: 0.2.0
 
-- Build date: 2024-08-19T11:41:25.998809700+02:00[Europe/Copenhagen]
+- Build date: 2024-08-20T10:30:34.295836300+02:00[Europe/Copenhagen]
 
 - Generator version: 7.4.0
 
@@ -115,6 +115,14 @@ Class | Method | HTTP request | Description
 *ExportApi* | [**exportTimeRegistrationsForUserWithHttpInfo**](docs/ExportApi.md#exportTimeRegistrationsForUserWithHttpInfo) | **POST** /export | 
 *ImportApi* | [**importTimeRegistrations**](docs/ImportApi.md#importTimeRegistrations) | **POST** /import | 
 *ImportApi* | [**importTimeRegistrationsWithHttpInfo**](docs/ImportApi.md#importTimeRegistrationsWithHttpInfo) | **POST** /import | 
+*KmRegistrationApi* | [**createKmRegistration**](docs/KmRegistrationApi.md#createKmRegistration) | **POST** /km-registration | 
+*KmRegistrationApi* | [**createKmRegistrationWithHttpInfo**](docs/KmRegistrationApi.md#createKmRegistrationWithHttpInfo) | **POST** /km-registration | 
+*KmRegistrationApi* | [**deleteKmRegistration**](docs/KmRegistrationApi.md#deleteKmRegistration) | **DELETE** /km-registration | 
+*KmRegistrationApi* | [**deleteKmRegistrationWithHttpInfo**](docs/KmRegistrationApi.md#deleteKmRegistrationWithHttpInfo) | **DELETE** /km-registration | 
+*KmRegistrationApi* | [**getKmRegistrationsForUser**](docs/KmRegistrationApi.md#getKmRegistrationsForUser) | **GET** /km-registration | 
+*KmRegistrationApi* | [**getKmRegistrationsForUserWithHttpInfo**](docs/KmRegistrationApi.md#getKmRegistrationsForUserWithHttpInfo) | **GET** /km-registration | 
+*KmRegistrationApi* | [**updateKmRegistration**](docs/KmRegistrationApi.md#updateKmRegistration) | **PUT** /km-registration | 
+*KmRegistrationApi* | [**updateKmRegistrationWithHttpInfo**](docs/KmRegistrationApi.md#updateKmRegistrationWithHttpInfo) | **PUT** /km-registration | 
 *LoginApi* | [**login**](docs/LoginApi.md#login) | **GET** /login | 
 *LoginApi* | [**loginWithHttpInfo**](docs/LoginApi.md#loginWithHttpInfo) | **GET** /login | 
 *TagApi* | [**deleteTagRegistration**](docs/TagApi.md#deleteTagRegistration) | **DELETE** /tag | 
@@ -131,6 +139,8 @@ Class | Method | HTTP request | Description
 *TimeRegistrationApi* | [**addBulkTimeRegistrationForUserWithHttpInfo**](docs/TimeRegistrationApi.md#addBulkTimeRegistrationForUserWithHttpInfo) | **POST** /time-registration/bulk | 
 *TimeRegistrationApi* | [**addTimeRegistrationForUser**](docs/TimeRegistrationApi.md#addTimeRegistrationForUser) | **POST** /time-registration | 
 *TimeRegistrationApi* | [**addTimeRegistrationForUserWithHttpInfo**](docs/TimeRegistrationApi.md#addTimeRegistrationForUserWithHttpInfo) | **POST** /time-registration | 
+*TimeRegistrationApi* | [**associateTimeRegistrationWithTask**](docs/TimeRegistrationApi.md#associateTimeRegistrationWithTask) | **POST** /time-registration/associate-task | 
+*TimeRegistrationApi* | [**associateTimeRegistrationWithTaskWithHttpInfo**](docs/TimeRegistrationApi.md#associateTimeRegistrationWithTaskWithHttpInfo) | **POST** /time-registration/associate-task | 
 *TimeRegistrationApi* | [**deleteTimeRegistration**](docs/TimeRegistrationApi.md#deleteTimeRegistration) | **DELETE** /time-registration | 
 *TimeRegistrationApi* | [**deleteTimeRegistrationWithHttpInfo**](docs/TimeRegistrationApi.md#deleteTimeRegistrationWithHttpInfo) | **DELETE** /time-registration | 
 *TimeRegistrationApi* | [**getTaskTimeRegistrationsOverview**](docs/TimeRegistrationApi.md#getTaskTimeRegistrationsOverview) | **GET** /time-registration/active-task | 
@@ -143,23 +153,33 @@ Class | Method | HTTP request | Description
 
 ## Documentation for Models
 
+ - [DayTimeRegistrations](docs/DayTimeRegistrations.md)
+ - [DefaultCreateResponse](docs/DefaultCreateResponse.md)
+ - [DefaultDeleteResponse](docs/DefaultDeleteResponse.md)
+ - [DefaultUpdateResponse](docs/DefaultUpdateResponse.md)
  - [ImportTimeRegistrationRequestInner](docs/ImportTimeRegistrationRequestInner.md)
  - [ImportTimeRegistrationResponseInner](docs/ImportTimeRegistrationResponseInner.md)
- - [PeriodEnum](docs/PeriodEnum.md)
- - [Tag](docs/Tag.md)
- - [TagConfiguration](docs/TagConfiguration.md)
+ - [ImportTimeRegistrationStatus](docs/ImportTimeRegistrationStatus.md)
+ - [KmRegistration](docs/KmRegistration.md)
+ - [KmRegistrationRequest](docs/KmRegistrationRequest.md)
+ - [KmRegistrationStatus](docs/KmRegistrationStatus.md)
+ - [KmRegistrationUpdateRequest](docs/KmRegistrationUpdateRequest.md)
+ - [OverviewPeriod](docs/OverviewPeriod.md)
  - [TagConfigurationMetadata](docs/TagConfigurationMetadata.md)
+ - [TagRegistration](docs/TagRegistration.md)
  - [TagTimeRegistrationRequest](docs/TagTimeRegistrationRequest.md)
- - [TagTimeRegistrationResponse](docs/TagTimeRegistrationResponse.md)
+ - [Task](docs/Task.md)
  - [TaskCreateResponseInner](docs/TaskCreateResponseInner.md)
+ - [TaskTimeRegistrationsInterval](docs/TaskTimeRegistrationsInterval.md)
+ - [TasklessTimeRegistrationsInterval](docs/TasklessTimeRegistrationsInterval.md)
+ - [TimeRegistration](docs/TimeRegistration.md)
+ - [TimeRegistrationAssociateTaskRequest](docs/TimeRegistrationAssociateTaskRequest.md)
  - [TimeRegistrationRequest](docs/TimeRegistrationRequest.md)
  - [TimeRegistrationResponse](docs/TimeRegistrationResponse.md)
  - [TimeRegistrationStatus](docs/TimeRegistrationStatus.md)
  - [TimeRegistrationTag](docs/TimeRegistrationTag.md)
  - [TimeRegistrationUpdateRequest](docs/TimeRegistrationUpdateRequest.md)
- - [TimeRegistrationsByTaskResponseInner](docs/TimeRegistrationsByTaskResponseInner.md)
- - [TimeRegistrationsByTaskResponseInnerTimeRegistrationsInner](docs/TimeRegistrationsByTaskResponseInnerTimeRegistrationsInner.md)
- - [UpdateTagRegistrationRequest](docs/UpdateTagRegistrationRequest.md)
+ - [TimeRegistrationsByTaskResponse](docs/TimeRegistrationsByTaskResponse.md)
 
 
 <a id="documentation-for-authorization"></a>

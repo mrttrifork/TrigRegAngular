@@ -23,11 +23,19 @@ public class TriforkRegistrationHttpClient {
         return timeRegistrationApi.getTimeRegistrationsForUser();
     }
 
-    public List<TimeRegistrationsByTaskResponseInner> getTaskTimeRegistrationsOverview(LocalDate date, @Nullable PeriodEnum period) throws ApiException {
+    public TimeRegistrationsByTaskResponse getTaskTimeRegistrationsOverview(LocalDate date, @Nullable OverviewPeriod period) throws ApiException {
         return timeRegistrationApi.getTaskTimeRegistrationsOverview(date, period);
     }
 
-    public String addTimeRegistrationForUser(TimeRegistrationRequest timeRegistrationRequest) throws ApiException {
+    public DefaultCreateResponse addTimeRegistrationForUser(TimeRegistrationRequest timeRegistrationRequest) throws ApiException {
         return timeRegistrationApi.addTimeRegistrationForUser(timeRegistrationRequest);
+    }
+
+    public DefaultCreateResponse updateTimeRegistrationForUser(Long timeRegistrationId, TimeRegistrationUpdateRequest timeRegistrationUpdateRequest) throws ApiException {
+        return timeRegistrationApi.updateTimeRegistrationForUser(timeRegistrationId, timeRegistrationUpdateRequest);
+    }
+
+    public DefaultDeleteResponse deleteTimeRegistration(Long timeRegistrationId) throws ApiException {
+        return timeRegistrationApi.deleteTimeRegistration(timeRegistrationId);
     }
 }

@@ -15,13 +15,12 @@ import java.util.*;
 import jakarta.annotation.Generated;
 
 /**
- * TagTimeRegistrationRequest
+ * A request to set a tag value for a tag configuration for a time registration. Administrators configure the rules for tags for time registrations. This includes the format of the tag value, and whether tags are mandatory or optional. When setting a tag value for a time registration, the request must follow these rules. 
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-19T11:41:29.305516100+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@Schema(name = "TagTimeRegistrationRequest", description = "A request to set a tag value for a tag configuration for a time registration. Administrators configure the rules for tags for time registrations. This includes the format of the tag value, and whether tags are mandatory or optional. When setting a tag value for a time registration, the request must follow these rules. ")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-20T10:30:37.943553100+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 public class TagTimeRegistrationRequest {
-
-  private Long timeRegistrationId;
 
   private Long tagConfigurationId;
 
@@ -34,29 +33,9 @@ public class TagTimeRegistrationRequest {
   /**
    * Constructor with only required parameters
    */
-  public TagTimeRegistrationRequest(Long timeRegistrationId, Long tagConfigurationId) {
-    this.timeRegistrationId = timeRegistrationId;
+  public TagTimeRegistrationRequest(Long tagConfigurationId, String value) {
     this.tagConfigurationId = tagConfigurationId;
-  }
-
-  public TagTimeRegistrationRequest timeRegistrationId(Long timeRegistrationId) {
-    this.timeRegistrationId = timeRegistrationId;
-    return this;
-  }
-
-  /**
-   * Get timeRegistrationId
-   * @return timeRegistrationId
-  */
-  @NotNull 
-  @Schema(name = "timeRegistrationId", requiredMode = Schema.RequiredMode.REQUIRED)
-  @JsonProperty("timeRegistrationId")
-  public Long getTimeRegistrationId() {
-    return timeRegistrationId;
-  }
-
-  public void setTimeRegistrationId(Long timeRegistrationId) {
-    this.timeRegistrationId = timeRegistrationId;
+    this.value = value;
   }
 
   public TagTimeRegistrationRequest tagConfigurationId(Long tagConfigurationId) {
@@ -65,11 +44,11 @@ public class TagTimeRegistrationRequest {
   }
 
   /**
-   * Get tagConfigurationId
+   * The id of the tag configuration to set a value for. This must be a valid tag configuration for the time  registration. 
    * @return tagConfigurationId
   */
   @NotNull 
-  @Schema(name = "tagConfigurationId", requiredMode = Schema.RequiredMode.REQUIRED)
+  @Schema(name = "tagConfigurationId", description = "The id of the tag configuration to set a value for. This must be a valid tag configuration for the time  registration. ", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("tagConfigurationId")
   public Long getTagConfigurationId() {
     return tagConfigurationId;
@@ -85,11 +64,11 @@ public class TagTimeRegistrationRequest {
   }
 
   /**
-   * Get value
+   * The value to set for the tag configuration. This is a string, but the format of the string is dependent on the tag configuration. For example, if the configuration specifies that the tag is an integer, then the string value must be a valid integer.
    * @return value
   */
-  
-  @Schema(name = "value", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @NotNull 
+  @Schema(name = "value", description = "The value to set for the tag configuration. This is a string, but the format of the string is dependent on the tag configuration. For example, if the configuration specifies that the tag is an integer, then the string value must be a valid integer.", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("value")
   public String getValue() {
     return value;
@@ -108,21 +87,19 @@ public class TagTimeRegistrationRequest {
       return false;
     }
     TagTimeRegistrationRequest tagTimeRegistrationRequest = (TagTimeRegistrationRequest) o;
-    return Objects.equals(this.timeRegistrationId, tagTimeRegistrationRequest.timeRegistrationId) &&
-        Objects.equals(this.tagConfigurationId, tagTimeRegistrationRequest.tagConfigurationId) &&
+    return Objects.equals(this.tagConfigurationId, tagTimeRegistrationRequest.tagConfigurationId) &&
         Objects.equals(this.value, tagTimeRegistrationRequest.value);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(timeRegistrationId, tagConfigurationId, value);
+    return Objects.hash(tagConfigurationId, value);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class TagTimeRegistrationRequest {\n");
-    sb.append("    timeRegistrationId: ").append(toIndentedString(timeRegistrationId)).append("\n");
     sb.append("    tagConfigurationId: ").append(toIndentedString(tagConfigurationId)).append("\n");
     sb.append("    value: ").append(toIndentedString(value)).append("\n");
     sb.append("}");

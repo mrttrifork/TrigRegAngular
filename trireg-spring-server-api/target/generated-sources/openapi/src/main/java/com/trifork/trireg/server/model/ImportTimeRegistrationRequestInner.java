@@ -5,7 +5,7 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.trifork.trireg.server.model.TagConfiguration;
+import com.trifork.trireg.server.model.TagTimeRegistrationRequest;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +26,7 @@ import jakarta.annotation.Generated;
  */
 
 @JsonTypeName("ImportTimeRegistrationRequest_inner")
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-19T11:41:29.305516100+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-20T10:30:37.943553100+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 public class ImportTimeRegistrationRequestInner {
 
   private Long userId;
@@ -39,7 +39,9 @@ public class ImportTimeRegistrationRequestInner {
   private String duration;
 
   @Valid
-  private List<@Valid TagConfiguration> tags = new ArrayList<>();
+  private List<@Valid TagTimeRegistrationRequest> tags = new ArrayList<>();
+
+  private String description;
 
   public ImportTimeRegistrationRequestInner() {
     super();
@@ -48,9 +50,8 @@ public class ImportTimeRegistrationRequestInner {
   /**
    * Constructor with only required parameters
    */
-  public ImportTimeRegistrationRequestInner(Long userId, Long taskId, LocalDate date, String duration, List<@Valid TagConfiguration> tags) {
+  public ImportTimeRegistrationRequestInner(Long userId, LocalDate date, String duration, List<@Valid TagTimeRegistrationRequest> tags) {
     this.userId = userId;
-    this.taskId = taskId;
     this.date = date;
     this.duration = duration;
     this.tags = tags;
@@ -82,11 +83,11 @@ public class ImportTimeRegistrationRequestInner {
   }
 
   /**
-   * Get taskId
+   * Associates the time registration with a task. If not specified, then the `description` field must be a non-null value 
    * @return taskId
   */
-  @NotNull 
-  @Schema(name = "taskId", requiredMode = Schema.RequiredMode.REQUIRED)
+  
+  @Schema(name = "taskId", description = "Associates the time registration with a task. If not specified, then the `description` field must be a non-null value ", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("taskId")
   public Long getTaskId() {
     return taskId;
@@ -136,12 +137,12 @@ public class ImportTimeRegistrationRequestInner {
     this.duration = duration;
   }
 
-  public ImportTimeRegistrationRequestInner tags(List<@Valid TagConfiguration> tags) {
+  public ImportTimeRegistrationRequestInner tags(List<@Valid TagTimeRegistrationRequest> tags) {
     this.tags = tags;
     return this;
   }
 
-  public ImportTimeRegistrationRequestInner addTagsItem(TagConfiguration tagsItem) {
+  public ImportTimeRegistrationRequestInner addTagsItem(TagTimeRegistrationRequest tagsItem) {
     if (this.tags == null) {
       this.tags = new ArrayList<>();
     }
@@ -156,12 +157,32 @@ public class ImportTimeRegistrationRequestInner {
   @NotNull @Valid 
   @Schema(name = "tags", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("tags")
-  public List<@Valid TagConfiguration> getTags() {
+  public List<@Valid TagTimeRegistrationRequest> getTags() {
     return tags;
   }
 
-  public void setTags(List<@Valid TagConfiguration> tags) {
+  public void setTags(List<@Valid TagTimeRegistrationRequest> tags) {
     this.tags = tags;
+  }
+
+  public ImportTimeRegistrationRequestInner description(String description) {
+    this.description = description;
+    return this;
+  }
+
+  /**
+   * Get description
+   * @return description
+  */
+  
+  @Schema(name = "description", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("description")
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
   }
 
   @Override
@@ -177,12 +198,13 @@ public class ImportTimeRegistrationRequestInner {
         Objects.equals(this.taskId, importTimeRegistrationRequestInner.taskId) &&
         Objects.equals(this.date, importTimeRegistrationRequestInner.date) &&
         Objects.equals(this.duration, importTimeRegistrationRequestInner.duration) &&
-        Objects.equals(this.tags, importTimeRegistrationRequestInner.tags);
+        Objects.equals(this.tags, importTimeRegistrationRequestInner.tags) &&
+        Objects.equals(this.description, importTimeRegistrationRequestInner.description);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(userId, taskId, date, duration, tags);
+    return Objects.hash(userId, taskId, date, duration, tags, description);
   }
 
   @Override
@@ -194,6 +216,7 @@ public class ImportTimeRegistrationRequestInner {
     sb.append("    date: ").append(toIndentedString(date)).append("\n");
     sb.append("    duration: ").append(toIndentedString(duration)).append("\n");
     sb.append("    tags: ").append(toIndentedString(tags)).append("\n");
+    sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("}");
     return sb.toString();
   }

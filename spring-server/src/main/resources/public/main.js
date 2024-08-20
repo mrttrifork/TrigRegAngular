@@ -45,7 +45,6 @@ import {
   Injector,
   Input,
   IterableDiffers,
-  JsonPipe,
   LOCALE_ID,
   LOCATION_INITIALIZED,
   Location,
@@ -213,8 +212,6 @@ import {
   ɵɵlistener,
   ɵɵloadQuery,
   ɵɵnextContext,
-  ɵɵpipe,
-  ɵɵpipeBind1,
   ɵɵprojection,
   ɵɵprojectionDef,
   ɵɵproperty,
@@ -236,7 +233,7 @@ import {
   ɵɵtextInterpolate,
   ɵɵtextInterpolate1,
   ɵɵviewQuery
-} from "./chunk-TJEJCTGV.js";
+} from "./chunk-SRSTSRY6.js";
 
 // node_modules/@angular/common/fesm2022/http.mjs
 var HttpHandler = class {
@@ -9608,6 +9605,309 @@ _ImportService.\u0275fac = function ImportService_Factory(__ngFactoryType__) {
 _ImportService.\u0275prov = /* @__PURE__ */ \u0275\u0275defineInjectable({ token: _ImportService, factory: _ImportService.\u0275fac, providedIn: "root" });
 var ImportService = _ImportService;
 
+// src/app/generated/api/kmRegistration.service.ts
+var _KmRegistrationService = class _KmRegistrationService {
+  constructor(httpClient, basePath, configuration) {
+    this.httpClient = httpClient;
+    this.basePath = "https://trireg2.tcs.trifork.dev";
+    this.defaultHeaders = new HttpHeaders();
+    this.configuration = new Configuration();
+    if (configuration) {
+      this.configuration = configuration;
+    }
+    if (typeof this.configuration.basePath !== "string") {
+      if (Array.isArray(basePath) && basePath.length > 0) {
+        basePath = basePath[0];
+      }
+      if (typeof basePath !== "string") {
+        basePath = this.basePath;
+      }
+      this.configuration.basePath = basePath;
+    }
+    this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
+  }
+  // @ts-ignore
+  addToHttpParams(httpParams, value, key) {
+    if (typeof value === "object" && value instanceof Date === false) {
+      httpParams = this.addToHttpParamsRecursive(httpParams, value);
+    } else {
+      httpParams = this.addToHttpParamsRecursive(httpParams, value, key);
+    }
+    return httpParams;
+  }
+  addToHttpParamsRecursive(httpParams, value, key) {
+    if (value == null) {
+      return httpParams;
+    }
+    if (typeof value === "object") {
+      if (Array.isArray(value)) {
+        value.forEach((elem) => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
+      } else if (value instanceof Date) {
+        if (key != null) {
+          httpParams = httpParams.append(key, value.toISOString().substring(0, 10));
+        } else {
+          throw Error("key may not be null if value is Date");
+        }
+      } else {
+        Object.keys(value).forEach((k) => httpParams = this.addToHttpParamsRecursive(httpParams, value[k], key != null ? `${key}.${k}` : k));
+      }
+    } else if (key != null) {
+      httpParams = httpParams.append(key, value);
+    } else {
+      throw Error("key may not be null if value is not object or array");
+    }
+    return httpParams;
+  }
+  createKmRegistration(kmRegistrationRequest, observe = "body", reportProgress = false, options) {
+    if (kmRegistrationRequest === null || kmRegistrationRequest === void 0) {
+      throw new Error("Required parameter kmRegistrationRequest was null or undefined when calling createKmRegistration.");
+    }
+    let localVarHeaders = this.defaultHeaders;
+    let localVarCredential;
+    localVarCredential = this.configuration.lookupCredential("openId");
+    if (localVarCredential) {
+    }
+    localVarCredential = this.configuration.lookupCredential("basicAuth");
+    if (localVarCredential) {
+      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
+    }
+    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
+    if (localVarHttpHeaderAcceptSelected === void 0) {
+      const httpHeaderAccepts = [
+        "application/json",
+        "text/plain"
+      ];
+      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (localVarHttpHeaderAcceptSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
+    }
+    let localVarHttpContext = options && options.context;
+    if (localVarHttpContext === void 0) {
+      localVarHttpContext = new HttpContext();
+    }
+    let localVarTransferCache = options && options.transferCache;
+    if (localVarTransferCache === void 0) {
+      localVarTransferCache = true;
+    }
+    const consumes = [
+      "application/json"
+    ];
+    const httpContentTypeSelected = this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Content-Type", httpContentTypeSelected);
+    }
+    let responseType_ = "json";
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
+        responseType_ = "text";
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = "json";
+      } else {
+        responseType_ = "blob";
+      }
+    }
+    let localVarPath = `/km-registration`;
+    return this.httpClient.request("post", `${this.configuration.basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: kmRegistrationRequest,
+      responseType: responseType_,
+      withCredentials: this.configuration.withCredentials,
+      headers: localVarHeaders,
+      observe,
+      transferCache: localVarTransferCache,
+      reportProgress
+    });
+  }
+  deleteKmRegistration(kmRegistrationId, observe = "body", reportProgress = false, options) {
+    if (kmRegistrationId === null || kmRegistrationId === void 0) {
+      throw new Error("Required parameter kmRegistrationId was null or undefined when calling deleteKmRegistration.");
+    }
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    if (kmRegistrationId !== void 0 && kmRegistrationId !== null) {
+      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, kmRegistrationId, "kmRegistrationId");
+    }
+    let localVarHeaders = this.defaultHeaders;
+    let localVarCredential;
+    localVarCredential = this.configuration.lookupCredential("openId");
+    if (localVarCredential) {
+    }
+    localVarCredential = this.configuration.lookupCredential("basicAuth");
+    if (localVarCredential) {
+      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
+    }
+    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
+    if (localVarHttpHeaderAcceptSelected === void 0) {
+      const httpHeaderAccepts = [
+        "application/json",
+        "text/plain"
+      ];
+      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (localVarHttpHeaderAcceptSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
+    }
+    let localVarHttpContext = options && options.context;
+    if (localVarHttpContext === void 0) {
+      localVarHttpContext = new HttpContext();
+    }
+    let localVarTransferCache = options && options.transferCache;
+    if (localVarTransferCache === void 0) {
+      localVarTransferCache = true;
+    }
+    let responseType_ = "json";
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
+        responseType_ = "text";
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = "json";
+      } else {
+        responseType_ = "blob";
+      }
+    }
+    let localVarPath = `/km-registration`;
+    return this.httpClient.request("delete", `${this.configuration.basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: responseType_,
+      withCredentials: this.configuration.withCredentials,
+      headers: localVarHeaders,
+      observe,
+      transferCache: localVarTransferCache,
+      reportProgress
+    });
+  }
+  getKmRegistrationsForUser(userId, observe = "body", reportProgress = false, options) {
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    if (userId !== void 0 && userId !== null) {
+      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, userId, "userId");
+    }
+    let localVarHeaders = this.defaultHeaders;
+    let localVarCredential;
+    localVarCredential = this.configuration.lookupCredential("openId");
+    if (localVarCredential) {
+    }
+    localVarCredential = this.configuration.lookupCredential("basicAuth");
+    if (localVarCredential) {
+      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
+    }
+    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
+    if (localVarHttpHeaderAcceptSelected === void 0) {
+      const httpHeaderAccepts = [
+        "application/json",
+        "text/plain"
+      ];
+      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (localVarHttpHeaderAcceptSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
+    }
+    let localVarHttpContext = options && options.context;
+    if (localVarHttpContext === void 0) {
+      localVarHttpContext = new HttpContext();
+    }
+    let localVarTransferCache = options && options.transferCache;
+    if (localVarTransferCache === void 0) {
+      localVarTransferCache = true;
+    }
+    let responseType_ = "json";
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
+        responseType_ = "text";
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = "json";
+      } else {
+        responseType_ = "blob";
+      }
+    }
+    let localVarPath = `/km-registration`;
+    return this.httpClient.request("get", `${this.configuration.basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: responseType_,
+      withCredentials: this.configuration.withCredentials,
+      headers: localVarHeaders,
+      observe,
+      transferCache: localVarTransferCache,
+      reportProgress
+    });
+  }
+  updateKmRegistration(kmRegistrationId, kmRegistrationUpdateRequest, observe = "body", reportProgress = false, options) {
+    if (kmRegistrationId === null || kmRegistrationId === void 0) {
+      throw new Error("Required parameter kmRegistrationId was null or undefined when calling updateKmRegistration.");
+    }
+    if (kmRegistrationUpdateRequest === null || kmRegistrationUpdateRequest === void 0) {
+      throw new Error("Required parameter kmRegistrationUpdateRequest was null or undefined when calling updateKmRegistration.");
+    }
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    if (kmRegistrationId !== void 0 && kmRegistrationId !== null) {
+      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, kmRegistrationId, "kmRegistrationId");
+    }
+    let localVarHeaders = this.defaultHeaders;
+    let localVarCredential;
+    localVarCredential = this.configuration.lookupCredential("openId");
+    if (localVarCredential) {
+    }
+    localVarCredential = this.configuration.lookupCredential("basicAuth");
+    if (localVarCredential) {
+      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
+    }
+    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
+    if (localVarHttpHeaderAcceptSelected === void 0) {
+      const httpHeaderAccepts = [
+        "application/json",
+        "text/plain"
+      ];
+      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (localVarHttpHeaderAcceptSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
+    }
+    let localVarHttpContext = options && options.context;
+    if (localVarHttpContext === void 0) {
+      localVarHttpContext = new HttpContext();
+    }
+    let localVarTransferCache = options && options.transferCache;
+    if (localVarTransferCache === void 0) {
+      localVarTransferCache = true;
+    }
+    const consumes = [
+      "application/json"
+    ];
+    const httpContentTypeSelected = this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Content-Type", httpContentTypeSelected);
+    }
+    let responseType_ = "json";
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
+        responseType_ = "text";
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = "json";
+      } else {
+        responseType_ = "blob";
+      }
+    }
+    let localVarPath = `/km-registration`;
+    return this.httpClient.request("put", `${this.configuration.basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: kmRegistrationUpdateRequest,
+      params: localVarQueryParameters,
+      responseType: responseType_,
+      withCredentials: this.configuration.withCredentials,
+      headers: localVarHeaders,
+      observe,
+      transferCache: localVarTransferCache,
+      reportProgress
+    });
+  }
+};
+_KmRegistrationService.\u0275fac = function KmRegistrationService_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _KmRegistrationService)(\u0275\u0275inject(HttpClient), \u0275\u0275inject(BASE_PATH, 8), \u0275\u0275inject(Configuration, 8));
+};
+_KmRegistrationService.\u0275prov = /* @__PURE__ */ \u0275\u0275defineInjectable({ token: _KmRegistrationService, factory: _KmRegistrationService.\u0275fac, providedIn: "root" });
+var KmRegistrationService = _KmRegistrationService;
+
 // src/app/generated/api/login.service.ts
 var _LoginService = class _LoginService {
   constructor(httpClient, basePath, configuration) {
@@ -9788,7 +10088,7 @@ var _TagService = class _TagService {
     let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
     if (localVarHttpHeaderAcceptSelected === void 0) {
       const httpHeaderAccepts = [
-        "text/plain"
+        "application/json"
       ];
       localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
     }
@@ -9882,9 +10182,16 @@ var _TagService = class _TagService {
       reportProgress
     });
   }
-  tagTimeRegistration(tagTimeRegistrationRequest, observe = "body", reportProgress = false, options) {
+  tagTimeRegistration(timeRegistrationId, tagTimeRegistrationRequest, observe = "body", reportProgress = false, options) {
+    if (timeRegistrationId === null || timeRegistrationId === void 0) {
+      throw new Error("Required parameter timeRegistrationId was null or undefined when calling tagTimeRegistration.");
+    }
     if (tagTimeRegistrationRequest === null || tagTimeRegistrationRequest === void 0) {
       throw new Error("Required parameter tagTimeRegistrationRequest was null or undefined when calling tagTimeRegistration.");
+    }
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    if (timeRegistrationId !== void 0 && timeRegistrationId !== null) {
+      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, timeRegistrationId, "timeRegistrationId");
     }
     let localVarHeaders = this.defaultHeaders;
     let localVarCredential;
@@ -9898,7 +10205,7 @@ var _TagService = class _TagService {
     let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
     if (localVarHttpHeaderAcceptSelected === void 0) {
       const httpHeaderAccepts = [
-        "text/plain"
+        "application/json"
       ];
       localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
     }
@@ -9934,6 +10241,7 @@ var _TagService = class _TagService {
     return this.httpClient.request("post", `${this.configuration.basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: tagTimeRegistrationRequest,
+      params: localVarQueryParameters,
       responseType: responseType_,
       withCredentials: this.configuration.withCredentials,
       headers: localVarHeaders,
@@ -9942,9 +10250,9 @@ var _TagService = class _TagService {
       reportProgress
     });
   }
-  updateTagRegistration(updateTagRegistrationRequest, observe = "body", reportProgress = false, options) {
-    if (updateTagRegistrationRequest === null || updateTagRegistrationRequest === void 0) {
-      throw new Error("Required parameter updateTagRegistrationRequest was null or undefined when calling updateTagRegistration.");
+  updateTagRegistration(tagRegistration, observe = "body", reportProgress = false, options) {
+    if (tagRegistration === null || tagRegistration === void 0) {
+      throw new Error("Required parameter tagRegistration was null or undefined when calling updateTagRegistration.");
     }
     let localVarHeaders = this.defaultHeaders;
     let localVarCredential;
@@ -9958,7 +10266,7 @@ var _TagService = class _TagService {
     let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
     if (localVarHttpHeaderAcceptSelected === void 0) {
       const httpHeaderAccepts = [
-        "text/plain"
+        "application/json"
       ];
       localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
     }
@@ -9993,7 +10301,7 @@ var _TagService = class _TagService {
     let localVarPath = `/tag`;
     return this.httpClient.request("put", `${this.configuration.basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      body: updateTagRegistrationRequest,
+      body: tagRegistration,
       responseType: responseType_,
       withCredentials: this.configuration.withCredentials,
       headers: localVarHeaders,
@@ -10192,6 +10500,7 @@ var _TimeRegistrationService = class _TimeRegistrationService {
     let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
     if (localVarHttpHeaderAcceptSelected === void 0) {
       const httpHeaderAccepts = [
+        "application/json",
         "text/plain"
       ];
       localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
@@ -10252,7 +10561,7 @@ var _TimeRegistrationService = class _TimeRegistrationService {
     let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
     if (localVarHttpHeaderAcceptSelected === void 0) {
       const httpHeaderAccepts = [
-        "text/plain"
+        "application/json"
       ];
       localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
     }
@@ -10296,6 +10605,67 @@ var _TimeRegistrationService = class _TimeRegistrationService {
       reportProgress
     });
   }
+  associateTimeRegistrationWithTask(timeRegistrationAssociateTaskRequest, observe = "body", reportProgress = false, options) {
+    if (timeRegistrationAssociateTaskRequest === null || timeRegistrationAssociateTaskRequest === void 0) {
+      throw new Error("Required parameter timeRegistrationAssociateTaskRequest was null or undefined when calling associateTimeRegistrationWithTask.");
+    }
+    let localVarHeaders = this.defaultHeaders;
+    let localVarCredential;
+    localVarCredential = this.configuration.lookupCredential("openId");
+    if (localVarCredential) {
+    }
+    localVarCredential = this.configuration.lookupCredential("basicAuth");
+    if (localVarCredential) {
+      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
+    }
+    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
+    if (localVarHttpHeaderAcceptSelected === void 0) {
+      const httpHeaderAccepts = [
+        "application/json",
+        "text/plain"
+      ];
+      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (localVarHttpHeaderAcceptSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
+    }
+    let localVarHttpContext = options && options.context;
+    if (localVarHttpContext === void 0) {
+      localVarHttpContext = new HttpContext();
+    }
+    let localVarTransferCache = options && options.transferCache;
+    if (localVarTransferCache === void 0) {
+      localVarTransferCache = true;
+    }
+    const consumes = [
+      "application/json"
+    ];
+    const httpContentTypeSelected = this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Content-Type", httpContentTypeSelected);
+    }
+    let responseType_ = "json";
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
+        responseType_ = "text";
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = "json";
+      } else {
+        responseType_ = "blob";
+      }
+    }
+    let localVarPath = `/time-registration/associate-task`;
+    return this.httpClient.request("post", `${this.configuration.basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: timeRegistrationAssociateTaskRequest,
+      responseType: responseType_,
+      withCredentials: this.configuration.withCredentials,
+      headers: localVarHeaders,
+      observe,
+      transferCache: localVarTransferCache,
+      reportProgress
+    });
+  }
   deleteTimeRegistration(timeRegistrationId, observe = "body", reportProgress = false, options) {
     if (timeRegistrationId === null || timeRegistrationId === void 0) {
       throw new Error("Required parameter timeRegistrationId was null or undefined when calling deleteTimeRegistration.");
@@ -10316,6 +10686,7 @@ var _TimeRegistrationService = class _TimeRegistrationService {
     let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
     if (localVarHttpHeaderAcceptSelected === void 0) {
       const httpHeaderAccepts = [
+        "application/json",
         "text/plain"
       ];
       localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
@@ -10486,6 +10857,7 @@ var _TimeRegistrationService = class _TimeRegistrationService {
     let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
     if (localVarHttpHeaderAcceptSelected === void 0) {
       const httpHeaderAccepts = [
+        "application/json",
         "text/plain"
       ];
       localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
@@ -10538,13 +10910,38 @@ _TimeRegistrationService.\u0275fac = function TimeRegistrationService_Factory(__
 _TimeRegistrationService.\u0275prov = /* @__PURE__ */ \u0275\u0275defineInjectable({ token: _TimeRegistrationService, factory: _TimeRegistrationService.\u0275fac, providedIn: "root" });
 var TimeRegistrationService = _TimeRegistrationService;
 
-// src/app/generated/model/periodEnum.ts
-var PeriodEnum;
-(function(PeriodEnum2) {
-  PeriodEnum2["Day"] = "DAY";
-  PeriodEnum2["Week"] = "WEEK";
-  PeriodEnum2["Month"] = "MONTH";
-})(PeriodEnum || (PeriodEnum = {}));
+// src/app/generated/model/importTimeRegistrationStatus.ts
+var ImportTimeRegistrationStatus;
+(function(ImportTimeRegistrationStatus2) {
+  ImportTimeRegistrationStatus2["Valid"] = "VALID";
+  ImportTimeRegistrationStatus2["Pending"] = "PENDING";
+  ImportTimeRegistrationStatus2["Failed"] = "FAILED";
+})(ImportTimeRegistrationStatus || (ImportTimeRegistrationStatus = {}));
+
+// src/app/generated/model/kmRegistrationStatus.ts
+var KmRegistrationStatus;
+(function(KmRegistrationStatus2) {
+  KmRegistrationStatus2["Pending"] = "PENDING";
+  KmRegistrationStatus2["Accepted"] = "ACCEPTED";
+  KmRegistrationStatus2["Rejected"] = "REJECTED";
+  KmRegistrationStatus2["Deleted"] = "DELETED";
+})(KmRegistrationStatus || (KmRegistrationStatus = {}));
+
+// src/app/generated/model/kmRegistrationUpdateRequest.ts
+var KmRegistrationUpdateRequestStatusEnum;
+(function(KmRegistrationUpdateRequestStatusEnum2) {
+  KmRegistrationUpdateRequestStatusEnum2["Approve"] = "APPROVE";
+  KmRegistrationUpdateRequestStatusEnum2["Reject"] = "REJECT";
+  KmRegistrationUpdateRequestStatusEnum2["Pending"] = "PENDING";
+})(KmRegistrationUpdateRequestStatusEnum || (KmRegistrationUpdateRequestStatusEnum = {}));
+
+// src/app/generated/model/overviewPeriod.ts
+var OverviewPeriod;
+(function(OverviewPeriod2) {
+  OverviewPeriod2["Day"] = "DAY";
+  OverviewPeriod2["Week"] = "WEEK";
+  OverviewPeriod2["Month"] = "MONTH";
+})(OverviewPeriod || (OverviewPeriod = {}));
 
 // src/app/generated/model/tagConfigurationMetadata.ts
 var TagConfigurationMetadataCardinalityEnum;
@@ -37732,143 +38129,6 @@ function friendlyDateTime(dateTimeish) {
   }
 }
 
-// src/app/component/task-line/task-line.component.ts
-function TaskLineComponent_Conditional_0_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "pre");
-    \u0275\u0275text(1);
-    \u0275\u0275pipe(2, "json");
-    \u0275\u0275elementEnd();
-  }
-  if (rf & 2) {
-    const ctx_r0 = \u0275\u0275nextContext();
-    \u0275\u0275advance();
-    \u0275\u0275textInterpolate(\u0275\u0275pipeBind1(2, 1, ctx_r0.tagConfigurationResponse()));
-  }
-}
-var _TaskLineComponent = class _TaskLineComponent {
-  constructor() {
-    this.tagConfigurationResponse = signal(void 0);
-    this.dates = [];
-  }
-  ngOnInit() {
-    const weekNumber = this.formGroup.controls.weekNumber.value;
-    if (weekNumber) {
-      let fromObject = DateTime.fromObject({
-        weekNumber
-      });
-      let dayOne = fromObject.startOf("week");
-      if (dayOne.isValid) {
-        for (let i = 0; i < 7; i++) {
-          this.dates.push(dayOne.toFormat("dd-MM"));
-          dayOne = dayOne.plus({ days: 1 });
-        }
-      }
-    }
-    const taskId = this.formGroup.controls.taskId.value;
-    if (taskId) {
-    }
-  }
-};
-_TaskLineComponent.\u0275fac = function TaskLineComponent_Factory(__ngFactoryType__) {
-  return new (__ngFactoryType__ || _TaskLineComponent)();
-};
-_TaskLineComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _TaskLineComponent, selectors: [["app-task-line"]], inputs: { formGroup: "formGroup" }, standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 47, vars: 16, consts: [[1, "flex-row", "justify-space-between", "align-items-center"], [1, "days"], ["matInput", "", "placeholder", "hh,mm", 3, "formControl"]], template: function TaskLineComponent_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275template(0, TaskLineComponent_Conditional_0_Template, 3, 3, "pre");
-    \u0275\u0275elementStart(1, "div", 0)(2, "div");
-    \u0275\u0275text(3);
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(4, "div", 1)(5, "mat-form-field")(6, "mat-label");
-    \u0275\u0275text(7, "Mon");
-    \u0275\u0275elementEnd();
-    \u0275\u0275element(8, "input", 2);
-    \u0275\u0275elementStart(9, "mat-hint");
-    \u0275\u0275text(10);
-    \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(11, "mat-form-field")(12, "mat-label");
-    \u0275\u0275text(13, "Tue");
-    \u0275\u0275elementEnd();
-    \u0275\u0275element(14, "input", 2);
-    \u0275\u0275elementStart(15, "mat-hint");
-    \u0275\u0275text(16);
-    \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(17, "mat-form-field")(18, "mat-label");
-    \u0275\u0275text(19, "Wed");
-    \u0275\u0275elementEnd();
-    \u0275\u0275element(20, "input", 2);
-    \u0275\u0275elementStart(21, "mat-hint");
-    \u0275\u0275text(22);
-    \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(23, "mat-form-field")(24, "mat-label");
-    \u0275\u0275text(25, "Thu");
-    \u0275\u0275elementEnd();
-    \u0275\u0275element(26, "input", 2);
-    \u0275\u0275elementStart(27, "mat-hint");
-    \u0275\u0275text(28);
-    \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(29, "mat-form-field")(30, "mat-label");
-    \u0275\u0275text(31, "Fri");
-    \u0275\u0275elementEnd();
-    \u0275\u0275element(32, "input", 2);
-    \u0275\u0275elementStart(33, "mat-hint");
-    \u0275\u0275text(34);
-    \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(35, "mat-form-field")(36, "mat-label");
-    \u0275\u0275text(37, "Sat");
-    \u0275\u0275elementEnd();
-    \u0275\u0275element(38, "input", 2);
-    \u0275\u0275elementStart(39, "mat-hint");
-    \u0275\u0275text(40);
-    \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(41, "mat-form-field")(42, "mat-label");
-    \u0275\u0275text(43, "Sun");
-    \u0275\u0275elementEnd();
-    \u0275\u0275element(44, "input", 2);
-    \u0275\u0275elementStart(45, "mat-hint");
-    \u0275\u0275text(46);
-    \u0275\u0275elementEnd()()()();
-  }
-  if (rf & 2) {
-    let tmp_1_0;
-    \u0275\u0275conditional(ctx.tagConfigurationResponse() ? 0 : -1);
-    \u0275\u0275advance(3);
-    \u0275\u0275textInterpolate1(" Task Name: ", (tmp_1_0 = ctx.formGroup.controls.taskName.value) !== null && tmp_1_0 !== void 0 ? tmp_1_0 : "-", " ");
-    \u0275\u0275advance(5);
-    \u0275\u0275property("formControl", ctx.formGroup.controls.monday);
-    \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(ctx.dates[0]);
-    \u0275\u0275advance(4);
-    \u0275\u0275property("formControl", ctx.formGroup.controls.tuesday);
-    \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(ctx.dates[1]);
-    \u0275\u0275advance(4);
-    \u0275\u0275property("formControl", ctx.formGroup.controls.wednesday);
-    \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(ctx.dates[2]);
-    \u0275\u0275advance(4);
-    \u0275\u0275property("formControl", ctx.formGroup.controls.thursday);
-    \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(ctx.dates[3]);
-    \u0275\u0275advance(4);
-    \u0275\u0275property("formControl", ctx.formGroup.controls.friday);
-    \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(ctx.dates[4]);
-    \u0275\u0275advance(4);
-    \u0275\u0275property("formControl", ctx.formGroup.controls.saturday);
-    \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(ctx.dates[5]);
-    \u0275\u0275advance(4);
-    \u0275\u0275property("formControl", ctx.formGroup.controls.sunday);
-    \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(ctx.dates[6]);
-  }
-}, dependencies: [MatFormFieldModule, MatFormField, MatLabel, MatHint, MatInputModule, MatInput, ReactiveFormsModule, DefaultValueAccessor, NgControlStatus, FormControlDirective, JsonPipe], styles: ["\n\n.days[_ngcontent-%COMP%] {\n  display: flex;\n  gap: 1rem;\n  flex-wrap: wrap;\n}\n.days[_ngcontent-%COMP%]    > mat-form-field[_ngcontent-%COMP%] {\n  width: 5rem;\n}\n/*# sourceMappingURL=task-line.component.css.map */"] });
-var TaskLineComponent = _TaskLineComponent;
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TaskLineComponent, { className: "TaskLineComponent", filePath: "src\\app\\component\\task-line\\task-line.component.ts", lineNumber: 35 });
-})();
-
 // node_modules/@angular/material/fesm2022/button.mjs
 var _c06 = ["mat-button", ""];
 var _c15 = [[["", 8, "material-icons", 3, "iconPositionEnd", ""], ["mat-icon", 3, "iconPositionEnd", ""], ["", "matButtonIcon", "", 3, "iconPositionEnd", ""]], "*", [["", "iconPositionEnd", "", 8, "material-icons"], ["mat-icon", "iconPositionEnd", ""], ["", "matButtonIcon", "", "iconPositionEnd", ""]]];
@@ -38987,39 +39247,6 @@ var MatButtonModule = _MatButtonModule;
   }], null, null);
 })();
 
-// src/app/util/DurationConverter.ts
-var DurationConverter = class {
-  static convertToISO8601Duration(humanDuration) {
-    const splitDuration = humanDuration.split(".|,");
-    if (splitDuration.length > 1) {
-      return void 0;
-    }
-    const [hour, minute] = splitDuration;
-    if (hour) {
-      const duration = Duration.fromObject({
-        hour: +hour,
-        minute: minute ? +minute : 0
-      });
-      return duration.toISO();
-    }
-    return void 0;
-  }
-  static convertToHumanDuration(iso8601Duration) {
-    const fromISO = Duration.fromISO(iso8601Duration);
-    const hours = fromISO.hours;
-    const minutes = fromISO.minutes;
-    const minutesAsHours = minutes ? minutes / 6 : void 0;
-    if (hours && minutesAsHours) {
-      return `${hours},${minutesAsHours}`;
-    } else if (hours) {
-      return `${hours}`;
-    } else if (minutesAsHours) {
-      return `0,${minutesAsHours}`;
-    }
-    return "";
-  }
-};
-
 // node_modules/@angular/core/fesm2022/rxjs-interop.mjs
 function toSignal(source, options) {
   ngDevMode && assertNotInReactiveContext(toSignal, "Invoking `toSignal` causes new subscriptions every time. Consider moving `toSignal` outside of the reactive context and read the signal value where needed.");
@@ -39082,82 +39309,272 @@ function makeToSignalEqual(userEquality = Object.is) {
   return (a, b) => a.kind === 1 && b.kind === 1 && userEquality(a.value, b.value);
 }
 
+// src/app/util/DurationConverter.ts
+var DurationConverter = class {
+  static convertToISO8601Duration(humanDuration) {
+    const hours = humanDuration.replace(/,/g, ".");
+    const hoursAsNumber = +hours;
+    if (isNaN(hoursAsNumber)) {
+      return void 0;
+    }
+    if (hoursAsNumber) {
+      const duration = Duration.fromObject({
+        minutes: +hoursAsNumber * 60
+      });
+      return duration.toISO();
+    }
+    return void 0;
+  }
+  static getMinutes(iso8601Duration) {
+    const fromISO = Duration.fromISO(iso8601Duration);
+    return fromISO.as("minutes");
+  }
+  static convertToHumanDuration(iso8601Duration) {
+    const fromISO = Duration.fromISO(iso8601Duration);
+    const hours = fromISO.hours;
+    const minutes = fromISO.minutes;
+    const minutesAsHours = minutes ? minutes / 6 : void 0;
+    if (hours && minutesAsHours) {
+      return `${hours},${minutesAsHours}`;
+    } else if (hours) {
+      return `${hours}`;
+    } else if (minutesAsHours) {
+      return `0,${minutesAsHours}`;
+    }
+    return "";
+  }
+  static isValidHumanDuration(humanDuration) {
+    const hours = humanDuration.replace(/,/g, ".");
+    const hoursAsNumber = +hours;
+    if (isNaN(hoursAsNumber)) {
+      return false;
+    }
+    const hoursAsMinutes = +hoursAsNumber * 60;
+    if (hoursAsMinutes < 0 || hoursAsMinutes > 1440) {
+      return false;
+    }
+    return true;
+  }
+};
+
+// src/app/component/time-registration-day/time-registration-day.component.ts
+function TimeRegistrationDayComponent_Conditional_6_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "mat-error");
+    \u0275\u0275text(1);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const ctx_r0 = \u0275\u0275nextContext();
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate(ctx_r0.dayRegistrationFormControl.getError("invalidInput"));
+  }
+}
+var _TimeRegistrationDayComponent = class _TimeRegistrationDayComponent {
+  constructor() {
+    this.timeRegistrationService = inject(TimeRegistrationService);
+    this.dayRegistrationFormControl = new FormControl("", {
+      updateOn: "blur",
+      validators: [
+        (control) => {
+          const value = control.value;
+          if (!DurationConverter.isValidHumanDuration(value)) {
+            return {
+              invalidInput: "Field is not a valid input"
+            };
+          }
+          return null;
+        }
+      ]
+    });
+    this.timeRegistrationChange = toSignal(this.dayRegistrationFormControl.valueChanges);
+    this.effectRef = effect(() => __async(this, null, function* () {
+      const timeChange = this.timeRegistrationChange();
+      if (this.dayRegistrationFormControl.dirty && this.dayRegistrationFormControl.valid) {
+        const [firstRegistration] = this.dayTimeRegistrations.timeRegistrations;
+        const formattedTimeChange = timeChange ? DurationConverter.convertToISO8601Duration(timeChange) : void 0;
+        if (!firstRegistration && formattedTimeChange) {
+          const newRegistration = {
+            date: this.dayTimeRegistrations.date,
+            duration: formattedTimeChange,
+            taskId: this.taskId
+          };
+          const response = yield firstValueFrom(this.timeRegistrationService.addTimeRegistrationForUser(newRegistration));
+          const newTimeRegistration = __spreadValues(__spreadValues({}, newRegistration), {
+            timeRegistrationId: response.id,
+            status: TimeRegistrationStatus.Valid,
+            tags: []
+          });
+          this.dayTimeRegistrations.timeRegistrations.push(newTimeRegistration);
+        } else {
+          if (formattedTimeChange) {
+            const response = yield firstValueFrom(this.timeRegistrationService.updateTimeRegistrationForUser(firstRegistration.timeRegistrationId, {
+              duration: formattedTimeChange
+            }));
+            this.dayTimeRegistrations.timeRegistrations.splice(0, 1, {
+              timeRegistrationId: response.id,
+              status: TimeRegistrationStatus.Valid,
+              tags: [],
+              duration: formattedTimeChange
+            });
+          } else {
+            yield firstValueFrom(this.timeRegistrationService.deleteTimeRegistration(firstRegistration.timeRegistrationId));
+            this.dayTimeRegistrations.timeRegistrations.splice(0, 1);
+          }
+        }
+      }
+    }));
+  }
+  get dayTimeRegistrations() {
+    return this._dayTimeRegistrations;
+  }
+  set dayTimeRegistrations(value) {
+    this._dayTimeRegistrations = value;
+    const firstTimeRegistration = value.timeRegistrations.find((timeRegistration) => !!timeRegistration);
+    if (firstTimeRegistration) {
+      const humanDuration = DurationConverter.convertToHumanDuration(firstTimeRegistration.duration);
+      this.dayRegistrationFormControl.setValue(humanDuration);
+    }
+  }
+  formatShortDay(isoDate) {
+    return DateTime.fromISO(isoDate).toFormat("EEE");
+  }
+  formatDanishDate(isoDate) {
+    return DateTime.fromISO(isoDate).toFormat("dd-MM");
+  }
+};
+_TimeRegistrationDayComponent.\u0275fac = function TimeRegistrationDayComponent_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _TimeRegistrationDayComponent)();
+};
+_TimeRegistrationDayComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _TimeRegistrationDayComponent, selectors: [["app-time-registration-day"]], inputs: { taskId: "taskId", dayTimeRegistrations: "dayTimeRegistrations" }, standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 7, vars: 4, consts: [["matInput", "", "placeholder", "hh,mm", 3, "formControl"]], template: function TimeRegistrationDayComponent_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "mat-form-field")(1, "mat-label");
+    \u0275\u0275text(2);
+    \u0275\u0275elementEnd();
+    \u0275\u0275element(3, "input", 0);
+    \u0275\u0275elementStart(4, "mat-hint");
+    \u0275\u0275text(5);
+    \u0275\u0275elementEnd();
+    \u0275\u0275template(6, TimeRegistrationDayComponent_Conditional_6_Template, 2, 1, "mat-error");
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(ctx.formatShortDay(ctx.dayTimeRegistrations.date));
+    \u0275\u0275advance();
+    \u0275\u0275property("formControl", ctx.dayRegistrationFormControl);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(ctx.formatDanishDate(ctx.dayTimeRegistrations.date));
+    \u0275\u0275advance();
+    \u0275\u0275conditional(ctx.dayRegistrationFormControl.hasError("invalidInput") ? 6 : -1);
+  }
+}, dependencies: [
+  MatFormField,
+  ReactiveFormsModule,
+  DefaultValueAccessor,
+  NgControlStatus,
+  FormControlDirective,
+  MatInputModule,
+  MatInput,
+  MatLabel,
+  MatHint,
+  MatError
+], styles: ["\n\nmat-form-field[_ngcontent-%COMP%] {\n  width: 5rem;\n}\n/*# sourceMappingURL=time-registration-day.component.css.map */"] });
+var TimeRegistrationDayComponent = _TimeRegistrationDayComponent;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TimeRegistrationDayComponent, { className: "TimeRegistrationDayComponent", filePath: "src\\app\\component\\time-registration-day\\time-registration-day.component.ts", lineNumber: 22 });
+})();
+
 // src/app/component/total-line/total-line.component.ts
+function TotalLineComponent_Conditional_4_For_1_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 2)(1, "p");
+    \u0275\u0275text(2);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(3, "p");
+    \u0275\u0275text(4);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(5, "p");
+    \u0275\u0275text(6);
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const entry_r1 = ctx.$implicit;
+    const ctx_r1 = \u0275\u0275nextContext(2);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(ctx_r1.DateTime.fromISO(entry_r1[0]).toFormat("dd-MM"));
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(ctx_r1.DateTime.fromISO(entry_r1[0]).toFormat("EEE"));
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(entry_r1[1]);
+  }
+}
+function TotalLineComponent_Conditional_4_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275repeaterCreate(0, TotalLineComponent_Conditional_4_For_1_Template, 7, 3, "div", 2, \u0275\u0275repeaterTrackByIdentity);
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext();
+    \u0275\u0275repeater(ctx_r1.Object.entries(ctx));
+  }
+}
 var _TotalLineComponent = class _TotalLineComponent {
   constructor() {
-    this.monday = new FormControl("1");
-    this.tuesday = new FormControl("6");
-    this.wednesday = new FormControl("1");
-    this.thursday = new FormControl();
-    this.friday = new FormControl();
-    this.saturday = new FormControl("4");
-    this.sunday = new FormControl();
+    this.dateToMinuteSignal = signal(void 0);
+    this.Object = Object;
+    this.DateTime = DateTime;
+  }
+  get taskResponse() {
+    return this._taskResponse;
+  }
+  set taskResponse(value) {
+    this._taskResponse = value;
+    this.mapTaskToDates();
+  }
+  mapTaskToDates() {
+    const dateToMinutes = this.taskResponse?.taskTimeRegistrations.reduce((sum, currentValue) => {
+      for (const dayTimeRegistrations of currentValue.dailyRegistrations) {
+        const date = dayTimeRegistrations.date;
+        if (!sum[date]) {
+          sum[date] = 0;
+        }
+        for (const timeRegistrations of dayTimeRegistrations.timeRegistrations) {
+          const minutes = DurationConverter.getMinutes(timeRegistrations.duration);
+          sum[date] = sum[date] + minutes;
+        }
+      }
+      return sum;
+    }, {});
+    if (dateToMinutes) {
+      this.dateToMinuteSignal.set(dateToMinutes);
+    }
   }
 };
 _TotalLineComponent.\u0275fac = function TotalLineComponent_Factory(__ngFactoryType__) {
   return new (__ngFactoryType__ || _TotalLineComponent)();
 };
-_TotalLineComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _TotalLineComponent, selectors: [["app-total-line"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 32, vars: 8, consts: [[1, "flex-row", "justify-space-between", "align-items-center"], [1, "days"], ["disabled", "true"], ["matInput", "", "readonly", "", 3, "disabled", "formControl"], ["matInput", "", "readonly", "", 3, "formControl"]], template: function TotalLineComponent_Template(rf, ctx) {
+_TotalLineComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _TotalLineComponent, selectors: [["app-total-line"]], inputs: { taskResponse: "taskResponse" }, standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 5, vars: 1, consts: [[1, "flex-row", "justify-space-between", "align-items-center"], [1, "days"], [1, "flex-column", "no-gap"]], template: function TotalLineComponent_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275elementStart(0, "div", 0)(1, "div");
     \u0275\u0275text(2, " Total time ");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(3, "div", 1)(4, "mat-form-field", 2)(5, "mat-label");
-    \u0275\u0275text(6, "Mon");
-    \u0275\u0275elementEnd();
-    \u0275\u0275element(7, "input", 3);
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(8, "mat-form-field")(9, "mat-label");
-    \u0275\u0275text(10, "Tue");
-    \u0275\u0275elementEnd();
-    \u0275\u0275element(11, "input", 4);
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(12, "mat-form-field")(13, "mat-label");
-    \u0275\u0275text(14, "Wed");
-    \u0275\u0275elementEnd();
-    \u0275\u0275element(15, "input", 4);
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(16, "mat-form-field")(17, "mat-label");
-    \u0275\u0275text(18, "Thu");
-    \u0275\u0275elementEnd();
-    \u0275\u0275element(19, "input", 4);
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(20, "mat-form-field")(21, "mat-label");
-    \u0275\u0275text(22, "Fri");
-    \u0275\u0275elementEnd();
-    \u0275\u0275element(23, "input", 4);
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(24, "mat-form-field")(25, "mat-label");
-    \u0275\u0275text(26, "Sat");
-    \u0275\u0275elementEnd();
-    \u0275\u0275element(27, "input", 4);
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(28, "mat-form-field")(29, "mat-label");
-    \u0275\u0275text(30, "Sun");
-    \u0275\u0275elementEnd();
-    \u0275\u0275element(31, "input", 4);
-    \u0275\u0275elementEnd()()();
+    \u0275\u0275elementStart(3, "div", 1);
+    \u0275\u0275template(4, TotalLineComponent_Conditional_4_Template, 2, 0);
+    \u0275\u0275elementEnd()();
   }
   if (rf & 2) {
-    \u0275\u0275advance(7);
-    \u0275\u0275property("disabled", true)("formControl", ctx.monday);
+    let tmp_0_0;
     \u0275\u0275advance(4);
-    \u0275\u0275property("formControl", ctx.tuesday);
-    \u0275\u0275advance(4);
-    \u0275\u0275property("formControl", ctx.wednesday);
-    \u0275\u0275advance(4);
-    \u0275\u0275property("formControl", ctx.thursday);
-    \u0275\u0275advance(4);
-    \u0275\u0275property("formControl", ctx.friday);
-    \u0275\u0275advance(4);
-    \u0275\u0275property("formControl", ctx.saturday);
-    \u0275\u0275advance(4);
-    \u0275\u0275property("formControl", ctx.sunday);
+    \u0275\u0275conditional((tmp_0_0 = ctx.dateToMinuteSignal()) ? 4 : -1, tmp_0_0);
   }
-}, dependencies: [MatFormFieldModule, MatFormField, MatLabel, MatInputModule, MatInput, ReactiveFormsModule, DefaultValueAccessor, NgControlStatus, FormControlDirective], styles: ["\n\n.days[_ngcontent-%COMP%] {\n  display: flex;\n  gap: 1rem;\n  flex-wrap: wrap;\n  margin-right: 1rem;\n}\n.days[_ngcontent-%COMP%]    > mat-form-field[_ngcontent-%COMP%] {\n  width: 5rem;\n}\n/*# sourceMappingURL=total-line.component.css.map */"] });
+}, dependencies: [
+  MatFormFieldModule,
+  MatInputModule,
+  ReactiveFormsModule
+], styles: ["\n\n.days[_ngcontent-%COMP%] {\n  display: flex;\n  gap: 1rem;\n  flex-wrap: wrap;\n  margin-right: 1rem;\n}\n.days[_ngcontent-%COMP%]    > mat-form-field[_ngcontent-%COMP%] {\n  width: 5rem;\n}\n/*# sourceMappingURL=total-line.component.css.map */"] });
 var TotalLineComponent = _TotalLineComponent;
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TotalLineComponent, { className: "TotalLineComponent", filePath: "src\\app\\component\\total-line\\total-line.component.ts", lineNumber: 19 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TotalLineComponent, { className: "TotalLineComponent", filePath: "src\\app\\component\\total-line\\total-line.component.ts", lineNumber: 24 });
 })();
 
 // node_modules/@angular/material/fesm2022/card.mjs
@@ -39629,6 +40046,46 @@ var MatCardModule = _MatCardModule;
   }], null, null);
 })();
 
+// src/app/component/task-registration/task-registration.component.ts
+function TaskRegistrationComponent_For_5_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275element(0, "app-time-registration-day", 2);
+  }
+  if (rf & 2) {
+    const dailyRegistration_r1 = ctx.$implicit;
+    const ctx_r1 = \u0275\u0275nextContext();
+    \u0275\u0275property("taskId", ctx_r1.task.task.taskId)("dayTimeRegistrations", dailyRegistration_r1);
+  }
+}
+var _TaskRegistrationComponent = class _TaskRegistrationComponent {
+};
+_TaskRegistrationComponent.\u0275fac = function TaskRegistrationComponent_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _TaskRegistrationComponent)();
+};
+_TaskRegistrationComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _TaskRegistrationComponent, selectors: [["app-task-registration"]], inputs: { task: "task" }, standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 6, vars: 1, consts: [[1, "flex-row", "justify-space-between", "align-items-center"], [1, "days"], [3, "taskId", "dayTimeRegistrations"]], template: function TaskRegistrationComponent_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 0)(1, "div");
+    \u0275\u0275text(2);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(3, "div", 1);
+    \u0275\u0275repeaterCreate(4, TaskRegistrationComponent_For_5_Template, 1, 2, "app-time-registration-day", 2, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate1(" ", ctx.task.task.taskName, " ");
+    \u0275\u0275advance(2);
+    \u0275\u0275repeater(ctx.task.dailyRegistrations);
+  }
+}, dependencies: [
+  ReactiveFormsModule,
+  TimeRegistrationDayComponent
+], styles: ["\n\n.days[_ngcontent-%COMP%] {\n  display: flex;\n  gap: 1rem;\n  flex-wrap: wrap;\n}\n/*# sourceMappingURL=task-registration.component.css.map */"] });
+var TaskRegistrationComponent = _TaskRegistrationComponent;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TaskRegistrationComponent, { className: "TaskRegistrationComponent", filePath: "src\\app\\component\\task-registration\\task-registration.component.ts", lineNumber: 22 });
+})();
+
 // src/app/component/home/home.component.ts
 function HomeComponent_For_10_Template(rf, ctx) {
   if (rf & 1) {
@@ -39643,13 +40100,23 @@ function HomeComponent_For_10_Template(rf, ctx) {
     \u0275\u0275textInterpolate1(" ", option_r2.name, " ");
   }
 }
-function HomeComponent_For_32_Template(rf, ctx) {
+function HomeComponent_Conditional_31_For_1_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275element(0, "app-task-line", 10);
+    \u0275\u0275element(0, "app-task-registration", 10);
   }
   if (rf & 2) {
     const task_r3 = ctx.$implicit;
-    \u0275\u0275property("formGroup", task_r3);
+    \u0275\u0275property("task", task_r3);
+  }
+}
+function HomeComponent_Conditional_31_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275repeaterCreate(0, HomeComponent_Conditional_31_For_1_Template, 1, 1, "app-task-registration", 10, \u0275\u0275repeaterTrackByIdentity);
+  }
+  if (rf & 2) {
+    let tmp_2_0;
+    const ctx_r3 = \u0275\u0275nextContext();
+    \u0275\u0275repeater((tmp_2_0 = ctx_r3.timeRegistrationByTaskSignal()) == null ? null : tmp_2_0.taskTimeRegistrations);
   }
 }
 var _HomeComponent = class _HomeComponent {
@@ -39677,21 +40144,13 @@ var _HomeComponent = class _HomeComponent {
       }
       return [];
     });
-    this.tasksFormArray = new FormArray([]);
     this.taskControl = new FormControl("");
-    this.timeRegistrationSignal = signal(void 0);
+    this.timeRegistrationByTaskSignal = signal(void 0);
     this.tasksSignal = signal(void 0);
     this.effectRef = effect(() => {
-      this.timeRegistrationService.getTimeRegistrationsForUser().subscribe({
+      this.timeRegistrationService.getTaskTimeRegistrationsOverview(DateTime.now().toISODate(), OverviewPeriod.Week).subscribe({
         next: (value) => {
-          this.timeRegistrationSignal.set(value);
-        }
-      });
-      this.timeRegistrationService.getTaskTimeRegistrationsOverview(DateTime.now().toISODate(), PeriodEnum.Week).subscribe({
-        next: (value) => {
-          for (const timeRegistrationsByTaskResponseInner of value) {
-            this.addTask(timeRegistrationsByTaskResponseInner);
-          }
+          this.timeRegistrationByTaskSignal.set(value);
         }
       });
       this.taskService.getTasksForUser().subscribe({
@@ -39721,39 +40180,6 @@ var _HomeComponent = class _HomeComponent {
       }));
     });
   }
-  filterTasks(tasks) {
-    return tasks.filter(({ taskId, taskName }) => {
-      if (!taskName) {
-        return false;
-      }
-      const taskValue = typeof this.taskControl.value === "string" ? this.taskControl.value : this.taskControl.value?.taskName ?? "";
-      return taskName.includes(taskValue) || taskName.toLowerCase().includes(taskValue.toLowerCase());
-    }).sort((a, b) => (a.taskName || "").localeCompare(b.taskName || ""));
-  }
-  optionSelected($event) {
-    const category = $event.option.value;
-    if (category) {
-      this.addTask(category);
-    }
-  }
-  addTask(category) {
-    const firstDuration = category.timeRegistrations?.[0].duration || "";
-    const addDuration = firstDuration ? DurationConverter.convertToHumanDuration(firstDuration) : "";
-    const formGroup = this.formBuilder.group({
-      monday: this.formBuilder.control(addDuration),
-      tuesday: this.formBuilder.control(""),
-      wednesday: this.formBuilder.control(""),
-      thursday: this.formBuilder.control(""),
-      friday: this.formBuilder.control(""),
-      saturday: this.formBuilder.control(""),
-      sunday: this.formBuilder.control(""),
-      taskId: category.taskId,
-      taskName: category.taskName,
-      weekNumber: DateTime.now().weekNumber
-    });
-    this.tasksFormArray.push(formGroup);
-    this.taskControl.reset();
-  }
   getWeekRangeAsString() {
     const startOfWeek = DateTime.now().startOf("week");
     const endOfWeek = DateTime.now().endOf("week");
@@ -39763,13 +40189,12 @@ var _HomeComponent = class _HomeComponent {
     const task = $event.option.value;
     this.addTimeRegistration(task.taskId);
     this.taskSearchControl.reset();
-    console.log(task);
   }
 };
 _HomeComponent.\u0275fac = function HomeComponent_Factory(__ngFactoryType__) {
   return new (__ngFactoryType__ || _HomeComponent)();
 };
-_HomeComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _HomeComponent, selectors: [["app-home"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 33, vars: 4, consts: [["auto", "matAutocomplete"], [1, "example-form"], [2, "width", "100%"], ["type", "text", "placeholder", "Search for task..", "aria-label", "Task", "matInput", "", 3, "formControl", "matAutocomplete"], [3, "optionSelected", "displayWith"], [3, "disabled", "value"], ["appearance", "outlined", 1, "card-1"], [2, "padding", "0 1rem"], [1, "flex-column"], ["appearance", "outlined"], [3, "formGroup"]], template: function HomeComponent_Template(rf, ctx) {
+_HomeComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _HomeComponent, selectors: [["app-home"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 32, vars: 6, consts: [["auto", "matAutocomplete"], [1, "example-form"], [2, "width", "100%"], ["type", "text", "placeholder", "Search for task..", "aria-label", "Task", "matInput", "", 3, "formControl", "matAutocomplete"], [3, "optionSelected", "displayWith"], [3, "disabled", "value"], ["appearance", "outlined", 1, "card-1"], [2, "padding", "0 1rem", 3, "taskResponse"], [1, "flex-column"], ["appearance", "outlined"], [3, "task"]], template: function HomeComponent_Template(rf, ctx) {
   if (rf & 1) {
     const _r1 = \u0275\u0275getCurrentView();
     \u0275\u0275elementStart(0, "h1");
@@ -39804,26 +40229,28 @@ _HomeComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _
     \u0275\u0275text(29, "Registered tasks");
     \u0275\u0275elementEnd()();
     \u0275\u0275elementStart(30, "mat-card-content");
-    \u0275\u0275repeaterCreate(31, HomeComponent_For_32_Template, 1, 1, "app-task-line", 10, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275template(31, HomeComponent_Conditional_31_Template, 2, 0);
     \u0275\u0275elementEnd()()()()();
   }
   if (rf & 2) {
-    const auto_r4 = \u0275\u0275reference(8);
+    const auto_r5 = \u0275\u0275reference(8);
     \u0275\u0275advance(6);
-    \u0275\u0275property("formControl", ctx.taskSearchControl)("matAutocomplete", auto_r4);
+    \u0275\u0275property("formControl", ctx.taskSearchControl)("matAutocomplete", auto_r5);
     \u0275\u0275advance();
     \u0275\u0275property("displayWith", ctx.displayFn);
     \u0275\u0275advance(2);
     \u0275\u0275repeater(ctx.filteredOptionsSignal());
     \u0275\u0275advance(3);
     \u0275\u0275textInterpolate1(" ", ctx.getWeekRangeAsString(), "\n");
-    \u0275\u0275advance(19);
-    \u0275\u0275repeater(ctx.tasksFormArray.controls);
+    \u0275\u0275advance(6);
+    \u0275\u0275property("taskResponse", ctx.timeRegistrationByTaskSignal());
+    \u0275\u0275advance(13);
+    \u0275\u0275conditional(ctx.timeRegistrationByTaskSignal() ? 31 : -1);
   }
-}, dependencies: [MatFormFieldModule, MatFormField, MatLabel, MatIconModule, MatInputModule, MatInput, ReactiveFormsModule, \u0275NgNoValidate, DefaultValueAccessor, NgControlStatus, NgControlStatusGroup, FormControlDirective, FormGroupDirective, MatAutocompleteModule, MatAutocomplete, MatOption, MatAutocompleteTrigger, MatOptionModule, TaskLineComponent, TotalLineComponent, MatCardModule, MatCard, MatCardContent, MatCardHeader, MatCardTitle], styles: ["\n\n[_nghost-%COMP%] {\n  padding: 1rem;\n}\n/*# sourceMappingURL=home.component.css.map */"] });
+}, dependencies: [MatFormFieldModule, MatFormField, MatLabel, MatIconModule, MatInputModule, MatInput, ReactiveFormsModule, \u0275NgNoValidate, DefaultValueAccessor, NgControlStatus, NgControlStatusGroup, FormControlDirective, MatAutocompleteModule, MatAutocomplete, MatOption, MatAutocompleteTrigger, MatOptionModule, TotalLineComponent, MatCardModule, MatCard, MatCardContent, MatCardHeader, MatCardTitle, TaskRegistrationComponent], styles: ["\n\n[_nghost-%COMP%] {\n  padding: 1rem;\n}\n/*# sourceMappingURL=home.component.css.map */"] });
 var HomeComponent = _HomeComponent;
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(HomeComponent, { className: "HomeComponent", filePath: "src\\app\\component\\home\\home.component.ts", lineNumber: 33 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(HomeComponent, { className: "HomeComponent", filePath: "src\\app\\component\\home\\home.component.ts", lineNumber: 31 });
 })();
 
 // src/app/component/login/login.component.ts
@@ -39895,7 +40322,7 @@ var _AsyncAnimationRendererFactory = class _AsyncAnimationRendererFactory {
    * @internal
    */
   loadImpl() {
-    const moduleImpl = this.moduleImpl ?? import("./chunk-5R6MFFU7.js").then((m) => m);
+    const moduleImpl = this.moduleImpl ?? import("./chunk-ZAUCXWBG.js").then((m) => m);
     return moduleImpl.catch((e) => {
       throw new RuntimeError(5300, (typeof ngDevMode === "undefined" || ngDevMode) && "Async loading for animations package was enabled, but loading failed. Angular falls back to using regular rendering. No animations will be displayed and their styles won't be applied.");
     }).then(({

@@ -47,7 +47,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
   TimeRegistrationResponse.JSON_PROPERTY_TAGS,
   TimeRegistrationResponse.JSON_PROPERTY_DESCRIPTION
 })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-19T11:41:25.998809700+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-20T10:30:34.295836300+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 public class TimeRegistrationResponse {
   public static final String JSON_PROPERTY_TIME_REGISTRATION_ID = "timeRegistrationId";
   private Long timeRegistrationId;

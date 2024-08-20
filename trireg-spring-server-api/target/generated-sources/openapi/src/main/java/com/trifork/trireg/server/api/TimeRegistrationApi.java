@@ -6,12 +6,16 @@
 package com.trifork.trireg.server.api;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import com.trifork.trireg.server.model.DefaultCreateResponse;
+import com.trifork.trireg.server.model.DefaultDeleteResponse;
+import com.trifork.trireg.server.model.DefaultUpdateResponse;
 import java.time.LocalDate;
-import com.trifork.trireg.server.model.PeriodEnum;
+import com.trifork.trireg.server.model.OverviewPeriod;
+import com.trifork.trireg.server.model.TimeRegistrationAssociateTaskRequest;
 import com.trifork.trireg.server.model.TimeRegistrationRequest;
 import com.trifork.trireg.server.model.TimeRegistrationResponse;
 import com.trifork.trireg.server.model.TimeRegistrationUpdateRequest;
-import com.trifork.trireg.server.model.TimeRegistrationsByTaskResponseInner;
+import com.trifork.trireg.server.model.TimeRegistrationsByTaskResponse;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -38,7 +42,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-19T11:41:29.305516100+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-20T10:30:37.943553100+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 @Validated
 @Tag(name = "TimeRegistration", description = "Tag for CRUD operations related to time registrations")
 public interface TimeRegistrationApi {
@@ -52,7 +56,7 @@ public interface TimeRegistrationApi {
      * Add several time registrations for a user
      *
      * @param timeRegistrationRequest A JSON object containing a list of time registration information (required)
-     * @return Created (status code 201)
+     * @return Time registrations added successfully (status code 201)
      *         or Failed creating one or more time registrations - if one time registration failed, no time registration is saved (status code 400)
      *         or JWT is missing or invalid (status code 401)
      */
@@ -61,10 +65,12 @@ public interface TimeRegistrationApi {
         description = "Add several time registrations for a user",
         tags = { "TimeRegistration" },
         responses = {
-            @ApiResponse(responseCode = "201", description = "Created", content = {
-                @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
+            @ApiResponse(responseCode = "201", description = "Time registrations added successfully", content = {
+                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = DefaultCreateResponse.class))),
+                @Content(mediaType = "text/plain", array = @ArraySchema(schema = @Schema(implementation = DefaultCreateResponse.class)))
             }),
             @ApiResponse(responseCode = "400", description = "Failed creating one or more time registrations - if one time registration failed, no time registration is saved", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)),
                 @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
             }),
             @ApiResponse(responseCode = "401", description = "JWT is missing or invalid")
@@ -77,13 +83,22 @@ public interface TimeRegistrationApi {
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/time-registration/bulk",
-        produces = { "text/plain" },
+        produces = { "application/json", "text/plain" },
         consumes = { "application/json" }
     )
     
-    default ResponseEntity<String> addBulkTimeRegistrationForUser(
+    default ResponseEntity<List<DefaultCreateResponse>> addBulkTimeRegistrationForUser(
         @Parameter(name = "TimeRegistrationRequest", description = "A JSON object containing a list of time registration information", required = true) @Valid @RequestBody List<@Valid TimeRegistrationRequest> timeRegistrationRequest
     ) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "[ { \"id\" : 12345, \"status\" : \"The data was created successfully\" }, { \"id\" : 12345, \"status\" : \"The data was created successfully\" } ]";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }
@@ -94,7 +109,7 @@ public interface TimeRegistrationApi {
      * Adds a time registration for a user
      *
      * @param timeRegistrationRequest A JSON object containing time registration information (required)
-     * @return Created (status code 201)
+     * @return Time registration added successfully (status code 201)
      *         or JWT is missing or invalid (status code 401)
      */
     @Operation(
@@ -102,8 +117,8 @@ public interface TimeRegistrationApi {
         description = "Adds a time registration for a user",
         tags = { "TimeRegistration" },
         responses = {
-            @ApiResponse(responseCode = "201", description = "Created", content = {
-                @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
+            @ApiResponse(responseCode = "201", description = "Time registration added successfully", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = DefaultCreateResponse.class))
             }),
             @ApiResponse(responseCode = "401", description = "JWT is missing or invalid")
         },
@@ -115,13 +130,80 @@ public interface TimeRegistrationApi {
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/time-registration",
-        produces = { "text/plain" },
+        produces = { "application/json" },
         consumes = { "application/json" }
     )
     
-    default ResponseEntity<String> addTimeRegistrationForUser(
+    default ResponseEntity<DefaultCreateResponse> addTimeRegistrationForUser(
         @Parameter(name = "TimeRegistrationRequest", description = "A JSON object containing time registration information", required = true) @Valid @RequestBody TimeRegistrationRequest timeRegistrationRequest
     ) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"id\" : 12345, \"status\" : \"The data was created successfully\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+
+    /**
+     * POST /time-registration/associate-task
+     * Associates a time registration - that currently does not have any task associated - to the specified task. Also accepts tags that may be required to make a valid time registration for the specified task. 
+     *
+     * @param timeRegistrationAssociateTaskRequest  (required)
+     * @return associated (status code 200)
+     *         or Bad associate request (status code 400)
+     *         or JWT is missing or invalid (status code 401)
+     *         or Time registration not found (status code 404)
+     */
+    @Operation(
+        operationId = "associateTimeRegistrationWithTask",
+        description = "Associates a time registration - that currently does not have any task associated - to the specified task. Also accepts tags that may be required to make a valid time registration for the specified task. ",
+        tags = { "TimeRegistration" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "associated", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = DefaultUpdateResponse.class)),
+                @Content(mediaType = "text/plain", schema = @Schema(implementation = DefaultUpdateResponse.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "Bad associate request", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)),
+                @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
+            }),
+            @ApiResponse(responseCode = "401", description = "JWT is missing or invalid"),
+            @ApiResponse(responseCode = "404", description = "Time registration not found", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)),
+                @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
+            })
+        },
+        security = {
+            @SecurityRequirement(name = "openId"),
+            @SecurityRequirement(name = "basicAuth")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/time-registration/associate-task",
+        produces = { "application/json", "text/plain" },
+        consumes = { "application/json" }
+    )
+    
+    default ResponseEntity<DefaultUpdateResponse> associateTimeRegistrationWithTask(
+        @Parameter(name = "TimeRegistrationAssociateTaskRequest", description = "", required = true) @Valid @RequestBody TimeRegistrationAssociateTaskRequest timeRegistrationAssociateTaskRequest
+    ) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"id\" : 12345, \"status\" : \"The data was updated successfully\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }
@@ -143,13 +225,16 @@ public interface TimeRegistrationApi {
         tags = { "TimeRegistration" },
         responses = {
             @ApiResponse(responseCode = "200", description = "deleted", content = {
-                @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = DefaultDeleteResponse.class)),
+                @Content(mediaType = "text/plain", schema = @Schema(implementation = DefaultDeleteResponse.class))
             }),
             @ApiResponse(responseCode = "400", description = "Bad delete request", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)),
                 @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
             }),
             @ApiResponse(responseCode = "401", description = "JWT is missing or invalid"),
             @ApiResponse(responseCode = "404", description = "Time registration not found", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)),
                 @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
             })
         },
@@ -161,12 +246,21 @@ public interface TimeRegistrationApi {
     @RequestMapping(
         method = RequestMethod.DELETE,
         value = "/time-registration",
-        produces = { "text/plain" }
+        produces = { "application/json", "text/plain" }
     )
     
-    default ResponseEntity<String> deleteTimeRegistration(
+    default ResponseEntity<DefaultDeleteResponse> deleteTimeRegistration(
         @NotNull @Parameter(name = "timeRegistrationId", description = "The id of the time registration to delete", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "timeRegistrationId", required = true) Long timeRegistrationId
     ) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"id\" : 12345, \"status\" : \"The data was deleted successfully\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }
@@ -177,7 +271,7 @@ public interface TimeRegistrationApi {
      * Returns time registrations for a user grouped by task
      *
      * @param date The date to consider when fetching active tasks and time registrations (required)
-     * @param period The time period to use when deciding in which time period tasks are considered active (optional)
+     * @param period The time period to use when deciding in which time period tasks are considered active. Defaults to &#39;WEEK&#39;.  (optional)
      * @return List of time registrations for the user grouped by task (status code 200)
      *         or Request contains an invalid time period value (status code 400)
      *         or JWT is missing or invalid (status code 401)
@@ -188,8 +282,8 @@ public interface TimeRegistrationApi {
         tags = { "TimeRegistration" },
         responses = {
             @ApiResponse(responseCode = "200", description = "List of time registrations for the user grouped by task", content = {
-                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TimeRegistrationsByTaskResponseInner.class))),
-                @Content(mediaType = "text/plain", array = @ArraySchema(schema = @Schema(implementation = TimeRegistrationsByTaskResponseInner.class)))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = TimeRegistrationsByTaskResponse.class)),
+                @Content(mediaType = "text/plain", schema = @Schema(implementation = TimeRegistrationsByTaskResponse.class))
             }),
             @ApiResponse(responseCode = "400", description = "Request contains an invalid time period value", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)),
@@ -208,14 +302,14 @@ public interface TimeRegistrationApi {
         produces = { "application/json", "text/plain" }
     )
     
-    default ResponseEntity<List<TimeRegistrationsByTaskResponseInner>> getTaskTimeRegistrationsOverview(
+    default ResponseEntity<TimeRegistrationsByTaskResponse> getTaskTimeRegistrationsOverview(
         @NotNull @Parameter(name = "date", description = "The date to consider when fetching active tasks and time registrations", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "date", required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-        @Parameter(name = "period", description = "The time period to use when deciding in which time period tasks are considered active", in = ParameterIn.QUERY) @Valid @RequestParam(value = "period", required = false) PeriodEnum period
+        @Parameter(name = "period", description = "The time period to use when deciding in which time period tasks are considered active. Defaults to 'WEEK'. ", in = ParameterIn.QUERY) @Valid @RequestParam(value = "period", required = false) OverviewPeriod period
     ) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "[ { \"taskDescription\" : \"taskDescription\", \"taskName\" : \"taskName\", \"timeRegistrations\" : [ { \"date\" : \"2000-01-23\", \"duration\" : \"PT1H30M\", \"timeRegistrationId\" : 6, \"registered\" : 1, \"status\" : \"status\" }, { \"date\" : \"2000-01-23\", \"duration\" : \"PT1H30M\", \"timeRegistrationId\" : 6, \"registered\" : 1, \"status\" : \"status\" } ], \"taskId\" : 0 }, { \"taskDescription\" : \"taskDescription\", \"taskName\" : \"taskName\", \"timeRegistrations\" : [ { \"date\" : \"2000-01-23\", \"duration\" : \"PT1H30M\", \"timeRegistrationId\" : 6, \"registered\" : 1, \"status\" : \"status\" }, { \"date\" : \"2000-01-23\", \"duration\" : \"PT1H30M\", \"timeRegistrationId\" : 6, \"registered\" : 1, \"status\" : \"status\" } ], \"taskId\" : 0 } ]";
+                    String exampleString = "{ \"taskTimeRegistrations\" : [ { \"task\" : { \"taskDescription\" : \"taskDescription\", \"taskName\" : \"taskName\", \"taskId\" : 0 }, \"dailyRegistrations\" : [ { \"date\" : \"2000-01-23\", \"timeRegistrations\" : [ { \"duration\" : \"PT1H30M\", \"timeRegistrationId\" : 6, \"description\" : \"description\", \"status\" : null, \"tags\" : [ { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } }, { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } } ] }, { \"duration\" : \"PT1H30M\", \"timeRegistrationId\" : 6, \"description\" : \"description\", \"status\" : null, \"tags\" : [ { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } }, { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } } ] } ] }, { \"date\" : \"2000-01-23\", \"timeRegistrations\" : [ { \"duration\" : \"PT1H30M\", \"timeRegistrationId\" : 6, \"description\" : \"description\", \"status\" : null, \"tags\" : [ { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } }, { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } } ] }, { \"duration\" : \"PT1H30M\", \"timeRegistrationId\" : 6, \"description\" : \"description\", \"status\" : null, \"tags\" : [ { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } }, { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } } ] } ] } ] }, { \"task\" : { \"taskDescription\" : \"taskDescription\", \"taskName\" : \"taskName\", \"taskId\" : 0 }, \"dailyRegistrations\" : [ { \"date\" : \"2000-01-23\", \"timeRegistrations\" : [ { \"duration\" : \"PT1H30M\", \"timeRegistrationId\" : 6, \"description\" : \"description\", \"status\" : null, \"tags\" : [ { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } }, { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } } ] }, { \"duration\" : \"PT1H30M\", \"timeRegistrationId\" : 6, \"description\" : \"description\", \"status\" : null, \"tags\" : [ { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } }, { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } } ] } ] }, { \"date\" : \"2000-01-23\", \"timeRegistrations\" : [ { \"duration\" : \"PT1H30M\", \"timeRegistrationId\" : 6, \"description\" : \"description\", \"status\" : null, \"tags\" : [ { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } }, { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } } ] }, { \"duration\" : \"PT1H30M\", \"timeRegistrationId\" : 6, \"description\" : \"description\", \"status\" : null, \"tags\" : [ { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } }, { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } } ] } ] } ] } ], \"tasklessTimeRegistrations\" : [ { \"taskDescription\" : \"taskDescription\", \"dailyRegistrations\" : [ { \"date\" : \"2000-01-23\", \"timeRegistrations\" : [ { \"duration\" : \"PT1H30M\", \"timeRegistrationId\" : 6, \"description\" : \"description\", \"status\" : null, \"tags\" : [ { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } }, { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } } ] }, { \"duration\" : \"PT1H30M\", \"timeRegistrationId\" : 6, \"description\" : \"description\", \"status\" : null, \"tags\" : [ { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } }, { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } } ] } ] }, { \"date\" : \"2000-01-23\", \"timeRegistrations\" : [ { \"duration\" : \"PT1H30M\", \"timeRegistrationId\" : 6, \"description\" : \"description\", \"status\" : null, \"tags\" : [ { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } }, { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } } ] }, { \"duration\" : \"PT1H30M\", \"timeRegistrationId\" : 6, \"description\" : \"description\", \"status\" : null, \"tags\" : [ { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } }, { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } } ] } ] } ] }, { \"taskDescription\" : \"taskDescription\", \"dailyRegistrations\" : [ { \"date\" : \"2000-01-23\", \"timeRegistrations\" : [ { \"duration\" : \"PT1H30M\", \"timeRegistrationId\" : 6, \"description\" : \"description\", \"status\" : null, \"tags\" : [ { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } }, { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } } ] }, { \"duration\" : \"PT1H30M\", \"timeRegistrationId\" : 6, \"description\" : \"description\", \"status\" : null, \"tags\" : [ { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } }, { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } } ] } ] }, { \"date\" : \"2000-01-23\", \"timeRegistrations\" : [ { \"duration\" : \"PT1H30M\", \"timeRegistrationId\" : 6, \"description\" : \"description\", \"status\" : null, \"tags\" : [ { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } }, { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } } ] }, { \"duration\" : \"PT1H30M\", \"timeRegistrationId\" : 6, \"description\" : \"description\", \"status\" : null, \"tags\" : [ { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } }, { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagValue\" : { \"tagId\" : 2, \"tagValue\" : \"tagValue\" } } ] } ] } ] } ] }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -288,13 +382,16 @@ public interface TimeRegistrationApi {
         tags = { "TimeRegistration" },
         responses = {
             @ApiResponse(responseCode = "200", description = "Updated", content = {
-                @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = DefaultCreateResponse.class)),
+                @Content(mediaType = "text/plain", schema = @Schema(implementation = DefaultCreateResponse.class))
             }),
             @ApiResponse(responseCode = "400", description = "Bad update request", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)),
                 @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
             }),
             @ApiResponse(responseCode = "401", description = "JWT is missing or invalid"),
             @ApiResponse(responseCode = "404", description = "Time registration not found", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)),
                 @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
             })
         },
@@ -306,14 +403,23 @@ public interface TimeRegistrationApi {
     @RequestMapping(
         method = RequestMethod.PUT,
         value = "/time-registration",
-        produces = { "text/plain" },
+        produces = { "application/json", "text/plain" },
         consumes = { "application/json" }
     )
     
-    default ResponseEntity<String> updateTimeRegistrationForUser(
+    default ResponseEntity<DefaultCreateResponse> updateTimeRegistrationForUser(
         @NotNull @Parameter(name = "timeRegistrationId", description = "The id of the time registration to update", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "timeRegistrationId", required = true) Long timeRegistrationId,
         @Parameter(name = "TimeRegistrationUpdateRequest", description = "", required = true) @Valid @RequestBody TimeRegistrationUpdateRequest timeRegistrationUpdateRequest
     ) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"id\" : 12345, \"status\" : \"The data was created successfully\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }

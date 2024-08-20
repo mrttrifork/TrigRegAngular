@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-19T11:41:29.305516100+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-20T10:30:37.943553100+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 @Validated
 @Tag(name = "Import", description = "Tag for operations related to importing time registrations")
 public interface ImportApi {
@@ -80,7 +80,7 @@ public interface ImportApi {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "[ { \"timeRegistrationId\" : 0, \"message\" : \"message\", \"status\" : \"status\" }, { \"timeRegistrationId\" : 0, \"message\" : \"message\", \"status\" : \"status\" } ]";
+                    String exampleString = "[ { \"timeRegistrationId\" : 0, \"message\" : \"message\", \"status\" : null }, { \"timeRegistrationId\" : 0, \"message\" : \"message\", \"status\" : null } ]";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }

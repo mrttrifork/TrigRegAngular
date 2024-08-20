@@ -17,9 +17,12 @@ import com.trifork.trireg.client.ApiException;
 import com.trifork.trireg.client.ApiResponse;
 import com.trifork.trireg.client.Pair;
 
+import com.trifork.trireg.client.api.DefaultCreateResponse;
+import com.trifork.trireg.client.api.DefaultDeleteResponse;
+import com.trifork.trireg.client.api.DefaultUpdateResponse;
+import com.trifork.trireg.client.api.TagRegistration;
 import com.trifork.trireg.client.api.TagTimeRegistrationRequest;
-import com.trifork.trireg.client.api.TagTimeRegistrationResponse;
-import com.trifork.trireg.client.api.UpdateTagRegistrationRequest;
+import com.trifork.trireg.client.api.TimeRegistrationTag;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,7 +49,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-19T11:41:25.998809700+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-20T10:30:34.295836300+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 public class TagApi {
   private final HttpClient memberVarHttpClient;
   private final ObjectMapper memberVarObjectMapper;
@@ -87,11 +90,11 @@ public class TagApi {
    * 
    * Deletes a tag that was added to a time registration
    * @param tagId The ID of the tag to delete (required)
-   * @return String
+   * @return DefaultDeleteResponse
    * @throws ApiException if fails to make API call
    */
-  public String deleteTagRegistration(Long tagId) throws ApiException {
-    ApiResponse<String> localVarResponse = deleteTagRegistrationWithHttpInfo(tagId);
+  public DefaultDeleteResponse deleteTagRegistration(Long tagId) throws ApiException {
+    ApiResponse<DefaultDeleteResponse> localVarResponse = deleteTagRegistrationWithHttpInfo(tagId);
     return localVarResponse.getData();
   }
 
@@ -99,10 +102,10 @@ public class TagApi {
    * 
    * Deletes a tag that was added to a time registration
    * @param tagId The ID of the tag to delete (required)
-   * @return ApiResponse&lt;String&gt;
+   * @return ApiResponse&lt;DefaultDeleteResponse&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<String> deleteTagRegistrationWithHttpInfo(Long tagId) throws ApiException {
+  public ApiResponse<DefaultDeleteResponse> deleteTagRegistrationWithHttpInfo(Long tagId) throws ApiException {
     HttpRequest.Builder localVarRequestBuilder = deleteTagRegistrationRequestBuilder(tagId);
     try {
       HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
@@ -115,19 +118,11 @@ public class TagApi {
         if (localVarResponse.statusCode()/ 100 != 2) {
           throw getApiException("deleteTagRegistration", localVarResponse);
         }
-        // for plain text response
-        if (localVarResponse.headers().map().containsKey("Content-Type") &&
-                "text/plain".equalsIgnoreCase(localVarResponse.headers().map().get("Content-Type").get(0).split(";")[0].trim())) {
-          java.util.Scanner s = new java.util.Scanner(localVarResponse.body()).useDelimiter("\\A");
-          String responseBodyText = s.hasNext() ? s.next() : "";
-          return new ApiResponse<String>(
-                  localVarResponse.statusCode(),
-                  localVarResponse.headers().map(),
-                  responseBodyText
-          );
-        } else {
-            throw new RuntimeException("Error! The response Content-Type is supposed to be `text/plain` but it's not: " + localVarResponse);
-        }
+        return new ApiResponse<DefaultDeleteResponse>(
+          localVarResponse.statusCode(),
+          localVarResponse.headers().map(),
+          localVarResponse.body() == null ? null : memberVarObjectMapper.readValue(localVarResponse.body(), new TypeReference<DefaultDeleteResponse>() {}) // closes the InputStream
+        );
       } finally {
       }
     } catch (IOException e) {
@@ -166,7 +161,7 @@ public class TagApi {
       localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    localVarRequestBuilder.header("Accept", "text/plain");
+    localVarRequestBuilder.header("Accept", "application/json");
 
     localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
     if (memberVarReadTimeout != null) {
@@ -179,24 +174,24 @@ public class TagApi {
   }
   /**
    * 
-   * Gets the tags associated with the given time registration
+   * Gets the tags associated with the specified time registration. This includes both the tags that have already been added, and the ones that can be added. 
    * @param timeRegistrationId The ID of the time registration to get tags for (required)
-   * @return List&lt;TagTimeRegistrationResponse&gt;
+   * @return List&lt;TimeRegistrationTag&gt;
    * @throws ApiException if fails to make API call
    */
-  public List<TagTimeRegistrationResponse> getTimeRegistrationTags(Long timeRegistrationId) throws ApiException {
-    ApiResponse<List<TagTimeRegistrationResponse>> localVarResponse = getTimeRegistrationTagsWithHttpInfo(timeRegistrationId);
+  public List<TimeRegistrationTag> getTimeRegistrationTags(Long timeRegistrationId) throws ApiException {
+    ApiResponse<List<TimeRegistrationTag>> localVarResponse = getTimeRegistrationTagsWithHttpInfo(timeRegistrationId);
     return localVarResponse.getData();
   }
 
   /**
    * 
-   * Gets the tags associated with the given time registration
+   * Gets the tags associated with the specified time registration. This includes both the tags that have already been added, and the ones that can be added. 
    * @param timeRegistrationId The ID of the time registration to get tags for (required)
-   * @return ApiResponse&lt;List&lt;TagTimeRegistrationResponse&gt;&gt;
+   * @return ApiResponse&lt;List&lt;TimeRegistrationTag&gt;&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<List<TagTimeRegistrationResponse>> getTimeRegistrationTagsWithHttpInfo(Long timeRegistrationId) throws ApiException {
+  public ApiResponse<List<TimeRegistrationTag>> getTimeRegistrationTagsWithHttpInfo(Long timeRegistrationId) throws ApiException {
     HttpRequest.Builder localVarRequestBuilder = getTimeRegistrationTagsRequestBuilder(timeRegistrationId);
     try {
       HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
@@ -209,10 +204,10 @@ public class TagApi {
         if (localVarResponse.statusCode()/ 100 != 2) {
           throw getApiException("getTimeRegistrationTags", localVarResponse);
         }
-        return new ApiResponse<List<TagTimeRegistrationResponse>>(
+        return new ApiResponse<List<TimeRegistrationTag>>(
           localVarResponse.statusCode(),
           localVarResponse.headers().map(),
-          localVarResponse.body() == null ? null : memberVarObjectMapper.readValue(localVarResponse.body(), new TypeReference<List<TagTimeRegistrationResponse>>() {}) // closes the InputStream
+          localVarResponse.body() == null ? null : memberVarObjectMapper.readValue(localVarResponse.body(), new TypeReference<List<TimeRegistrationTag>>() {}) // closes the InputStream
         );
       } finally {
       }
@@ -265,25 +260,27 @@ public class TagApi {
   }
   /**
    * 
-   * Tags a time registration with a specified tag and optional tag value
+   * Tags a time registration with a specified tag and tag value
+   * @param timeRegistrationId The ID of the time registration to add a tag to (required)
    * @param tagTimeRegistrationRequest A JSON object containing tag information (required)
-   * @return String
+   * @return DefaultCreateResponse
    * @throws ApiException if fails to make API call
    */
-  public String tagTimeRegistration(TagTimeRegistrationRequest tagTimeRegistrationRequest) throws ApiException {
-    ApiResponse<String> localVarResponse = tagTimeRegistrationWithHttpInfo(tagTimeRegistrationRequest);
+  public DefaultCreateResponse tagTimeRegistration(Long timeRegistrationId, TagTimeRegistrationRequest tagTimeRegistrationRequest) throws ApiException {
+    ApiResponse<DefaultCreateResponse> localVarResponse = tagTimeRegistrationWithHttpInfo(timeRegistrationId, tagTimeRegistrationRequest);
     return localVarResponse.getData();
   }
 
   /**
    * 
-   * Tags a time registration with a specified tag and optional tag value
+   * Tags a time registration with a specified tag and tag value
+   * @param timeRegistrationId The ID of the time registration to add a tag to (required)
    * @param tagTimeRegistrationRequest A JSON object containing tag information (required)
-   * @return ApiResponse&lt;String&gt;
+   * @return ApiResponse&lt;DefaultCreateResponse&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<String> tagTimeRegistrationWithHttpInfo(TagTimeRegistrationRequest tagTimeRegistrationRequest) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = tagTimeRegistrationRequestBuilder(tagTimeRegistrationRequest);
+  public ApiResponse<DefaultCreateResponse> tagTimeRegistrationWithHttpInfo(Long timeRegistrationId, TagTimeRegistrationRequest tagTimeRegistrationRequest) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = tagTimeRegistrationRequestBuilder(timeRegistrationId, tagTimeRegistrationRequest);
     try {
       HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
           localVarRequestBuilder.build(),
@@ -295,19 +292,11 @@ public class TagApi {
         if (localVarResponse.statusCode()/ 100 != 2) {
           throw getApiException("tagTimeRegistration", localVarResponse);
         }
-        // for plain text response
-        if (localVarResponse.headers().map().containsKey("Content-Type") &&
-                "text/plain".equalsIgnoreCase(localVarResponse.headers().map().get("Content-Type").get(0).split(";")[0].trim())) {
-          java.util.Scanner s = new java.util.Scanner(localVarResponse.body()).useDelimiter("\\A");
-          String responseBodyText = s.hasNext() ? s.next() : "";
-          return new ApiResponse<String>(
-                  localVarResponse.statusCode(),
-                  localVarResponse.headers().map(),
-                  responseBodyText
-          );
-        } else {
-            throw new RuntimeException("Error! The response Content-Type is supposed to be `text/plain` but it's not: " + localVarResponse);
-        }
+        return new ApiResponse<DefaultCreateResponse>(
+          localVarResponse.statusCode(),
+          localVarResponse.headers().map(),
+          localVarResponse.body() == null ? null : memberVarObjectMapper.readValue(localVarResponse.body(), new TypeReference<DefaultCreateResponse>() {}) // closes the InputStream
+        );
       } finally {
       }
     } catch (IOException e) {
@@ -319,7 +308,11 @@ public class TagApi {
     }
   }
 
-  private HttpRequest.Builder tagTimeRegistrationRequestBuilder(TagTimeRegistrationRequest tagTimeRegistrationRequest) throws ApiException {
+  private HttpRequest.Builder tagTimeRegistrationRequestBuilder(Long timeRegistrationId, TagTimeRegistrationRequest tagTimeRegistrationRequest) throws ApiException {
+    // verify the required parameter 'timeRegistrationId' is set
+    if (timeRegistrationId == null) {
+      throw new ApiException(400, "Missing the required parameter 'timeRegistrationId' when calling tagTimeRegistration");
+    }
     // verify the required parameter 'tagTimeRegistrationRequest' is set
     if (tagTimeRegistrationRequest == null) {
       throw new ApiException(400, "Missing the required parameter 'tagTimeRegistrationRequest' when calling tagTimeRegistration");
@@ -329,10 +322,25 @@ public class TagApi {
 
     String localVarPath = "/tag";
 
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "timeRegistrationId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("timeRegistrationId", timeRegistrationId));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
 
     localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "text/plain");
+    localVarRequestBuilder.header("Accept", "application/json");
 
     try {
       byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(tagTimeRegistrationRequest);
@@ -351,24 +359,24 @@ public class TagApi {
   /**
    * 
    * Updates a tag that was added to a time registration
-   * @param updateTagRegistrationRequest A JSON object containing the updated tag information (required)
-   * @return String
+   * @param tagRegistration A JSON object containing the updated tag information (required)
+   * @return DefaultUpdateResponse
    * @throws ApiException if fails to make API call
    */
-  public String updateTagRegistration(UpdateTagRegistrationRequest updateTagRegistrationRequest) throws ApiException {
-    ApiResponse<String> localVarResponse = updateTagRegistrationWithHttpInfo(updateTagRegistrationRequest);
+  public DefaultUpdateResponse updateTagRegistration(TagRegistration tagRegistration) throws ApiException {
+    ApiResponse<DefaultUpdateResponse> localVarResponse = updateTagRegistrationWithHttpInfo(tagRegistration);
     return localVarResponse.getData();
   }
 
   /**
    * 
    * Updates a tag that was added to a time registration
-   * @param updateTagRegistrationRequest A JSON object containing the updated tag information (required)
-   * @return ApiResponse&lt;String&gt;
+   * @param tagRegistration A JSON object containing the updated tag information (required)
+   * @return ApiResponse&lt;DefaultUpdateResponse&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<String> updateTagRegistrationWithHttpInfo(UpdateTagRegistrationRequest updateTagRegistrationRequest) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updateTagRegistrationRequestBuilder(updateTagRegistrationRequest);
+  public ApiResponse<DefaultUpdateResponse> updateTagRegistrationWithHttpInfo(TagRegistration tagRegistration) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = updateTagRegistrationRequestBuilder(tagRegistration);
     try {
       HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
           localVarRequestBuilder.build(),
@@ -380,19 +388,11 @@ public class TagApi {
         if (localVarResponse.statusCode()/ 100 != 2) {
           throw getApiException("updateTagRegistration", localVarResponse);
         }
-        // for plain text response
-        if (localVarResponse.headers().map().containsKey("Content-Type") &&
-                "text/plain".equalsIgnoreCase(localVarResponse.headers().map().get("Content-Type").get(0).split(";")[0].trim())) {
-          java.util.Scanner s = new java.util.Scanner(localVarResponse.body()).useDelimiter("\\A");
-          String responseBodyText = s.hasNext() ? s.next() : "";
-          return new ApiResponse<String>(
-                  localVarResponse.statusCode(),
-                  localVarResponse.headers().map(),
-                  responseBodyText
-          );
-        } else {
-            throw new RuntimeException("Error! The response Content-Type is supposed to be `text/plain` but it's not: " + localVarResponse);
-        }
+        return new ApiResponse<DefaultUpdateResponse>(
+          localVarResponse.statusCode(),
+          localVarResponse.headers().map(),
+          localVarResponse.body() == null ? null : memberVarObjectMapper.readValue(localVarResponse.body(), new TypeReference<DefaultUpdateResponse>() {}) // closes the InputStream
+        );
       } finally {
       }
     } catch (IOException e) {
@@ -404,10 +404,10 @@ public class TagApi {
     }
   }
 
-  private HttpRequest.Builder updateTagRegistrationRequestBuilder(UpdateTagRegistrationRequest updateTagRegistrationRequest) throws ApiException {
-    // verify the required parameter 'updateTagRegistrationRequest' is set
-    if (updateTagRegistrationRequest == null) {
-      throw new ApiException(400, "Missing the required parameter 'updateTagRegistrationRequest' when calling updateTagRegistration");
+  private HttpRequest.Builder updateTagRegistrationRequestBuilder(TagRegistration tagRegistration) throws ApiException {
+    // verify the required parameter 'tagRegistration' is set
+    if (tagRegistration == null) {
+      throw new ApiException(400, "Missing the required parameter 'tagRegistration' when calling updateTagRegistration");
     }
 
     HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
@@ -417,10 +417,10 @@ public class TagApi {
     localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
     localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "text/plain");
+    localVarRequestBuilder.header("Accept", "application/json");
 
     try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(updateTagRegistrationRequest);
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(tagRegistration);
       localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
     } catch (IOException e) {
       throw new ApiException(e);

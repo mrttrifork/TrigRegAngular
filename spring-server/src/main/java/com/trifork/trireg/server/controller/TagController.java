@@ -1,7 +1,7 @@
 package com.trifork.trireg.server.controller;
 
 import com.trifork.trireg.server.api.TagApi;
-import com.trifork.trireg.server.model.TagTimeRegistrationResponse;
+import com.trifork.trireg.server.model.TimeRegistrationTag;
 import com.trifork.trireg.server.service.TagService;
 import com.trifork.trireg.server.util.HTTPResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +24,8 @@ public class TagController implements TagApi {
     }
 
     @Override
-    public ResponseEntity<List<TagTimeRegistrationResponse>> getTimeRegistrationTags(Long timeRegistrationId) {
-        List<TagTimeRegistrationResponse> timeRegistrationTags = service.getTimeRegistrationTags(timeRegistrationId);
+    public ResponseEntity<List<TimeRegistrationTag>> getTimeRegistrationTags(Long timeRegistrationId) {
+        List<TimeRegistrationTag> timeRegistrationTags = service.getTimeRegistrationTags(timeRegistrationId);
         if (timeRegistrationTags != null) {
             return HTTPResponseUtil.createOKResponse(timeRegistrationTags);
         }

@@ -13,7 +13,7 @@
 
 package com.trifork.trireg.client;
 
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-19T11:41:25.998809700+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-20T10:30:34.295836300+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 public class Configuration {
     public static final String VERSION = "0.2.0";
 

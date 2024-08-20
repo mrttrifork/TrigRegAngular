@@ -8,7 +8,7 @@
 | Name | Type | Description | Notes |
 |------------ | ------------- | ------------- | -------------|
 |**timeRegistrationId** | **Long** |  |  |
-|**status** | **String** | Describes the status of importing the time registration (SUCCESS, PENDING, FAILED) |  |
+|**status** | **ImportTimeRegistrationStatus** |  |  |
 |**message** | **String** | Provides a description of the import status |  [optional] |
 
 

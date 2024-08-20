@@ -28,7 +28,7 @@
     <mat-card-title>Total hours</mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <app-total-line style="padding: 0 1rem;"></app-total-line>
+    <app-total-line [taskResponse]="timeRegistrationByTaskSignal()" style="padding: 0 1rem;"></app-total-line>
     <div class="flex-column">
       <mat-card appearance="outlined">
         <mat-card-header>
@@ -43,8 +43,10 @@
           <mat-card-title>Registered tasks</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          @for (task of tasksFormArray.controls; track task) {
-            <app-task-line [formGroup]="task"></app-task-line>
+          @if (timeRegistrationByTaskSignal()) {
+            @for (task of timeRegistrationByTaskSignal()?.taskTimeRegistrations; track task) {
+              <app-task-registration [task]="task"></app-task-registration>
+            }
           }
         </mat-card-content>
       </mat-card>

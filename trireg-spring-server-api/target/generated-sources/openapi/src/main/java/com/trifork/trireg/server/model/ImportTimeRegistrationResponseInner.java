@@ -5,6 +5,8 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.trifork.trireg.server.model.ImportTimeRegistrationStatus;
 import org.openapitools.jackson.nullable.JsonNullable;
 import java.time.OffsetDateTime;
 import jakarta.validation.Valid;
@@ -20,12 +22,12 @@ import jakarta.annotation.Generated;
  */
 
 @JsonTypeName("ImportTimeRegistrationResponse_inner")
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-19T11:41:29.305516100+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-20T10:30:37.943553100+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 public class ImportTimeRegistrationResponseInner {
 
   private Long timeRegistrationId;
 
-  private String status;
+  private ImportTimeRegistrationStatus status;
 
   private String message;
 
@@ -36,7 +38,7 @@ public class ImportTimeRegistrationResponseInner {
   /**
    * Constructor with only required parameters
    */
-  public ImportTimeRegistrationResponseInner(Long timeRegistrationId, String status) {
+  public ImportTimeRegistrationResponseInner(Long timeRegistrationId, ImportTimeRegistrationStatus status) {
     this.timeRegistrationId = timeRegistrationId;
     this.status = status;
   }
@@ -61,23 +63,23 @@ public class ImportTimeRegistrationResponseInner {
     this.timeRegistrationId = timeRegistrationId;
   }
 
-  public ImportTimeRegistrationResponseInner status(String status) {
+  public ImportTimeRegistrationResponseInner status(ImportTimeRegistrationStatus status) {
     this.status = status;
     return this;
   }
 
   /**
-   * Describes the status of importing the time registration (SUCCESS, PENDING, FAILED)
+   * Get status
    * @return status
   */
-  @NotNull 
-  @Schema(name = "status", description = "Describes the status of importing the time registration (SUCCESS, PENDING, FAILED)", requiredMode = Schema.RequiredMode.REQUIRED)
+  @NotNull @Valid 
+  @Schema(name = "status", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("status")
-  public String getStatus() {
+  public ImportTimeRegistrationStatus getStatus() {
     return status;
   }
 
-  public void setStatus(String status) {
+  public void setStatus(ImportTimeRegistrationStatus status) {
     this.status = status;
   }
 

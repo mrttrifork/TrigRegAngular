@@ -4,6 +4,7 @@ C:\Users\Magnus\IdeaProjects\trireg-angular-parent\spring-server\src\main\java\c
 C:\Users\Magnus\IdeaProjects\trireg-angular-parent\spring-server\src\main\java\com\trifork\trireg\client\httpClient\TriforkTaskHttpClient.java
 C:\Users\Magnus\IdeaProjects\trireg-angular-parent\spring-server\src\main\java\com\trifork\trireg\server\configuration\MVCConfiguration.java
 C:\Users\Magnus\IdeaProjects\trireg-angular-parent\spring-server\src\main\java\com\trifork\trireg\server\configuration\OAuth2LoginSecurityConfig.java
+C:\Users\Magnus\IdeaProjects\trireg-angular-parent\spring-server\src\main\java\com\trifork\trireg\server\configuration\RefreshAccessTokenFilter.java
 C:\Users\Magnus\IdeaProjects\trireg-angular-parent\spring-server\src\main\java\com\trifork\trireg\server\controller\AppController.java
 C:\Users\Magnus\IdeaProjects\trireg-angular-parent\spring-server\src\main\java\com\trifork\trireg\server\controller\ExceptionControllerAdvice.java
 C:\Users\Magnus\IdeaProjects\trireg-angular-parent\spring-server\src\main\java\com\trifork\trireg\server\controller\LoginController.java

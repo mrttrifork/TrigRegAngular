@@ -4,7 +4,7 @@ import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.trifork.trireg.server.model.TagConfiguration;
+import com.trifork.trireg.server.model.TagTimeRegistrationRequest;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,7 +24,7 @@ import jakarta.annotation.Generated;
  * TimeRegistrationRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-19T11:41:29.305516100+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-20T10:30:37.943553100+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 public class TimeRegistrationRequest {
 
   private Long taskId;
@@ -35,7 +35,9 @@ public class TimeRegistrationRequest {
   private String duration;
 
   @Valid
-  private List<@Valid TagConfiguration> tags;
+  private List<@Valid TagTimeRegistrationRequest> tags;
+
+  private String description;
 
   public TimeRegistrationRequest() {
     super();
@@ -44,8 +46,7 @@ public class TimeRegistrationRequest {
   /**
    * Constructor with only required parameters
    */
-  public TimeRegistrationRequest(Long taskId, LocalDate date, String duration) {
-    this.taskId = taskId;
+  public TimeRegistrationRequest(LocalDate date, String duration) {
     this.date = date;
     this.duration = duration;
   }
@@ -56,11 +57,11 @@ public class TimeRegistrationRequest {
   }
 
   /**
-   * Get taskId
+   * Associates the time registration with a task. If not specified, then the `description` field must be a non-null value 
    * @return taskId
   */
-  @NotNull 
-  @Schema(name = "taskId", requiredMode = Schema.RequiredMode.REQUIRED)
+  
+  @Schema(name = "taskId", description = "Associates the time registration with a task. If not specified, then the `description` field must be a non-null value ", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("taskId")
   public Long getTaskId() {
     return taskId;
@@ -110,12 +111,12 @@ public class TimeRegistrationRequest {
     this.duration = duration;
   }
 
-  public TimeRegistrationRequest tags(List<@Valid TagConfiguration> tags) {
+  public TimeRegistrationRequest tags(List<@Valid TagTimeRegistrationRequest> tags) {
     this.tags = tags;
     return this;
   }
 
-  public TimeRegistrationRequest addTagsItem(TagConfiguration tagsItem) {
+  public TimeRegistrationRequest addTagsItem(TagTimeRegistrationRequest tagsItem) {
     if (this.tags == null) {
       this.tags = new ArrayList<>();
     }
@@ -130,12 +131,32 @@ public class TimeRegistrationRequest {
   @Valid 
   @Schema(name = "tags", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("tags")
-  public List<@Valid TagConfiguration> getTags() {
+  public List<@Valid TagTimeRegistrationRequest> getTags() {
     return tags;
   }
 
-  public void setTags(List<@Valid TagConfiguration> tags) {
+  public void setTags(List<@Valid TagTimeRegistrationRequest> tags) {
     this.tags = tags;
+  }
+
+  public TimeRegistrationRequest description(String description) {
+    this.description = description;
+    return this;
+  }
+
+  /**
+   * Get description
+   * @return description
+  */
+  
+  @Schema(name = "description", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("description")
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
   }
 
   @Override
@@ -150,12 +171,13 @@ public class TimeRegistrationRequest {
     return Objects.equals(this.taskId, timeRegistrationRequest.taskId) &&
         Objects.equals(this.date, timeRegistrationRequest.date) &&
         Objects.equals(this.duration, timeRegistrationRequest.duration) &&
-        Objects.equals(this.tags, timeRegistrationRequest.tags);
+        Objects.equals(this.tags, timeRegistrationRequest.tags) &&
+        Objects.equals(this.description, timeRegistrationRequest.description);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(taskId, date, duration, tags);
+    return Objects.hash(taskId, date, duration, tags, description);
   }
 
   @Override
@@ -166,6 +188,7 @@ public class TimeRegistrationRequest {
     sb.append("    date: ").append(toIndentedString(date)).append("\n");
     sb.append("    duration: ").append(toIndentedString(duration)).append("\n");
     sb.append("    tags: ").append(toIndentedString(tags)).append("\n");
+    sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("}");
     return sb.toString();
   }

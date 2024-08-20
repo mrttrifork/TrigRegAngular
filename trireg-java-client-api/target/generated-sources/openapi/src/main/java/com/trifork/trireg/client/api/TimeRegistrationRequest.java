@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.trifork.trireg.client.api.TagConfiguration;
+import com.trifork.trireg.client.api.TagTimeRegistrationRequest;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,9 +39,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
   TimeRegistrationRequest.JSON_PROPERTY_TASK_ID,
   TimeRegistrationRequest.JSON_PROPERTY_DATE,
   TimeRegistrationRequest.JSON_PROPERTY_DURATION,
-  TimeRegistrationRequest.JSON_PROPERTY_TAGS
+  TimeRegistrationRequest.JSON_PROPERTY_TAGS,
+  TimeRegistrationRequest.JSON_PROPERTY_DESCRIPTION
 })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-19T11:41:25.998809700+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-20T10:30:34.295836300+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 public class TimeRegistrationRequest {
   public static final String JSON_PROPERTY_TASK_ID = "taskId";
   private Long taskId;
@@ -53,7 +54,10 @@ public class TimeRegistrationRequest {
   private String duration;
 
   public static final String JSON_PROPERTY_TAGS = "tags";
-  private List<TagConfiguration> tags;
+  private List<TagTimeRegistrationRequest> tags;
+
+  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  private String description;
 
   public TimeRegistrationRequest() { 
   }
@@ -64,12 +68,12 @@ public class TimeRegistrationRequest {
   }
 
    /**
-   * Get taskId
+   * Associates the time registration with a task. If not specified, then the &#x60;description&#x60; field must be a non-null value 
    * @return taskId
   **/
-  @jakarta.annotation.Nonnull
+  @jakarta.annotation.Nullable
   @JsonProperty(JSON_PROPERTY_TASK_ID)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
   public Long getTaskId() {
     return taskId;
@@ -77,7 +81,7 @@ public class TimeRegistrationRequest {
 
 
   @JsonProperty(JSON_PROPERTY_TASK_ID)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTaskId(Long taskId) {
     this.taskId = taskId;
   }
@@ -133,12 +137,12 @@ public class TimeRegistrationRequest {
   }
 
 
-  public TimeRegistrationRequest tags(List<TagConfiguration> tags) {
+  public TimeRegistrationRequest tags(List<TagTimeRegistrationRequest> tags) {
     this.tags = tags;
     return this;
   }
 
-  public TimeRegistrationRequest addTagsItem(TagConfiguration tagsItem) {
+  public TimeRegistrationRequest addTagsItem(TagTimeRegistrationRequest tagsItem) {
     if (this.tags == null) {
       this.tags = new ArrayList<>();
     }
@@ -154,15 +158,40 @@ public class TimeRegistrationRequest {
   @JsonProperty(JSON_PROPERTY_TAGS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<TagConfiguration> getTags() {
+  public List<TagTimeRegistrationRequest> getTags() {
     return tags;
   }
 
 
   @JsonProperty(JSON_PROPERTY_TAGS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTags(List<TagConfiguration> tags) {
+  public void setTags(List<TagTimeRegistrationRequest> tags) {
     this.tags = tags;
+  }
+
+
+  public TimeRegistrationRequest description(String description) {
+    this.description = description;
+    return this;
+  }
+
+   /**
+   * Get description
+   * @return description
+  **/
+  @jakarta.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getDescription() {
+    return description;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDescription(String description) {
+    this.description = description;
   }
 
 
@@ -181,12 +210,13 @@ public class TimeRegistrationRequest {
     return Objects.equals(this.taskId, timeRegistrationRequest.taskId) &&
         Objects.equals(this.date, timeRegistrationRequest.date) &&
         Objects.equals(this.duration, timeRegistrationRequest.duration) &&
-        Objects.equals(this.tags, timeRegistrationRequest.tags);
+        Objects.equals(this.tags, timeRegistrationRequest.tags) &&
+        Objects.equals(this.description, timeRegistrationRequest.description);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(taskId, date, duration, tags);
+    return Objects.hash(taskId, date, duration, tags, description);
   }
 
   @Override
@@ -197,6 +227,7 @@ public class TimeRegistrationRequest {
     sb.append("    date: ").append(toIndentedString(date)).append("\n");
     sb.append("    duration: ").append(toIndentedString(duration)).append("\n");
     sb.append("    tags: ").append(toIndentedString(tags)).append("\n");
+    sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -267,6 +298,11 @@ public class TimeRegistrationRequest {
           "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
         }
       }
+    }
+
+    // add `description` to the URL query string
+    if (getDescription() != null) {
+      joiner.add(String.format("%sdescription%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getDescription()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     return joiner.toString();

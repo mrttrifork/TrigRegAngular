@@ -1,32 +1,30 @@
 import {Component, computed, effect, inject, Signal, signal, WritableSignal} from '@angular/core';
 import {AsyncPipe, JsonPipe} from "@angular/common";
 import {
-  PeriodEnum,
+  OverviewPeriod,
   TaskCreateResponseInner,
   TaskService,
-  TimeRegistrationResponse,
-  TimeRegistrationsByTaskResponseInner,
+  TimeRegistrationsByTaskResponse,
   TimeRegistrationService
 } from "../../generated";
 import {firstValueFrom} from "rxjs";
 import {MatAutocompleteModule, MatAutocompleteSelectedEvent} from "@angular/material/autocomplete";
-import {FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule} from "@angular/forms";
+import {FormBuilder, FormControl, ReactiveFormsModule} from "@angular/forms";
 import {MatIconModule} from "@angular/material/icon";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatOptionModule} from "@angular/material/core";
 import {MatInputModule} from '@angular/material/input';
-import {TaskLineComponent, TaskLineFormGroup} from "../task-line/task-line.component";
 import {DateTime} from "luxon";
 import {MatButton} from "@angular/material/button";
-import DurationConverter from "../../util/DurationConverter";
 import {toSignal} from "@angular/core/rxjs-interop";
 import {TotalLineComponent} from "../total-line/total-line.component";
 import {MatCardModule} from "@angular/material/card";
+import {TaskRegistrationComponent} from "../task-registration/task-registration.component";
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [JsonPipe, AsyncPipe, MatFormFieldModule, MatIconModule, MatInputModule, ReactiveFormsModule, MatAutocompleteModule, MatOptionModule, TaskLineComponent, MatButton, TotalLineComponent, MatCardModule],
+  imports: [JsonPipe, AsyncPipe, MatFormFieldModule, MatIconModule, MatInputModule, ReactiveFormsModule, MatAutocompleteModule, MatOptionModule, MatButton, TotalLineComponent, MatCardModule, TaskRegistrationComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
@@ -67,24 +65,15 @@ export class HomeComponent {
     }
   }
 
-  tasksFormArray: FormArray<FormGroup<TaskLineFormGroup>> = new FormArray<FormGroup<TaskLineFormGroup>>([]);
+  taskControl = new FormControl<string | TimeRegistrationsByTaskResponse>('');
 
-  taskControl = new FormControl<string | TimeRegistrationsByTaskResponseInner>('');
-
-  timeRegistrationSignal: WritableSignal<TimeRegistrationResponse[] | undefined> = signal(undefined);
+  timeRegistrationByTaskSignal: WritableSignal<TimeRegistrationsByTaskResponse | undefined> = signal(undefined);
   tasksSignal: WritableSignal<TaskCreateResponseInner[] | undefined> = signal(undefined);
 
   private effectRef = effect(() => {
-    this.timeRegistrationService.getTimeRegistrationsForUser().subscribe({
+    this.timeRegistrationService.getTaskTimeRegistrationsOverview(DateTime.now().toISODate(), OverviewPeriod.Week).subscribe({
       next: value => {
-        this.timeRegistrationSignal.set(value);
-      }
-    })
-    this.timeRegistrationService.getTaskTimeRegistrationsOverview(DateTime.now().toISODate(), PeriodEnum.Week).subscribe({
-      next: value => {
-        for (const timeRegistrationsByTaskResponseInner of value) {
-          this.addTask(timeRegistrationsByTaskResponseInner);
-        }
+        this.timeRegistrationByTaskSignal.set(value);
       }
     })
     this.taskService.getTasksForUser().subscribe({
@@ -106,44 +95,6 @@ export class HomeComponent {
     }));
   }
 
-  private filterTasks(tasks: TimeRegistrationsByTaskResponseInner[]): TimeRegistrationsByTaskResponseInner[] {
-    return tasks
-      .filter(({taskId, taskName}) => {
-        if (!taskName) {
-          return false;
-        }
-        const taskValue = typeof this.taskControl.value === "string" ? this.taskControl.value : this.taskControl.value?.taskName ?? "";
-        return taskName.includes(taskValue) || taskName.toLowerCase().includes(taskValue.toLowerCase());
-      })
-      .sort((a, b) => (a.taskName || "").localeCompare(b.taskName || ""));
-  }
-
-  public optionSelected($event: MatAutocompleteSelectedEvent) {
-    const category = $event.option.value;
-    if (category) {
-      this.addTask(category as TimeRegistrationsByTaskResponseInner);
-    }
-  }
-
-  private addTask(category: TimeRegistrationsByTaskResponseInner) {
-    const firstDuration = category.timeRegistrations?.[0].duration || "";
-    const addDuration = firstDuration ? DurationConverter.convertToHumanDuration(firstDuration) : "";
-    const formGroup: FormGroup<TaskLineFormGroup> = this.formBuilder.group({
-      monday: this.formBuilder.control(addDuration),
-      tuesday: this.formBuilder.control(''),
-      wednesday: this.formBuilder.control(''),
-      thursday: this.formBuilder.control(''),
-      friday: this.formBuilder.control(''),
-      saturday: this.formBuilder.control(''),
-      sunday: this.formBuilder.control(''),
-      taskId: category.taskId,
-      taskName: category.taskName,
-      weekNumber: DateTime.now().weekNumber
-    });
-    this.tasksFormArray.push(formGroup);
-    this.taskControl.reset();
-  }
-
   public getWeekRangeAsString() {
     const startOfWeek = DateTime.now().startOf("week");
     const endOfWeek = DateTime.now().endOf("week");
@@ -155,6 +106,5 @@ export class HomeComponent {
     const task = $event.option.value as TaskCreateResponseInner;
     this.addTimeRegistration(task.taskId)
     this.taskSearchControl.reset();
-    console.log(task);
   }
 }

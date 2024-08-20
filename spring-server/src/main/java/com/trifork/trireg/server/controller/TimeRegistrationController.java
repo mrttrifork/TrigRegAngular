@@ -1,10 +1,8 @@
 package com.trifork.trireg.server.controller;
 
-import com.trifork.trireg.client.api.PeriodEnum;
+import com.trifork.trireg.client.api.OverviewPeriod;
 import com.trifork.trireg.server.api.TimeRegistrationApi;
-import com.trifork.trireg.server.model.TimeRegistrationRequest;
-import com.trifork.trireg.server.model.TimeRegistrationResponse;
-import com.trifork.trireg.server.model.TimeRegistrationsByTaskResponseInner;
+import com.trifork.trireg.server.model.*;
 import com.trifork.trireg.server.service.TimeRegistrationService;
 import com.trifork.trireg.server.util.HTTPResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +35,9 @@ public class TimeRegistrationController implements TimeRegistrationApi {
     }
 
     @Override
-    public ResponseEntity<List<TimeRegistrationsByTaskResponseInner>> getTaskTimeRegistrationsOverview(LocalDate date, com.trifork.trireg.server.model.PeriodEnum period) {
-        PeriodEnum periodEnum = period != null ? PeriodEnum.fromValue(period.getValue()) : null;
-        List<TimeRegistrationsByTaskResponseInner> taskTimeRegistrationsOverview = service.getTaskTimeRegistrationsOverview(date, periodEnum);
+    public ResponseEntity<TimeRegistrationsByTaskResponse> getTaskTimeRegistrationsOverview(LocalDate date, com.trifork.trireg.server.model.OverviewPeriod period) {
+        OverviewPeriod periodEnum = period != null ? OverviewPeriod.fromValue(period.getValue()) : null;
+        TimeRegistrationsByTaskResponse taskTimeRegistrationsOverview = service.getTaskTimeRegistrationsOverview(date, periodEnum);
         if (taskTimeRegistrationsOverview != null) {
             return HTTPResponseUtil.createOKResponse(taskTimeRegistrationsOverview);
         }
@@ -47,8 +45,26 @@ public class TimeRegistrationController implements TimeRegistrationApi {
     }
 
     @Override
-    public ResponseEntity<String> addTimeRegistrationForUser(TimeRegistrationRequest timeRegistrationRequest) {
-        String response = service.addTimeRegistrationForUser(timeRegistrationRequest);
+    public ResponseEntity<DefaultCreateResponse> addTimeRegistrationForUser(TimeRegistrationRequest timeRegistrationRequest) {
+        DefaultCreateResponse response = service.addTimeRegistrationForUser(timeRegistrationRequest);
+        if (response != null) {
+            return HTTPResponseUtil.createOKResponse(response);
+        }
+        throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Did not find a registration for the user");
+    }
+
+    @Override
+    public ResponseEntity<DefaultCreateResponse> updateTimeRegistrationForUser(Long timeRegistrationId, TimeRegistrationUpdateRequest timeRegistrationUpdateRequest) {
+        DefaultCreateResponse response = service.updateTimeRegistrationForUser(timeRegistrationId, timeRegistrationUpdateRequest);
+        if (response != null) {
+            return HTTPResponseUtil.createOKResponse(response);
+        }
+        throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Did not find a registration for the user");
+    }
+
+    @Override
+    public ResponseEntity<DefaultDeleteResponse> deleteTimeRegistration(Long timeRegistrationId) {
+        DefaultDeleteResponse response = service.deleteTimeRegistration(timeRegistrationId);
         if (response != null) {
             return HTTPResponseUtil.createOKResponse(response);
         }

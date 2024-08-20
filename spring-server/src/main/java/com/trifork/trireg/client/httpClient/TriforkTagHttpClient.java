@@ -2,7 +2,7 @@ package com.trifork.trireg.client.httpClient;
 
 import com.trifork.trireg.client.ApiException;
 import com.trifork.trireg.client.api.TagApi;
-import com.trifork.trireg.client.api.TagTimeRegistrationResponse;
+import com.trifork.trireg.client.api.TimeRegistrationTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +17,7 @@ public class TriforkTagHttpClient {
         this.tagApi = tagApi;
     }
 
-    public List<TagTimeRegistrationResponse> getTimeRegistrationTags(Long timeRegistrationId) throws ApiException {
+    public List<TimeRegistrationTag> getTimeRegistrationTags(Long timeRegistrationId) throws ApiException {
         return tagApi.getTimeRegistrationTags(timeRegistrationId);
     }
 }

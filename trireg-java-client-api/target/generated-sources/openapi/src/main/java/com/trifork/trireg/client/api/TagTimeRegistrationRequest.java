@@ -29,18 +29,14 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * TagTimeRegistrationRequest
+ * A request to set a tag value for a tag configuration for a time registration. Administrators configure the rules for tags for time registrations. This includes the format of the tag value, and whether tags are mandatory or optional. When setting a tag value for a time registration, the request must follow these rules. 
  */
 @JsonPropertyOrder({
-  TagTimeRegistrationRequest.JSON_PROPERTY_TIME_REGISTRATION_ID,
   TagTimeRegistrationRequest.JSON_PROPERTY_TAG_CONFIGURATION_ID,
   TagTimeRegistrationRequest.JSON_PROPERTY_VALUE
 })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-19T11:41:25.998809700+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-20T10:30:34.295836300+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 public class TagTimeRegistrationRequest {
-  public static final String JSON_PROPERTY_TIME_REGISTRATION_ID = "timeRegistrationId";
-  private Long timeRegistrationId;
-
   public static final String JSON_PROPERTY_TAG_CONFIGURATION_ID = "tagConfigurationId";
   private Long tagConfigurationId;
 
@@ -50,38 +46,13 @@ public class TagTimeRegistrationRequest {
   public TagTimeRegistrationRequest() { 
   }
 
-  public TagTimeRegistrationRequest timeRegistrationId(Long timeRegistrationId) {
-    this.timeRegistrationId = timeRegistrationId;
-    return this;
-  }
-
-   /**
-   * Get timeRegistrationId
-   * @return timeRegistrationId
-  **/
-  @jakarta.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_TIME_REGISTRATION_ID)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public Long getTimeRegistrationId() {
-    return timeRegistrationId;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_TIME_REGISTRATION_ID)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setTimeRegistrationId(Long timeRegistrationId) {
-    this.timeRegistrationId = timeRegistrationId;
-  }
-
-
   public TagTimeRegistrationRequest tagConfigurationId(Long tagConfigurationId) {
     this.tagConfigurationId = tagConfigurationId;
     return this;
   }
 
    /**
-   * Get tagConfigurationId
+   * The id of the tag configuration to set a value for. This must be a valid tag configuration for the time  registration. 
    * @return tagConfigurationId
   **/
   @jakarta.annotation.Nonnull
@@ -106,12 +77,12 @@ public class TagTimeRegistrationRequest {
   }
 
    /**
-   * Get value
+   * The value to set for the tag configuration. This is a string, but the format of the string is dependent on the tag configuration. For example, if the configuration specifies that the tag is an integer, then the string value must be a valid integer.
    * @return value
   **/
-  @jakarta.annotation.Nullable
+  @jakarta.annotation.Nonnull
   @JsonProperty(JSON_PROPERTY_VALUE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public String getValue() {
     return value;
@@ -119,7 +90,7 @@ public class TagTimeRegistrationRequest {
 
 
   @JsonProperty(JSON_PROPERTY_VALUE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setValue(String value) {
     this.value = value;
   }
@@ -137,21 +108,19 @@ public class TagTimeRegistrationRequest {
       return false;
     }
     TagTimeRegistrationRequest tagTimeRegistrationRequest = (TagTimeRegistrationRequest) o;
-    return Objects.equals(this.timeRegistrationId, tagTimeRegistrationRequest.timeRegistrationId) &&
-        Objects.equals(this.tagConfigurationId, tagTimeRegistrationRequest.tagConfigurationId) &&
+    return Objects.equals(this.tagConfigurationId, tagTimeRegistrationRequest.tagConfigurationId) &&
         Objects.equals(this.value, tagTimeRegistrationRequest.value);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(timeRegistrationId, tagConfigurationId, value);
+    return Objects.hash(tagConfigurationId, value);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class TagTimeRegistrationRequest {\n");
-    sb.append("    timeRegistrationId: ").append(toIndentedString(timeRegistrationId)).append("\n");
     sb.append("    tagConfigurationId: ").append(toIndentedString(tagConfigurationId)).append("\n");
     sb.append("    value: ").append(toIndentedString(value)).append("\n");
     sb.append("}");
@@ -200,11 +169,6 @@ public class TagTimeRegistrationRequest {
     }
 
     StringJoiner joiner = new StringJoiner("&");
-
-    // add `timeRegistrationId` to the URL query string
-    if (getTimeRegistrationId() != null) {
-      joiner.add(String.format("%stimeRegistrationId%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getTimeRegistrationId()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
-    }
 
     // add `tagConfigurationId` to the URL query string
     if (getTagConfigurationId() != null) {

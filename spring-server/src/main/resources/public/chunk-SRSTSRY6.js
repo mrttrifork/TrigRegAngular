@@ -28434,8 +28434,6 @@ export {
   ɵɵProvidersFeature,
   ɵɵStandaloneFeature,
   setClassMetadata,
-  ɵɵpipe,
-  ɵɵpipeBind1,
   ɵɵtemplateRefExtractor,
   ɵsetClassDebugInfo,
   Directive,
@@ -28483,7 +28481,6 @@ export {
   Location,
   parseCookieValue,
   NgTemplateOutlet,
-  JsonPipe,
   CommonModule,
   PLATFORM_BROWSER_ID,
   isPlatformBrowser2 as isPlatformBrowser,
@@ -28585,4 +28582,4 @@ export {
    * License: MIT
    *)
 */
-//# sourceMappingURL=chunk-TJEJCTGV.js.map
+//# sourceMappingURL=chunk-SRSTSRY6.js.map

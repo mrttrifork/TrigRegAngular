@@ -17,12 +17,16 @@ import com.trifork.trireg.client.ApiException;
 import com.trifork.trireg.client.ApiResponse;
 import com.trifork.trireg.client.Pair;
 
+import com.trifork.trireg.client.api.DefaultCreateResponse;
+import com.trifork.trireg.client.api.DefaultDeleteResponse;
+import com.trifork.trireg.client.api.DefaultUpdateResponse;
 import java.time.LocalDate;
-import com.trifork.trireg.client.api.PeriodEnum;
+import com.trifork.trireg.client.api.OverviewPeriod;
+import com.trifork.trireg.client.api.TimeRegistrationAssociateTaskRequest;
 import com.trifork.trireg.client.api.TimeRegistrationRequest;
 import com.trifork.trireg.client.api.TimeRegistrationResponse;
 import com.trifork.trireg.client.api.TimeRegistrationUpdateRequest;
-import com.trifork.trireg.client.api.TimeRegistrationsByTaskResponseInner;
+import com.trifork.trireg.client.api.TimeRegistrationsByTaskResponse;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,7 +53,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-19T11:41:25.998809700+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-20T10:30:34.295836300+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 public class TimeRegistrationApi {
   private final HttpClient memberVarHttpClient;
   private final ObjectMapper memberVarObjectMapper;
@@ -90,11 +94,11 @@ public class TimeRegistrationApi {
    * 
    * Add several time registrations for a user
    * @param timeRegistrationRequest A JSON object containing a list of time registration information (required)
-   * @return String
+   * @return List&lt;DefaultCreateResponse&gt;
    * @throws ApiException if fails to make API call
    */
-  public String addBulkTimeRegistrationForUser(List<TimeRegistrationRequest> timeRegistrationRequest) throws ApiException {
-    ApiResponse<String> localVarResponse = addBulkTimeRegistrationForUserWithHttpInfo(timeRegistrationRequest);
+  public List<DefaultCreateResponse> addBulkTimeRegistrationForUser(List<TimeRegistrationRequest> timeRegistrationRequest) throws ApiException {
+    ApiResponse<List<DefaultCreateResponse>> localVarResponse = addBulkTimeRegistrationForUserWithHttpInfo(timeRegistrationRequest);
     return localVarResponse.getData();
   }
 
@@ -102,10 +106,10 @@ public class TimeRegistrationApi {
    * 
    * Add several time registrations for a user
    * @param timeRegistrationRequest A JSON object containing a list of time registration information (required)
-   * @return ApiResponse&lt;String&gt;
+   * @return ApiResponse&lt;List&lt;DefaultCreateResponse&gt;&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<String> addBulkTimeRegistrationForUserWithHttpInfo(List<TimeRegistrationRequest> timeRegistrationRequest) throws ApiException {
+  public ApiResponse<List<DefaultCreateResponse>> addBulkTimeRegistrationForUserWithHttpInfo(List<TimeRegistrationRequest> timeRegistrationRequest) throws ApiException {
     HttpRequest.Builder localVarRequestBuilder = addBulkTimeRegistrationForUserRequestBuilder(timeRegistrationRequest);
     try {
       HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
@@ -118,19 +122,11 @@ public class TimeRegistrationApi {
         if (localVarResponse.statusCode()/ 100 != 2) {
           throw getApiException("addBulkTimeRegistrationForUser", localVarResponse);
         }
-        // for plain text response
-        if (localVarResponse.headers().map().containsKey("Content-Type") &&
-                "text/plain".equalsIgnoreCase(localVarResponse.headers().map().get("Content-Type").get(0).split(";")[0].trim())) {
-          java.util.Scanner s = new java.util.Scanner(localVarResponse.body()).useDelimiter("\\A");
-          String responseBodyText = s.hasNext() ? s.next() : "";
-          return new ApiResponse<String>(
-                  localVarResponse.statusCode(),
-                  localVarResponse.headers().map(),
-                  responseBodyText
-          );
-        } else {
-            throw new RuntimeException("Error! The response Content-Type is supposed to be `text/plain` but it's not: " + localVarResponse);
-        }
+        return new ApiResponse<List<DefaultCreateResponse>>(
+          localVarResponse.statusCode(),
+          localVarResponse.headers().map(),
+          localVarResponse.body() == null ? null : memberVarObjectMapper.readValue(localVarResponse.body(), new TypeReference<List<DefaultCreateResponse>>() {}) // closes the InputStream
+        );
       } finally {
       }
     } catch (IOException e) {
@@ -155,7 +151,7 @@ public class TimeRegistrationApi {
     localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
     localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "text/plain");
+    localVarRequestBuilder.header("Accept", "application/json, text/plain");
 
     try {
       byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(timeRegistrationRequest);
@@ -175,11 +171,11 @@ public class TimeRegistrationApi {
    * 
    * Adds a time registration for a user
    * @param timeRegistrationRequest A JSON object containing time registration information (required)
-   * @return String
+   * @return DefaultCreateResponse
    * @throws ApiException if fails to make API call
    */
-  public String addTimeRegistrationForUser(TimeRegistrationRequest timeRegistrationRequest) throws ApiException {
-    ApiResponse<String> localVarResponse = addTimeRegistrationForUserWithHttpInfo(timeRegistrationRequest);
+  public DefaultCreateResponse addTimeRegistrationForUser(TimeRegistrationRequest timeRegistrationRequest) throws ApiException {
+    ApiResponse<DefaultCreateResponse> localVarResponse = addTimeRegistrationForUserWithHttpInfo(timeRegistrationRequest);
     return localVarResponse.getData();
   }
 
@@ -187,10 +183,10 @@ public class TimeRegistrationApi {
    * 
    * Adds a time registration for a user
    * @param timeRegistrationRequest A JSON object containing time registration information (required)
-   * @return ApiResponse&lt;String&gt;
+   * @return ApiResponse&lt;DefaultCreateResponse&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<String> addTimeRegistrationForUserWithHttpInfo(TimeRegistrationRequest timeRegistrationRequest) throws ApiException {
+  public ApiResponse<DefaultCreateResponse> addTimeRegistrationForUserWithHttpInfo(TimeRegistrationRequest timeRegistrationRequest) throws ApiException {
     HttpRequest.Builder localVarRequestBuilder = addTimeRegistrationForUserRequestBuilder(timeRegistrationRequest);
     try {
       HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
@@ -203,19 +199,11 @@ public class TimeRegistrationApi {
         if (localVarResponse.statusCode()/ 100 != 2) {
           throw getApiException("addTimeRegistrationForUser", localVarResponse);
         }
-        // for plain text response
-        if (localVarResponse.headers().map().containsKey("Content-Type") &&
-                "text/plain".equalsIgnoreCase(localVarResponse.headers().map().get("Content-Type").get(0).split(";")[0].trim())) {
-          java.util.Scanner s = new java.util.Scanner(localVarResponse.body()).useDelimiter("\\A");
-          String responseBodyText = s.hasNext() ? s.next() : "";
-          return new ApiResponse<String>(
-                  localVarResponse.statusCode(),
-                  localVarResponse.headers().map(),
-                  responseBodyText
-          );
-        } else {
-            throw new RuntimeException("Error! The response Content-Type is supposed to be `text/plain` but it's not: " + localVarResponse);
-        }
+        return new ApiResponse<DefaultCreateResponse>(
+          localVarResponse.statusCode(),
+          localVarResponse.headers().map(),
+          localVarResponse.body() == null ? null : memberVarObjectMapper.readValue(localVarResponse.body(), new TypeReference<DefaultCreateResponse>() {}) // closes the InputStream
+        );
       } finally {
       }
     } catch (IOException e) {
@@ -240,7 +228,7 @@ public class TimeRegistrationApi {
     localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
     localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "text/plain");
+    localVarRequestBuilder.header("Accept", "application/json");
 
     try {
       byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(timeRegistrationRequest);
@@ -258,13 +246,90 @@ public class TimeRegistrationApi {
   }
   /**
    * 
-   * Deletes the specified time registration
-   * @param timeRegistrationId The id of the time registration to delete (required)
-   * @return String
+   * Associates a time registration - that currently does not have any task associated - to the specified task. Also accepts tags that may be required to make a valid time registration for the specified task. 
+   * @param timeRegistrationAssociateTaskRequest  (required)
+   * @return DefaultUpdateResponse
    * @throws ApiException if fails to make API call
    */
-  public String deleteTimeRegistration(Long timeRegistrationId) throws ApiException {
-    ApiResponse<String> localVarResponse = deleteTimeRegistrationWithHttpInfo(timeRegistrationId);
+  public DefaultUpdateResponse associateTimeRegistrationWithTask(TimeRegistrationAssociateTaskRequest timeRegistrationAssociateTaskRequest) throws ApiException {
+    ApiResponse<DefaultUpdateResponse> localVarResponse = associateTimeRegistrationWithTaskWithHttpInfo(timeRegistrationAssociateTaskRequest);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * 
+   * Associates a time registration - that currently does not have any task associated - to the specified task. Also accepts tags that may be required to make a valid time registration for the specified task. 
+   * @param timeRegistrationAssociateTaskRequest  (required)
+   * @return ApiResponse&lt;DefaultUpdateResponse&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<DefaultUpdateResponse> associateTimeRegistrationWithTaskWithHttpInfo(TimeRegistrationAssociateTaskRequest timeRegistrationAssociateTaskRequest) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = associateTimeRegistrationWithTaskRequestBuilder(timeRegistrationAssociateTaskRequest);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("associateTimeRegistrationWithTask", localVarResponse);
+        }
+        return new ApiResponse<DefaultUpdateResponse>(
+          localVarResponse.statusCode(),
+          localVarResponse.headers().map(),
+          localVarResponse.body() == null ? null : memberVarObjectMapper.readValue(localVarResponse.body(), new TypeReference<DefaultUpdateResponse>() {}) // closes the InputStream
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder associateTimeRegistrationWithTaskRequestBuilder(TimeRegistrationAssociateTaskRequest timeRegistrationAssociateTaskRequest) throws ApiException {
+    // verify the required parameter 'timeRegistrationAssociateTaskRequest' is set
+    if (timeRegistrationAssociateTaskRequest == null) {
+      throw new ApiException(400, "Missing the required parameter 'timeRegistrationAssociateTaskRequest' when calling associateTimeRegistrationWithTask");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/time-registration/associate-task";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json, text/plain");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(timeRegistrationAssociateTaskRequest);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+  /**
+   * 
+   * Deletes the specified time registration
+   * @param timeRegistrationId The id of the time registration to delete (required)
+   * @return DefaultDeleteResponse
+   * @throws ApiException if fails to make API call
+   */
+  public DefaultDeleteResponse deleteTimeRegistration(Long timeRegistrationId) throws ApiException {
+    ApiResponse<DefaultDeleteResponse> localVarResponse = deleteTimeRegistrationWithHttpInfo(timeRegistrationId);
     return localVarResponse.getData();
   }
 
@@ -272,10 +337,10 @@ public class TimeRegistrationApi {
    * 
    * Deletes the specified time registration
    * @param timeRegistrationId The id of the time registration to delete (required)
-   * @return ApiResponse&lt;String&gt;
+   * @return ApiResponse&lt;DefaultDeleteResponse&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<String> deleteTimeRegistrationWithHttpInfo(Long timeRegistrationId) throws ApiException {
+  public ApiResponse<DefaultDeleteResponse> deleteTimeRegistrationWithHttpInfo(Long timeRegistrationId) throws ApiException {
     HttpRequest.Builder localVarRequestBuilder = deleteTimeRegistrationRequestBuilder(timeRegistrationId);
     try {
       HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
@@ -288,19 +353,11 @@ public class TimeRegistrationApi {
         if (localVarResponse.statusCode()/ 100 != 2) {
           throw getApiException("deleteTimeRegistration", localVarResponse);
         }
-        // for plain text response
-        if (localVarResponse.headers().map().containsKey("Content-Type") &&
-                "text/plain".equalsIgnoreCase(localVarResponse.headers().map().get("Content-Type").get(0).split(";")[0].trim())) {
-          java.util.Scanner s = new java.util.Scanner(localVarResponse.body()).useDelimiter("\\A");
-          String responseBodyText = s.hasNext() ? s.next() : "";
-          return new ApiResponse<String>(
-                  localVarResponse.statusCode(),
-                  localVarResponse.headers().map(),
-                  responseBodyText
-          );
-        } else {
-            throw new RuntimeException("Error! The response Content-Type is supposed to be `text/plain` but it's not: " + localVarResponse);
-        }
+        return new ApiResponse<DefaultDeleteResponse>(
+          localVarResponse.statusCode(),
+          localVarResponse.headers().map(),
+          localVarResponse.body() == null ? null : memberVarObjectMapper.readValue(localVarResponse.body(), new TypeReference<DefaultDeleteResponse>() {}) // closes the InputStream
+        );
       } finally {
       }
     } catch (IOException e) {
@@ -339,7 +396,7 @@ public class TimeRegistrationApi {
       localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    localVarRequestBuilder.header("Accept", "text/plain");
+    localVarRequestBuilder.header("Accept", "application/json, text/plain");
 
     localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
     if (memberVarReadTimeout != null) {
@@ -354,12 +411,12 @@ public class TimeRegistrationApi {
    * 
    * Returns time registrations for a user grouped by task
    * @param date The date to consider when fetching active tasks and time registrations (required)
-   * @param period The time period to use when deciding in which time period tasks are considered active (optional)
-   * @return List&lt;TimeRegistrationsByTaskResponseInner&gt;
+   * @param period The time period to use when deciding in which time period tasks are considered active. Defaults to &#39;WEEK&#39;.  (optional)
+   * @return TimeRegistrationsByTaskResponse
    * @throws ApiException if fails to make API call
    */
-  public List<TimeRegistrationsByTaskResponseInner> getTaskTimeRegistrationsOverview(LocalDate date, PeriodEnum period) throws ApiException {
-    ApiResponse<List<TimeRegistrationsByTaskResponseInner>> localVarResponse = getTaskTimeRegistrationsOverviewWithHttpInfo(date, period);
+  public TimeRegistrationsByTaskResponse getTaskTimeRegistrationsOverview(LocalDate date, OverviewPeriod period) throws ApiException {
+    ApiResponse<TimeRegistrationsByTaskResponse> localVarResponse = getTaskTimeRegistrationsOverviewWithHttpInfo(date, period);
     return localVarResponse.getData();
   }
 
@@ -367,11 +424,11 @@ public class TimeRegistrationApi {
    * 
    * Returns time registrations for a user grouped by task
    * @param date The date to consider when fetching active tasks and time registrations (required)
-   * @param period The time period to use when deciding in which time period tasks are considered active (optional)
-   * @return ApiResponse&lt;List&lt;TimeRegistrationsByTaskResponseInner&gt;&gt;
+   * @param period The time period to use when deciding in which time period tasks are considered active. Defaults to &#39;WEEK&#39;.  (optional)
+   * @return ApiResponse&lt;TimeRegistrationsByTaskResponse&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<List<TimeRegistrationsByTaskResponseInner>> getTaskTimeRegistrationsOverviewWithHttpInfo(LocalDate date, PeriodEnum period) throws ApiException {
+  public ApiResponse<TimeRegistrationsByTaskResponse> getTaskTimeRegistrationsOverviewWithHttpInfo(LocalDate date, OverviewPeriod period) throws ApiException {
     HttpRequest.Builder localVarRequestBuilder = getTaskTimeRegistrationsOverviewRequestBuilder(date, period);
     try {
       HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
@@ -384,10 +441,10 @@ public class TimeRegistrationApi {
         if (localVarResponse.statusCode()/ 100 != 2) {
           throw getApiException("getTaskTimeRegistrationsOverview", localVarResponse);
         }
-        return new ApiResponse<List<TimeRegistrationsByTaskResponseInner>>(
+        return new ApiResponse<TimeRegistrationsByTaskResponse>(
           localVarResponse.statusCode(),
           localVarResponse.headers().map(),
-          localVarResponse.body() == null ? null : memberVarObjectMapper.readValue(localVarResponse.body(), new TypeReference<List<TimeRegistrationsByTaskResponseInner>>() {}) // closes the InputStream
+          localVarResponse.body() == null ? null : memberVarObjectMapper.readValue(localVarResponse.body(), new TypeReference<TimeRegistrationsByTaskResponse>() {}) // closes the InputStream
         );
       } finally {
       }
@@ -400,7 +457,7 @@ public class TimeRegistrationApi {
     }
   }
 
-  private HttpRequest.Builder getTaskTimeRegistrationsOverviewRequestBuilder(LocalDate date, PeriodEnum period) throws ApiException {
+  private HttpRequest.Builder getTaskTimeRegistrationsOverviewRequestBuilder(LocalDate date, OverviewPeriod period) throws ApiException {
     // verify the required parameter 'date' is set
     if (date == null) {
       throw new ApiException(400, "Missing the required parameter 'date' when calling getTaskTimeRegistrationsOverview");
@@ -510,11 +567,11 @@ public class TimeRegistrationApi {
    * Updates the specified time registration
    * @param timeRegistrationId The id of the time registration to update (required)
    * @param timeRegistrationUpdateRequest  (required)
-   * @return String
+   * @return DefaultCreateResponse
    * @throws ApiException if fails to make API call
    */
-  public String updateTimeRegistrationForUser(Long timeRegistrationId, TimeRegistrationUpdateRequest timeRegistrationUpdateRequest) throws ApiException {
-    ApiResponse<String> localVarResponse = updateTimeRegistrationForUserWithHttpInfo(timeRegistrationId, timeRegistrationUpdateRequest);
+  public DefaultCreateResponse updateTimeRegistrationForUser(Long timeRegistrationId, TimeRegistrationUpdateRequest timeRegistrationUpdateRequest) throws ApiException {
+    ApiResponse<DefaultCreateResponse> localVarResponse = updateTimeRegistrationForUserWithHttpInfo(timeRegistrationId, timeRegistrationUpdateRequest);
     return localVarResponse.getData();
   }
 
@@ -523,10 +580,10 @@ public class TimeRegistrationApi {
    * Updates the specified time registration
    * @param timeRegistrationId The id of the time registration to update (required)
    * @param timeRegistrationUpdateRequest  (required)
-   * @return ApiResponse&lt;String&gt;
+   * @return ApiResponse&lt;DefaultCreateResponse&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<String> updateTimeRegistrationForUserWithHttpInfo(Long timeRegistrationId, TimeRegistrationUpdateRequest timeRegistrationUpdateRequest) throws ApiException {
+  public ApiResponse<DefaultCreateResponse> updateTimeRegistrationForUserWithHttpInfo(Long timeRegistrationId, TimeRegistrationUpdateRequest timeRegistrationUpdateRequest) throws ApiException {
     HttpRequest.Builder localVarRequestBuilder = updateTimeRegistrationForUserRequestBuilder(timeRegistrationId, timeRegistrationUpdateRequest);
     try {
       HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
@@ -539,19 +596,11 @@ public class TimeRegistrationApi {
         if (localVarResponse.statusCode()/ 100 != 2) {
           throw getApiException("updateTimeRegistrationForUser", localVarResponse);
         }
-        // for plain text response
-        if (localVarResponse.headers().map().containsKey("Content-Type") &&
-                "text/plain".equalsIgnoreCase(localVarResponse.headers().map().get("Content-Type").get(0).split(";")[0].trim())) {
-          java.util.Scanner s = new java.util.Scanner(localVarResponse.body()).useDelimiter("\\A");
-          String responseBodyText = s.hasNext() ? s.next() : "";
-          return new ApiResponse<String>(
-                  localVarResponse.statusCode(),
-                  localVarResponse.headers().map(),
-                  responseBodyText
-          );
-        } else {
-            throw new RuntimeException("Error! The response Content-Type is supposed to be `text/plain` but it's not: " + localVarResponse);
-        }
+        return new ApiResponse<DefaultCreateResponse>(
+          localVarResponse.statusCode(),
+          localVarResponse.headers().map(),
+          localVarResponse.body() == null ? null : memberVarObjectMapper.readValue(localVarResponse.body(), new TypeReference<DefaultCreateResponse>() {}) // closes the InputStream
+        );
       } finally {
       }
     } catch (IOException e) {
@@ -595,7 +644,7 @@ public class TimeRegistrationApi {
     }
 
     localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "text/plain");
+    localVarRequestBuilder.header("Accept", "application/json, text/plain");
 
     try {
       byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(timeRegistrationUpdateRequest);

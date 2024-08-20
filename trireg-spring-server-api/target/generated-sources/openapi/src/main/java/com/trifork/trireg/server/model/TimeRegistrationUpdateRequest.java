@@ -4,6 +4,8 @@ import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.trifork.trireg.server.model.TimeRegistrationStatus;
 import java.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.openapitools.jackson.nullable.JsonNullable;
@@ -20,7 +22,7 @@ import jakarta.annotation.Generated;
  * TimeRegistrationUpdateRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-19T11:41:29.305516100+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-20T10:30:37.943553100+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 public class TimeRegistrationUpdateRequest {
 
   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
@@ -28,7 +30,9 @@ public class TimeRegistrationUpdateRequest {
 
   private String duration;
 
-  private String status;
+  private TimeRegistrationStatus status;
+
+  private String description;
 
   public TimeRegistrationUpdateRequest date(LocalDate date) {
     this.date = date;
@@ -70,24 +74,44 @@ public class TimeRegistrationUpdateRequest {
     this.duration = duration;
   }
 
-  public TimeRegistrationUpdateRequest status(String status) {
+  public TimeRegistrationUpdateRequest status(TimeRegistrationStatus status) {
     this.status = status;
     return this;
   }
 
   /**
-   * Describes the status of the time registration (PENDING, VALID, INVALID)
+   * Get status
    * @return status
   */
-  
-  @Schema(name = "status", description = "Describes the status of the time registration (PENDING, VALID, INVALID)", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @Valid 
+  @Schema(name = "status", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("status")
-  public String getStatus() {
+  public TimeRegistrationStatus getStatus() {
     return status;
   }
 
-  public void setStatus(String status) {
+  public void setStatus(TimeRegistrationStatus status) {
     this.status = status;
+  }
+
+  public TimeRegistrationUpdateRequest description(String description) {
+    this.description = description;
+    return this;
+  }
+
+  /**
+   * Get description
+   * @return description
+  */
+  
+  @Schema(name = "description", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("description")
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
   }
 
   @Override
@@ -101,12 +125,13 @@ public class TimeRegistrationUpdateRequest {
     TimeRegistrationUpdateRequest timeRegistrationUpdateRequest = (TimeRegistrationUpdateRequest) o;
     return Objects.equals(this.date, timeRegistrationUpdateRequest.date) &&
         Objects.equals(this.duration, timeRegistrationUpdateRequest.duration) &&
-        Objects.equals(this.status, timeRegistrationUpdateRequest.status);
+        Objects.equals(this.status, timeRegistrationUpdateRequest.status) &&
+        Objects.equals(this.description, timeRegistrationUpdateRequest.description);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(date, duration, status);
+    return Objects.hash(date, duration, status, description);
   }
 
   @Override
@@ -116,6 +141,7 @@ public class TimeRegistrationUpdateRequest {
     sb.append("    date: ").append(toIndentedString(date)).append("\n");
     sb.append("    duration: ").append(toIndentedString(duration)).append("\n");
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
+    sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("}");
     return sb.toString();
   }

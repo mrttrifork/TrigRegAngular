@@ -1,0 +1,10 @@
+<div class="flex-row justify-space-between align-items-center">
+  <div>
+    {{ task.task.taskName }}
+  </div>
+  <div class="days">
+    @for (dailyRegistration of task.dailyRegistrations; track dailyRegistration) {
+      <app-time-registration-day [taskId]="task.task.taskId" [dayTimeRegistrations]="dailyRegistration"></app-time-registration-day>
+    }
+  </div>
+</div>

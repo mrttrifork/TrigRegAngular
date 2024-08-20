@@ -2,11 +2,9 @@ package com.trifork.trireg.server.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.trifork.trireg.client.ApiException;
-import com.trifork.trireg.client.api.PeriodEnum;
-import com.trifork.trireg.server.model.TimeRegistrationRequest;
+import com.trifork.trireg.server.model.*;
+import com.trifork.trireg.client.api.OverviewPeriod;
 import com.trifork.trireg.client.httpClient.TriforkRegistrationHttpClient;
-import com.trifork.trireg.server.model.TimeRegistrationResponse;
-import com.trifork.trireg.server.model.TimeRegistrationsByTaskResponseInner;
 import com.trifork.trireg.server.util.CopyUtil;
 import jakarta.annotation.Nullable;
 import org.apache.logging.log4j.LogManager;
@@ -41,9 +39,9 @@ public class TimeRegistrationService {
         }
     }
 
-    public List<TimeRegistrationsByTaskResponseInner> getTaskTimeRegistrationsOverview(LocalDate date, @Nullable PeriodEnum period) {
+    public TimeRegistrationsByTaskResponse getTaskTimeRegistrationsOverview(LocalDate date, @Nullable OverviewPeriod period) {
         try {
-            List<com.trifork.trireg.client.api.TimeRegistrationsByTaskResponseInner> response = client.getTaskTimeRegistrationsOverview(date, period);
+            com.trifork.trireg.client.api.TimeRegistrationsByTaskResponse response = client.getTaskTimeRegistrationsOverview(date, period);
             logger.info(response.toString());
             return CopyUtil.transferToTarget(response, new TypeReference<>() {
             });
@@ -53,11 +51,37 @@ public class TimeRegistrationService {
         }
     }
 
-    public String addTimeRegistrationForUser(TimeRegistrationRequest timeRegistrationRequest) {
+    public DefaultCreateResponse addTimeRegistrationForUser(TimeRegistrationRequest timeRegistrationRequest) {
         try {
             com.trifork.trireg.client.api.TimeRegistrationRequest clientRequest = CopyUtil.transferToTarget(timeRegistrationRequest, new TypeReference<>() {
             });
-            return client.addTimeRegistrationForUser(clientRequest);
+            com.trifork.trireg.client.api.DefaultCreateResponse response = client.addTimeRegistrationForUser(clientRequest);
+            return CopyUtil.transferToTarget(response, new TypeReference<>() {
+            });
+        } catch (ApiException e) {
+            logger.warn("Got an ApiException", e);
+            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "An error happened while calling getTimeRegistrationsForUser");
+        }
+    }
+
+    public DefaultCreateResponse updateTimeRegistrationForUser(Long timeRegistrationId, TimeRegistrationUpdateRequest timeRegistrationUpdateRequest) {
+        try {
+            com.trifork.trireg.client.api.TimeRegistrationUpdateRequest clientRequest = CopyUtil.transferToTarget(timeRegistrationUpdateRequest, new TypeReference<>() {
+            });
+            com.trifork.trireg.client.api.DefaultCreateResponse response = client.updateTimeRegistrationForUser(timeRegistrationId, clientRequest);
+            return CopyUtil.transferToTarget(response, new TypeReference<>() {
+            });
+        } catch (ApiException e) {
+            logger.warn("Got an ApiException", e);
+            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "An error happened while calling getTimeRegistrationsForUser");
+        }
+    }
+
+    public DefaultDeleteResponse deleteTimeRegistration(Long timeRegistrationId) {
+        try {
+            com.trifork.trireg.client.api.DefaultDeleteResponse response = client.deleteTimeRegistration(timeRegistrationId);
+            return CopyUtil.transferToTarget(response, new TypeReference<>() {
+            });
         } catch (ApiException e) {
             logger.warn("Got an ApiException", e);
             throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "An error happened while calling getTimeRegistrationsForUser");

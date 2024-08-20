@@ -17,7 +17,7 @@ All URIs are relative to *https://trireg2.tcs.trifork.dev*
 
 ## deleteTagRegistration
 
-> String deleteTagRegistration(tagId)
+> DefaultDeleteResponse deleteTagRegistration(tagId)
 
 
 
@@ -48,7 +48,7 @@ public class Example {
         TagApi apiInstance = new TagApi(defaultClient);
         Long tagId = 56L; // Long | The ID of the tag to delete
         try {
-            String result = apiInstance.deleteTagRegistration(tagId);
+            DefaultDeleteResponse result = apiInstance.deleteTagRegistration(tagId);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling TagApi#deleteTagRegistration");
@@ -70,7 +70,7 @@ public class Example {
 
 ### Return type
 
-**String**
+[**DefaultDeleteResponse**](DefaultDeleteResponse.md)
 
 
 ### Authorization
@@ -80,7 +80,7 @@ public class Example {
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: text/plain
+- **Accept**: application/json
 
 ### HTTP response details
 | Status code | Description | Response headers |
@@ -91,7 +91,7 @@ public class Example {
 
 ## deleteTagRegistrationWithHttpInfo
 
-> ApiResponse<String> deleteTagRegistration deleteTagRegistrationWithHttpInfo(tagId)
+> ApiResponse<DefaultDeleteResponse> deleteTagRegistration deleteTagRegistrationWithHttpInfo(tagId)
 
 
 
@@ -123,7 +123,7 @@ public class Example {
         TagApi apiInstance = new TagApi(defaultClient);
         Long tagId = 56L; // Long | The ID of the tag to delete
         try {
-            ApiResponse<String> response = apiInstance.deleteTagRegistrationWithHttpInfo(tagId);
+            ApiResponse<DefaultDeleteResponse> response = apiInstance.deleteTagRegistrationWithHttpInfo(tagId);
             System.out.println("Status code: " + response.getStatusCode());
             System.out.println("Response headers: " + response.getHeaders());
             System.out.println("Response body: " + response.getData());
@@ -147,7 +147,7 @@ public class Example {
 
 ### Return type
 
-ApiResponse<**String**>
+ApiResponse<[**DefaultDeleteResponse**](DefaultDeleteResponse.md)>
 
 
 ### Authorization
@@ -157,7 +157,7 @@ ApiResponse<**String**>
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: text/plain
+- **Accept**: application/json
 
 ### HTTP response details
 | Status code | Description | Response headers |
@@ -169,11 +169,11 @@ ApiResponse<**String**>
 
 ## getTimeRegistrationTags
 
-> List<TagTimeRegistrationResponse> getTimeRegistrationTags(timeRegistrationId)
+> List<TimeRegistrationTag> getTimeRegistrationTags(timeRegistrationId)
 
 
 
-Gets the tags associated with the given time registration
+Gets the tags associated with the specified time registration. This includes both the tags that have already been added, and the ones that can be added. 
 
 ### Example
 
@@ -200,7 +200,7 @@ public class Example {
         TagApi apiInstance = new TagApi(defaultClient);
         Long timeRegistrationId = 56L; // Long | The ID of the time registration to get tags for
         try {
-            List<TagTimeRegistrationResponse> result = apiInstance.getTimeRegistrationTags(timeRegistrationId);
+            List<TimeRegistrationTag> result = apiInstance.getTimeRegistrationTags(timeRegistrationId);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling TagApi#getTimeRegistrationTags");
@@ -222,7 +222,7 @@ public class Example {
 
 ### Return type
 
-[**List&lt;TagTimeRegistrationResponse&gt;**](TagTimeRegistrationResponse.md)
+[**List&lt;TimeRegistrationTag&gt;**](TimeRegistrationTag.md)
 
 
 ### Authorization
@@ -237,18 +237,18 @@ public class Example {
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | List of tags for the requested time registration |  -  |
+| **200** | List of tags for the requested time registration, both existing and available to add |  -  |
 | **401** | JWT is missing or invalid |  -  |
 | **404** | Unable to find a time registration with the specified timeRegistrationId |  -  |
 | **502** | While acting as a gateway or proxy, this service received an invalid response from the upstream server. |  -  |
 
 ## getTimeRegistrationTagsWithHttpInfo
 
-> ApiResponse<List<TagTimeRegistrationResponse>> getTimeRegistrationTags getTimeRegistrationTagsWithHttpInfo(timeRegistrationId)
+> ApiResponse<List<TimeRegistrationTag>> getTimeRegistrationTags getTimeRegistrationTagsWithHttpInfo(timeRegistrationId)
 
 
 
-Gets the tags associated with the given time registration
+Gets the tags associated with the specified time registration. This includes both the tags that have already been added, and the ones that can be added. 
 
 ### Example
 
@@ -276,7 +276,7 @@ public class Example {
         TagApi apiInstance = new TagApi(defaultClient);
         Long timeRegistrationId = 56L; // Long | The ID of the time registration to get tags for
         try {
-            ApiResponse<List<TagTimeRegistrationResponse>> response = apiInstance.getTimeRegistrationTagsWithHttpInfo(timeRegistrationId);
+            ApiResponse<List<TimeRegistrationTag>> response = apiInstance.getTimeRegistrationTagsWithHttpInfo(timeRegistrationId);
             System.out.println("Status code: " + response.getStatusCode());
             System.out.println("Response headers: " + response.getHeaders());
             System.out.println("Response body: " + response.getData());
@@ -300,7 +300,7 @@ public class Example {
 
 ### Return type
 
-ApiResponse<[**List&lt;TagTimeRegistrationResponse&gt;**](TagTimeRegistrationResponse.md)>
+ApiResponse<[**List&lt;TimeRegistrationTag&gt;**](TimeRegistrationTag.md)>
 
 
 ### Authorization
@@ -315,7 +315,7 @@ ApiResponse<[**List&lt;TagTimeRegistrationResponse&gt;**](TagTimeRegistrationRes
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | List of tags for the requested time registration |  -  |
+| **200** | List of tags for the requested time registration, both existing and available to add |  -  |
 | **401** | JWT is missing or invalid |  -  |
 | **404** | Unable to find a time registration with the specified timeRegistrationId |  -  |
 | **502** | While acting as a gateway or proxy, this service received an invalid response from the upstream server. |  -  |
@@ -323,11 +323,11 @@ ApiResponse<[**List&lt;TagTimeRegistrationResponse&gt;**](TagTimeRegistrationRes
 
 ## tagTimeRegistration
 
-> String tagTimeRegistration(tagTimeRegistrationRequest)
+> DefaultCreateResponse tagTimeRegistration(timeRegistrationId, tagTimeRegistrationRequest)
 
 
 
-Tags a time registration with a specified tag and optional tag value
+Tags a time registration with a specified tag and tag value
 
 ### Example
 
@@ -352,9 +352,10 @@ public class Example {
         basicAuth.setPassword("YOUR PASSWORD");
 
         TagApi apiInstance = new TagApi(defaultClient);
+        Long timeRegistrationId = 56L; // Long | The ID of the time registration to add a tag to
         TagTimeRegistrationRequest tagTimeRegistrationRequest = new TagTimeRegistrationRequest(); // TagTimeRegistrationRequest | A JSON object containing tag information
         try {
-            String result = apiInstance.tagTimeRegistration(tagTimeRegistrationRequest);
+            DefaultCreateResponse result = apiInstance.tagTimeRegistration(timeRegistrationId, tagTimeRegistrationRequest);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling TagApi#tagTimeRegistration");
@@ -372,11 +373,12 @@ public class Example {
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
+| **timeRegistrationId** | **Long**| The ID of the time registration to add a tag to | |
 | **tagTimeRegistrationRequest** | [**TagTimeRegistrationRequest**](TagTimeRegistrationRequest.md)| A JSON object containing tag information | |
 
 ### Return type
 
-**String**
+[**DefaultCreateResponse**](DefaultCreateResponse.md)
 
 
 ### Authorization
@@ -386,12 +388,12 @@ public class Example {
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: text/plain
+- **Accept**: application/json
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Tag was successfully added to the time registration |  -  |
+| **200** | Tag was successfully added to the time registration. The response contains the id of the new tag |  -  |
 | **401** | JWT is missing or invalid |  -  |
 | **400** | Tag was not added to the time registration due to an error with the request |  -  |
 | **404** | No time registration was found to tag |  -  |
@@ -399,11 +401,11 @@ public class Example {
 
 ## tagTimeRegistrationWithHttpInfo
 
-> ApiResponse<String> tagTimeRegistration tagTimeRegistrationWithHttpInfo(tagTimeRegistrationRequest)
+> ApiResponse<DefaultCreateResponse> tagTimeRegistration tagTimeRegistrationWithHttpInfo(timeRegistrationId, tagTimeRegistrationRequest)
 
 
 
-Tags a time registration with a specified tag and optional tag value
+Tags a time registration with a specified tag and tag value
 
 ### Example
 
@@ -429,9 +431,10 @@ public class Example {
         basicAuth.setPassword("YOUR PASSWORD");
 
         TagApi apiInstance = new TagApi(defaultClient);
+        Long timeRegistrationId = 56L; // Long | The ID of the time registration to add a tag to
         TagTimeRegistrationRequest tagTimeRegistrationRequest = new TagTimeRegistrationRequest(); // TagTimeRegistrationRequest | A JSON object containing tag information
         try {
-            ApiResponse<String> response = apiInstance.tagTimeRegistrationWithHttpInfo(tagTimeRegistrationRequest);
+            ApiResponse<DefaultCreateResponse> response = apiInstance.tagTimeRegistrationWithHttpInfo(timeRegistrationId, tagTimeRegistrationRequest);
             System.out.println("Status code: " + response.getStatusCode());
             System.out.println("Response headers: " + response.getHeaders());
             System.out.println("Response body: " + response.getData());
@@ -451,11 +454,12 @@ public class Example {
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
+| **timeRegistrationId** | **Long**| The ID of the time registration to add a tag to | |
 | **tagTimeRegistrationRequest** | [**TagTimeRegistrationRequest**](TagTimeRegistrationRequest.md)| A JSON object containing tag information | |
 
 ### Return type
 
-ApiResponse<**String**>
+ApiResponse<[**DefaultCreateResponse**](DefaultCreateResponse.md)>
 
 
 ### Authorization
@@ -465,12 +469,12 @@ ApiResponse<**String**>
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: text/plain
+- **Accept**: application/json
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Tag was successfully added to the time registration |  -  |
+| **200** | Tag was successfully added to the time registration. The response contains the id of the new tag |  -  |
 | **401** | JWT is missing or invalid |  -  |
 | **400** | Tag was not added to the time registration due to an error with the request |  -  |
 | **404** | No time registration was found to tag |  -  |
@@ -479,7 +483,7 @@ ApiResponse<**String**>
 
 ## updateTagRegistration
 
-> String updateTagRegistration(updateTagRegistrationRequest)
+> DefaultUpdateResponse updateTagRegistration(tagRegistration)
 
 
 
@@ -508,9 +512,9 @@ public class Example {
         basicAuth.setPassword("YOUR PASSWORD");
 
         TagApi apiInstance = new TagApi(defaultClient);
-        UpdateTagRegistrationRequest updateTagRegistrationRequest = new UpdateTagRegistrationRequest(); // UpdateTagRegistrationRequest | A JSON object containing the updated tag information
+        TagRegistration tagRegistration = new TagRegistration(); // TagRegistration | A JSON object containing the updated tag information
         try {
-            String result = apiInstance.updateTagRegistration(updateTagRegistrationRequest);
+            DefaultUpdateResponse result = apiInstance.updateTagRegistration(tagRegistration);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling TagApi#updateTagRegistration");
@@ -528,11 +532,11 @@ public class Example {
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **updateTagRegistrationRequest** | [**UpdateTagRegistrationRequest**](UpdateTagRegistrationRequest.md)| A JSON object containing the updated tag information | |
+| **tagRegistration** | [**TagRegistration**](TagRegistration.md)| A JSON object containing the updated tag information | |
 
 ### Return type
 
-**String**
+[**DefaultUpdateResponse**](DefaultUpdateResponse.md)
 
 
 ### Authorization
@@ -542,7 +546,7 @@ public class Example {
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: text/plain
+- **Accept**: application/json
 
 ### HTTP response details
 | Status code | Description | Response headers |
@@ -554,7 +558,7 @@ public class Example {
 
 ## updateTagRegistrationWithHttpInfo
 
-> ApiResponse<String> updateTagRegistration updateTagRegistrationWithHttpInfo(updateTagRegistrationRequest)
+> ApiResponse<DefaultUpdateResponse> updateTagRegistration updateTagRegistrationWithHttpInfo(tagRegistration)
 
 
 
@@ -584,9 +588,9 @@ public class Example {
         basicAuth.setPassword("YOUR PASSWORD");
 
         TagApi apiInstance = new TagApi(defaultClient);
-        UpdateTagRegistrationRequest updateTagRegistrationRequest = new UpdateTagRegistrationRequest(); // UpdateTagRegistrationRequest | A JSON object containing the updated tag information
+        TagRegistration tagRegistration = new TagRegistration(); // TagRegistration | A JSON object containing the updated tag information
         try {
-            ApiResponse<String> response = apiInstance.updateTagRegistrationWithHttpInfo(updateTagRegistrationRequest);
+            ApiResponse<DefaultUpdateResponse> response = apiInstance.updateTagRegistrationWithHttpInfo(tagRegistration);
             System.out.println("Status code: " + response.getStatusCode());
             System.out.println("Response headers: " + response.getHeaders());
             System.out.println("Response body: " + response.getData());
@@ -606,11 +610,11 @@ public class Example {
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **updateTagRegistrationRequest** | [**UpdateTagRegistrationRequest**](UpdateTagRegistrationRequest.md)| A JSON object containing the updated tag information | |
+| **tagRegistration** | [**TagRegistration**](TagRegistration.md)| A JSON object containing the updated tag information | |
 
 ### Return type
 
-ApiResponse<**String**>
+ApiResponse<[**DefaultUpdateResponse**](DefaultUpdateResponse.md)>
 
 
 ### Authorization
@@ -620,7 +624,7 @@ ApiResponse<**String**>
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: text/plain
+- **Accept**: application/json
 
 ### HTTP response details
 | Status code | Description | Response headers |

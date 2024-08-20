@@ -2,19 +2,23 @@ import {Duration} from "luxon";
 
 export default class DurationConverter {
   public static convertToISO8601Duration(humanDuration: string): string | undefined {
-    const splitDuration = humanDuration.split(".|,");
-    if (splitDuration.length > 1) {
+    const hours = humanDuration.replace(/,/g, ".");
+    const hoursAsNumber = +hours;
+    if (isNaN(hoursAsNumber)) {
       return undefined;
     }
-    const [hour, minute] = splitDuration;
-    if (hour) {
+    if (hoursAsNumber) {
       const duration = Duration.fromObject({
-        hour: +hour,
-        minute: minute ? +minute : 0
+        minutes: +hoursAsNumber * 60,
       });
       return duration.toISO();
     }
     return undefined;
+  }
+
+  public static getMinutes(iso8601Duration: string): number {
+    const fromISO = Duration.fromISO(iso8601Duration);
+    return fromISO.as("minutes");
   }
 
   public static convertToHumanDuration(iso8601Duration: string): string {
@@ -25,11 +29,24 @@ export default class DurationConverter {
     const minutesAsHours = minutes ? minutes / 6 : undefined;
     if (hours && minutesAsHours) {
       return `${hours},${minutesAsHours}`
-    } else if(hours){
+    } else if (hours) {
       return `${hours}`;
-    } else if(minutesAsHours){
+    } else if (minutesAsHours) {
       return `0,${minutesAsHours}`
     }
     return "";
+  }
+
+  public static isValidHumanDuration(humanDuration: string): boolean {
+    const hours = humanDuration.replace(/,/g, ".");
+    const hoursAsNumber = +hours;
+    if (isNaN(hoursAsNumber)) {
+      return false;
+    }
+    const hoursAsMinutes = +hoursAsNumber * 60;
+    if(hoursAsMinutes < 0 || hoursAsMinutes > 1440){
+      return false;
+    }
+    return true;
   }
 }

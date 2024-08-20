@@ -5,9 +5,12 @@
  */
 package com.trifork.trireg.server.api;
 
+import com.trifork.trireg.server.model.DefaultCreateResponse;
+import com.trifork.trireg.server.model.DefaultDeleteResponse;
+import com.trifork.trireg.server.model.DefaultUpdateResponse;
+import com.trifork.trireg.server.model.TagRegistration;
 import com.trifork.trireg.server.model.TagTimeRegistrationRequest;
-import com.trifork.trireg.server.model.TagTimeRegistrationResponse;
-import com.trifork.trireg.server.model.UpdateTagRegistrationRequest;
+import com.trifork.trireg.server.model.TimeRegistrationTag;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -34,7 +37,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-19T11:41:29.305516100+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-20T10:30:37.943553100+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 @Validated
 @Tag(name = "Tag", description = "Tag for CRUD operations related to adding tags to time registrations")
 public interface TagApi {
@@ -58,7 +61,7 @@ public interface TagApi {
         tags = { "Tag" },
         responses = {
             @ApiResponse(responseCode = "200", description = "Tag was successfully deleted", content = {
-                @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = DefaultDeleteResponse.class))
             }),
             @ApiResponse(responseCode = "401", description = "JWT is missing or invalid"),
             @ApiResponse(responseCode = "404", description = "The requested tag was not found and could not be deleted")
@@ -71,12 +74,21 @@ public interface TagApi {
     @RequestMapping(
         method = RequestMethod.DELETE,
         value = "/tag",
-        produces = { "text/plain" }
+        produces = { "application/json" }
     )
     
-    default ResponseEntity<String> deleteTagRegistration(
+    default ResponseEntity<DefaultDeleteResponse> deleteTagRegistration(
         @NotNull @Parameter(name = "tagId", description = "The ID of the tag to delete", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "tagId", required = true) Long tagId
     ) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"id\" : 12345, \"status\" : \"The data was deleted successfully\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }
@@ -84,21 +96,21 @@ public interface TagApi {
 
     /**
      * GET /tag
-     * Gets the tags associated with the given time registration
+     * Gets the tags associated with the specified time registration. This includes both the tags that have already been added, and the ones that can be added. 
      *
      * @param timeRegistrationId The ID of the time registration to get tags for (required)
-     * @return List of tags for the requested time registration (status code 200)
+     * @return List of tags for the requested time registration, both existing and available to add (status code 200)
      *         or JWT is missing or invalid (status code 401)
      *         or Unable to find a time registration with the specified timeRegistrationId (status code 404)
      *         or While acting as a gateway or proxy, this service received an invalid response from the upstream server. (status code 502)
      */
     @Operation(
         operationId = "getTimeRegistrationTags",
-        description = "Gets the tags associated with the given time registration",
+        description = "Gets the tags associated with the specified time registration. This includes both the tags that have already been added, and the ones that can be added. ",
         tags = { "Tag" },
         responses = {
-            @ApiResponse(responseCode = "200", description = "List of tags for the requested time registration", content = {
-                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TagTimeRegistrationResponse.class)))
+            @ApiResponse(responseCode = "200", description = "List of tags for the requested time registration, both existing and available to add", content = {
+                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TimeRegistrationTag.class)))
             }),
             @ApiResponse(responseCode = "401", description = "JWT is missing or invalid"),
             @ApiResponse(responseCode = "404", description = "Unable to find a time registration with the specified timeRegistrationId"),
@@ -115,13 +127,13 @@ public interface TagApi {
         produces = { "application/json" }
     )
     
-    default ResponseEntity<List<TagTimeRegistrationResponse>> getTimeRegistrationTags(
+    default ResponseEntity<List<TimeRegistrationTag>> getTimeRegistrationTags(
         @NotNull @Parameter(name = "timeRegistrationId", description = "The ID of the time registration to get tags for", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "timeRegistrationId", required = true) Long timeRegistrationId
     ) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "[ { \"tagConfigurationId\" : 0, \"tagValue\" : \"tagValue\" }, { \"tagConfigurationId\" : 0, \"tagValue\" : \"tagValue\" } ]";
+                    String exampleString = "[ { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagRegistration\" : { \"tagId\" : 2, \"tagRegistration\" : \"tagRegistration\" } }, { \"tagConfigurationMetadata\" : { \"tagConfigurationDescription\" : \"tagConfigurationDescription\", \"tagConfigurationId\" : 5, \"tagConfigurationName\" : \"tagConfigurationName\", \"valueType\" : \"STRING\", \"cardinality\" : \"OPTIONAL\" }, \"tagRegistration\" : { \"tagId\" : 2, \"tagRegistration\" : \"tagRegistration\" } } ]";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -134,10 +146,11 @@ public interface TagApi {
 
     /**
      * POST /tag
-     * Tags a time registration with a specified tag and optional tag value
+     * Tags a time registration with a specified tag and tag value
      *
+     * @param timeRegistrationId The ID of the time registration to add a tag to (required)
      * @param tagTimeRegistrationRequest A JSON object containing tag information (required)
-     * @return Tag was successfully added to the time registration (status code 200)
+     * @return Tag was successfully added to the time registration. The response contains the id of the new tag (status code 200)
      *         or JWT is missing or invalid (status code 401)
      *         or Tag was not added to the time registration due to an error with the request (status code 400)
      *         or No time registration was found to tag (status code 404)
@@ -145,11 +158,11 @@ public interface TagApi {
      */
     @Operation(
         operationId = "tagTimeRegistration",
-        description = "Tags a time registration with a specified tag and optional tag value",
+        description = "Tags a time registration with a specified tag and tag value",
         tags = { "Tag" },
         responses = {
-            @ApiResponse(responseCode = "200", description = "Tag was successfully added to the time registration", content = {
-                @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
+            @ApiResponse(responseCode = "200", description = "Tag was successfully added to the time registration. The response contains the id of the new tag", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = DefaultCreateResponse.class))
             }),
             @ApiResponse(responseCode = "401", description = "JWT is missing or invalid"),
             @ApiResponse(responseCode = "400", description = "Tag was not added to the time registration due to an error with the request"),
@@ -164,13 +177,23 @@ public interface TagApi {
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/tag",
-        produces = { "text/plain" },
+        produces = { "application/json" },
         consumes = { "application/json" }
     )
     
-    default ResponseEntity<String> tagTimeRegistration(
+    default ResponseEntity<DefaultCreateResponse> tagTimeRegistration(
+        @NotNull @Parameter(name = "timeRegistrationId", description = "The ID of the time registration to add a tag to", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "timeRegistrationId", required = true) Long timeRegistrationId,
         @Parameter(name = "TagTimeRegistrationRequest", description = "A JSON object containing tag information", required = true) @Valid @RequestBody TagTimeRegistrationRequest tagTimeRegistrationRequest
     ) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"id\" : 12345, \"status\" : \"The data was created successfully\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }
@@ -180,7 +203,7 @@ public interface TagApi {
      * PUT /tag
      * Updates a tag that was added to a time registration
      *
-     * @param updateTagRegistrationRequest A JSON object containing the updated tag information (required)
+     * @param tagRegistration A JSON object containing the updated tag information (required)
      * @return Tag was successfully updated (status code 200)
      *         or The updated tag information yields an invalid tag (status code 400)
      *         or JWT is missing or invalid (status code 401)
@@ -192,7 +215,7 @@ public interface TagApi {
         tags = { "Tag" },
         responses = {
             @ApiResponse(responseCode = "200", description = "Tag was successfully updated", content = {
-                @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = DefaultUpdateResponse.class))
             }),
             @ApiResponse(responseCode = "400", description = "The updated tag information yields an invalid tag"),
             @ApiResponse(responseCode = "401", description = "JWT is missing or invalid"),
@@ -206,13 +229,22 @@ public interface TagApi {
     @RequestMapping(
         method = RequestMethod.PUT,
         value = "/tag",
-        produces = { "text/plain" },
+        produces = { "application/json" },
         consumes = { "application/json" }
     )
     
-    default ResponseEntity<String> updateTagRegistration(
-        @Parameter(name = "UpdateTagRegistrationRequest", description = "A JSON object containing the updated tag information", required = true) @Valid @RequestBody UpdateTagRegistrationRequest updateTagRegistrationRequest
+    default ResponseEntity<DefaultUpdateResponse> updateTagRegistration(
+        @Parameter(name = "TagRegistration", description = "A JSON object containing the updated tag information", required = true) @Valid @RequestBody TagRegistration tagRegistration
     ) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"id\" : 12345, \"status\" : \"The data was updated successfully\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }

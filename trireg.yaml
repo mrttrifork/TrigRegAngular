@@ -24,6 +24,8 @@ tags:
     name: Export
   - description: Tag for operations related to importing time registrations
     name: Import
+  - description: Tag for CRUD operations related to kilometre registration
+    name: KmRegistration
   - description: Tag for operations related to logging into the service through a web
       browser
     name: Login
@@ -44,6 +46,30 @@ paths:
             \ with a valid session token."
       tags:
         - Login
+  /task:
+    get:
+      description: Gets the tasks available to the user
+      operationId: getTasksForUser
+      parameters:
+        - description: The id of the user to get tasks for (Default is the user logged
+            in)
+          in: query
+          name: userId
+          required: false
+          schema:
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskCreateResponse'
+          description: Successfully fetched the list of tasks available
+        "401":
+          description: JWT is missing or invalid
+      tags:
+        - Task
   /time-registration:
     delete:
       description: Deletes the specified time registration
@@ -59,18 +85,20 @@ paths:
       responses:
         "200":
           content:
-            text/plain:
+            application/json:
               examples:
                 success-deleted:
-                  description: The time registration was deleted successfully (Status
-                    = deleted)
-                  value: Time registration deleted successfully
+                  value:
+                    id: 12345
+                    status: The time registration was deleted successfully (Status
+                      = deleted)
                 success-rejected:
-                  description: The imported time registration was rejected successfully
-                    (Status = rejected)
-                  value: Time registration rejected successfully
+                  value:
+                    id: 54321
+                    status: The imported time registration was rejected successfully
+                      (Status = rejected)
               schema:
-                type: string
+                $ref: '#/components/schemas/DefaultDeleteResponse'
           description: deleted
         "400":
           content:
@@ -117,13 +145,15 @@ paths:
       responses:
         "201":
           content:
-            text/plain:
+            application/json:
               examples:
                 Example#1:
-                  value: Time registration added successfully
+                  value:
+                    id: 12345
+                    status: Time registration added successfully
               schema:
-                type: string
-          description: Created
+                $ref: '#/components/schemas/DefaultCreateResponse'
+          description: Time registration added successfully
         "401":
           description: JWT is missing or invalid
       tags:
@@ -148,12 +178,14 @@ paths:
       responses:
         "200":
           content:
-            text/plain:
+            application/json:
               examples:
                 Success:
-                  value: Time registration updated successfully
+                  value:
+                    id: 12345
+                    status: Time registration updated successfully
               schema:
-                type: string
+                $ref: '#/components/schemas/DefaultCreateResponse'
           description: Updated
         "400":
           content:
@@ -183,13 +215,12 @@ paths:
           schema:
             format: date
             type: string
-        - description: The time period to use when deciding in which time period tasks
-            are considered active
+        - description: |
+            The time period to use when deciding in which time period tasks are considered active. Defaults to 'WEEK'.
           in: query
           name: period
-          required: false
           schema:
-            $ref: '#/components/schemas/PeriodEnum'
+            $ref: '#/components/schemas/OverviewPeriod'
       responses:
         "200":
           content:
@@ -205,6 +236,55 @@ paths:
           description: Request contains an invalid time period value
         "401":
           description: JWT is missing or invalid
+      tags:
+        - TimeRegistration
+  /time-registration/associate-task:
+    post:
+      description: |
+        Associates a time registration - that currently does not have any task associated - to the specified task.
+        Also accepts tags that may be required to make a valid time registration for the specified task.
+      operationId: associateTimeRegistrationWithTask
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeRegistrationAssociateTaskRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                success-associated:
+                  value:
+                    id: 12345
+                    status: The time registration was successfully associated with
+                      task
+              schema:
+                $ref: '#/components/schemas/DefaultUpdateResponse'
+          description: associated
+        "400":
+          content:
+            text/plain:
+              examples:
+                existing-association:
+                  description: "Error message when trying to associate a time registration\
+                    \ that has already been associated with a task \nWill also return\
+                    \ this message when trying to associate to the already associated\
+                    \ task\n"
+                  value: Cannot associate a time registration with an existing time
+                    registration
+              schema:
+                type: string
+          description: Bad associate request
+        "401":
+          description: JWT is missing or invalid
+        "404":
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Time registration not found
       tags:
         - TimeRegistration
   /time-registration/bulk:
@@ -223,13 +303,19 @@ paths:
       responses:
         "201":
           content:
-            text/plain:
+            application/json:
               examples:
-                Example#1:
-                  value: Time registrations added successfully
+                success:
+                  value:
+                    - id: 12345
+                      status: The time registration was created successfully
+                    - id: 12346
+                      status: The time registration was created successfully
               schema:
-                type: string
-          description: Created
+                items:
+                  $ref: '#/components/schemas/DefaultCreateResponse'
+                type: array
+          description: Time registrations added successfully
         "400":
           content:
             text/plain:
@@ -241,13 +327,53 @@ paths:
           description: JWT is missing or invalid
       tags:
         - TimeRegistration
-  /task:
-    get:
-      description: Gets the tasks available to the user
-      operationId: getTasksForUser
+  /km-registration:
+    delete:
+      description: |
+        Deletes or rejects a kilometre registration.
+      operationId: deleteKmRegistration
       parameters:
-        - description: The id of the user to get tasks for (Default is the user logged
-            in)
+        - description: The id of the kilometre registrations to update
+          in: query
+          name: kmRegistrationId
+          required: true
+          schema:
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                success-deleted:
+                  value:
+                    id: 12345
+                    status: The kilometre registration was deleted successfully
+              schema:
+                $ref: '#/components/schemas/DefaultDeleteResponse'
+          description: Successfully deleted or rejected a kilometre registration
+        "400":
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Bad delete request
+        "401":
+          description: JWT is missing or invalid
+        "404":
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Kilometre registration not found
+      tags:
+        - KmRegistration
+    get:
+      description: |
+        Gets all kilometre registrations made by the specified user
+      operationId: getKmRegistrationsForUser
+      parameters:
+        - description: The id of the user to get kilometre registrations data for
           in: query
           name: userId
           required: false
@@ -259,12 +385,98 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TaskCreateResponse'
-          description: Successfully fetched the list of tasks available
+                items:
+                  $ref: '#/components/schemas/KmRegistration'
+                type: array
+          description: Successfully fetched the kilometre registrations
+        "401":
+          description: JWT is missing or invalid
+        "404":
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: User not found
+      tags:
+        - KmRegistration
+    post:
+      description: |
+        Registers a new kilometre registration with to/from details and how many kilometres were travelled
+      operationId: createKmRegistration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KmRegistrationRequest'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              examples:
+                Success:
+                  value:
+                    id: 12345
+                    status: Km registration created successfully
+              schema:
+                $ref: '#/components/schemas/DefaultCreateResponse'
+          description: Successfully created the kilometre registration
+        "400":
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Bad create request
         "401":
           description: JWT is missing or invalid
       tags:
-        - Task
+        - KmRegistration
+    put:
+      description: |
+        Updates an existing kilometre registration with to/from details and how many kilometres were travelled
+      operationId: updateKmRegistration
+      parameters:
+        - description: The id of the kilometre registrations to update
+          in: query
+          name: kmRegistrationId
+          required: true
+          schema:
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KmRegistrationUpdateRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                Success:
+                  value:
+                    id: 12345
+                    status: Km registration updated successfully
+              schema:
+                $ref: '#/components/schemas/DefaultUpdateResponse'
+          description: Successfully updated the kilometre registration
+        "400":
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Bad update request
+        "401":
+          description: JWT is missing or invalid
+        "404":
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Kilometre registration not found
+      tags:
+        - KmRegistration
   /export:
     post:
       description: Exports time registrations for a specific time period for the user
@@ -319,9 +531,9 @@ paths:
       responses:
         "200":
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
+                $ref: '#/components/schemas/DefaultDeleteResponse'
           description: Tag was successfully deleted
         "401":
           description: JWT is missing or invalid
@@ -330,7 +542,9 @@ paths:
       tags:
         - Tag
     get:
-      description: Gets the tags associated with the given time registration
+      description: |
+        Gets the tags associated with the specified time registration. This includes both the tags that have already been
+        added, and the ones that can be added.
       operationId: getTimeRegistrationTags
       parameters:
         - description: The ID of the time registration to get tags for
@@ -346,9 +560,10 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/TagTimeRegistrationResponse'
+                  $ref: '#/components/schemas/TimeRegistrationTag'
                 type: array
-          description: List of tags for the requested time registration
+          description: "List of tags for the requested time registration, both existing\
+            \ and available to add"
         "401":
           description: JWT is missing or invalid
         "404":
@@ -359,9 +574,16 @@ paths:
       tags:
         - Tag
     post:
-      description: Tags a time registration with a specified tag and optional tag
-        value
+      description: Tags a time registration with a specified tag and tag value
       operationId: tagTimeRegistration
+      parameters:
+        - description: The ID of the time registration to add a tag to
+          in: query
+          name: timeRegistrationId
+          required: true
+          schema:
+            format: int64
+            type: integer
       requestBody:
         content:
           application/json:
@@ -372,10 +594,11 @@ paths:
       responses:
         "200":
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-          description: Tag was successfully added to the time registration
+                $ref: '#/components/schemas/DefaultCreateResponse'
+          description: Tag was successfully added to the time registration. The response
+            contains the id of the new tag
         "401":
           description: JWT is missing or invalid
         "400":
@@ -395,15 +618,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/updateTagRegistration_request'
+              $ref: '#/components/schemas/TagRegistration'
         description: A JSON object containing the updated tag information
         required: true
       responses:
         "200":
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
+                $ref: '#/components/schemas/DefaultUpdateResponse'
           description: Tag was successfully updated
         "400":
           description: The updated tag information yields an invalid tag
@@ -495,7 +718,7 @@ components:
           type: string
         duration:
           description: "ISO 8601 formatted duration component <PnDTnHnMn.nS>. Each\
-                \ unit is optional, but at least one must be specified"
+            \ unit is optional, but at least one must be specified"
           example: PT1H30M
           format: duration
           type: string
@@ -516,28 +739,662 @@ components:
         - timeRegistrationId
         - userId
       type: object
-    TimeRegistrationStatus:
-      description: "The status of a time registration Valid values: * `VALID` - The\
-            \ time registration is valid * `PENDING` - The time registration is valid\
-            \ as such, but is awaiting the approval of the user. If this happens, it will\
-            \ become 'valid'. If it is rejected, it will become 'rejected'. * `INVALID`\
-            \ - Something is wrong with the time registration, it will need correction\
-            \ before it can become valid * `DELETED` - The time registration has existed\
-            \ at some point, but has now been deleted * `REJECTED` - The time registration\
-            \ has been rejected by the user"
+    TimeRegistrationUpdateRequest:
+      example:
+        date: 2000-01-23
+        duration: PT1H30M
+        description: description
+        status: null
+      properties:
+        date:
+          format: date
+          type: string
+        duration:
+          description: "ISO 8601 formatted duration component <PnDTnHnMn.nS>. Each\
+            \ unit is optional, but at least one must be specified"
+          example: PT1H30M
+          format: duration
+          type: string
+        status:
+          $ref: '#/components/schemas/TimeRegistrationStatus'
+        description:
+          type: string
+      type: object
+    DefaultCreateResponse:
+      description: A response to a create operation.
+      example:
+        id: 12345
+        status: The data was created successfully
+      properties:
+        id:
+          description: The id of the created entity.
+          format: int64
+          type: integer
+        status:
+          description: A description of the status of the create operation.
+          type: string
+      required:
+        - id
+        - status
+      type: object
+    TimeRegistrationRequest:
+      example:
+        date: 2000-01-23
+        duration: PT1H30M
+        description: description
+        taskId: 0
+        tags:
+          - tagConfigurationId: 6
+            value: value
+          - tagConfigurationId: 6
+            value: value
+      properties:
+        taskId:
+          description: |
+            Associates the time registration with a task.
+            If not specified, then the `description` field must be a non-null value
+          format: int64
+          type: integer
+        date:
+          format: date
+          type: string
+        duration:
+          description: "ISO 8601 formatted duration component <PnDTnHnMn.nS>. Each\
+            \ unit is optional, but at least one must be specified"
+          example: PT1H30M
+          format: duration
+          type: string
+        tags:
+          items:
+            $ref: '#/components/schemas/TagTimeRegistrationRequest'
+          type: array
+        description:
+          type: string
+      required:
+        - date
+        - duration
+      type: object
+    DefaultDeleteResponse:
+      description: A response to a delete operation.
+      example:
+        id: 12345
+        status: The data was deleted successfully
+      properties:
+        id:
+          format: int64
+          type: integer
+        status:
+          description: A description of the status of the delete operation.
+          type: string
+      required:
+        - id
+        - status
+      type: object
+    OverviewPeriod:
+      description: |
+        A period of time that an overview is covering Valid values:
+            * `day` - Covers a specific date
+            * `week` - Covers the whole week (Monday to Sunday) of a specific date
+            * `month` - Covers the whole month of a specific date
       enum:
-        - VALID
-        - PENDING
-        - INVALID
-        - DELETED
-        - REJECTED
+        - DAY
+        - WEEK
+        - MONTH
       type: string
+    TimeRegistrationsByTaskResponse:
+      example:
+        taskTimeRegistrations:
+          - task:
+              taskDescription: taskDescription
+              taskName: taskName
+              taskId: 0
+            dailyRegistrations:
+              - date: 2000-01-23
+                timeRegistrations:
+                  - duration: PT1H30M
+                    timeRegistrationId: 6
+                    description: description
+                    status: null
+                    tags:
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+                  - duration: PT1H30M
+                    timeRegistrationId: 6
+                    description: description
+                    status: null
+                    tags:
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+              - date: 2000-01-23
+                timeRegistrations:
+                  - duration: PT1H30M
+                    timeRegistrationId: 6
+                    description: description
+                    status: null
+                    tags:
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+                  - duration: PT1H30M
+                    timeRegistrationId: 6
+                    description: description
+                    status: null
+                    tags:
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+          - task:
+              taskDescription: taskDescription
+              taskName: taskName
+              taskId: 0
+            dailyRegistrations:
+              - date: 2000-01-23
+                timeRegistrations:
+                  - duration: PT1H30M
+                    timeRegistrationId: 6
+                    description: description
+                    status: null
+                    tags:
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+                  - duration: PT1H30M
+                    timeRegistrationId: 6
+                    description: description
+                    status: null
+                    tags:
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+              - date: 2000-01-23
+                timeRegistrations:
+                  - duration: PT1H30M
+                    timeRegistrationId: 6
+                    description: description
+                    status: null
+                    tags:
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+                  - duration: PT1H30M
+                    timeRegistrationId: 6
+                    description: description
+                    status: null
+                    tags:
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+        tasklessTimeRegistrations:
+          - taskDescription: taskDescription
+            dailyRegistrations:
+              - date: 2000-01-23
+                timeRegistrations:
+                  - duration: PT1H30M
+                    timeRegistrationId: 6
+                    description: description
+                    status: null
+                    tags:
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+                  - duration: PT1H30M
+                    timeRegistrationId: 6
+                    description: description
+                    status: null
+                    tags:
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+              - date: 2000-01-23
+                timeRegistrations:
+                  - duration: PT1H30M
+                    timeRegistrationId: 6
+                    description: description
+                    status: null
+                    tags:
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+                  - duration: PT1H30M
+                    timeRegistrationId: 6
+                    description: description
+                    status: null
+                    tags:
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+          - taskDescription: taskDescription
+            dailyRegistrations:
+              - date: 2000-01-23
+                timeRegistrations:
+                  - duration: PT1H30M
+                    timeRegistrationId: 6
+                    description: description
+                    status: null
+                    tags:
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+                  - duration: PT1H30M
+                    timeRegistrationId: 6
+                    description: description
+                    status: null
+                    tags:
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+              - date: 2000-01-23
+                timeRegistrations:
+                  - duration: PT1H30M
+                    timeRegistrationId: 6
+                    description: description
+                    status: null
+                    tags:
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+                  - duration: PT1H30M
+                    timeRegistrationId: 6
+                    description: description
+                    status: null
+                    tags:
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+                      - tagConfigurationMetadata:
+                          tagConfigurationDescription: tagConfigurationDescription
+                          tagConfigurationId: 5
+                          tagConfigurationName: tagConfigurationName
+                          valueType: STRING
+                          cardinality: OPTIONAL
+                        tagValue:
+                          tagId: 2
+                          tagValue: tagValue
+      properties:
+        taskTimeRegistrations:
+          description: The time registrations associated to tasks - can be empty.
+          items:
+            $ref: '#/components/schemas/TaskTimeRegistrationsInterval'
+          type: array
+        tasklessTimeRegistrations:
+          description: The time registrations that are not associated to tasks - can
+            be empty.
+          items:
+            $ref: '#/components/schemas/TasklessTimeRegistrationsInterval'
+          type: array
+      required:
+        - taskTimeRegistrations
+        - tasklessTimeRegistrations
+      type: object
+    TimeRegistrationAssociateTaskRequest:
+      example:
+        timeRegistrationId: 0
+        taskId: 6
+        tags:
+          - tagConfigurationId: 6
+            value: value
+          - tagConfigurationId: 6
+            value: value
+      properties:
+        timeRegistrationId:
+          format: int64
+          type: integer
+        taskId:
+          format: int64
+          type: integer
+        tags:
+          items:
+            $ref: '#/components/schemas/TagTimeRegistrationRequest'
+          type: array
+      required:
+        - tags
+        - taskId
+        - timeRegistrationId
+      type: object
+    DefaultUpdateResponse:
+      description: A response to an update operation.
+      example:
+        id: 12345
+        status: The data was updated successfully
+      properties:
+        id:
+          description: The id of the updated entity.
+          format: int64
+          type: integer
+        status:
+          description: A description of the status of the update operation.
+          type: string
+      required:
+        - id
+        - status
+      type: object
+    KmRegistration:
+      example:
+        date: 2000-01-23
+        kmRegistrationId: 0
+        km: 1
+        from: from
+        to: to
+        taskId: 6
+        status: null
+      properties:
+        kmRegistrationId:
+          format: int64
+          type: integer
+        taskId:
+          format: int64
+          type: integer
+        date:
+          format: date
+          type: string
+        from:
+          type: string
+        to:
+          type: string
+        km:
+          type: integer
+        status:
+          $ref: '#/components/schemas/KmRegistrationStatus'
+      required:
+        - date
+        - from
+        - km
+        - kmRegistrationId
+        - status
+        - taskId
+        - to
+      type: object
+    KmRegistrationUpdateRequest:
+      example:
+        date: 2000-01-23
+        km: 0
+        from: from
+        to: to
+        status: PENDING
+      properties:
+        date:
+          format: date
+          type: string
+        from:
+          type: string
+        to:
+          type: string
+        km:
+          type: integer
+        status:
+          default: PENDING
+          enum:
+            - APPROVE
+            - REJECT
+            - PENDING
+          type: string
+      type: object
+    KmRegistrationRequest:
+      example:
+        date: 2000-01-23
+        km: 6
+        from: from
+        to: to
+        taskId: 0
+      properties:
+        taskId:
+          format: int64
+          type: integer
+        date:
+          format: date
+          type: string
+        from:
+          type: string
+        to:
+          type: string
+        km:
+          type: integer
+      required:
+        - date
+        - from
+        - km
+        - taskId
+        - to
+      type: object
     TimeRegistrationTag:
       description: "Composite object with information about a potential tag for a\
-            \ time registration. This consists both of tags that has\nbeen set, and tags\
-            \ that can potentially be set. Contains metadata describing the tag and the\
-            \ current tag value (if \nany). The 'tagValue' is null if no tag value has\
-            \ been set for the specific configuration.\n"
+        \ time registration. This consists both of tags that has\nbeen set, and tags\
+        \ that can potentially be set. Contains metadata describing the tag and the\
+        \ current tag value (if \nany). The 'tagValue' is null if no tag value has\
+        \ been set for the specific configuration.\n"
       example:
         tagConfigurationMetadata:
           tagConfigurationDescription: tagConfigurationDescription
@@ -545,18 +1402,18 @@ components:
           tagConfigurationName: tagConfigurationName
           valueType: STRING
           cardinality: OPTIONAL
-        tagValue:
+        tagRegistration:
           tagId: 2
-          tagValue: tagValue
+          tagRegistration: tagRegistration
       properties:
         tagConfigurationMetadata:
           $ref: '#/components/schemas/TagConfigurationMetadata'
-        tagValue:
-          $ref: '#/components/schemas/Tag'
+        tagRegistration:
+          $ref: '#/components/schemas/TagRegistration'
       required:
         - tagConfigurationMetadata
       type: object
-    Tag:
+    TagRegistration:
       description: An existing tag with some value
       example:
         tagId: 2
@@ -568,13 +1425,319 @@ components:
           type: integer
         tagValue:
           description: "The value of this tag. This is a valid value corresponding\
-                \ to the tag configuration. For example, if the tag \nconfiguration specifies\
-                \ that the tag is an integer, then the value is a valid integer.\n"
+            \ to the tag configuration. For example, if the tag \nconfiguration specifies\
+            \ that the tag is an integer, then the value is a valid integer.\n"
           type: string
       required:
         - tagId
         - tagValue
       type: object
+    TagTimeRegistrationRequest:
+      description: |
+        A request to set a tag value for a tag configuration for a time registration. Administrators configure the rules for
+        tags for time registrations. This includes the format of the tag value, and whether tags are mandatory or optional.
+        When setting a tag value for a time registration, the request must follow these rules.
+      example:
+        tagConfigurationId: 6
+        value: value
+      properties:
+        tagConfigurationId:
+          description: "The id of the tag configuration to set a value for. This must\
+            \ be a valid tag configuration for the time \nregistration.\n"
+          format: int64
+          type: integer
+        value:
+          description: |-
+            The value to set for the tag configuration. This is a string, but the format of the string is dependent on the tag
+            configuration. For example, if the configuration specifies that the tag is an integer, then the string value must
+            be a valid integer.
+          type: string
+      required:
+        - tagConfigurationId
+        - value
+      type: object
+    ImportTimeRegistrationRequest:
+      items:
+        $ref: '#/components/schemas/ImportTimeRegistrationRequest_inner'
+      type: array
+    ImportTimeRegistrationResponse:
+      items:
+        $ref: '#/components/schemas/ImportTimeRegistrationResponse_inner'
+      type: array
+    Duration:
+      description: "ISO 8601 formatted duration component <PnDTnHnMn.nS>. Each unit\
+        \ is optional, but at least one must be specified"
+      example: PT1H30M
+      format: duration
+      type: string
+    TimeRegistrationStatus:
+      description: "The status of a time registration Valid values: * `VALID` - The\
+        \ time registration is valid * `PENDING` - The time registration is valid\
+        \ as such, but is awaiting the approval of the user. If this happens, it will\
+        \ become 'valid'. If it is rejected, it will become 'rejected'. * `INVALID`\
+        \ - Something is wrong with the time registration, it will need correction\
+        \ before it can become valid * `DELETED` - The time registration has existed\
+        \ at some point, but has now been deleted * `REJECTED` - The time registration\
+        \ has been rejected by the user"
+      enum:
+        - VALID
+        - PENDING
+        - INVALID
+        - DELETED
+        - REJECTED
+      type: string
+    TaskTimeRegistrationsInterval:
+      description: "The time registrations for some specific task. These are grouped\
+        \ by the days in the search interval, where the\nregistrations for each day\
+        \ can be empty. For example: lets assume a user has performed two differently\
+        \ tagged time \nregistrations on Monday and one time registration on Wednesday\
+        \ in some week. If that week is queried, then the\nresponse will contain an\
+        \ entry with the task, and an array of 'dailyRegistration' with seven entries\
+        \ (Monday-Sunday).\nThe Monday entry will contain two time registrations,\
+        \ the Wednesday entry will contain the single time registration, \nand the\
+        \ remaining five days will contain empty arrays.\n"
+      example:
+        task:
+          taskDescription: taskDescription
+          taskName: taskName
+          taskId: 0
+        dailyRegistrations:
+          - date: 2000-01-23
+            timeRegistrations:
+              - duration: PT1H30M
+                timeRegistrationId: 6
+                description: description
+                status: null
+                tags:
+                  - tagConfigurationMetadata:
+                      tagConfigurationDescription: tagConfigurationDescription
+                      tagConfigurationId: 5
+                      tagConfigurationName: tagConfigurationName
+                      valueType: STRING
+                      cardinality: OPTIONAL
+                    tagValue:
+                      tagId: 2
+                      tagValue: tagValue
+                  - tagConfigurationMetadata:
+                      tagConfigurationDescription: tagConfigurationDescription
+                      tagConfigurationId: 5
+                      tagConfigurationName: tagConfigurationName
+                      valueType: STRING
+                      cardinality: OPTIONAL
+                    tagValue:
+                      tagId: 2
+                      tagValue: tagValue
+              - duration: PT1H30M
+                timeRegistrationId: 6
+                description: description
+                status: null
+                tags:
+                  - tagConfigurationMetadata:
+                      tagConfigurationDescription: tagConfigurationDescription
+                      tagConfigurationId: 5
+                      tagConfigurationName: tagConfigurationName
+                      valueType: STRING
+                      cardinality: OPTIONAL
+                    tagValue:
+                      tagId: 2
+                      tagValue: tagValue
+                  - tagConfigurationMetadata:
+                      tagConfigurationDescription: tagConfigurationDescription
+                      tagConfigurationId: 5
+                      tagConfigurationName: tagConfigurationName
+                      valueType: STRING
+                      cardinality: OPTIONAL
+                    tagValue:
+                      tagId: 2
+                      tagValue: tagValue
+          - date: 2000-01-23
+            timeRegistrations:
+              - duration: PT1H30M
+                timeRegistrationId: 6
+                description: description
+                status: null
+                tags:
+                  - tagConfigurationMetadata:
+                      tagConfigurationDescription: tagConfigurationDescription
+                      tagConfigurationId: 5
+                      tagConfigurationName: tagConfigurationName
+                      valueType: STRING
+                      cardinality: OPTIONAL
+                    tagValue:
+                      tagId: 2
+                      tagValue: tagValue
+                  - tagConfigurationMetadata:
+                      tagConfigurationDescription: tagConfigurationDescription
+                      tagConfigurationId: 5
+                      tagConfigurationName: tagConfigurationName
+                      valueType: STRING
+                      cardinality: OPTIONAL
+                    tagValue:
+                      tagId: 2
+                      tagValue: tagValue
+              - duration: PT1H30M
+                timeRegistrationId: 6
+                description: description
+                status: null
+                tags:
+                  - tagConfigurationMetadata:
+                      tagConfigurationDescription: tagConfigurationDescription
+                      tagConfigurationId: 5
+                      tagConfigurationName: tagConfigurationName
+                      valueType: STRING
+                      cardinality: OPTIONAL
+                    tagValue:
+                      tagId: 2
+                      tagValue: tagValue
+                  - tagConfigurationMetadata:
+                      tagConfigurationDescription: tagConfigurationDescription
+                      tagConfigurationId: 5
+                      tagConfigurationName: tagConfigurationName
+                      valueType: STRING
+                      cardinality: OPTIONAL
+                    tagValue:
+                      tagId: 2
+                      tagValue: tagValue
+      properties:
+        task:
+          $ref: '#/components/schemas/Task'
+        dailyRegistrations:
+          items:
+            $ref: '#/components/schemas/DayTimeRegistrations'
+          type: array
+      required:
+        - dailyRegistrations
+        - task
+      type: object
+    TasklessTimeRegistrationsInterval:
+      description: "Time registrations without a task association. These are grouped\
+        \ by description and subsequently days in the search\ninterval, where the\
+        \ registrations for each day can be empty. For example: lets assume a user\
+        \ has performed a taskless\ntime registration with comment \"Working on the\
+        \ Project\" on Tuesday and one time registration with the same comment on\n\
+        Thursday in some week. If that week is queried, then the response will contain\
+        \ an entry with 'taskDescription' = \n\"Working on the Project\", and an array\
+        \ of 'dailyRegistration' with seven entries (Monday-Sunday). The Tuesday and\n\
+        Thursday entries will contain one time registration, and the remaining five\
+        \ days will contain empty arrays.\n"
+      example:
+        taskDescription: taskDescription
+        dailyRegistrations:
+          - date: 2000-01-23
+            timeRegistrations:
+              - duration: PT1H30M
+                timeRegistrationId: 6
+                description: description
+                status: null
+                tags:
+                  - tagConfigurationMetadata:
+                      tagConfigurationDescription: tagConfigurationDescription
+                      tagConfigurationId: 5
+                      tagConfigurationName: tagConfigurationName
+                      valueType: STRING
+                      cardinality: OPTIONAL
+                    tagValue:
+                      tagId: 2
+                      tagValue: tagValue
+                  - tagConfigurationMetadata:
+                      tagConfigurationDescription: tagConfigurationDescription
+                      tagConfigurationId: 5
+                      tagConfigurationName: tagConfigurationName
+                      valueType: STRING
+                      cardinality: OPTIONAL
+                    tagValue:
+                      tagId: 2
+                      tagValue: tagValue
+              - duration: PT1H30M
+                timeRegistrationId: 6
+                description: description
+                status: null
+                tags:
+                  - tagConfigurationMetadata:
+                      tagConfigurationDescription: tagConfigurationDescription
+                      tagConfigurationId: 5
+                      tagConfigurationName: tagConfigurationName
+                      valueType: STRING
+                      cardinality: OPTIONAL
+                    tagValue:
+                      tagId: 2
+                      tagValue: tagValue
+                  - tagConfigurationMetadata:
+                      tagConfigurationDescription: tagConfigurationDescription
+                      tagConfigurationId: 5
+                      tagConfigurationName: tagConfigurationName
+                      valueType: STRING
+                      cardinality: OPTIONAL
+                    tagValue:
+                      tagId: 2
+                      tagValue: tagValue
+          - date: 2000-01-23
+            timeRegistrations:
+              - duration: PT1H30M
+                timeRegistrationId: 6
+                description: description
+                status: null
+                tags:
+                  - tagConfigurationMetadata:
+                      tagConfigurationDescription: tagConfigurationDescription
+                      tagConfigurationId: 5
+                      tagConfigurationName: tagConfigurationName
+                      valueType: STRING
+                      cardinality: OPTIONAL
+                    tagValue:
+                      tagId: 2
+                      tagValue: tagValue
+                  - tagConfigurationMetadata:
+                      tagConfigurationDescription: tagConfigurationDescription
+                      tagConfigurationId: 5
+                      tagConfigurationName: tagConfigurationName
+                      valueType: STRING
+                      cardinality: OPTIONAL
+                    tagValue:
+                      tagId: 2
+                      tagValue: tagValue
+              - duration: PT1H30M
+                timeRegistrationId: 6
+                description: description
+                status: null
+                tags:
+                  - tagConfigurationMetadata:
+                      tagConfigurationDescription: tagConfigurationDescription
+                      tagConfigurationId: 5
+                      tagConfigurationName: tagConfigurationName
+                      valueType: STRING
+                      cardinality: OPTIONAL
+                    tagValue:
+                      tagId: 2
+                      tagValue: tagValue
+                  - tagConfigurationMetadata:
+                      tagConfigurationDescription: tagConfigurationDescription
+                      tagConfigurationId: 5
+                      tagConfigurationName: tagConfigurationName
+                      valueType: STRING
+                      cardinality: OPTIONAL
+                    tagValue:
+                      tagId: 2
+                      tagValue: tagValue
+      properties:
+        taskDescription:
+          type: string
+        dailyRegistrations:
+          items:
+            $ref: '#/components/schemas/DayTimeRegistrations'
+          type: array
+      required:
+        - dailyRegistrations
+        - taskDescription
+      type: object
+    KmRegistrationStatus:
+      description: Describes the status of the kilometre registration
+      enum:
+        - PENDING
+        - ACCEPTED
+        - REJECTED
+        - DELETED
+      type: string
     TagConfigurationMetadata:
       description: |
         Metadata for a tag configuration in the context of a specific time registration. This can differ based on the task the
@@ -606,9 +1769,9 @@ components:
           type: string
         valueType:
           description: "The value type of this configuration Valid values: * `STRING`\
-                \ - The tag value can be any string * `BOOL` - The tag value must be a\
-                \ boolean on the form 'true' or 'false' (case insensitive) * `INT` - The\
-                \ tag value must be a valid 32-bit integer"
+            \ - The tag value can be any string * `BOOL` - The tag value must be a\
+            \ boolean on the form 'true' or 'false' (case insensitive) * `INT` - The\
+            \ tag value must be a valid 32-bit integer"
           enum:
             - STRING
             - BOOL
@@ -620,199 +1783,157 @@ components:
         - tagConfigurationName
         - valueType
       type: object
-    TimeRegistrationUpdateRequest:
-      example:
-        date: 2000-01-23
-        duration: PT1H30M
-        status: status
-      properties:
-        date:
-          format: date
-          type: string
-        duration:
-          description: "ISO 8601 formatted duration component <PnDTnHnMn.nS>. Each\
-            \ unit is optional, but at least one must be specified"
-          example: PT1H30M
-          format: duration
-          type: string
-        status:
-          description: "Describes the status of the time registration (PENDING, VALID,\
-            \ INVALID)"
-          type: string
-      type: object
-    TimeRegistrationRequest:
-      example:
-        date: 2000-01-23
-        duration: PT1H30M
-        taskId: 0
-        tags:
-          - tagConfigurationId: 6
-            value: value
-          - tagConfigurationId: 6
-            value: value
-      properties:
-        taskId:
-          format: int64
-          type: integer
-        date:
-          format: date
-          type: string
-        duration:
-          description: "ISO 8601 formatted duration component <PnDTnHnMn.nS>. Each\
-            \ unit is optional, but at least one must be specified"
-          example: PT1H30M
-          format: duration
-          type: string
-        tags:
-          items:
-            $ref: '#/components/schemas/TagConfiguration'
-          type: array
-      required:
-        - date
-        - duration
-        - taskId
-      type: object
-    TimeRegistrationsByTaskResponse:
-      items:
-        $ref: '#/components/schemas/TimeRegistrationsByTaskResponse_inner'
-      type: array
-    TagTimeRegistrationResponse:
-      example:
-        tagConfigurationId: 0
-        tagValue: tagValue
-      properties:
-        tagConfigurationId:
-          format: int64
-          type: integer
-        tagValue:
-          type: string
-      required:
-        - tagConfigurationId
-      type: object
-    TagTimeRegistrationRequest:
-      example:
-        tagConfigurationId: 6
-        timeRegistrationId: 0
-        value: value
-      properties:
-        timeRegistrationId:
-          format: int64
-          type: integer
-        tagConfigurationId:
-          format: int64
-          type: integer
-        value:
-          type: string
-      required:
-        - tagConfigurationId
-        - timeRegistrationId
-      type: object
-    ImportTimeRegistrationRequest:
-      items:
-        $ref: '#/components/schemas/ImportTimeRegistrationRequest_inner'
-      type: array
-    ImportTimeRegistrationResponse:
-      items:
-        $ref: '#/components/schemas/ImportTimeRegistrationResponse_inner'
-      type: array
-    Duration:
-      description: "ISO 8601 formatted duration component <PnDTnHnMn.nS>. Each unit\
-        \ is optional, but at least one must be specified"
-      example: PT1H30M
-      format: duration
+    ImportTimeRegistrationStatus:
+      description: "The status of importing a time registration Valid values: * `VALID`\
+        \ - The time registration is valid and has been imported successfully * `PENDING`\
+        \ - The time registration is valid, but is awaiting the approval of the user.\
+        \ Used when a user imports data for another user. * `FAILED` - Something is\
+        \ wrong with the time registration, it has not been imported."
+      enum:
+        - VALID
+        - PENDING
+        - FAILED
       type: string
-    TagConfiguration:
-      example:
-        tagConfigurationId: 6
-        value: value
-      properties:
-        tagConfigurationId:
-          format: int64
-          type: integer
-        value:
-          type: string
-      required:
-        - tagConfigurationId
-      type: object
-    updateTagRegistration_request:
-      properties:
-        tagId:
-          format: int64
-          type: integer
-        value:
-          type: string
-      required:
-        - tagId
-        - value
-      type: object
-    TimeRegistrationsByTaskResponse_inner_timeRegistrations_inner:
-      example:
-        date: 2000-01-23
-        duration: PT1H30M
-        timeRegistrationId: 6
-        registered: 1
-        status: status
-      properties:
-        timeRegistrationId:
-          format: int64
-          type: integer
-        registered:
-          description: The registered time value as Unix milliseconds timestamp
-          format: int64
-          type: integer
-        date:
-          format: date
-          type: string
-        duration:
-          description: "ISO 8601 formatted duration component <PnDTnHnMn.nS>. Each\
-            \ unit is optional, but at least one must be specified"
-          example: PT1H30M
-          format: duration
-          type: string
-        status:
-          description: "Describes the status of the time registration (PENDING, VALID,\
-            \ INVALID)"
-          type: string
-      required:
-        - date
-        - duration
-        - registered
-        - status
-        - timeRegistrationId
-      type: object
-    TimeRegistrationsByTaskResponse_inner:
+    Task:
       example:
         taskDescription: taskDescription
         taskName: taskName
-        timeRegistrations:
-          - date: 2000-01-23
-            duration: PT1H30M
-            timeRegistrationId: 6
-            registered: 1
-            status: status
-          - date: 2000-01-23
-            duration: PT1H30M
-            timeRegistrationId: 6
-            registered: 1
-            status: status
         taskId: 0
       properties:
         taskId:
+          description: The unique id of this task
           format: int64
           type: integer
         taskName:
+          description: "The name of this task, which is suitable for display to the\
+            \ user."
           type: string
         taskDescription:
+          description: An optional description of this task.
+          type: string
+      required:
+        - taskId
+        - taskName
+      type: object
+    DayTimeRegistrations:
+      description: A collection of time registrations for a specific date.
+      example:
+        date: 2000-01-23
+        timeRegistrations:
+          - duration: PT1H30M
+            timeRegistrationId: 6
+            description: description
+            status: null
+            tags:
+              - tagConfigurationMetadata:
+                  tagConfigurationDescription: tagConfigurationDescription
+                  tagConfigurationId: 5
+                  tagConfigurationName: tagConfigurationName
+                  valueType: STRING
+                  cardinality: OPTIONAL
+                tagValue:
+                  tagId: 2
+                  tagValue: tagValue
+              - tagConfigurationMetadata:
+                  tagConfigurationDescription: tagConfigurationDescription
+                  tagConfigurationId: 5
+                  tagConfigurationName: tagConfigurationName
+                  valueType: STRING
+                  cardinality: OPTIONAL
+                tagValue:
+                  tagId: 2
+                  tagValue: tagValue
+          - duration: PT1H30M
+            timeRegistrationId: 6
+            description: description
+            status: null
+            tags:
+              - tagConfigurationMetadata:
+                  tagConfigurationDescription: tagConfigurationDescription
+                  tagConfigurationId: 5
+                  tagConfigurationName: tagConfigurationName
+                  valueType: STRING
+                  cardinality: OPTIONAL
+                tagValue:
+                  tagId: 2
+                  tagValue: tagValue
+              - tagConfigurationMetadata:
+                  tagConfigurationDescription: tagConfigurationDescription
+                  tagConfigurationId: 5
+                  tagConfigurationName: tagConfigurationName
+                  valueType: STRING
+                  cardinality: OPTIONAL
+                tagValue:
+                  tagId: 2
+                  tagValue: tagValue
+      properties:
+        date:
+          description: The date of all contained time registrations
+          format: date
           type: string
         timeRegistrations:
+          description: The time registrations for the specified date - can be empty.
           items:
-            $ref: '#/components/schemas/TimeRegistrationsByTaskResponse_inner_timeRegistrations_inner'
+            $ref: '#/components/schemas/TimeRegistration'
           type: array
+      required:
+        - date
+        - timeRegistrations
+      type: object
+    TimeRegistration:
+      example:
+        duration: PT1H30M
+        timeRegistrationId: 6
+        description: description
+        status: null
+        tags:
+          - tagConfigurationMetadata:
+              tagConfigurationDescription: tagConfigurationDescription
+              tagConfigurationId: 5
+              tagConfigurationName: tagConfigurationName
+              valueType: STRING
+              cardinality: OPTIONAL
+            tagValue:
+              tagId: 2
+              tagValue: tagValue
+          - tagConfigurationMetadata:
+              tagConfigurationDescription: tagConfigurationDescription
+              tagConfigurationId: 5
+              tagConfigurationName: tagConfigurationName
+              valueType: STRING
+              cardinality: OPTIONAL
+            tagValue:
+              tagId: 2
+              tagValue: tagValue
+      properties:
+        timeRegistrationId:
+          format: int64
+          type: integer
+        duration:
+          description: "ISO 8601 formatted duration component <PnDTnHnMn.nS>. Each\
+            \ unit is optional, but at least one must be specified"
+          example: PT1H30M
+          format: duration
+          type: string
+        status:
+          $ref: '#/components/schemas/TimeRegistrationStatus'
+        tags:
+          items:
+            $ref: '#/components/schemas/TimeRegistrationTag'
+          type: array
+        description:
+          type: string
+      required:
+        - duration
+        - status
+        - tags
+        - timeRegistrationId
       type: object
     ImportTimeRegistrationRequest_inner:
       example:
         date: 2000-01-23
         duration: PT1H30M
+        description: description
         userId: 0
         taskId: 6
         tags:
@@ -825,6 +1946,9 @@ components:
           format: int64
           type: integer
         taskId:
+          description: |
+            Associates the time registration with a task.
+            If not specified, then the `description` field must be a non-null value
           format: int64
           type: integer
         date:
@@ -838,28 +1962,27 @@ components:
           type: string
         tags:
           items:
-            $ref: '#/components/schemas/TagConfiguration'
+            $ref: '#/components/schemas/TagTimeRegistrationRequest'
           type: array
+        description:
+          type: string
       required:
         - date
         - duration
         - tags
-        - taskId
         - userId
       type: object
     ImportTimeRegistrationResponse_inner:
       example:
         timeRegistrationId: 0
         message: message
-        status: status
+        status: null
       properties:
         timeRegistrationId:
           format: int64
           type: integer
         status:
-          description: "Describes the status of importing the time registration (SUCCESS,\
-            \ PENDING, FAILED)"
-          type: string
+          $ref: '#/components/schemas/ImportTimeRegistrationStatus'
         message:
           description: Provides a description of the import status
           type: string
@@ -867,14 +1990,6 @@ components:
         - status
         - timeRegistrationId
       type: object
-    PeriodEnum:
-      type: string
-      enum:
-        - DAY
-        - WEEK
-        - MONTH
-      description: |
-       Valid values: * `day` - Only get tasks for the specified date * `week` - Get the tasks for the whole week (Monday to Sunday) of the specified date * `month` - Get the tasks for the whole month of the specified date
     TaskCreateResponse:
       items:
         $ref: '#/components/schemas/TaskCreateResponse_inner'
