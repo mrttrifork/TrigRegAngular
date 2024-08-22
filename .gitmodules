@@ -1,0 +1,4 @@
+[submodule "api/trireg2-api"]
+	path = api/trireg2-api
+	url = https://github.com/trifork/trireg2-api
+	branch = overview-changes

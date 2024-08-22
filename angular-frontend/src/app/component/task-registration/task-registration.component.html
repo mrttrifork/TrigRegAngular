@@ -1,10 +1,17 @@
-<div class="flex-row justify-space-between align-items-center">
-  <div>
-    {{ task.task.taskName }}
-  </div>
-  <div class="days">
-    @for (dailyRegistration of task.dailyRegistrations; track dailyRegistration) {
-      <app-time-registration-day [taskId]="task.task.taskId" [dayTimeRegistrations]="dailyRegistration"></app-time-registration-day>
-    }
-  </div>
-</div>
+<mat-card appearance="outlined">
+  <mat-card-content>
+    <div class="flex-row justify-space-between align-items-center">
+      <div>
+        @for (task of getTaskName(task.task.taskName); let index = $index; track task) {
+          <div [classList]="getMarginLeft(index)">{{ task }}</div>
+        }
+      </div>
+      <div class="flex-row flex-wrap-wrap">
+        @for (dailyRegistration of task.dailyRegistrations; track dailyRegistration) {
+          <app-time-registration-day [taskId]="task.task.taskId"
+                                     [dayTimeRegistrations]="dailyRegistration"></app-time-registration-day>
+        }
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

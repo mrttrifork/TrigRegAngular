@@ -1391,6 +1391,14 @@ mat-card.mat-mdc-card.mat-mdc-card-outlined {
 mat-card.mat-mdc-card.mat-mdc-card-outlined mat-card {
   background-color: #ecf0ff;
 }
+mat-card.mat-mdc-card.mat-mdc-card-outlined mat-card mat-card {
+  background-color: #d7e3ff;
+}
+.bottom-right-fab-button {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+}
 
 /* angular:styles/global:styles */
 /*# sourceMappingURL=styles.css.map */

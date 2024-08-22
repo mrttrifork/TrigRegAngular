@@ -221,6 +221,14 @@ paths:
           name: period
           schema:
             $ref: '#/components/schemas/OverviewPeriod'
+        - name: "extraTasks"
+          description: "An optional collection of extra tasks to include in the response, regardless of whether they are active or not"
+          in: query
+          schema:
+            type: array
+            items:
+              type: integer
+              format: int64
       responses:
         "200":
           content:

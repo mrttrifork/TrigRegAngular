@@ -4,7 +4,7 @@ TriReg2 User API
 
 - API version: 0.2.0
 
-- Build date: 2024-08-20T10:30:34.295836300+02:00[Europe/Copenhagen]
+- Build date: 2024-08-21T22:43:45.700872200+02:00[Europe/Copenhagen]
 
 - Generator version: 7.4.0
 

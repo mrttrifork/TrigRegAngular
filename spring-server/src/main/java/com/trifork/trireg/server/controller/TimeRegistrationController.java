@@ -5,6 +5,7 @@ import com.trifork.trireg.server.api.TimeRegistrationApi;
 import com.trifork.trireg.server.model.*;
 import com.trifork.trireg.server.service.TimeRegistrationService;
 import com.trifork.trireg.server.util.HTTPResponseUtil;
+import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,9 +36,9 @@ public class TimeRegistrationController implements TimeRegistrationApi {
     }
 
     @Override
-    public ResponseEntity<TimeRegistrationsByTaskResponse> getTaskTimeRegistrationsOverview(LocalDate date, com.trifork.trireg.server.model.OverviewPeriod period) {
+    public ResponseEntity<TimeRegistrationsByTaskResponse> getTaskTimeRegistrationsOverview(LocalDate date, com.trifork.trireg.server.model.OverviewPeriod period, List<Long> extraTasks) {
         OverviewPeriod periodEnum = period != null ? OverviewPeriod.fromValue(period.getValue()) : null;
-        TimeRegistrationsByTaskResponse taskTimeRegistrationsOverview = service.getTaskTimeRegistrationsOverview(date, periodEnum);
+        TimeRegistrationsByTaskResponse taskTimeRegistrationsOverview = service.getTaskTimeRegistrationsOverview(date, periodEnum, extraTasks);
         if (taskTimeRegistrationsOverview != null) {
             return HTTPResponseUtil.createOKResponse(taskTimeRegistrationsOverview);
         }

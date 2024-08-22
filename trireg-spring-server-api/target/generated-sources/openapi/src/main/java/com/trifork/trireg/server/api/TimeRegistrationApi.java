@@ -42,7 +42,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-20T10:30:37.943553100+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-21T22:43:49.173986300+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 @Validated
 @Tag(name = "TimeRegistration", description = "Tag for CRUD operations related to time registrations")
 public interface TimeRegistrationApi {
@@ -272,6 +272,7 @@ public interface TimeRegistrationApi {
      *
      * @param date The date to consider when fetching active tasks and time registrations (required)
      * @param period The time period to use when deciding in which time period tasks are considered active. Defaults to &#39;WEEK&#39;.  (optional)
+     * @param extraTasks An optional collection of extra tasks to include in the response, regardless of whether they are active or not (optional)
      * @return List of time registrations for the user grouped by task (status code 200)
      *         or Request contains an invalid time period value (status code 400)
      *         or JWT is missing or invalid (status code 401)
@@ -304,7 +305,8 @@ public interface TimeRegistrationApi {
     
     default ResponseEntity<TimeRegistrationsByTaskResponse> getTaskTimeRegistrationsOverview(
         @NotNull @Parameter(name = "date", description = "The date to consider when fetching active tasks and time registrations", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "date", required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-        @Parameter(name = "period", description = "The time period to use when deciding in which time period tasks are considered active. Defaults to 'WEEK'. ", in = ParameterIn.QUERY) @Valid @RequestParam(value = "period", required = false) OverviewPeriod period
+        @Parameter(name = "period", description = "The time period to use when deciding in which time period tasks are considered active. Defaults to 'WEEK'. ", in = ParameterIn.QUERY) @Valid @RequestParam(value = "period", required = false) OverviewPeriod period,
+        @Parameter(name = "extraTasks", description = "An optional collection of extra tasks to include in the response, regardless of whether they are active or not", in = ParameterIn.QUERY) @Valid @RequestParam(value = "extraTasks", required = false) List<Long> extraTasks
     ) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {

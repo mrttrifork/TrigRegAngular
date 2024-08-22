@@ -94,6 +94,7 @@ import {
   afterRender,
   allowSanitizationBypassAndThrow,
   animate,
+  animateChild,
   animationFrameScheduler,
   asapScheduler,
   assertInInjectionContext,
@@ -156,6 +157,7 @@ import {
   performanceMarkFeature,
   pipe,
   platformCore,
+  query,
   refCount,
   reflectComponentType,
   runInInjectionContext,
@@ -182,6 +184,7 @@ import {
   untracked,
   unwrapSafeValue,
   ɵsetClassDebugInfo,
+  ɵɵHostDirectivesFeature,
   ɵɵInheritDefinitionFeature,
   ɵɵInputTransformsFeature,
   ɵɵNgOnChangesFeature,
@@ -233,7 +236,7 @@ import {
   ɵɵtextInterpolate,
   ɵɵtextInterpolate1,
   ɵɵviewQuery
-} from "./chunk-SRSTSRY6.js";
+} from "./chunk-JPWGOBWI.js";
 
 // node_modules/@angular/common/fesm2022/http.mjs
 var HttpHandler = class {
@@ -4169,9 +4172,9 @@ var DefaultUrlSerializer = class {
   /** Converts a `UrlTree` into a url */
   serialize(tree2) {
     const segment = `/${serializeSegment(tree2.root, true)}`;
-    const query = serializeQueryParams(tree2.queryParams);
+    const query2 = serializeQueryParams(tree2.queryParams);
     const fragment = typeof tree2.fragment === `string` ? `#${encodeUriFragment(tree2.fragment)}` : "";
-    return `${segment}${query}${fragment}`;
+    return `${segment}${query2}${fragment}`;
   }
 };
 var DEFAULT_SERIALIZER = new DefaultUrlSerializer();
@@ -10724,7 +10727,7 @@ var _TimeRegistrationService = class _TimeRegistrationService {
       reportProgress
     });
   }
-  getTaskTimeRegistrationsOverview(date, period, observe = "body", reportProgress = false, options) {
+  getTaskTimeRegistrationsOverview(date, period, extraTasks, observe = "body", reportProgress = false, options) {
     if (date === null || date === void 0) {
       throw new Error("Required parameter date was null or undefined when calling getTaskTimeRegistrationsOverview.");
     }
@@ -10734,6 +10737,11 @@ var _TimeRegistrationService = class _TimeRegistrationService {
     }
     if (period !== void 0 && period !== null) {
       localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, period, "period");
+    }
+    if (extraTasks) {
+      extraTasks.forEach((element) => {
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, element, "extraTasks");
+      });
     }
     let localVarHeaders = this.defaultHeaders;
     let localVarCredential;
@@ -11551,11 +11559,11 @@ var _MediaMatcher = class _MediaMatcher {
    * Confirms the layout engine will trigger for the selector query provided and returns the
    * MediaQueryList for the query provided.
    */
-  matchMedia(query) {
+  matchMedia(query2) {
     if (this._platform.WEBKIT || this._platform.BLINK) {
-      createEmptyStyleRule(query, this._nonce);
+      createEmptyStyleRule(query2, this._nonce);
     }
-    return this._matchMedia(query);
+    return this._matchMedia(query2);
   }
 };
 _MediaMatcher.\u0275fac = function MediaMatcher_Factory(__ngFactoryType__) {
@@ -11585,8 +11593,8 @@ var MediaMatcher = _MediaMatcher;
     }]
   }], null);
 })();
-function createEmptyStyleRule(query, nonce) {
-  if (mediaQueriesForWebkitCompatibility.has(query)) {
+function createEmptyStyleRule(query2, nonce) {
+  if (mediaQueriesForWebkitCompatibility.has(query2)) {
     return;
   }
   try {
@@ -11599,17 +11607,17 @@ function createEmptyStyleRule(query, nonce) {
       document.head.appendChild(mediaQueryStyleNode);
     }
     if (mediaQueryStyleNode.sheet) {
-      mediaQueryStyleNode.sheet.insertRule(`@media ${query} {body{ }}`, 0);
-      mediaQueriesForWebkitCompatibility.add(query);
+      mediaQueryStyleNode.sheet.insertRule(`@media ${query2} {body{ }}`, 0);
+      mediaQueriesForWebkitCompatibility.add(query2);
     }
   } catch (e) {
     console.error(e);
   }
 }
-function noopMatchMedia(query) {
+function noopMatchMedia(query2) {
   return {
-    matches: query === "all" || query === "",
-    media: query,
+    matches: query2 === "all" || query2 === "",
+    media: query2,
     addListener: () => {
     },
     removeListener: () => {
@@ -11645,7 +11653,7 @@ var _BreakpointObserver = class _BreakpointObserver {
    */
   observe(value) {
     const queries = splitQueries(coerceArray(value));
-    const observables = queries.map((query) => this._registerQuery(query).observable);
+    const observables = queries.map((query2) => this._registerQuery(query2).observable);
     let stateObservable = combineLatest(observables);
     stateObservable = concat(stateObservable.pipe(take(1)), stateObservable.pipe(skip(1), debounceTime(0)));
     return stateObservable.pipe(map((breakpointStates) => {
@@ -11655,20 +11663,20 @@ var _BreakpointObserver = class _BreakpointObserver {
       };
       breakpointStates.forEach(({
         matches,
-        query
+        query: query2
       }) => {
         response.matches = response.matches || matches;
-        response.breakpoints[query] = matches;
+        response.breakpoints[query2] = matches;
       });
       return response;
     }));
   }
   /** Registers a specific query to be listened for. */
-  _registerQuery(query) {
-    if (this._queries.has(query)) {
-      return this._queries.get(query);
+  _registerQuery(query2) {
+    if (this._queries.has(query2)) {
+      return this._queries.get(query2);
     }
-    const mql = this._mediaMatcher.matchMedia(query);
+    const mql = this._mediaMatcher.matchMedia(query2);
     const queryObservable = new Observable((observer) => {
       const handler = (e) => this._zone.run(() => observer.next(e));
       mql.addListener(handler);
@@ -11678,14 +11686,14 @@ var _BreakpointObserver = class _BreakpointObserver {
     }).pipe(startWith(mql), map(({
       matches
     }) => ({
-      query,
+      query: query2,
       matches
     })), takeUntil(this._destroySubject));
     const output = {
       observable: queryObservable,
       mql
     };
-    this._queries.set(query, output);
+    this._queries.set(query2, output);
     return output;
   }
 };
@@ -11711,7 +11719,7 @@ var BreakpointObserver = _BreakpointObserver;
   }], null);
 })();
 function splitQueries(queries) {
-  return queries.map((query) => query.split(",")).reduce((a1, a2) => a1.concat(a2)).map((query) => query.trim());
+  return queries.map((query2) => query2.split(",")).reduce((a1, a2) => a1.concat(a2)).map((query2) => query2.trim());
 }
 var Breakpoints = {
   XSmall: "(max-width: 599.98px)",
@@ -16023,6 +16031,204 @@ var _RecycleViewRepeaterStrategy = class {
     return cachedView || null;
   }
 };
+var SelectionModel = class {
+  /** Selected values. */
+  get selected() {
+    if (!this._selected) {
+      this._selected = Array.from(this._selection.values());
+    }
+    return this._selected;
+  }
+  constructor(_multiple = false, initiallySelectedValues, _emitChanges = true, compareWith) {
+    this._multiple = _multiple;
+    this._emitChanges = _emitChanges;
+    this.compareWith = compareWith;
+    this._selection = /* @__PURE__ */ new Set();
+    this._deselectedToEmit = [];
+    this._selectedToEmit = [];
+    this.changed = new Subject();
+    if (initiallySelectedValues && initiallySelectedValues.length) {
+      if (_multiple) {
+        initiallySelectedValues.forEach((value) => this._markSelected(value));
+      } else {
+        this._markSelected(initiallySelectedValues[0]);
+      }
+      this._selectedToEmit.length = 0;
+    }
+  }
+  /**
+   * Selects a value or an array of values.
+   * @param values The values to select
+   * @return Whether the selection changed as a result of this call
+   * @breaking-change 16.0.0 make return type boolean
+   */
+  select(...values) {
+    this._verifyValueAssignment(values);
+    values.forEach((value) => this._markSelected(value));
+    const changed = this._hasQueuedChanges();
+    this._emitChangeEvent();
+    return changed;
+  }
+  /**
+   * Deselects a value or an array of values.
+   * @param values The values to deselect
+   * @return Whether the selection changed as a result of this call
+   * @breaking-change 16.0.0 make return type boolean
+   */
+  deselect(...values) {
+    this._verifyValueAssignment(values);
+    values.forEach((value) => this._unmarkSelected(value));
+    const changed = this._hasQueuedChanges();
+    this._emitChangeEvent();
+    return changed;
+  }
+  /**
+   * Sets the selected values
+   * @param values The new selected values
+   * @return Whether the selection changed as a result of this call
+   * @breaking-change 16.0.0 make return type boolean
+   */
+  setSelection(...values) {
+    this._verifyValueAssignment(values);
+    const oldValues = this.selected;
+    const newSelectedSet = new Set(values);
+    values.forEach((value) => this._markSelected(value));
+    oldValues.filter((value) => !newSelectedSet.has(this._getConcreteValue(value, newSelectedSet))).forEach((value) => this._unmarkSelected(value));
+    const changed = this._hasQueuedChanges();
+    this._emitChangeEvent();
+    return changed;
+  }
+  /**
+   * Toggles a value between selected and deselected.
+   * @param value The value to toggle
+   * @return Whether the selection changed as a result of this call
+   * @breaking-change 16.0.0 make return type boolean
+   */
+  toggle(value) {
+    return this.isSelected(value) ? this.deselect(value) : this.select(value);
+  }
+  /**
+   * Clears all of the selected values.
+   * @param flushEvent Whether to flush the changes in an event.
+   *   If false, the changes to the selection will be flushed along with the next event.
+   * @return Whether the selection changed as a result of this call
+   * @breaking-change 16.0.0 make return type boolean
+   */
+  clear(flushEvent = true) {
+    this._unmarkAll();
+    const changed = this._hasQueuedChanges();
+    if (flushEvent) {
+      this._emitChangeEvent();
+    }
+    return changed;
+  }
+  /**
+   * Determines whether a value is selected.
+   */
+  isSelected(value) {
+    return this._selection.has(this._getConcreteValue(value));
+  }
+  /**
+   * Determines whether the model does not have a value.
+   */
+  isEmpty() {
+    return this._selection.size === 0;
+  }
+  /**
+   * Determines whether the model has a value.
+   */
+  hasValue() {
+    return !this.isEmpty();
+  }
+  /**
+   * Sorts the selected values based on a predicate function.
+   */
+  sort(predicate) {
+    if (this._multiple && this.selected) {
+      this._selected.sort(predicate);
+    }
+  }
+  /**
+   * Gets whether multiple values can be selected.
+   */
+  isMultipleSelection() {
+    return this._multiple;
+  }
+  /** Emits a change event and clears the records of selected and deselected values. */
+  _emitChangeEvent() {
+    this._selected = null;
+    if (this._selectedToEmit.length || this._deselectedToEmit.length) {
+      this.changed.next({
+        source: this,
+        added: this._selectedToEmit,
+        removed: this._deselectedToEmit
+      });
+      this._deselectedToEmit = [];
+      this._selectedToEmit = [];
+    }
+  }
+  /** Selects a value. */
+  _markSelected(value) {
+    value = this._getConcreteValue(value);
+    if (!this.isSelected(value)) {
+      if (!this._multiple) {
+        this._unmarkAll();
+      }
+      if (!this.isSelected(value)) {
+        this._selection.add(value);
+      }
+      if (this._emitChanges) {
+        this._selectedToEmit.push(value);
+      }
+    }
+  }
+  /** Deselects a value. */
+  _unmarkSelected(value) {
+    value = this._getConcreteValue(value);
+    if (this.isSelected(value)) {
+      this._selection.delete(value);
+      if (this._emitChanges) {
+        this._deselectedToEmit.push(value);
+      }
+    }
+  }
+  /** Clears out the selected values. */
+  _unmarkAll() {
+    if (!this.isEmpty()) {
+      this._selection.forEach((value) => this._unmarkSelected(value));
+    }
+  }
+  /**
+   * Verifies the value assignment and throws an error if the specified value array is
+   * including multiple values while the selection model is not supporting multiple values.
+   */
+  _verifyValueAssignment(values) {
+    if (values.length > 1 && !this._multiple && (typeof ngDevMode === "undefined" || ngDevMode)) {
+      throw getMultipleValuesInSingleSelectionError();
+    }
+  }
+  /** Whether there are queued up change to be emitted. */
+  _hasQueuedChanges() {
+    return !!(this._deselectedToEmit.length || this._selectedToEmit.length);
+  }
+  /** Returns a value that is comparable to inputValue by applying compareWith function, returns the same inputValue otherwise. */
+  _getConcreteValue(inputValue, selection) {
+    if (!this.compareWith) {
+      return inputValue;
+    } else {
+      selection = selection ?? this._selection;
+      for (let selectedValue of selection) {
+        if (this.compareWith(inputValue, selectedValue)) {
+          return selectedValue;
+        }
+      }
+      return inputValue;
+    }
+  }
+};
+function getMultipleValuesInSingleSelectionError() {
+  return Error("Cannot pass multiple values into SelectionModel with single-value mode.");
+}
 var _UniqueSelectionDispatcher = class _UniqueSelectionDispatcher {
   constructor() {
     this._listeners = [];
@@ -39247,6 +39453,51 @@ var MatButtonModule = _MatButtonModule;
   }], null, null);
 })();
 
+// src/app/util/DurationConverter.ts
+var DurationConverter = class _DurationConverter {
+  static convertToISO8601Duration(humanDuration) {
+    const hours = humanDuration.replace(/,/g, ".");
+    const hoursAsNumber = +hours;
+    if (isNaN(hoursAsNumber)) {
+      return void 0;
+    }
+    if (hoursAsNumber) {
+      const duration = Duration.fromObject({
+        minutes: +hoursAsNumber * 60
+      });
+      return duration.toISO();
+    }
+    return void 0;
+  }
+  static getMinutes(iso8601Duration) {
+    const fromISO = Duration.fromISO(iso8601Duration);
+    return fromISO.as("minutes");
+  }
+  static toHumanFromMinutes(minutes) {
+    const fromMinutes = Duration.fromObject({ minutes });
+    return _DurationConverter.convertToHumanDuration(fromMinutes.toISO());
+  }
+  static convertToHumanDuration(iso8601Duration) {
+    const fromISO = Duration.fromISO(iso8601Duration);
+    return fromISO.as("hours").toLocaleString("da-DK", {
+      maximumFractionDigits: 1,
+      minimumFractionDigits: 1
+    });
+  }
+  static isValidHumanDuration(humanDuration) {
+    const hours = humanDuration.replace(/,/g, ".");
+    const hoursAsNumber = +hours;
+    if (isNaN(hoursAsNumber)) {
+      return false;
+    }
+    const hoursAsMinutes = +hoursAsNumber * 60;
+    if (hoursAsMinutes < 0 || hoursAsMinutes > 1440) {
+      return false;
+    }
+    return true;
+  }
+};
+
 // node_modules/@angular/core/fesm2022/rxjs-interop.mjs
 function toSignal(source, options) {
   ngDevMode && assertNotInReactiveContext(toSignal, "Invoking `toSignal` causes new subscriptions every time. Consider moving `toSignal` outside of the reactive context and read the signal value where needed.");
@@ -39309,53 +39560,32 @@ function makeToSignalEqual(userEquality = Object.is) {
   return (a, b) => a.kind === 1 && b.kind === 1 && userEquality(a.value, b.value);
 }
 
-// src/app/util/DurationConverter.ts
-var DurationConverter = class {
-  static convertToISO8601Duration(humanDuration) {
-    const hours = humanDuration.replace(/,/g, ".");
-    const hoursAsNumber = +hours;
-    if (isNaN(hoursAsNumber)) {
-      return void 0;
-    }
-    if (hoursAsNumber) {
-      const duration = Duration.fromObject({
-        minutes: +hoursAsNumber * 60
-      });
-      return duration.toISO();
-    }
-    return void 0;
+// src/app/service/total-time.service.ts
+var _TotalTimeService = class _TotalTimeService {
+  constructor() {
+    this.subject = new BehaviorSubject({
+      taskTimeRegistrations: [],
+      tasklessTimeRegistrations: []
+    });
   }
-  static getMinutes(iso8601Duration) {
-    const fromISO = Duration.fromISO(iso8601Duration);
-    return fromISO.as("minutes");
+  getObservable() {
+    return this.subject.asObservable();
   }
-  static convertToHumanDuration(iso8601Duration) {
-    const fromISO = Duration.fromISO(iso8601Duration);
-    const hours = fromISO.hours;
-    const minutes = fromISO.minutes;
-    const minutesAsHours = minutes ? minutes / 6 : void 0;
-    if (hours && minutesAsHours) {
-      return `${hours},${minutesAsHours}`;
-    } else if (hours) {
-      return `${hours}`;
-    } else if (minutesAsHours) {
-      return `0,${minutesAsHours}`;
-    }
-    return "";
+  next(value) {
+    this.subject.next(value);
   }
-  static isValidHumanDuration(humanDuration) {
-    const hours = humanDuration.replace(/,/g, ".");
-    const hoursAsNumber = +hours;
-    if (isNaN(hoursAsNumber)) {
-      return false;
-    }
-    const hoursAsMinutes = +hoursAsNumber * 60;
-    if (hoursAsMinutes < 0 || hoursAsMinutes > 1440) {
-      return false;
-    }
-    return true;
+  patch() {
+    this.subject.next({
+      taskTimeRegistrations: this.subject.value.taskTimeRegistrations,
+      tasklessTimeRegistrations: this.subject.value.tasklessTimeRegistrations
+    });
   }
 };
+_TotalTimeService.\u0275fac = function TotalTimeService_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _TotalTimeService)();
+};
+_TotalTimeService.\u0275prov = /* @__PURE__ */ \u0275\u0275defineInjectable({ token: _TotalTimeService, factory: _TotalTimeService.\u0275fac, providedIn: "root" });
+var TotalTimeService = _TotalTimeService;
 
 // src/app/component/time-registration-day/time-registration-day.component.ts
 function TimeRegistrationDayComponent_Conditional_6_Template(rf, ctx) {
@@ -39373,6 +39603,7 @@ function TimeRegistrationDayComponent_Conditional_6_Template(rf, ctx) {
 var _TimeRegistrationDayComponent = class _TimeRegistrationDayComponent {
   constructor() {
     this.timeRegistrationService = inject(TimeRegistrationService);
+    this.totalTimeService = inject(TotalTimeService);
     this.dayRegistrationFormControl = new FormControl("", {
       updateOn: "blur",
       validators: [
@@ -39397,7 +39628,8 @@ var _TimeRegistrationDayComponent = class _TimeRegistrationDayComponent {
           const newRegistration = {
             date: this.dayTimeRegistrations.date,
             duration: formattedTimeChange,
-            taskId: this.taskId
+            taskId: this.taskId,
+            description: this.taskDescription
           };
           const response = yield firstValueFrom(this.timeRegistrationService.addTimeRegistrationForUser(newRegistration));
           const newTimeRegistration = __spreadValues(__spreadValues({}, newRegistration), {
@@ -39422,6 +39654,7 @@ var _TimeRegistrationDayComponent = class _TimeRegistrationDayComponent {
             this.dayTimeRegistrations.timeRegistrations.splice(0, 1);
           }
         }
+        this.totalTimeService.patch();
       }
     }));
   }
@@ -39446,7 +39679,7 @@ var _TimeRegistrationDayComponent = class _TimeRegistrationDayComponent {
 _TimeRegistrationDayComponent.\u0275fac = function TimeRegistrationDayComponent_Factory(__ngFactoryType__) {
   return new (__ngFactoryType__ || _TimeRegistrationDayComponent)();
 };
-_TimeRegistrationDayComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _TimeRegistrationDayComponent, selectors: [["app-time-registration-day"]], inputs: { taskId: "taskId", dayTimeRegistrations: "dayTimeRegistrations" }, standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 7, vars: 4, consts: [["matInput", "", "placeholder", "hh,mm", 3, "formControl"]], template: function TimeRegistrationDayComponent_Template(rf, ctx) {
+_TimeRegistrationDayComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _TimeRegistrationDayComponent, selectors: [["app-time-registration-day"]], inputs: { taskId: "taskId", taskDescription: "taskDescription", dayTimeRegistrations: "dayTimeRegistrations" }, standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 7, vars: 4, consts: [["matInput", "", "placeholder", "hh,mm", 3, "formControl"]], template: function TimeRegistrationDayComponent_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275elementStart(0, "mat-form-field")(1, "mat-label");
     \u0275\u0275text(2);
@@ -39482,90 +39715,79 @@ _TimeRegistrationDayComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComp
 ], styles: ["\n\nmat-form-field[_ngcontent-%COMP%] {\n  width: 5rem;\n}\n/*# sourceMappingURL=time-registration-day.component.css.map */"] });
 var TimeRegistrationDayComponent = _TimeRegistrationDayComponent;
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TimeRegistrationDayComponent, { className: "TimeRegistrationDayComponent", filePath: "src\\app\\component\\time-registration-day\\time-registration-day.component.ts", lineNumber: 22 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TimeRegistrationDayComponent, { className: "TimeRegistrationDayComponent", filePath: "src\\app\\component\\time-registration-day\\time-registration-day.component.ts", lineNumber: 23 });
 })();
 
 // src/app/component/total-line/total-line.component.ts
-function TotalLineComponent_Conditional_4_For_1_Template(rf, ctx) {
+function TotalLineComponent_For_5_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 2)(1, "p");
+    \u0275\u0275elementStart(0, "div", 2)(1, "span");
     \u0275\u0275text(2);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(3, "p");
+    \u0275\u0275elementStart(3, "span");
     \u0275\u0275text(4);
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(5, "p");
-    \u0275\u0275text(6);
     \u0275\u0275elementEnd()();
   }
   if (rf & 2) {
-    const entry_r1 = ctx.$implicit;
-    const ctx_r1 = \u0275\u0275nextContext(2);
-    \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(ctx_r1.DateTime.fromISO(entry_r1[0]).toFormat("dd-MM"));
-    \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(ctx_r1.DateTime.fromISO(entry_r1[0]).toFormat("EEE"));
-    \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(entry_r1[1]);
-  }
-}
-function TotalLineComponent_Conditional_4_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275repeaterCreate(0, TotalLineComponent_Conditional_4_For_1_Template, 7, 3, "div", 2, \u0275\u0275repeaterTrackByIdentity);
-  }
-  if (rf & 2) {
+    const dateAndMinutes_r1 = ctx.$implicit;
     const ctx_r1 = \u0275\u0275nextContext();
-    \u0275\u0275repeater(ctx_r1.Object.entries(ctx));
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(ctx_r1.formatDanishDate(dateAndMinutes_r1.date));
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(ctx_r1.DurationConverter.toHumanFromMinutes(dateAndMinutes_r1.minutes));
   }
 }
 var _TotalLineComponent = class _TotalLineComponent {
   constructor() {
-    this.dateToMinuteSignal = signal(void 0);
-    this.Object = Object;
-    this.DateTime = DateTime;
-  }
-  get taskResponse() {
-    return this._taskResponse;
-  }
-  set taskResponse(value) {
-    this._taskResponse = value;
-    this.mapTaskToDates();
-  }
-  mapTaskToDates() {
-    const dateToMinutes = this.taskResponse?.taskTimeRegistrations.reduce((sum, currentValue) => {
-      for (const dayTimeRegistrations of currentValue.dailyRegistrations) {
-        const date = dayTimeRegistrations.date;
-        if (!sum[date]) {
-          sum[date] = 0;
-        }
-        for (const timeRegistrations of dayTimeRegistrations.timeRegistrations) {
-          const minutes = DurationConverter.getMinutes(timeRegistrations.duration);
-          sum[date] = sum[date] + minutes;
-        }
+    this.totalTimeService = inject(TotalTimeService);
+    this.subscription = toSignal(this.totalTimeService.getObservable());
+    this.dateToMinuteSignal = computed(() => {
+      const subs = this.subscription();
+      if (!subs) {
+        return [];
       }
-      return sum;
-    }, {});
-    if (dateToMinutes) {
-      this.dateToMinuteSignal.set(dateToMinutes);
-    }
+      const dateToMinutes = subs.taskTimeRegistrations.reduce((sum, currentValue) => {
+        for (const dayTimeRegistrations of currentValue.dailyRegistrations) {
+          const date = dayTimeRegistrations.date;
+          if (!sum[date]) {
+            sum[date] = 0;
+          }
+          for (const timeRegistrations of dayTimeRegistrations.timeRegistrations) {
+            const minutes = DurationConverter.getMinutes(timeRegistrations.duration);
+            sum[date] = sum[date] + minutes;
+          }
+        }
+        return sum;
+      }, {});
+      return Object.entries(dateToMinutes).map(([key, value]) => {
+        return {
+          date: key,
+          minutes: value
+        };
+      });
+    });
+    this.Object = Object;
+    this.DurationConverter = DurationConverter;
+  }
+  formatDanishDate(isoDate) {
+    return DateTime.fromISO(isoDate).toFormat("dd-MM");
   }
 };
 _TotalLineComponent.\u0275fac = function TotalLineComponent_Factory(__ngFactoryType__) {
   return new (__ngFactoryType__ || _TotalLineComponent)();
 };
-_TotalLineComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _TotalLineComponent, selectors: [["app-total-line"]], inputs: { taskResponse: "taskResponse" }, standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 5, vars: 1, consts: [[1, "flex-row", "justify-space-between", "align-items-center"], [1, "days"], [1, "flex-column", "no-gap"]], template: function TotalLineComponent_Template(rf, ctx) {
+_TotalLineComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _TotalLineComponent, selectors: [["app-total-line"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 6, vars: 0, consts: [[1, "flex-row", "justify-space-between", "align-items-center"], [1, "flex-row", "flex-wrap-wrap"], [1, "flex-column", "half-gap", 2, "width", "5rem"]], template: function TotalLineComponent_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275elementStart(0, "div", 0)(1, "div");
     \u0275\u0275text(2, " Total time ");
     \u0275\u0275elementEnd();
     \u0275\u0275elementStart(3, "div", 1);
-    \u0275\u0275template(4, TotalLineComponent_Conditional_4_Template, 2, 0);
+    \u0275\u0275repeaterCreate(4, TotalLineComponent_For_5_Template, 5, 2, "div", 2, \u0275\u0275repeaterTrackByIdentity);
     \u0275\u0275elementEnd()();
   }
   if (rf & 2) {
-    let tmp_0_0;
     \u0275\u0275advance(4);
-    \u0275\u0275conditional((tmp_0_0 = ctx.dateToMinuteSignal()) ? 4 : -1, tmp_0_0);
+    \u0275\u0275repeater(ctx.dateToMinuteSignal());
   }
 }, dependencies: [
   MatFormFieldModule,
@@ -39574,7 +39796,7 @@ _TotalLineComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ ty
 ], styles: ["\n\n.days[_ngcontent-%COMP%] {\n  display: flex;\n  gap: 1rem;\n  flex-wrap: wrap;\n  margin-right: 1rem;\n}\n.days[_ngcontent-%COMP%]    > mat-form-field[_ngcontent-%COMP%] {\n  width: 5rem;\n}\n/*# sourceMappingURL=total-line.component.css.map */"] });
 var TotalLineComponent = _TotalLineComponent;
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TotalLineComponent, { className: "TotalLineComponent", filePath: "src\\app\\component\\total-line\\total-line.component.ts", lineNumber: 24 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TotalLineComponent, { className: "TotalLineComponent", filePath: "src\\app\\component\\total-line\\total-line.component.ts", lineNumber: 30 });
 })();
 
 // node_modules/@angular/material/fesm2022/card.mjs
@@ -40049,81 +40271,2603 @@ var MatCardModule = _MatCardModule;
 // src/app/component/task-registration/task-registration.component.ts
 function TaskRegistrationComponent_For_5_Template(rf, ctx) {
   if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 2);
+    \u0275\u0275text(1);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const task_r1 = ctx.$implicit;
+    const \u0275$index_9_r2 = ctx.$index;
+    const ctx_r2 = \u0275\u0275nextContext();
+    \u0275\u0275property("classList", ctx_r2.getMarginLeft(\u0275$index_9_r2));
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate(task_r1);
+  }
+}
+function TaskRegistrationComponent_For_8_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275element(0, "app-time-registration-day", 4);
+  }
+  if (rf & 2) {
+    const dailyRegistration_r4 = ctx.$implicit;
+    const ctx_r2 = \u0275\u0275nextContext();
+    \u0275\u0275property("taskId", ctx_r2.task.task.taskId)("dayTimeRegistrations", dailyRegistration_r4);
+  }
+}
+var _TaskRegistrationComponent = class _TaskRegistrationComponent {
+  getTaskName(taskName) {
+    return taskName.split(" / ");
+  }
+  getMarginLeft(index) {
+    return [`ml-${index}`];
+  }
+};
+_TaskRegistrationComponent.\u0275fac = function TaskRegistrationComponent_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _TaskRegistrationComponent)();
+};
+_TaskRegistrationComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _TaskRegistrationComponent, selectors: [["app-task-registration"]], inputs: { task: "task" }, standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 9, vars: 0, consts: [["appearance", "outlined"], [1, "flex-row", "justify-space-between", "align-items-center"], [3, "classList"], [1, "flex-row", "flex-wrap-wrap"], [3, "taskId", "dayTimeRegistrations"]], template: function TaskRegistrationComponent_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "mat-card", 0)(1, "mat-card-content")(2, "div", 1)(3, "div");
+    \u0275\u0275repeaterCreate(4, TaskRegistrationComponent_For_5_Template, 2, 2, "div", 2, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(6, "div", 3);
+    \u0275\u0275repeaterCreate(7, TaskRegistrationComponent_For_8_Template, 1, 2, "app-time-registration-day", 4, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275elementEnd()()()();
+  }
+  if (rf & 2) {
+    \u0275\u0275advance(4);
+    \u0275\u0275repeater(ctx.getTaskName(ctx.task.task.taskName));
+    \u0275\u0275advance(3);
+    \u0275\u0275repeater(ctx.task.dailyRegistrations);
+  }
+}, dependencies: [
+  ReactiveFormsModule,
+  TimeRegistrationDayComponent,
+  MatCardModule,
+  MatCard,
+  MatCardContent
+], styles: ["\n\n.ml-1[_ngcontent-%COMP%] {\n  margin-left: 1rem;\n}\n.ml-2[_ngcontent-%COMP%] {\n  margin-left: 2rem;\n}\n.ml-3[_ngcontent-%COMP%] {\n  margin-left: 3rem;\n}\n.ml-4[_ngcontent-%COMP%] {\n  margin-left: 4rem;\n}\n.ml-5[_ngcontent-%COMP%] {\n  margin-left: 5rem;\n}\n/*# sourceMappingURL=task-registration.component.css.map */"] });
+var TaskRegistrationComponent = _TaskRegistrationComponent;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TaskRegistrationComponent, { className: "TaskRegistrationComponent", filePath: "src\\app\\component\\task-registration\\task-registration.component.ts", lineNumber: 24 });
+})();
+
+// src/app/component/unregistered-task-registration/unregistered-task-registration.component.ts
+function UnregisteredTaskRegistrationComponent_For_5_Template(rf, ctx) {
+  if (rf & 1) {
     \u0275\u0275element(0, "app-time-registration-day", 2);
   }
   if (rf & 2) {
     const dailyRegistration_r1 = ctx.$implicit;
     const ctx_r1 = \u0275\u0275nextContext();
-    \u0275\u0275property("taskId", ctx_r1.task.task.taskId)("dayTimeRegistrations", dailyRegistration_r1);
+    \u0275\u0275property("dayTimeRegistrations", dailyRegistration_r1)("taskDescription", ctx_r1.task.taskDescription);
   }
 }
-var _TaskRegistrationComponent = class _TaskRegistrationComponent {
+var _UnregisteredTaskRegistrationComponent = class _UnregisteredTaskRegistrationComponent {
 };
-_TaskRegistrationComponent.\u0275fac = function TaskRegistrationComponent_Factory(__ngFactoryType__) {
-  return new (__ngFactoryType__ || _TaskRegistrationComponent)();
+_UnregisteredTaskRegistrationComponent.\u0275fac = function UnregisteredTaskRegistrationComponent_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _UnregisteredTaskRegistrationComponent)();
 };
-_TaskRegistrationComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _TaskRegistrationComponent, selectors: [["app-task-registration"]], inputs: { task: "task" }, standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 6, vars: 1, consts: [[1, "flex-row", "justify-space-between", "align-items-center"], [1, "days"], [3, "taskId", "dayTimeRegistrations"]], template: function TaskRegistrationComponent_Template(rf, ctx) {
+_UnregisteredTaskRegistrationComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _UnregisteredTaskRegistrationComponent, selectors: [["app-unregistered-task-registration"]], inputs: { task: "task" }, standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 6, vars: 1, consts: [[1, "flex-row", "justify-space-between", "align-items-center"], [1, "flex-row", "flex-wrap-wrap"], [3, "dayTimeRegistrations", "taskDescription"]], template: function UnregisteredTaskRegistrationComponent_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275elementStart(0, "div", 0)(1, "div");
     \u0275\u0275text(2);
     \u0275\u0275elementEnd();
     \u0275\u0275elementStart(3, "div", 1);
-    \u0275\u0275repeaterCreate(4, TaskRegistrationComponent_For_5_Template, 1, 2, "app-time-registration-day", 2, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275repeaterCreate(4, UnregisteredTaskRegistrationComponent_For_5_Template, 1, 2, "app-time-registration-day", 2, \u0275\u0275repeaterTrackByIdentity);
     \u0275\u0275elementEnd()();
   }
   if (rf & 2) {
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate1(" ", ctx.task.task.taskName, " ");
+    \u0275\u0275textInterpolate1(" ", ctx.task.taskDescription, " ");
     \u0275\u0275advance(2);
     \u0275\u0275repeater(ctx.task.dailyRegistrations);
   }
-}, dependencies: [
-  ReactiveFormsModule,
-  TimeRegistrationDayComponent
-], styles: ["\n\n.days[_ngcontent-%COMP%] {\n  display: flex;\n  gap: 1rem;\n  flex-wrap: wrap;\n}\n/*# sourceMappingURL=task-registration.component.css.map */"] });
-var TaskRegistrationComponent = _TaskRegistrationComponent;
+}, dependencies: [TimeRegistrationDayComponent] });
+var UnregisteredTaskRegistrationComponent = _UnregisteredTaskRegistrationComponent;
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TaskRegistrationComponent, { className: "TaskRegistrationComponent", filePath: "src\\app\\component\\task-registration\\task-registration.component.ts", lineNumber: 22 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(UnregisteredTaskRegistrationComponent, { className: "UnregisteredTaskRegistrationComponent", filePath: "src\\app\\component\\unregistered-task-registration\\unregistered-task-registration.component.ts", lineNumber: 14 });
 })();
 
-// src/app/component/home/home.component.ts
-function HomeComponent_For_10_Template(rf, ctx) {
+// node_modules/@angular/cdk/fesm2022/dialog.mjs
+function CdkDialogContainer_ng_template_0_Template(rf, ctx) {
+}
+var DialogConfig = class {
+  constructor() {
+    this.role = "dialog";
+    this.panelClass = "";
+    this.hasBackdrop = true;
+    this.backdropClass = "";
+    this.disableClose = false;
+    this.width = "";
+    this.height = "";
+    this.data = null;
+    this.ariaDescribedBy = null;
+    this.ariaLabelledBy = null;
+    this.ariaLabel = null;
+    this.ariaModal = true;
+    this.autoFocus = "first-tabbable";
+    this.restoreFocus = true;
+    this.closeOnNavigation = true;
+    this.closeOnDestroy = true;
+    this.closeOnOverlayDetachments = true;
+  }
+};
+function throwDialogContentAlreadyAttachedError() {
+  throw Error("Attempting to attach dialog content after content is already attached");
+}
+var _CdkDialogContainer = class _CdkDialogContainer extends BasePortalOutlet {
+  constructor(_elementRef, _focusTrapFactory, _document2, _config, _interactivityChecker, _ngZone, _overlayRef, _focusMonitor) {
+    super();
+    this._elementRef = _elementRef;
+    this._focusTrapFactory = _focusTrapFactory;
+    this._config = _config;
+    this._interactivityChecker = _interactivityChecker;
+    this._ngZone = _ngZone;
+    this._overlayRef = _overlayRef;
+    this._focusMonitor = _focusMonitor;
+    this._platform = inject(Platform);
+    this._focusTrap = null;
+    this._elementFocusedBeforeDialogWasOpened = null;
+    this._closeInteractionType = null;
+    this._ariaLabelledByQueue = [];
+    this._changeDetectorRef = inject(ChangeDetectorRef);
+    this._injector = inject(Injector);
+    this._isDestroyed = false;
+    this.attachDomPortal = (portal) => {
+      if (this._portalOutlet.hasAttached() && (typeof ngDevMode === "undefined" || ngDevMode)) {
+        throwDialogContentAlreadyAttachedError();
+      }
+      const result = this._portalOutlet.attachDomPortal(portal);
+      this._contentAttached();
+      return result;
+    };
+    this._document = _document2;
+    if (this._config.ariaLabelledBy) {
+      this._ariaLabelledByQueue.push(this._config.ariaLabelledBy);
+    }
+  }
+  _addAriaLabelledBy(id) {
+    this._ariaLabelledByQueue.push(id);
+    this._changeDetectorRef.markForCheck();
+  }
+  _removeAriaLabelledBy(id) {
+    const index = this._ariaLabelledByQueue.indexOf(id);
+    if (index > -1) {
+      this._ariaLabelledByQueue.splice(index, 1);
+      this._changeDetectorRef.markForCheck();
+    }
+  }
+  _contentAttached() {
+    this._initializeFocusTrap();
+    this._handleBackdropClicks();
+    this._captureInitialFocus();
+  }
+  /**
+   * Can be used by child classes to customize the initial focus
+   * capturing behavior (e.g. if it's tied to an animation).
+   */
+  _captureInitialFocus() {
+    this._trapFocus();
+  }
+  ngOnDestroy() {
+    this._isDestroyed = true;
+    this._restoreFocus();
+  }
+  /**
+   * Attach a ComponentPortal as content to this dialog container.
+   * @param portal Portal to be attached as the dialog content.
+   */
+  attachComponentPortal(portal) {
+    if (this._portalOutlet.hasAttached() && (typeof ngDevMode === "undefined" || ngDevMode)) {
+      throwDialogContentAlreadyAttachedError();
+    }
+    const result = this._portalOutlet.attachComponentPortal(portal);
+    this._contentAttached();
+    return result;
+  }
+  /**
+   * Attach a TemplatePortal as content to this dialog container.
+   * @param portal Portal to be attached as the dialog content.
+   */
+  attachTemplatePortal(portal) {
+    if (this._portalOutlet.hasAttached() && (typeof ngDevMode === "undefined" || ngDevMode)) {
+      throwDialogContentAlreadyAttachedError();
+    }
+    const result = this._portalOutlet.attachTemplatePortal(portal);
+    this._contentAttached();
+    return result;
+  }
+  // TODO(crisbeto): this shouldn't be exposed, but there are internal references to it.
+  /** Captures focus if it isn't already inside the dialog. */
+  _recaptureFocus() {
+    if (!this._containsFocus()) {
+      this._trapFocus();
+    }
+  }
+  /**
+   * Focuses the provided element. If the element is not focusable, it will add a tabIndex
+   * attribute to forcefully focus it. The attribute is removed after focus is moved.
+   * @param element The element to focus.
+   */
+  _forceFocus(element, options) {
+    if (!this._interactivityChecker.isFocusable(element)) {
+      element.tabIndex = -1;
+      this._ngZone.runOutsideAngular(() => {
+        const callback = () => {
+          element.removeEventListener("blur", callback);
+          element.removeEventListener("mousedown", callback);
+          element.removeAttribute("tabindex");
+        };
+        element.addEventListener("blur", callback);
+        element.addEventListener("mousedown", callback);
+      });
+    }
+    element.focus(options);
+  }
+  /**
+   * Focuses the first element that matches the given selector within the focus trap.
+   * @param selector The CSS selector for the element to set focus to.
+   */
+  _focusByCssSelector(selector, options) {
+    let elementToFocus = this._elementRef.nativeElement.querySelector(selector);
+    if (elementToFocus) {
+      this._forceFocus(elementToFocus, options);
+    }
+  }
+  /**
+   * Moves the focus inside the focus trap. When autoFocus is not set to 'dialog', if focus
+   * cannot be moved then focus will go to the dialog container.
+   */
+  _trapFocus() {
+    if (this._isDestroyed) {
+      return;
+    }
+    afterNextRender(() => {
+      const element = this._elementRef.nativeElement;
+      switch (this._config.autoFocus) {
+        case false:
+        case "dialog":
+          if (!this._containsFocus()) {
+            element.focus();
+          }
+          break;
+        case true:
+        case "first-tabbable":
+          const focusedSuccessfully = this._focusTrap?.focusInitialElement();
+          if (!focusedSuccessfully) {
+            this._focusDialogContainer();
+          }
+          break;
+        case "first-heading":
+          this._focusByCssSelector('h1, h2, h3, h4, h5, h6, [role="heading"]');
+          break;
+        default:
+          this._focusByCssSelector(this._config.autoFocus);
+          break;
+      }
+    }, {
+      injector: this._injector
+    });
+  }
+  /** Restores focus to the element that was focused before the dialog opened. */
+  _restoreFocus() {
+    const focusConfig = this._config.restoreFocus;
+    let focusTargetElement = null;
+    if (typeof focusConfig === "string") {
+      focusTargetElement = this._document.querySelector(focusConfig);
+    } else if (typeof focusConfig === "boolean") {
+      focusTargetElement = focusConfig ? this._elementFocusedBeforeDialogWasOpened : null;
+    } else if (focusConfig) {
+      focusTargetElement = focusConfig;
+    }
+    if (this._config.restoreFocus && focusTargetElement && typeof focusTargetElement.focus === "function") {
+      const activeElement = _getFocusedElementPierceShadowDom();
+      const element = this._elementRef.nativeElement;
+      if (!activeElement || activeElement === this._document.body || activeElement === element || element.contains(activeElement)) {
+        if (this._focusMonitor) {
+          this._focusMonitor.focusVia(focusTargetElement, this._closeInteractionType);
+          this._closeInteractionType = null;
+        } else {
+          focusTargetElement.focus();
+        }
+      }
+    }
+    if (this._focusTrap) {
+      this._focusTrap.destroy();
+    }
+  }
+  /** Focuses the dialog container. */
+  _focusDialogContainer() {
+    if (this._elementRef.nativeElement.focus) {
+      this._elementRef.nativeElement.focus();
+    }
+  }
+  /** Returns whether focus is inside the dialog. */
+  _containsFocus() {
+    const element = this._elementRef.nativeElement;
+    const activeElement = _getFocusedElementPierceShadowDom();
+    return element === activeElement || element.contains(activeElement);
+  }
+  /** Sets up the focus trap. */
+  _initializeFocusTrap() {
+    if (this._platform.isBrowser) {
+      this._focusTrap = this._focusTrapFactory.create(this._elementRef.nativeElement);
+      if (this._document) {
+        this._elementFocusedBeforeDialogWasOpened = _getFocusedElementPierceShadowDom();
+      }
+    }
+  }
+  /** Sets up the listener that handles clicks on the dialog backdrop. */
+  _handleBackdropClicks() {
+    this._overlayRef.backdropClick().subscribe(() => {
+      if (this._config.disableClose) {
+        this._recaptureFocus();
+      }
+    });
+  }
+};
+_CdkDialogContainer.\u0275fac = function CdkDialogContainer_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _CdkDialogContainer)(\u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(FocusTrapFactory), \u0275\u0275directiveInject(DOCUMENT, 8), \u0275\u0275directiveInject(DialogConfig), \u0275\u0275directiveInject(InteractivityChecker), \u0275\u0275directiveInject(NgZone), \u0275\u0275directiveInject(OverlayRef), \u0275\u0275directiveInject(FocusMonitor));
+};
+_CdkDialogContainer.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
+  type: _CdkDialogContainer,
+  selectors: [["cdk-dialog-container"]],
+  viewQuery: function CdkDialogContainer_Query(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275viewQuery(CdkPortalOutlet, 7);
+    }
+    if (rf & 2) {
+      let _t;
+      \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx._portalOutlet = _t.first);
+    }
+  },
+  hostAttrs: ["tabindex", "-1", 1, "cdk-dialog-container"],
+  hostVars: 6,
+  hostBindings: function CdkDialogContainer_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      \u0275\u0275attribute("id", ctx._config.id || null)("role", ctx._config.role)("aria-modal", ctx._config.ariaModal)("aria-labelledby", ctx._config.ariaLabel ? null : ctx._ariaLabelledByQueue[0])("aria-label", ctx._config.ariaLabel)("aria-describedby", ctx._config.ariaDescribedBy || null);
+    }
+  },
+  standalone: true,
+  features: [\u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
+  decls: 1,
+  vars: 0,
+  consts: [["cdkPortalOutlet", ""]],
+  template: function CdkDialogContainer_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275template(0, CdkDialogContainer_ng_template_0_Template, 0, 0, "ng-template", 0);
+    }
+  },
+  dependencies: [CdkPortalOutlet],
+  styles: [".cdk-dialog-container{display:block;width:100%;height:100%;min-height:inherit;max-height:inherit}"],
+  encapsulation: 2
+});
+var CdkDialogContainer = _CdkDialogContainer;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(CdkDialogContainer, [{
+    type: Component,
+    args: [{
+      selector: "cdk-dialog-container",
+      encapsulation: ViewEncapsulation$1.None,
+      changeDetection: ChangeDetectionStrategy.Default,
+      standalone: true,
+      imports: [CdkPortalOutlet],
+      host: {
+        "class": "cdk-dialog-container",
+        "tabindex": "-1",
+        "[attr.id]": "_config.id || null",
+        "[attr.role]": "_config.role",
+        "[attr.aria-modal]": "_config.ariaModal",
+        "[attr.aria-labelledby]": "_config.ariaLabel ? null : _ariaLabelledByQueue[0]",
+        "[attr.aria-label]": "_config.ariaLabel",
+        "[attr.aria-describedby]": "_config.ariaDescribedBy || null"
+      },
+      template: "<ng-template cdkPortalOutlet />\n",
+      styles: [".cdk-dialog-container{display:block;width:100%;height:100%;min-height:inherit;max-height:inherit}"]
+    }]
+  }], () => [{
+    type: ElementRef
+  }, {
+    type: FocusTrapFactory
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [DOCUMENT]
+    }]
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Inject,
+      args: [DialogConfig]
+    }]
+  }, {
+    type: InteractivityChecker
+  }, {
+    type: NgZone
+  }, {
+    type: OverlayRef
+  }, {
+    type: FocusMonitor
+  }], {
+    _portalOutlet: [{
+      type: ViewChild,
+      args: [CdkPortalOutlet, {
+        static: true
+      }]
+    }]
+  });
+})();
+var DialogRef = class {
+  constructor(overlayRef, config) {
+    this.overlayRef = overlayRef;
+    this.config = config;
+    this.closed = new Subject();
+    this.disableClose = config.disableClose;
+    this.backdropClick = overlayRef.backdropClick();
+    this.keydownEvents = overlayRef.keydownEvents();
+    this.outsidePointerEvents = overlayRef.outsidePointerEvents();
+    this.id = config.id;
+    this.keydownEvents.subscribe((event) => {
+      if (event.keyCode === ESCAPE && !this.disableClose && !hasModifierKey(event)) {
+        event.preventDefault();
+        this.close(void 0, {
+          focusOrigin: "keyboard"
+        });
+      }
+    });
+    this.backdropClick.subscribe(() => {
+      if (!this.disableClose) {
+        this.close(void 0, {
+          focusOrigin: "mouse"
+        });
+      }
+    });
+    this._detachSubscription = overlayRef.detachments().subscribe(() => {
+      if (config.closeOnOverlayDetachments !== false) {
+        this.close();
+      }
+    });
+  }
+  /**
+   * Close the dialog.
+   * @param result Optional result to return to the dialog opener.
+   * @param options Additional options to customize the closing behavior.
+   */
+  close(result, options) {
+    if (this.containerInstance) {
+      const closedSubject = this.closed;
+      this.containerInstance._closeInteractionType = options?.focusOrigin || "program";
+      this._detachSubscription.unsubscribe();
+      this.overlayRef.dispose();
+      closedSubject.next(result);
+      closedSubject.complete();
+      this.componentInstance = this.containerInstance = null;
+    }
+  }
+  /** Updates the position of the dialog based on the current position strategy. */
+  updatePosition() {
+    this.overlayRef.updatePosition();
+    return this;
+  }
+  /**
+   * Updates the dialog's width and height.
+   * @param width New width of the dialog.
+   * @param height New height of the dialog.
+   */
+  updateSize(width = "", height = "") {
+    this.overlayRef.updateSize({
+      width,
+      height
+    });
+    return this;
+  }
+  /** Add a CSS class or an array of classes to the overlay pane. */
+  addPanelClass(classes) {
+    this.overlayRef.addPanelClass(classes);
+    return this;
+  }
+  /** Remove a CSS class or an array of classes from the overlay pane. */
+  removePanelClass(classes) {
+    this.overlayRef.removePanelClass(classes);
+    return this;
+  }
+};
+var DIALOG_SCROLL_STRATEGY = new InjectionToken("DialogScrollStrategy", {
+  providedIn: "root",
+  factory: () => {
+    const overlay = inject(Overlay);
+    return () => overlay.scrollStrategies.block();
+  }
+});
+var DIALOG_DATA = new InjectionToken("DialogData");
+var DEFAULT_DIALOG_CONFIG = new InjectionToken("DefaultDialogConfig");
+var uniqueId = 0;
+var _Dialog = class _Dialog {
+  /** Keeps track of the currently-open dialogs. */
+  get openDialogs() {
+    return this._parentDialog ? this._parentDialog.openDialogs : this._openDialogsAtThisLevel;
+  }
+  /** Stream that emits when a dialog has been opened. */
+  get afterOpened() {
+    return this._parentDialog ? this._parentDialog.afterOpened : this._afterOpenedAtThisLevel;
+  }
+  constructor(_overlay, _injector, _defaultOptions, _parentDialog, _overlayContainer, scrollStrategy) {
+    this._overlay = _overlay;
+    this._injector = _injector;
+    this._defaultOptions = _defaultOptions;
+    this._parentDialog = _parentDialog;
+    this._overlayContainer = _overlayContainer;
+    this._openDialogsAtThisLevel = [];
+    this._afterAllClosedAtThisLevel = new Subject();
+    this._afterOpenedAtThisLevel = new Subject();
+    this._ariaHiddenElements = /* @__PURE__ */ new Map();
+    this.afterAllClosed = defer(() => this.openDialogs.length ? this._getAfterAllClosed() : this._getAfterAllClosed().pipe(startWith(void 0)));
+    this._scrollStrategy = scrollStrategy;
+  }
+  open(componentOrTemplateRef, config) {
+    const defaults2 = this._defaultOptions || new DialogConfig();
+    config = __spreadValues(__spreadValues({}, defaults2), config);
+    config.id = config.id || `cdk-dialog-${uniqueId++}`;
+    if (config.id && this.getDialogById(config.id) && (typeof ngDevMode === "undefined" || ngDevMode)) {
+      throw Error(`Dialog with id "${config.id}" exists already. The dialog id must be unique.`);
+    }
+    const overlayConfig = this._getOverlayConfig(config);
+    const overlayRef = this._overlay.create(overlayConfig);
+    const dialogRef = new DialogRef(overlayRef, config);
+    const dialogContainer = this._attachContainer(overlayRef, dialogRef, config);
+    dialogRef.containerInstance = dialogContainer;
+    this._attachDialogContent(componentOrTemplateRef, dialogRef, dialogContainer, config);
+    if (!this.openDialogs.length) {
+      this._hideNonDialogContentFromAssistiveTechnology();
+    }
+    this.openDialogs.push(dialogRef);
+    dialogRef.closed.subscribe(() => this._removeOpenDialog(dialogRef, true));
+    this.afterOpened.next(dialogRef);
+    return dialogRef;
+  }
+  /**
+   * Closes all of the currently-open dialogs.
+   */
+  closeAll() {
+    reverseForEach(this.openDialogs, (dialog) => dialog.close());
+  }
+  /**
+   * Finds an open dialog by its id.
+   * @param id ID to use when looking up the dialog.
+   */
+  getDialogById(id) {
+    return this.openDialogs.find((dialog) => dialog.id === id);
+  }
+  ngOnDestroy() {
+    reverseForEach(this._openDialogsAtThisLevel, (dialog) => {
+      if (dialog.config.closeOnDestroy === false) {
+        this._removeOpenDialog(dialog, false);
+      }
+    });
+    reverseForEach(this._openDialogsAtThisLevel, (dialog) => dialog.close());
+    this._afterAllClosedAtThisLevel.complete();
+    this._afterOpenedAtThisLevel.complete();
+    this._openDialogsAtThisLevel = [];
+  }
+  /**
+   * Creates an overlay config from a dialog config.
+   * @param config The dialog configuration.
+   * @returns The overlay configuration.
+   */
+  _getOverlayConfig(config) {
+    const state2 = new OverlayConfig({
+      positionStrategy: config.positionStrategy || this._overlay.position().global().centerHorizontally().centerVertically(),
+      scrollStrategy: config.scrollStrategy || this._scrollStrategy(),
+      panelClass: config.panelClass,
+      hasBackdrop: config.hasBackdrop,
+      direction: config.direction,
+      minWidth: config.minWidth,
+      minHeight: config.minHeight,
+      maxWidth: config.maxWidth,
+      maxHeight: config.maxHeight,
+      width: config.width,
+      height: config.height,
+      disposeOnNavigation: config.closeOnNavigation
+    });
+    if (config.backdropClass) {
+      state2.backdropClass = config.backdropClass;
+    }
+    return state2;
+  }
+  /**
+   * Attaches a dialog container to a dialog's already-created overlay.
+   * @param overlay Reference to the dialog's underlying overlay.
+   * @param config The dialog configuration.
+   * @returns A promise resolving to a ComponentRef for the attached container.
+   */
+  _attachContainer(overlay, dialogRef, config) {
+    const userInjector = config.injector || config.viewContainerRef?.injector;
+    const providers = [{
+      provide: DialogConfig,
+      useValue: config
+    }, {
+      provide: DialogRef,
+      useValue: dialogRef
+    }, {
+      provide: OverlayRef,
+      useValue: overlay
+    }];
+    let containerType;
+    if (config.container) {
+      if (typeof config.container === "function") {
+        containerType = config.container;
+      } else {
+        containerType = config.container.type;
+        providers.push(...config.container.providers(config));
+      }
+    } else {
+      containerType = CdkDialogContainer;
+    }
+    const containerPortal = new ComponentPortal(containerType, config.viewContainerRef, Injector.create({
+      parent: userInjector || this._injector,
+      providers
+    }), config.componentFactoryResolver);
+    const containerRef = overlay.attach(containerPortal);
+    return containerRef.instance;
+  }
+  /**
+   * Attaches the user-provided component to the already-created dialog container.
+   * @param componentOrTemplateRef The type of component being loaded into the dialog,
+   *     or a TemplateRef to instantiate as the content.
+   * @param dialogRef Reference to the dialog being opened.
+   * @param dialogContainer Component that is going to wrap the dialog content.
+   * @param config Configuration used to open the dialog.
+   */
+  _attachDialogContent(componentOrTemplateRef, dialogRef, dialogContainer, config) {
+    if (componentOrTemplateRef instanceof TemplateRef) {
+      const injector = this._createInjector(config, dialogRef, dialogContainer, void 0);
+      let context = {
+        $implicit: config.data,
+        dialogRef
+      };
+      if (config.templateContext) {
+        context = __spreadValues(__spreadValues({}, context), typeof config.templateContext === "function" ? config.templateContext() : config.templateContext);
+      }
+      dialogContainer.attachTemplatePortal(new TemplatePortal(componentOrTemplateRef, null, context, injector));
+    } else {
+      const injector = this._createInjector(config, dialogRef, dialogContainer, this._injector);
+      const contentRef = dialogContainer.attachComponentPortal(new ComponentPortal(componentOrTemplateRef, config.viewContainerRef, injector, config.componentFactoryResolver));
+      dialogRef.componentRef = contentRef;
+      dialogRef.componentInstance = contentRef.instance;
+    }
+  }
+  /**
+   * Creates a custom injector to be used inside the dialog. This allows a component loaded inside
+   * of a dialog to close itself and, optionally, to return a value.
+   * @param config Config object that is used to construct the dialog.
+   * @param dialogRef Reference to the dialog being opened.
+   * @param dialogContainer Component that is going to wrap the dialog content.
+   * @param fallbackInjector Injector to use as a fallback when a lookup fails in the custom
+   * dialog injector, if the user didn't provide a custom one.
+   * @returns The custom injector that can be used inside the dialog.
+   */
+  _createInjector(config, dialogRef, dialogContainer, fallbackInjector) {
+    const userInjector = config.injector || config.viewContainerRef?.injector;
+    const providers = [{
+      provide: DIALOG_DATA,
+      useValue: config.data
+    }, {
+      provide: DialogRef,
+      useValue: dialogRef
+    }];
+    if (config.providers) {
+      if (typeof config.providers === "function") {
+        providers.push(...config.providers(dialogRef, config, dialogContainer));
+      } else {
+        providers.push(...config.providers);
+      }
+    }
+    if (config.direction && (!userInjector || !userInjector.get(Directionality, null, {
+      optional: true
+    }))) {
+      providers.push({
+        provide: Directionality,
+        useValue: {
+          value: config.direction,
+          change: of()
+        }
+      });
+    }
+    return Injector.create({
+      parent: userInjector || fallbackInjector,
+      providers
+    });
+  }
+  /**
+   * Removes a dialog from the array of open dialogs.
+   * @param dialogRef Dialog to be removed.
+   * @param emitEvent Whether to emit an event if this is the last dialog.
+   */
+  _removeOpenDialog(dialogRef, emitEvent) {
+    const index = this.openDialogs.indexOf(dialogRef);
+    if (index > -1) {
+      this.openDialogs.splice(index, 1);
+      if (!this.openDialogs.length) {
+        this._ariaHiddenElements.forEach((previousValue, element) => {
+          if (previousValue) {
+            element.setAttribute("aria-hidden", previousValue);
+          } else {
+            element.removeAttribute("aria-hidden");
+          }
+        });
+        this._ariaHiddenElements.clear();
+        if (emitEvent) {
+          this._getAfterAllClosed().next();
+        }
+      }
+    }
+  }
+  /** Hides all of the content that isn't an overlay from assistive technology. */
+  _hideNonDialogContentFromAssistiveTechnology() {
+    const overlayContainer = this._overlayContainer.getContainerElement();
+    if (overlayContainer.parentElement) {
+      const siblings = overlayContainer.parentElement.children;
+      for (let i = siblings.length - 1; i > -1; i--) {
+        const sibling = siblings[i];
+        if (sibling !== overlayContainer && sibling.nodeName !== "SCRIPT" && sibling.nodeName !== "STYLE" && !sibling.hasAttribute("aria-live")) {
+          this._ariaHiddenElements.set(sibling, sibling.getAttribute("aria-hidden"));
+          sibling.setAttribute("aria-hidden", "true");
+        }
+      }
+    }
+  }
+  _getAfterAllClosed() {
+    const parent = this._parentDialog;
+    return parent ? parent._getAfterAllClosed() : this._afterAllClosedAtThisLevel;
+  }
+};
+_Dialog.\u0275fac = function Dialog_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _Dialog)(\u0275\u0275inject(Overlay), \u0275\u0275inject(Injector), \u0275\u0275inject(DEFAULT_DIALOG_CONFIG, 8), \u0275\u0275inject(_Dialog, 12), \u0275\u0275inject(OverlayContainer), \u0275\u0275inject(DIALOG_SCROLL_STRATEGY));
+};
+_Dialog.\u0275prov = /* @__PURE__ */ \u0275\u0275defineInjectable({
+  token: _Dialog,
+  factory: _Dialog.\u0275fac,
+  providedIn: "root"
+});
+var Dialog = _Dialog;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(Dialog, [{
+    type: Injectable,
+    args: [{
+      providedIn: "root"
+    }]
+  }], () => [{
+    type: Overlay
+  }, {
+    type: Injector
+  }, {
+    type: DialogConfig,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [DEFAULT_DIALOG_CONFIG]
+    }]
+  }, {
+    type: Dialog,
+    decorators: [{
+      type: Optional
+    }, {
+      type: SkipSelf
+    }]
+  }, {
+    type: OverlayContainer
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Inject,
+      args: [DIALOG_SCROLL_STRATEGY]
+    }]
+  }], null);
+})();
+function reverseForEach(items, callback) {
+  let i = items.length;
+  while (i--) {
+    callback(items[i]);
+  }
+}
+var _DialogModule = class _DialogModule {
+};
+_DialogModule.\u0275fac = function DialogModule_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _DialogModule)();
+};
+_DialogModule.\u0275mod = /* @__PURE__ */ \u0275\u0275defineNgModule({
+  type: _DialogModule
+});
+_DialogModule.\u0275inj = /* @__PURE__ */ \u0275\u0275defineInjector({
+  providers: [Dialog],
+  imports: [
+    OverlayModule,
+    PortalModule,
+    A11yModule,
+    // Re-export the PortalModule so that people extending the `CdkDialogContainer`
+    // don't have to remember to import it or be faced with an unhelpful error.
+    PortalModule
+  ]
+});
+var DialogModule = _DialogModule;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(DialogModule, [{
+    type: NgModule,
+    args: [{
+      imports: [OverlayModule, PortalModule, A11yModule, CdkDialogContainer],
+      exports: [
+        // Re-export the PortalModule so that people extending the `CdkDialogContainer`
+        // don't have to remember to import it or be faced with an unhelpful error.
+        PortalModule,
+        CdkDialogContainer
+      ],
+      providers: [Dialog]
+    }]
+  }], null, null);
+})();
+
+// node_modules/@angular/material/fesm2022/dialog.mjs
+function MatDialogContainer_ng_template_2_Template(rf, ctx) {
+}
+var MatDialogConfig = class {
+  constructor() {
+    this.role = "dialog";
+    this.panelClass = "";
+    this.hasBackdrop = true;
+    this.backdropClass = "";
+    this.disableClose = false;
+    this.width = "";
+    this.height = "";
+    this.data = null;
+    this.ariaDescribedBy = null;
+    this.ariaLabelledBy = null;
+    this.ariaLabel = null;
+    this.ariaModal = true;
+    this.autoFocus = "first-tabbable";
+    this.restoreFocus = true;
+    this.delayFocusTrap = true;
+    this.closeOnNavigation = true;
+  }
+};
+var OPEN_CLASS = "mdc-dialog--open";
+var OPENING_CLASS = "mdc-dialog--opening";
+var CLOSING_CLASS = "mdc-dialog--closing";
+var OPEN_ANIMATION_DURATION = 150;
+var CLOSE_ANIMATION_DURATION = 75;
+var _MatDialogContainer = class _MatDialogContainer extends CdkDialogContainer {
+  constructor(elementRef, focusTrapFactory, _document2, dialogConfig, interactivityChecker, ngZone, overlayRef, _animationMode, focusMonitor) {
+    super(elementRef, focusTrapFactory, _document2, dialogConfig, interactivityChecker, ngZone, overlayRef, focusMonitor);
+    this._animationMode = _animationMode;
+    this._animationStateChanged = new EventEmitter();
+    this._animationsEnabled = this._animationMode !== "NoopAnimations";
+    this._actionSectionCount = 0;
+    this._hostElement = this._elementRef.nativeElement;
+    this._enterAnimationDuration = this._animationsEnabled ? parseCssTime(this._config.enterAnimationDuration) ?? OPEN_ANIMATION_DURATION : 0;
+    this._exitAnimationDuration = this._animationsEnabled ? parseCssTime(this._config.exitAnimationDuration) ?? CLOSE_ANIMATION_DURATION : 0;
+    this._animationTimer = null;
+    this._finishDialogOpen = () => {
+      this._clearAnimationClasses();
+      this._openAnimationDone(this._enterAnimationDuration);
+    };
+    this._finishDialogClose = () => {
+      this._clearAnimationClasses();
+      this._animationStateChanged.emit({
+        state: "closed",
+        totalTime: this._exitAnimationDuration
+      });
+    };
+  }
+  _contentAttached() {
+    super._contentAttached();
+    this._startOpenAnimation();
+  }
+  /** Starts the dialog open animation if enabled. */
+  _startOpenAnimation() {
+    this._animationStateChanged.emit({
+      state: "opening",
+      totalTime: this._enterAnimationDuration
+    });
+    if (this._animationsEnabled) {
+      this._hostElement.style.setProperty(TRANSITION_DURATION_PROPERTY, `${this._enterAnimationDuration}ms`);
+      this._requestAnimationFrame(() => this._hostElement.classList.add(OPENING_CLASS, OPEN_CLASS));
+      this._waitForAnimationToComplete(this._enterAnimationDuration, this._finishDialogOpen);
+    } else {
+      this._hostElement.classList.add(OPEN_CLASS);
+      Promise.resolve().then(() => this._finishDialogOpen());
+    }
+  }
+  /**
+   * Starts the exit animation of the dialog if enabled. This method is
+   * called by the dialog ref.
+   */
+  _startExitAnimation() {
+    this._animationStateChanged.emit({
+      state: "closing",
+      totalTime: this._exitAnimationDuration
+    });
+    this._hostElement.classList.remove(OPEN_CLASS);
+    if (this._animationsEnabled) {
+      this._hostElement.style.setProperty(TRANSITION_DURATION_PROPERTY, `${this._exitAnimationDuration}ms`);
+      this._requestAnimationFrame(() => this._hostElement.classList.add(CLOSING_CLASS));
+      this._waitForAnimationToComplete(this._exitAnimationDuration, this._finishDialogClose);
+    } else {
+      Promise.resolve().then(() => this._finishDialogClose());
+    }
+  }
+  /**
+   * Updates the number action sections.
+   * @param delta Increase/decrease in the number of sections.
+   */
+  _updateActionSectionCount(delta) {
+    this._actionSectionCount += delta;
+    this._changeDetectorRef.markForCheck();
+  }
+  /** Clears all dialog animation classes. */
+  _clearAnimationClasses() {
+    this._hostElement.classList.remove(OPENING_CLASS, CLOSING_CLASS);
+  }
+  _waitForAnimationToComplete(duration, callback) {
+    if (this._animationTimer !== null) {
+      clearTimeout(this._animationTimer);
+    }
+    this._animationTimer = setTimeout(callback, duration);
+  }
+  /** Runs a callback in `requestAnimationFrame`, if available. */
+  _requestAnimationFrame(callback) {
+    this._ngZone.runOutsideAngular(() => {
+      if (typeof requestAnimationFrame === "function") {
+        requestAnimationFrame(callback);
+      } else {
+        callback();
+      }
+    });
+  }
+  _captureInitialFocus() {
+    if (!this._config.delayFocusTrap) {
+      this._trapFocus();
+    }
+  }
+  /**
+   * Callback for when the open dialog animation has finished. Intended to
+   * be called by sub-classes that use different animation implementations.
+   */
+  _openAnimationDone(totalTime) {
+    if (this._config.delayFocusTrap) {
+      this._trapFocus();
+    }
+    this._animationStateChanged.next({
+      state: "opened",
+      totalTime
+    });
+  }
+  ngOnDestroy() {
+    super.ngOnDestroy();
+    if (this._animationTimer !== null) {
+      clearTimeout(this._animationTimer);
+    }
+  }
+  attachComponentPortal(portal) {
+    const ref = super.attachComponentPortal(portal);
+    ref.location.nativeElement.classList.add("mat-mdc-dialog-component-host");
+    return ref;
+  }
+};
+_MatDialogContainer.\u0275fac = function MatDialogContainer_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatDialogContainer)(\u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(FocusTrapFactory), \u0275\u0275directiveInject(DOCUMENT, 8), \u0275\u0275directiveInject(MatDialogConfig), \u0275\u0275directiveInject(InteractivityChecker), \u0275\u0275directiveInject(NgZone), \u0275\u0275directiveInject(OverlayRef), \u0275\u0275directiveInject(ANIMATION_MODULE_TYPE, 8), \u0275\u0275directiveInject(FocusMonitor));
+};
+_MatDialogContainer.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
+  type: _MatDialogContainer,
+  selectors: [["mat-dialog-container"]],
+  hostAttrs: ["tabindex", "-1", 1, "mat-mdc-dialog-container", "mdc-dialog"],
+  hostVars: 10,
+  hostBindings: function MatDialogContainer_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      \u0275\u0275hostProperty("id", ctx._config.id);
+      \u0275\u0275attribute("aria-modal", ctx._config.ariaModal)("role", ctx._config.role)("aria-labelledby", ctx._config.ariaLabel ? null : ctx._ariaLabelledByQueue[0])("aria-label", ctx._config.ariaLabel)("aria-describedby", ctx._config.ariaDescribedBy || null);
+      \u0275\u0275classProp("_mat-animation-noopable", !ctx._animationsEnabled)("mat-mdc-dialog-container-with-actions", ctx._actionSectionCount > 0);
+    }
+  },
+  standalone: true,
+  features: [\u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
+  decls: 3,
+  vars: 0,
+  consts: [[1, "mat-mdc-dialog-inner-container", "mdc-dialog__container"], [1, "mat-mdc-dialog-surface", "mdc-dialog__surface"], ["cdkPortalOutlet", ""]],
+  template: function MatDialogContainer_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275elementStart(0, "div", 0)(1, "div", 1);
+      \u0275\u0275template(2, MatDialogContainer_ng_template_2_Template, 0, 0, "ng-template", 2);
+      \u0275\u0275elementEnd()();
+    }
+  },
+  dependencies: [CdkPortalOutlet],
+  styles: ['.mat-mdc-dialog-container{width:100%;height:100%;display:block;box-sizing:border-box;max-height:inherit;min-height:inherit;min-width:inherit;max-width:inherit;outline:0}.cdk-overlay-pane.mat-mdc-dialog-panel{max-width:var(--mat-dialog-container-max-width, 80vw);min-width:var(--mat-dialog-container-min-width, 0)}@media(max-width: 599px){.cdk-overlay-pane.mat-mdc-dialog-panel{max-width:var(--mat-dialog-container-small-max-width, 80vw)}}.mat-mdc-dialog-inner-container{display:flex;flex-direction:row;align-items:center;justify-content:space-around;box-sizing:border-box;height:100%;opacity:0;transition:opacity linear var(--mat-dialog-transition-duration, 0ms);max-height:inherit;min-height:inherit;min-width:inherit;max-width:inherit}.mdc-dialog--closing .mat-mdc-dialog-inner-container{transition:opacity 75ms linear;transform:none}.mdc-dialog--open .mat-mdc-dialog-inner-container{opacity:1}._mat-animation-noopable .mat-mdc-dialog-inner-container{transition:none}.mat-mdc-dialog-surface{display:flex;flex-direction:column;flex-grow:0;flex-shrink:0;box-sizing:border-box;width:100%;height:100%;position:relative;overflow-y:auto;outline:0;transform:scale(0.8);transition:transform var(--mat-dialog-transition-duration, 0ms) cubic-bezier(0, 0, 0.2, 1);max-height:inherit;min-height:inherit;min-width:inherit;max-width:inherit;box-shadow:var(--mat-dialog-container-elevation-shadow, 0px 11px 15px -7px rgba(0, 0, 0, 0.2), 0px 24px 38px 3px rgba(0, 0, 0, 0.14), 0px 9px 46px 8px rgba(0, 0, 0, 0.12));border-radius:var(--mdc-dialog-container-shape, 4px);background-color:var(--mdc-dialog-container-color, white)}[dir=rtl] .mat-mdc-dialog-surface{text-align:right}.mdc-dialog--open .mat-mdc-dialog-surface,.mdc-dialog--closing .mat-mdc-dialog-surface{transform:none}._mat-animation-noopable .mat-mdc-dialog-surface{transition:none}.mat-mdc-dialog-surface::before{position:absolute;box-sizing:border-box;width:100%;height:100%;top:0;left:0;border:2px solid rgba(0,0,0,0);border-radius:inherit;content:"";pointer-events:none}.mat-mdc-dialog-title{display:block;position:relative;flex-shrink:0;box-sizing:border-box;margin:0 0 1px;padding:var(--mat-dialog-headline-padding, 0 24px 9px)}.mat-mdc-dialog-title::before{display:inline-block;width:0;height:40px;content:"";vertical-align:0}[dir=rtl] .mat-mdc-dialog-title{text-align:right}.mat-mdc-dialog-container .mat-mdc-dialog-title{color:var(--mdc-dialog-subhead-color, rgba(0, 0, 0, 0.87));font-family:var(--mdc-dialog-subhead-font, inherit);line-height:var(--mdc-dialog-subhead-line-height, 1.5rem);font-size:var(--mdc-dialog-subhead-size, 1rem);font-weight:var(--mdc-dialog-subhead-weight, 400);letter-spacing:var(--mdc-dialog-subhead-tracking, 0.03125em)}.mat-mdc-dialog-content{display:block;flex-grow:1;box-sizing:border-box;margin:0;overflow:auto;max-height:65vh}.mat-mdc-dialog-content>:first-child{margin-top:0}.mat-mdc-dialog-content>:last-child{margin-bottom:0}.mat-mdc-dialog-container .mat-mdc-dialog-content{color:var(--mdc-dialog-supporting-text-color, rgba(0, 0, 0, 0.6));font-family:var(--mdc-dialog-supporting-text-font, inherit);line-height:var(--mdc-dialog-supporting-text-line-height, 1.5rem);font-size:var(--mdc-dialog-supporting-text-size, 1rem);font-weight:var(--mdc-dialog-supporting-text-weight, 400);letter-spacing:var(--mdc-dialog-supporting-text-tracking, 0.03125em)}.mat-mdc-dialog-container .mat-mdc-dialog-content{padding:var(--mat-dialog-content-padding, 20px 24px)}.mat-mdc-dialog-container-with-actions .mat-mdc-dialog-content{padding:var(--mat-dialog-with-actions-content-padding, 20px 24px)}.mat-mdc-dialog-container .mat-mdc-dialog-title+.mat-mdc-dialog-content{padding-top:0}.mat-mdc-dialog-actions{display:flex;position:relative;flex-shrink:0;flex-wrap:wrap;align-items:center;justify-content:flex-end;box-sizing:border-box;min-height:52px;margin:0;padding:8px;border-top:1px solid rgba(0,0,0,0);padding:var(--mat-dialog-actions-padding, 8px);justify-content:var(--mat-dialog-actions-alignment, start)}.cdk-high-contrast-active .mat-mdc-dialog-actions{border-top-color:CanvasText}.mat-mdc-dialog-actions.mat-mdc-dialog-actions-align-start,.mat-mdc-dialog-actions[align=start]{justify-content:start}.mat-mdc-dialog-actions.mat-mdc-dialog-actions-align-center,.mat-mdc-dialog-actions[align=center]{justify-content:center}.mat-mdc-dialog-actions.mat-mdc-dialog-actions-align-end,.mat-mdc-dialog-actions[align=end]{justify-content:flex-end}.mat-mdc-dialog-actions .mat-button-base+.mat-button-base,.mat-mdc-dialog-actions .mat-mdc-button-base+.mat-mdc-button-base{margin-left:8px}[dir=rtl] .mat-mdc-dialog-actions .mat-button-base+.mat-button-base,[dir=rtl] .mat-mdc-dialog-actions .mat-mdc-button-base+.mat-mdc-button-base{margin-left:0;margin-right:8px}.mat-mdc-dialog-component-host{display:contents}'],
+  encapsulation: 2
+});
+var MatDialogContainer = _MatDialogContainer;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatDialogContainer, [{
+    type: Component,
+    args: [{
+      selector: "mat-dialog-container",
+      encapsulation: ViewEncapsulation$1.None,
+      changeDetection: ChangeDetectionStrategy.Default,
+      standalone: true,
+      imports: [CdkPortalOutlet],
+      host: {
+        "class": "mat-mdc-dialog-container mdc-dialog",
+        "tabindex": "-1",
+        "[attr.aria-modal]": "_config.ariaModal",
+        "[id]": "_config.id",
+        "[attr.role]": "_config.role",
+        "[attr.aria-labelledby]": "_config.ariaLabel ? null : _ariaLabelledByQueue[0]",
+        "[attr.aria-label]": "_config.ariaLabel",
+        "[attr.aria-describedby]": "_config.ariaDescribedBy || null",
+        "[class._mat-animation-noopable]": "!_animationsEnabled",
+        "[class.mat-mdc-dialog-container-with-actions]": "_actionSectionCount > 0"
+      },
+      template: '<div class="mat-mdc-dialog-inner-container mdc-dialog__container">\n  <div class="mat-mdc-dialog-surface mdc-dialog__surface">\n    <ng-template cdkPortalOutlet />\n  </div>\n</div>\n',
+      styles: ['.mat-mdc-dialog-container{width:100%;height:100%;display:block;box-sizing:border-box;max-height:inherit;min-height:inherit;min-width:inherit;max-width:inherit;outline:0}.cdk-overlay-pane.mat-mdc-dialog-panel{max-width:var(--mat-dialog-container-max-width, 80vw);min-width:var(--mat-dialog-container-min-width, 0)}@media(max-width: 599px){.cdk-overlay-pane.mat-mdc-dialog-panel{max-width:var(--mat-dialog-container-small-max-width, 80vw)}}.mat-mdc-dialog-inner-container{display:flex;flex-direction:row;align-items:center;justify-content:space-around;box-sizing:border-box;height:100%;opacity:0;transition:opacity linear var(--mat-dialog-transition-duration, 0ms);max-height:inherit;min-height:inherit;min-width:inherit;max-width:inherit}.mdc-dialog--closing .mat-mdc-dialog-inner-container{transition:opacity 75ms linear;transform:none}.mdc-dialog--open .mat-mdc-dialog-inner-container{opacity:1}._mat-animation-noopable .mat-mdc-dialog-inner-container{transition:none}.mat-mdc-dialog-surface{display:flex;flex-direction:column;flex-grow:0;flex-shrink:0;box-sizing:border-box;width:100%;height:100%;position:relative;overflow-y:auto;outline:0;transform:scale(0.8);transition:transform var(--mat-dialog-transition-duration, 0ms) cubic-bezier(0, 0, 0.2, 1);max-height:inherit;min-height:inherit;min-width:inherit;max-width:inherit;box-shadow:var(--mat-dialog-container-elevation-shadow, 0px 11px 15px -7px rgba(0, 0, 0, 0.2), 0px 24px 38px 3px rgba(0, 0, 0, 0.14), 0px 9px 46px 8px rgba(0, 0, 0, 0.12));border-radius:var(--mdc-dialog-container-shape, 4px);background-color:var(--mdc-dialog-container-color, white)}[dir=rtl] .mat-mdc-dialog-surface{text-align:right}.mdc-dialog--open .mat-mdc-dialog-surface,.mdc-dialog--closing .mat-mdc-dialog-surface{transform:none}._mat-animation-noopable .mat-mdc-dialog-surface{transition:none}.mat-mdc-dialog-surface::before{position:absolute;box-sizing:border-box;width:100%;height:100%;top:0;left:0;border:2px solid rgba(0,0,0,0);border-radius:inherit;content:"";pointer-events:none}.mat-mdc-dialog-title{display:block;position:relative;flex-shrink:0;box-sizing:border-box;margin:0 0 1px;padding:var(--mat-dialog-headline-padding, 0 24px 9px)}.mat-mdc-dialog-title::before{display:inline-block;width:0;height:40px;content:"";vertical-align:0}[dir=rtl] .mat-mdc-dialog-title{text-align:right}.mat-mdc-dialog-container .mat-mdc-dialog-title{color:var(--mdc-dialog-subhead-color, rgba(0, 0, 0, 0.87));font-family:var(--mdc-dialog-subhead-font, inherit);line-height:var(--mdc-dialog-subhead-line-height, 1.5rem);font-size:var(--mdc-dialog-subhead-size, 1rem);font-weight:var(--mdc-dialog-subhead-weight, 400);letter-spacing:var(--mdc-dialog-subhead-tracking, 0.03125em)}.mat-mdc-dialog-content{display:block;flex-grow:1;box-sizing:border-box;margin:0;overflow:auto;max-height:65vh}.mat-mdc-dialog-content>:first-child{margin-top:0}.mat-mdc-dialog-content>:last-child{margin-bottom:0}.mat-mdc-dialog-container .mat-mdc-dialog-content{color:var(--mdc-dialog-supporting-text-color, rgba(0, 0, 0, 0.6));font-family:var(--mdc-dialog-supporting-text-font, inherit);line-height:var(--mdc-dialog-supporting-text-line-height, 1.5rem);font-size:var(--mdc-dialog-supporting-text-size, 1rem);font-weight:var(--mdc-dialog-supporting-text-weight, 400);letter-spacing:var(--mdc-dialog-supporting-text-tracking, 0.03125em)}.mat-mdc-dialog-container .mat-mdc-dialog-content{padding:var(--mat-dialog-content-padding, 20px 24px)}.mat-mdc-dialog-container-with-actions .mat-mdc-dialog-content{padding:var(--mat-dialog-with-actions-content-padding, 20px 24px)}.mat-mdc-dialog-container .mat-mdc-dialog-title+.mat-mdc-dialog-content{padding-top:0}.mat-mdc-dialog-actions{display:flex;position:relative;flex-shrink:0;flex-wrap:wrap;align-items:center;justify-content:flex-end;box-sizing:border-box;min-height:52px;margin:0;padding:8px;border-top:1px solid rgba(0,0,0,0);padding:var(--mat-dialog-actions-padding, 8px);justify-content:var(--mat-dialog-actions-alignment, start)}.cdk-high-contrast-active .mat-mdc-dialog-actions{border-top-color:CanvasText}.mat-mdc-dialog-actions.mat-mdc-dialog-actions-align-start,.mat-mdc-dialog-actions[align=start]{justify-content:start}.mat-mdc-dialog-actions.mat-mdc-dialog-actions-align-center,.mat-mdc-dialog-actions[align=center]{justify-content:center}.mat-mdc-dialog-actions.mat-mdc-dialog-actions-align-end,.mat-mdc-dialog-actions[align=end]{justify-content:flex-end}.mat-mdc-dialog-actions .mat-button-base+.mat-button-base,.mat-mdc-dialog-actions .mat-mdc-button-base+.mat-mdc-button-base{margin-left:8px}[dir=rtl] .mat-mdc-dialog-actions .mat-button-base+.mat-button-base,[dir=rtl] .mat-mdc-dialog-actions .mat-mdc-button-base+.mat-mdc-button-base{margin-left:0;margin-right:8px}.mat-mdc-dialog-component-host{display:contents}']
+    }]
+  }], () => [{
+    type: ElementRef
+  }, {
+    type: FocusTrapFactory
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [DOCUMENT]
+    }]
+  }, {
+    type: MatDialogConfig
+  }, {
+    type: InteractivityChecker
+  }, {
+    type: NgZone
+  }, {
+    type: OverlayRef
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [ANIMATION_MODULE_TYPE]
+    }]
+  }, {
+    type: FocusMonitor
+  }], null);
+})();
+var TRANSITION_DURATION_PROPERTY = "--mat-dialog-transition-duration";
+function parseCssTime(time) {
+  if (time == null) {
+    return null;
+  }
+  if (typeof time === "number") {
+    return time;
+  }
+  if (time.endsWith("ms")) {
+    return coerceNumberProperty(time.substring(0, time.length - 2));
+  }
+  if (time.endsWith("s")) {
+    return coerceNumberProperty(time.substring(0, time.length - 1)) * 1e3;
+  }
+  if (time === "0") {
+    return 0;
+  }
+  return null;
+}
+var MatDialogState;
+(function(MatDialogState2) {
+  MatDialogState2[MatDialogState2["OPEN"] = 0] = "OPEN";
+  MatDialogState2[MatDialogState2["CLOSING"] = 1] = "CLOSING";
+  MatDialogState2[MatDialogState2["CLOSED"] = 2] = "CLOSED";
+})(MatDialogState || (MatDialogState = {}));
+var MatDialogRef = class {
+  constructor(_ref, config, _containerInstance) {
+    this._ref = _ref;
+    this._containerInstance = _containerInstance;
+    this._afterOpened = new Subject();
+    this._beforeClosed = new Subject();
+    this._state = MatDialogState.OPEN;
+    this.disableClose = config.disableClose;
+    this.id = _ref.id;
+    _ref.addPanelClass("mat-mdc-dialog-panel");
+    _containerInstance._animationStateChanged.pipe(filter((event) => event.state === "opened"), take(1)).subscribe(() => {
+      this._afterOpened.next();
+      this._afterOpened.complete();
+    });
+    _containerInstance._animationStateChanged.pipe(filter((event) => event.state === "closed"), take(1)).subscribe(() => {
+      clearTimeout(this._closeFallbackTimeout);
+      this._finishDialogClose();
+    });
+    _ref.overlayRef.detachments().subscribe(() => {
+      this._beforeClosed.next(this._result);
+      this._beforeClosed.complete();
+      this._finishDialogClose();
+    });
+    merge(this.backdropClick(), this.keydownEvents().pipe(filter((event) => event.keyCode === ESCAPE && !this.disableClose && !hasModifierKey(event)))).subscribe((event) => {
+      if (!this.disableClose) {
+        event.preventDefault();
+        _closeDialogVia(this, event.type === "keydown" ? "keyboard" : "mouse");
+      }
+    });
+  }
+  /**
+   * Close the dialog.
+   * @param dialogResult Optional result to return to the dialog opener.
+   */
+  close(dialogResult) {
+    this._result = dialogResult;
+    this._containerInstance._animationStateChanged.pipe(filter((event) => event.state === "closing"), take(1)).subscribe((event) => {
+      this._beforeClosed.next(dialogResult);
+      this._beforeClosed.complete();
+      this._ref.overlayRef.detachBackdrop();
+      this._closeFallbackTimeout = setTimeout(() => this._finishDialogClose(), event.totalTime + 100);
+    });
+    this._state = MatDialogState.CLOSING;
+    this._containerInstance._startExitAnimation();
+  }
+  /**
+   * Gets an observable that is notified when the dialog is finished opening.
+   */
+  afterOpened() {
+    return this._afterOpened;
+  }
+  /**
+   * Gets an observable that is notified when the dialog is finished closing.
+   */
+  afterClosed() {
+    return this._ref.closed;
+  }
+  /**
+   * Gets an observable that is notified when the dialog has started closing.
+   */
+  beforeClosed() {
+    return this._beforeClosed;
+  }
+  /**
+   * Gets an observable that emits when the overlay's backdrop has been clicked.
+   */
+  backdropClick() {
+    return this._ref.backdropClick;
+  }
+  /**
+   * Gets an observable that emits when keydown events are targeted on the overlay.
+   */
+  keydownEvents() {
+    return this._ref.keydownEvents;
+  }
+  /**
+   * Updates the dialog's position.
+   * @param position New dialog position.
+   */
+  updatePosition(position) {
+    let strategy = this._ref.config.positionStrategy;
+    if (position && (position.left || position.right)) {
+      position.left ? strategy.left(position.left) : strategy.right(position.right);
+    } else {
+      strategy.centerHorizontally();
+    }
+    if (position && (position.top || position.bottom)) {
+      position.top ? strategy.top(position.top) : strategy.bottom(position.bottom);
+    } else {
+      strategy.centerVertically();
+    }
+    this._ref.updatePosition();
+    return this;
+  }
+  /**
+   * Updates the dialog's width and height.
+   * @param width New width of the dialog.
+   * @param height New height of the dialog.
+   */
+  updateSize(width = "", height = "") {
+    this._ref.updateSize(width, height);
+    return this;
+  }
+  /** Add a CSS class or an array of classes to the overlay pane. */
+  addPanelClass(classes) {
+    this._ref.addPanelClass(classes);
+    return this;
+  }
+  /** Remove a CSS class or an array of classes from the overlay pane. */
+  removePanelClass(classes) {
+    this._ref.removePanelClass(classes);
+    return this;
+  }
+  /** Gets the current state of the dialog's lifecycle. */
+  getState() {
+    return this._state;
+  }
+  /**
+   * Finishes the dialog close by updating the state of the dialog
+   * and disposing the overlay.
+   */
+  _finishDialogClose() {
+    this._state = MatDialogState.CLOSED;
+    this._ref.close(this._result, {
+      focusOrigin: this._closeInteractionType
+    });
+    this.componentInstance = null;
+  }
+};
+function _closeDialogVia(ref, interactionType, result) {
+  ref._closeInteractionType = interactionType;
+  return ref.close(result);
+}
+var MAT_DIALOG_DATA = new InjectionToken("MatMdcDialogData");
+var MAT_DIALOG_DEFAULT_OPTIONS = new InjectionToken("mat-mdc-dialog-default-options");
+var MAT_DIALOG_SCROLL_STRATEGY = new InjectionToken("mat-mdc-dialog-scroll-strategy", {
+  providedIn: "root",
+  factory: () => {
+    const overlay = inject(Overlay);
+    return () => overlay.scrollStrategies.block();
+  }
+});
+var uniqueId2 = 0;
+var _MatDialog = class _MatDialog {
+  /** Keeps track of the currently-open dialogs. */
+  get openDialogs() {
+    return this._parentDialog ? this._parentDialog.openDialogs : this._openDialogsAtThisLevel;
+  }
+  /** Stream that emits when a dialog has been opened. */
+  get afterOpened() {
+    return this._parentDialog ? this._parentDialog.afterOpened : this._afterOpenedAtThisLevel;
+  }
+  _getAfterAllClosed() {
+    const parent = this._parentDialog;
+    return parent ? parent._getAfterAllClosed() : this._afterAllClosedAtThisLevel;
+  }
+  constructor(_overlay, injector, location, _defaultOptions, _scrollStrategy, _parentDialog, _overlayContainer, _animationMode) {
+    this._overlay = _overlay;
+    this._defaultOptions = _defaultOptions;
+    this._scrollStrategy = _scrollStrategy;
+    this._parentDialog = _parentDialog;
+    this._openDialogsAtThisLevel = [];
+    this._afterAllClosedAtThisLevel = new Subject();
+    this._afterOpenedAtThisLevel = new Subject();
+    this.dialogConfigClass = MatDialogConfig;
+    this.afterAllClosed = defer(() => this.openDialogs.length ? this._getAfterAllClosed() : this._getAfterAllClosed().pipe(startWith(void 0)));
+    this._dialog = injector.get(Dialog);
+    this._dialogRefConstructor = MatDialogRef;
+    this._dialogContainerType = MatDialogContainer;
+    this._dialogDataToken = MAT_DIALOG_DATA;
+  }
+  open(componentOrTemplateRef, config) {
+    let dialogRef;
+    config = __spreadValues(__spreadValues({}, this._defaultOptions || new MatDialogConfig()), config);
+    config.id = config.id || `mat-mdc-dialog-${uniqueId2++}`;
+    config.scrollStrategy = config.scrollStrategy || this._scrollStrategy();
+    const cdkRef = this._dialog.open(componentOrTemplateRef, __spreadProps(__spreadValues({}, config), {
+      positionStrategy: this._overlay.position().global().centerHorizontally().centerVertically(),
+      // Disable closing since we need to sync it up to the animation ourselves.
+      disableClose: true,
+      // Disable closing on destroy, because this service cleans up its open dialogs as well.
+      // We want to do the cleanup here, rather than the CDK service, because the CDK destroys
+      // the dialogs immediately whereas we want it to wait for the animations to finish.
+      closeOnDestroy: false,
+      // Disable closing on detachments so that we can sync up the animation.
+      // The Material dialog ref handles this manually.
+      closeOnOverlayDetachments: false,
+      container: {
+        type: this._dialogContainerType,
+        providers: () => [
+          // Provide our config as the CDK config as well since it has the same interface as the
+          // CDK one, but it contains the actual values passed in by the user for things like
+          // `disableClose` which we disable for the CDK dialog since we handle it ourselves.
+          {
+            provide: this.dialogConfigClass,
+            useValue: config
+          },
+          {
+            provide: DialogConfig,
+            useValue: config
+          }
+        ]
+      },
+      templateContext: () => ({
+        dialogRef
+      }),
+      providers: (ref, cdkConfig, dialogContainer) => {
+        dialogRef = new this._dialogRefConstructor(ref, config, dialogContainer);
+        dialogRef.updatePosition(config?.position);
+        return [{
+          provide: this._dialogContainerType,
+          useValue: dialogContainer
+        }, {
+          provide: this._dialogDataToken,
+          useValue: cdkConfig.data
+        }, {
+          provide: this._dialogRefConstructor,
+          useValue: dialogRef
+        }];
+      }
+    }));
+    dialogRef.componentRef = cdkRef.componentRef;
+    dialogRef.componentInstance = cdkRef.componentInstance;
+    this.openDialogs.push(dialogRef);
+    this.afterOpened.next(dialogRef);
+    dialogRef.afterClosed().subscribe(() => {
+      const index = this.openDialogs.indexOf(dialogRef);
+      if (index > -1) {
+        this.openDialogs.splice(index, 1);
+        if (!this.openDialogs.length) {
+          this._getAfterAllClosed().next();
+        }
+      }
+    });
+    return dialogRef;
+  }
+  /**
+   * Closes all of the currently-open dialogs.
+   */
+  closeAll() {
+    this._closeDialogs(this.openDialogs);
+  }
+  /**
+   * Finds an open dialog by its id.
+   * @param id ID to use when looking up the dialog.
+   */
+  getDialogById(id) {
+    return this.openDialogs.find((dialog) => dialog.id === id);
+  }
+  ngOnDestroy() {
+    this._closeDialogs(this._openDialogsAtThisLevel);
+    this._afterAllClosedAtThisLevel.complete();
+    this._afterOpenedAtThisLevel.complete();
+  }
+  _closeDialogs(dialogs) {
+    let i = dialogs.length;
+    while (i--) {
+      dialogs[i].close();
+    }
+  }
+};
+_MatDialog.\u0275fac = function MatDialog_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatDialog)(\u0275\u0275inject(Overlay), \u0275\u0275inject(Injector), \u0275\u0275inject(Location, 8), \u0275\u0275inject(MAT_DIALOG_DEFAULT_OPTIONS, 8), \u0275\u0275inject(MAT_DIALOG_SCROLL_STRATEGY), \u0275\u0275inject(_MatDialog, 12), \u0275\u0275inject(OverlayContainer), \u0275\u0275inject(ANIMATION_MODULE_TYPE, 8));
+};
+_MatDialog.\u0275prov = /* @__PURE__ */ \u0275\u0275defineInjectable({
+  token: _MatDialog,
+  factory: _MatDialog.\u0275fac,
+  providedIn: "root"
+});
+var MatDialog = _MatDialog;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatDialog, [{
+    type: Injectable,
+    args: [{
+      providedIn: "root"
+    }]
+  }], () => [{
+    type: Overlay
+  }, {
+    type: Injector
+  }, {
+    type: Location,
+    decorators: [{
+      type: Optional
+    }]
+  }, {
+    type: MatDialogConfig,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [MAT_DIALOG_DEFAULT_OPTIONS]
+    }]
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Inject,
+      args: [MAT_DIALOG_SCROLL_STRATEGY]
+    }]
+  }, {
+    type: MatDialog,
+    decorators: [{
+      type: Optional
+    }, {
+      type: SkipSelf
+    }]
+  }, {
+    type: OverlayContainer
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [ANIMATION_MODULE_TYPE]
+    }]
+  }], null);
+})();
+var dialogElementUid = 0;
+var _MatDialogClose = class _MatDialogClose {
+  constructor(dialogRef, _elementRef, _dialog) {
+    this.dialogRef = dialogRef;
+    this._elementRef = _elementRef;
+    this._dialog = _dialog;
+    this.type = "button";
+  }
+  ngOnInit() {
+    if (!this.dialogRef) {
+      this.dialogRef = getClosestDialog(this._elementRef, this._dialog.openDialogs);
+    }
+  }
+  ngOnChanges(changes) {
+    const proxiedChange = changes["_matDialogClose"] || changes["_matDialogCloseResult"];
+    if (proxiedChange) {
+      this.dialogResult = proxiedChange.currentValue;
+    }
+  }
+  _onButtonClick(event) {
+    _closeDialogVia(this.dialogRef, event.screenX === 0 && event.screenY === 0 ? "keyboard" : "mouse", this.dialogResult);
+  }
+};
+_MatDialogClose.\u0275fac = function MatDialogClose_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatDialogClose)(\u0275\u0275directiveInject(MatDialogRef, 8), \u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(MatDialog));
+};
+_MatDialogClose.\u0275dir = /* @__PURE__ */ \u0275\u0275defineDirective({
+  type: _MatDialogClose,
+  selectors: [["", "mat-dialog-close", ""], ["", "matDialogClose", ""]],
+  hostVars: 2,
+  hostBindings: function MatDialogClose_HostBindings(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275listener("click", function MatDialogClose_click_HostBindingHandler($event) {
+        return ctx._onButtonClick($event);
+      });
+    }
+    if (rf & 2) {
+      \u0275\u0275attribute("aria-label", ctx.ariaLabel || null)("type", ctx.type);
+    }
+  },
+  inputs: {
+    ariaLabel: [0, "aria-label", "ariaLabel"],
+    type: "type",
+    dialogResult: [0, "mat-dialog-close", "dialogResult"],
+    _matDialogClose: [0, "matDialogClose", "_matDialogClose"]
+  },
+  exportAs: ["matDialogClose"],
+  standalone: true,
+  features: [\u0275\u0275NgOnChangesFeature]
+});
+var MatDialogClose = _MatDialogClose;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatDialogClose, [{
+    type: Directive,
+    args: [{
+      selector: "[mat-dialog-close], [matDialogClose]",
+      exportAs: "matDialogClose",
+      standalone: true,
+      host: {
+        "(click)": "_onButtonClick($event)",
+        "[attr.aria-label]": "ariaLabel || null",
+        "[attr.type]": "type"
+      }
+    }]
+  }], () => [{
+    type: MatDialogRef,
+    decorators: [{
+      type: Optional
+    }]
+  }, {
+    type: ElementRef
+  }, {
+    type: MatDialog
+  }], {
+    ariaLabel: [{
+      type: Input,
+      args: ["aria-label"]
+    }],
+    type: [{
+      type: Input
+    }],
+    dialogResult: [{
+      type: Input,
+      args: ["mat-dialog-close"]
+    }],
+    _matDialogClose: [{
+      type: Input,
+      args: ["matDialogClose"]
+    }]
+  });
+})();
+var _MatDialogLayoutSection = class _MatDialogLayoutSection {
+  constructor(_dialogRef, _elementRef, _dialog) {
+    this._dialogRef = _dialogRef;
+    this._elementRef = _elementRef;
+    this._dialog = _dialog;
+  }
+  ngOnInit() {
+    if (!this._dialogRef) {
+      this._dialogRef = getClosestDialog(this._elementRef, this._dialog.openDialogs);
+    }
+    if (this._dialogRef) {
+      Promise.resolve().then(() => {
+        this._onAdd();
+      });
+    }
+  }
+  ngOnDestroy() {
+    const instance = this._dialogRef?._containerInstance;
+    if (instance) {
+      Promise.resolve().then(() => {
+        this._onRemove();
+      });
+    }
+  }
+};
+_MatDialogLayoutSection.\u0275fac = function MatDialogLayoutSection_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatDialogLayoutSection)(\u0275\u0275directiveInject(MatDialogRef, 8), \u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(MatDialog));
+};
+_MatDialogLayoutSection.\u0275dir = /* @__PURE__ */ \u0275\u0275defineDirective({
+  type: _MatDialogLayoutSection,
+  standalone: true
+});
+var MatDialogLayoutSection = _MatDialogLayoutSection;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatDialogLayoutSection, [{
+    type: Directive,
+    args: [{
+      standalone: true
+    }]
+  }], () => [{
+    type: MatDialogRef,
+    decorators: [{
+      type: Optional
+    }]
+  }, {
+    type: ElementRef
+  }, {
+    type: MatDialog
+  }], null);
+})();
+var _MatDialogTitle = class _MatDialogTitle extends MatDialogLayoutSection {
+  constructor() {
+    super(...arguments);
+    this.id = `mat-mdc-dialog-title-${dialogElementUid++}`;
+  }
+  _onAdd() {
+    this._dialogRef._containerInstance?._addAriaLabelledBy?.(this.id);
+  }
+  _onRemove() {
+    this._dialogRef?._containerInstance?._removeAriaLabelledBy?.(this.id);
+  }
+};
+_MatDialogTitle.\u0275fac = /* @__PURE__ */ (() => {
+  let \u0275MatDialogTitle_BaseFactory;
+  return function MatDialogTitle_Factory(__ngFactoryType__) {
+    return (\u0275MatDialogTitle_BaseFactory || (\u0275MatDialogTitle_BaseFactory = \u0275\u0275getInheritedFactory(_MatDialogTitle)))(__ngFactoryType__ || _MatDialogTitle);
+  };
+})();
+_MatDialogTitle.\u0275dir = /* @__PURE__ */ \u0275\u0275defineDirective({
+  type: _MatDialogTitle,
+  selectors: [["", "mat-dialog-title", ""], ["", "matDialogTitle", ""]],
+  hostAttrs: [1, "mat-mdc-dialog-title", "mdc-dialog__title"],
+  hostVars: 1,
+  hostBindings: function MatDialogTitle_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      \u0275\u0275hostProperty("id", ctx.id);
+    }
+  },
+  inputs: {
+    id: "id"
+  },
+  exportAs: ["matDialogTitle"],
+  standalone: true,
+  features: [\u0275\u0275InheritDefinitionFeature]
+});
+var MatDialogTitle = _MatDialogTitle;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatDialogTitle, [{
+    type: Directive,
+    args: [{
+      selector: "[mat-dialog-title], [matDialogTitle]",
+      exportAs: "matDialogTitle",
+      standalone: true,
+      host: {
+        "class": "mat-mdc-dialog-title mdc-dialog__title",
+        "[id]": "id"
+      }
+    }]
+  }], null, {
+    id: [{
+      type: Input
+    }]
+  });
+})();
+var _MatDialogContent = class _MatDialogContent {
+};
+_MatDialogContent.\u0275fac = function MatDialogContent_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatDialogContent)();
+};
+_MatDialogContent.\u0275dir = /* @__PURE__ */ \u0275\u0275defineDirective({
+  type: _MatDialogContent,
+  selectors: [["", "mat-dialog-content", ""], ["mat-dialog-content"], ["", "matDialogContent", ""]],
+  hostAttrs: [1, "mat-mdc-dialog-content", "mdc-dialog__content"],
+  standalone: true,
+  features: [\u0275\u0275HostDirectivesFeature([CdkScrollable])]
+});
+var MatDialogContent = _MatDialogContent;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatDialogContent, [{
+    type: Directive,
+    args: [{
+      selector: `[mat-dialog-content], mat-dialog-content, [matDialogContent]`,
+      host: {
+        "class": "mat-mdc-dialog-content mdc-dialog__content"
+      },
+      standalone: true,
+      hostDirectives: [CdkScrollable]
+    }]
+  }], null, null);
+})();
+var _MatDialogActions = class _MatDialogActions extends MatDialogLayoutSection {
+  _onAdd() {
+    this._dialogRef._containerInstance?._updateActionSectionCount?.(1);
+  }
+  _onRemove() {
+    this._dialogRef._containerInstance?._updateActionSectionCount?.(-1);
+  }
+};
+_MatDialogActions.\u0275fac = /* @__PURE__ */ (() => {
+  let \u0275MatDialogActions_BaseFactory;
+  return function MatDialogActions_Factory(__ngFactoryType__) {
+    return (\u0275MatDialogActions_BaseFactory || (\u0275MatDialogActions_BaseFactory = \u0275\u0275getInheritedFactory(_MatDialogActions)))(__ngFactoryType__ || _MatDialogActions);
+  };
+})();
+_MatDialogActions.\u0275dir = /* @__PURE__ */ \u0275\u0275defineDirective({
+  type: _MatDialogActions,
+  selectors: [["", "mat-dialog-actions", ""], ["mat-dialog-actions"], ["", "matDialogActions", ""]],
+  hostAttrs: [1, "mat-mdc-dialog-actions", "mdc-dialog__actions"],
+  hostVars: 6,
+  hostBindings: function MatDialogActions_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      \u0275\u0275classProp("mat-mdc-dialog-actions-align-start", ctx.align === "start")("mat-mdc-dialog-actions-align-center", ctx.align === "center")("mat-mdc-dialog-actions-align-end", ctx.align === "end");
+    }
+  },
+  inputs: {
+    align: "align"
+  },
+  standalone: true,
+  features: [\u0275\u0275InheritDefinitionFeature]
+});
+var MatDialogActions = _MatDialogActions;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatDialogActions, [{
+    type: Directive,
+    args: [{
+      selector: `[mat-dialog-actions], mat-dialog-actions, [matDialogActions]`,
+      standalone: true,
+      host: {
+        "class": "mat-mdc-dialog-actions mdc-dialog__actions",
+        "[class.mat-mdc-dialog-actions-align-start]": 'align === "start"',
+        "[class.mat-mdc-dialog-actions-align-center]": 'align === "center"',
+        "[class.mat-mdc-dialog-actions-align-end]": 'align === "end"'
+      }
+    }]
+  }], null, {
+    align: [{
+      type: Input
+    }]
+  });
+})();
+function getClosestDialog(element, openDialogs) {
+  let parent = element.nativeElement.parentElement;
+  while (parent && !parent.classList.contains("mat-mdc-dialog-container")) {
+    parent = parent.parentElement;
+  }
+  return parent ? openDialogs.find((dialog) => dialog.id === parent.id) : null;
+}
+var DIRECTIVES = [MatDialogContainer, MatDialogClose, MatDialogTitle, MatDialogActions, MatDialogContent];
+var _MatDialogModule = class _MatDialogModule {
+};
+_MatDialogModule.\u0275fac = function MatDialogModule_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatDialogModule)();
+};
+_MatDialogModule.\u0275mod = /* @__PURE__ */ \u0275\u0275defineNgModule({
+  type: _MatDialogModule
+});
+_MatDialogModule.\u0275inj = /* @__PURE__ */ \u0275\u0275defineInjector({
+  providers: [MatDialog],
+  imports: [DialogModule, OverlayModule, PortalModule, MatCommonModule, MatCommonModule]
+});
+var MatDialogModule = _MatDialogModule;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatDialogModule, [{
+    type: NgModule,
+    args: [{
+      imports: [DialogModule, OverlayModule, PortalModule, MatCommonModule, ...DIRECTIVES],
+      exports: [MatCommonModule, ...DIRECTIVES],
+      providers: [MatDialog]
+    }]
+  }], null, null);
+})();
+var _defaultParams = {
+  params: {
+    enterAnimationDuration: "150ms",
+    exitAnimationDuration: "75ms"
+  }
+};
+var matDialogAnimations = {
+  /** Animation that is applied on the dialog container by default. */
+  dialogContainer: trigger("dialogContainer", [
+    // Note: The `enter` animation transitions to `transform: none`, because for some reason
+    // specifying the transform explicitly, causes IE both to blur the dialog content and
+    // decimate the animation performance. Leaving it as `none` solves both issues.
+    state("void, exit", style({
+      opacity: 0,
+      transform: "scale(0.7)"
+    })),
+    state("enter", style({
+      transform: "none"
+    })),
+    transition("* => enter", group([animate("{{enterAnimationDuration}} cubic-bezier(0, 0, 0.2, 1)", style({
+      transform: "none",
+      opacity: 1
+    })), query("@*", animateChild(), {
+      optional: true
+    })]), _defaultParams),
+    transition("* => void, * => exit", group([animate("{{exitAnimationDuration}} cubic-bezier(0.4, 0.0, 0.2, 1)", style({
+      opacity: 0
+    })), query("@*", animateChild(), {
+      optional: true
+    })]), _defaultParams)
+  ])
+};
+
+// node_modules/@angular/material/fesm2022/button-toggle.mjs
+var _c08 = ["button"];
+var _c17 = ["*"];
+function MatButtonToggle_Conditional_3_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "mat-option", 5);
+    \u0275\u0275element(0, "mat-pseudo-checkbox", 3);
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext();
+    \u0275\u0275property("disabled", ctx_r1.disabled);
+  }
+}
+function MatButtonToggle_Conditional_4_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275element(0, "mat-pseudo-checkbox", 3);
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext();
+    \u0275\u0275property("disabled", ctx_r1.disabled);
+  }
+}
+var MAT_BUTTON_TOGGLE_DEFAULT_OPTIONS = new InjectionToken("MAT_BUTTON_TOGGLE_DEFAULT_OPTIONS", {
+  providedIn: "root",
+  factory: MAT_BUTTON_TOGGLE_GROUP_DEFAULT_OPTIONS_FACTORY
+});
+function MAT_BUTTON_TOGGLE_GROUP_DEFAULT_OPTIONS_FACTORY() {
+  return {
+    hideSingleSelectionIndicator: false,
+    hideMultipleSelectionIndicator: false
+  };
+}
+var MAT_BUTTON_TOGGLE_GROUP = new InjectionToken("MatButtonToggleGroup");
+var MAT_BUTTON_TOGGLE_GROUP_VALUE_ACCESSOR = {
+  provide: NG_VALUE_ACCESSOR,
+  useExisting: forwardRef(() => MatButtonToggleGroup),
+  multi: true
+};
+var uniqueIdCounter = 0;
+var MatButtonToggleChange = class {
+  constructor(source, value) {
+    this.source = source;
+    this.value = value;
+  }
+};
+var _MatButtonToggleGroup = class _MatButtonToggleGroup {
+  /** `name` attribute for the underlying `input` element. */
+  get name() {
+    return this._name;
+  }
+  set name(value) {
+    this._name = value;
+    this._markButtonsForCheck();
+  }
+  /** Value of the toggle group. */
+  get value() {
+    const selected = this._selectionModel ? this._selectionModel.selected : [];
+    if (this.multiple) {
+      return selected.map((toggle) => toggle.value);
+    }
+    return selected[0] ? selected[0].value : void 0;
+  }
+  set value(newValue) {
+    this._setSelectionByValue(newValue);
+    this.valueChange.emit(this.value);
+  }
+  /** Selected button toggles in the group. */
+  get selected() {
+    const selected = this._selectionModel ? this._selectionModel.selected : [];
+    return this.multiple ? selected : selected[0] || null;
+  }
+  /** Whether multiple button toggles can be selected. */
+  get multiple() {
+    return this._multiple;
+  }
+  set multiple(value) {
+    this._multiple = value;
+    this._markButtonsForCheck();
+  }
+  /** Whether multiple button toggle group is disabled. */
+  get disabled() {
+    return this._disabled;
+  }
+  set disabled(value) {
+    this._disabled = value;
+    this._markButtonsForCheck();
+  }
+  /** The layout direction of the toggle button group. */
+  get dir() {
+    return this._dir && this._dir.value === "rtl" ? "rtl" : "ltr";
+  }
+  /** Whether checkmark indicator for single-selection button toggle groups is hidden. */
+  get hideSingleSelectionIndicator() {
+    return this._hideSingleSelectionIndicator;
+  }
+  set hideSingleSelectionIndicator(value) {
+    this._hideSingleSelectionIndicator = value;
+    this._markButtonsForCheck();
+  }
+  /** Whether checkmark indicator for multiple-selection button toggle groups is hidden. */
+  get hideMultipleSelectionIndicator() {
+    return this._hideMultipleSelectionIndicator;
+  }
+  set hideMultipleSelectionIndicator(value) {
+    this._hideMultipleSelectionIndicator = value;
+    this._markButtonsForCheck();
+  }
+  constructor(_changeDetector, defaultOptions, _dir) {
+    this._changeDetector = _changeDetector;
+    this._dir = _dir;
+    this._multiple = false;
+    this._disabled = false;
+    this._controlValueAccessorChangeFn = () => {
+    };
+    this._onTouched = () => {
+    };
+    this._name = `mat-button-toggle-group-${uniqueIdCounter++}`;
+    this.valueChange = new EventEmitter();
+    this.change = new EventEmitter();
+    this.appearance = defaultOptions && defaultOptions.appearance ? defaultOptions.appearance : "standard";
+    this.hideSingleSelectionIndicator = defaultOptions?.hideSingleSelectionIndicator ?? false;
+    this.hideMultipleSelectionIndicator = defaultOptions?.hideMultipleSelectionIndicator ?? false;
+  }
+  ngOnInit() {
+    this._selectionModel = new SelectionModel(this.multiple, void 0, false);
+  }
+  ngAfterContentInit() {
+    this._selectionModel.select(...this._buttonToggles.filter((toggle) => toggle.checked));
+    if (!this.multiple) {
+      this._initializeTabIndex();
+    }
+  }
+  /**
+   * Sets the model value. Implemented as part of ControlValueAccessor.
+   * @param value Value to be set to the model.
+   */
+  writeValue(value) {
+    this.value = value;
+    this._changeDetector.markForCheck();
+  }
+  // Implemented as part of ControlValueAccessor.
+  registerOnChange(fn) {
+    this._controlValueAccessorChangeFn = fn;
+  }
+  // Implemented as part of ControlValueAccessor.
+  registerOnTouched(fn) {
+    this._onTouched = fn;
+  }
+  // Implemented as part of ControlValueAccessor.
+  setDisabledState(isDisabled) {
+    this.disabled = isDisabled;
+  }
+  /** Handle keydown event calling to single-select button toggle. */
+  _keydown(event) {
+    if (this.multiple || this.disabled) {
+      return;
+    }
+    const target = event.target;
+    const buttonId = target.id;
+    const index = this._buttonToggles.toArray().findIndex((toggle) => {
+      return toggle.buttonId === buttonId;
+    });
+    let nextButton = null;
+    switch (event.keyCode) {
+      case SPACE:
+      case ENTER:
+        nextButton = this._buttonToggles.get(index) || null;
+        break;
+      case UP_ARROW:
+        nextButton = this._getNextButton(index, -1);
+        break;
+      case LEFT_ARROW:
+        nextButton = this._getNextButton(index, this.dir === "ltr" ? -1 : 1);
+        break;
+      case DOWN_ARROW:
+        nextButton = this._getNextButton(index, 1);
+        break;
+      case RIGHT_ARROW:
+        nextButton = this._getNextButton(index, this.dir === "ltr" ? 1 : -1);
+        break;
+      default:
+        return;
+    }
+    if (nextButton) {
+      event.preventDefault();
+      nextButton._onButtonClick();
+      nextButton.focus();
+    }
+  }
+  /** Dispatch change event with current selection and group value. */
+  _emitChangeEvent(toggle) {
+    const event = new MatButtonToggleChange(toggle, this.value);
+    this._rawValue = event.value;
+    this._controlValueAccessorChangeFn(event.value);
+    this.change.emit(event);
+  }
+  /**
+   * Syncs a button toggle's selected state with the model value.
+   * @param toggle Toggle to be synced.
+   * @param select Whether the toggle should be selected.
+   * @param isUserInput Whether the change was a result of a user interaction.
+   * @param deferEvents Whether to defer emitting the change events.
+   */
+  _syncButtonToggle(toggle, select, isUserInput = false, deferEvents = false) {
+    if (!this.multiple && this.selected && !toggle.checked) {
+      this.selected.checked = false;
+    }
+    if (this._selectionModel) {
+      if (select) {
+        this._selectionModel.select(toggle);
+      } else {
+        this._selectionModel.deselect(toggle);
+      }
+    } else {
+      deferEvents = true;
+    }
+    if (deferEvents) {
+      Promise.resolve().then(() => this._updateModelValue(toggle, isUserInput));
+    } else {
+      this._updateModelValue(toggle, isUserInput);
+    }
+  }
+  /** Checks whether a button toggle is selected. */
+  _isSelected(toggle) {
+    return this._selectionModel && this._selectionModel.isSelected(toggle);
+  }
+  /** Determines whether a button toggle should be checked on init. */
+  _isPrechecked(toggle) {
+    if (typeof this._rawValue === "undefined") {
+      return false;
+    }
+    if (this.multiple && Array.isArray(this._rawValue)) {
+      return this._rawValue.some((value) => toggle.value != null && value === toggle.value);
+    }
+    return toggle.value === this._rawValue;
+  }
+  /** Initializes the tabindex attribute using the radio pattern. */
+  _initializeTabIndex() {
+    this._buttonToggles.forEach((toggle) => {
+      toggle.tabIndex = -1;
+    });
+    if (this.selected) {
+      this.selected.tabIndex = 0;
+    } else {
+      for (let i = 0; i < this._buttonToggles.length; i++) {
+        const toggle = this._buttonToggles.get(i);
+        if (!toggle.disabled) {
+          toggle.tabIndex = 0;
+          break;
+        }
+      }
+    }
+    this._markButtonsForCheck();
+  }
+  /** Obtain the subsequent toggle to which the focus shifts. */
+  _getNextButton(startIndex, offset2) {
+    const items = this._buttonToggles;
+    for (let i = 1; i <= items.length; i++) {
+      const index = (startIndex + offset2 * i + items.length) % items.length;
+      const item = items.get(index);
+      if (item && !item.disabled) {
+        return item;
+      }
+    }
+    return null;
+  }
+  /** Updates the selection state of the toggles in the group based on a value. */
+  _setSelectionByValue(value) {
+    this._rawValue = value;
+    if (!this._buttonToggles) {
+      return;
+    }
+    if (this.multiple && value) {
+      if (!Array.isArray(value) && (typeof ngDevMode === "undefined" || ngDevMode)) {
+        throw Error("Value must be an array in multiple-selection mode.");
+      }
+      this._clearSelection();
+      value.forEach((currentValue) => this._selectValue(currentValue));
+    } else {
+      this._clearSelection();
+      this._selectValue(value);
+    }
+  }
+  /** Clears the selected toggles. */
+  _clearSelection() {
+    this._selectionModel.clear();
+    this._buttonToggles.forEach((toggle) => {
+      toggle.checked = false;
+      if (!this.multiple) {
+        toggle.tabIndex = -1;
+      }
+    });
+  }
+  /** Selects a value if there's a toggle that corresponds to it. */
+  _selectValue(value) {
+    const correspondingOption = this._buttonToggles.find((toggle) => {
+      return toggle.value != null && toggle.value === value;
+    });
+    if (correspondingOption) {
+      correspondingOption.checked = true;
+      this._selectionModel.select(correspondingOption);
+      if (!this.multiple) {
+        correspondingOption.tabIndex = 0;
+      }
+    }
+  }
+  /** Syncs up the group's value with the model and emits the change event. */
+  _updateModelValue(toggle, isUserInput) {
+    if (isUserInput) {
+      this._emitChangeEvent(toggle);
+    }
+    this.valueChange.emit(this.value);
+  }
+  /** Marks all of the child button toggles to be checked. */
+  _markButtonsForCheck() {
+    this._buttonToggles?.forEach((toggle) => toggle._markForCheck());
+  }
+};
+_MatButtonToggleGroup.\u0275fac = function MatButtonToggleGroup_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatButtonToggleGroup)(\u0275\u0275directiveInject(ChangeDetectorRef), \u0275\u0275directiveInject(MAT_BUTTON_TOGGLE_DEFAULT_OPTIONS, 8), \u0275\u0275directiveInject(Directionality, 8));
+};
+_MatButtonToggleGroup.\u0275dir = /* @__PURE__ */ \u0275\u0275defineDirective({
+  type: _MatButtonToggleGroup,
+  selectors: [["mat-button-toggle-group"]],
+  contentQueries: function MatButtonToggleGroup_ContentQueries(rf, ctx, dirIndex) {
+    if (rf & 1) {
+      \u0275\u0275contentQuery(dirIndex, MatButtonToggle, 5);
+    }
+    if (rf & 2) {
+      let _t;
+      \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx._buttonToggles = _t);
+    }
+  },
+  hostAttrs: [1, "mat-button-toggle-group"],
+  hostVars: 6,
+  hostBindings: function MatButtonToggleGroup_HostBindings(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275listener("keydown", function MatButtonToggleGroup_keydown_HostBindingHandler($event) {
+        return ctx._keydown($event);
+      });
+    }
+    if (rf & 2) {
+      \u0275\u0275attribute("role", ctx.multiple ? "group" : "radiogroup")("aria-disabled", ctx.disabled);
+      \u0275\u0275classProp("mat-button-toggle-vertical", ctx.vertical)("mat-button-toggle-group-appearance-standard", ctx.appearance === "standard");
+    }
+  },
+  inputs: {
+    appearance: "appearance",
+    name: "name",
+    vertical: [2, "vertical", "vertical", booleanAttribute],
+    value: "value",
+    multiple: [2, "multiple", "multiple", booleanAttribute],
+    disabled: [2, "disabled", "disabled", booleanAttribute],
+    hideSingleSelectionIndicator: [2, "hideSingleSelectionIndicator", "hideSingleSelectionIndicator", booleanAttribute],
+    hideMultipleSelectionIndicator: [2, "hideMultipleSelectionIndicator", "hideMultipleSelectionIndicator", booleanAttribute]
+  },
+  outputs: {
+    valueChange: "valueChange",
+    change: "change"
+  },
+  exportAs: ["matButtonToggleGroup"],
+  standalone: true,
+  features: [\u0275\u0275ProvidersFeature([MAT_BUTTON_TOGGLE_GROUP_VALUE_ACCESSOR, {
+    provide: MAT_BUTTON_TOGGLE_GROUP,
+    useExisting: _MatButtonToggleGroup
+  }]), \u0275\u0275InputTransformsFeature]
+});
+var MatButtonToggleGroup = _MatButtonToggleGroup;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatButtonToggleGroup, [{
+    type: Directive,
+    args: [{
+      selector: "mat-button-toggle-group",
+      providers: [MAT_BUTTON_TOGGLE_GROUP_VALUE_ACCESSOR, {
+        provide: MAT_BUTTON_TOGGLE_GROUP,
+        useExisting: MatButtonToggleGroup
+      }],
+      host: {
+        "class": "mat-button-toggle-group",
+        "(keydown)": "_keydown($event)",
+        "[attr.role]": "multiple ? 'group' : 'radiogroup'",
+        "[attr.aria-disabled]": "disabled",
+        "[class.mat-button-toggle-vertical]": "vertical",
+        "[class.mat-button-toggle-group-appearance-standard]": 'appearance === "standard"'
+      },
+      exportAs: "matButtonToggleGroup",
+      standalone: true
+    }]
+  }], () => [{
+    type: ChangeDetectorRef
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [MAT_BUTTON_TOGGLE_DEFAULT_OPTIONS]
+    }]
+  }, {
+    type: Directionality,
+    decorators: [{
+      type: Optional
+    }]
+  }], {
+    _buttonToggles: [{
+      type: ContentChildren,
+      args: [forwardRef(() => MatButtonToggle), {
+        // Note that this would technically pick up toggles
+        // from nested groups, but that's not a case that we support.
+        descendants: true
+      }]
+    }],
+    appearance: [{
+      type: Input
+    }],
+    name: [{
+      type: Input
+    }],
+    vertical: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }],
+    value: [{
+      type: Input
+    }],
+    valueChange: [{
+      type: Output
+    }],
+    multiple: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }],
+    disabled: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }],
+    change: [{
+      type: Output
+    }],
+    hideSingleSelectionIndicator: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }],
+    hideMultipleSelectionIndicator: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }]
+  });
+})();
+var _MatButtonToggle = class _MatButtonToggle {
+  /** Unique ID for the underlying `button` element. */
+  get buttonId() {
+    return `${this.id}-button`;
+  }
+  /** Tabindex of the toggle. */
+  get tabIndex() {
+    return this._tabIndex;
+  }
+  set tabIndex(value) {
+    this._tabIndex = value;
+    this._markForCheck();
+  }
+  /** The appearance style of the button. */
+  get appearance() {
+    return this.buttonToggleGroup ? this.buttonToggleGroup.appearance : this._appearance;
+  }
+  set appearance(value) {
+    this._appearance = value;
+  }
+  /** Whether the button is checked. */
+  get checked() {
+    return this.buttonToggleGroup ? this.buttonToggleGroup._isSelected(this) : this._checked;
+  }
+  set checked(value) {
+    if (value !== this._checked) {
+      this._checked = value;
+      if (this.buttonToggleGroup) {
+        this.buttonToggleGroup._syncButtonToggle(this, this._checked);
+      }
+      this._changeDetectorRef.markForCheck();
+    }
+  }
+  /** Whether the button is disabled. */
+  get disabled() {
+    return this._disabled || this.buttonToggleGroup && this.buttonToggleGroup.disabled;
+  }
+  set disabled(value) {
+    this._disabled = value;
+  }
+  constructor(toggleGroup, _changeDetectorRef, _elementRef, _focusMonitor, defaultTabIndex, defaultOptions) {
+    this._changeDetectorRef = _changeDetectorRef;
+    this._elementRef = _elementRef;
+    this._focusMonitor = _focusMonitor;
+    this._checked = false;
+    this.ariaLabelledby = null;
+    this._disabled = false;
+    this.change = new EventEmitter();
+    const parsedTabIndex = Number(defaultTabIndex);
+    this.tabIndex = parsedTabIndex || parsedTabIndex === 0 ? parsedTabIndex : null;
+    this.buttonToggleGroup = toggleGroup;
+    this.appearance = defaultOptions && defaultOptions.appearance ? defaultOptions.appearance : "standard";
+  }
+  ngOnInit() {
+    const group2 = this.buttonToggleGroup;
+    this.id = this.id || `mat-button-toggle-${uniqueIdCounter++}`;
+    if (group2) {
+      if (group2._isPrechecked(this)) {
+        this.checked = true;
+      } else if (group2._isSelected(this) !== this._checked) {
+        group2._syncButtonToggle(this, this._checked);
+      }
+    }
+  }
+  ngAfterViewInit() {
+    this._focusMonitor.monitor(this._elementRef, true);
+  }
+  ngOnDestroy() {
+    const group2 = this.buttonToggleGroup;
+    this._focusMonitor.stopMonitoring(this._elementRef);
+    if (group2 && group2._isSelected(this)) {
+      group2._syncButtonToggle(this, false, false, true);
+    }
+  }
+  /** Focuses the button. */
+  focus(options) {
+    this._buttonElement.nativeElement.focus(options);
+  }
+  /** Checks the button toggle due to an interaction with the underlying native button. */
+  _onButtonClick() {
+    const newChecked = this.isSingleSelector() ? true : !this._checked;
+    if (newChecked !== this._checked) {
+      this._checked = newChecked;
+      if (this.buttonToggleGroup) {
+        this.buttonToggleGroup._syncButtonToggle(this, this._checked, true);
+        this.buttonToggleGroup._onTouched();
+      }
+    }
+    if (this.isSingleSelector()) {
+      const focusable = this.buttonToggleGroup._buttonToggles.find((toggle) => {
+        return toggle.tabIndex === 0;
+      });
+      if (focusable) {
+        focusable.tabIndex = -1;
+      }
+      this.tabIndex = 0;
+    }
+    this.change.emit(new MatButtonToggleChange(this, this.value));
+  }
+  /**
+   * Marks the button toggle as needing checking for change detection.
+   * This method is exposed because the parent button toggle group will directly
+   * update bound properties of the radio button.
+   */
+  _markForCheck() {
+    this._changeDetectorRef.markForCheck();
+  }
+  /** Gets the name that should be assigned to the inner DOM node. */
+  _getButtonName() {
+    if (this.isSingleSelector()) {
+      return this.buttonToggleGroup.name;
+    }
+    return this.name || null;
+  }
+  /** Whether the toggle is in single selection mode. */
+  isSingleSelector() {
+    return this.buttonToggleGroup && !this.buttonToggleGroup.multiple;
+  }
+};
+_MatButtonToggle.\u0275fac = function MatButtonToggle_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatButtonToggle)(\u0275\u0275directiveInject(MAT_BUTTON_TOGGLE_GROUP, 8), \u0275\u0275directiveInject(ChangeDetectorRef), \u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(FocusMonitor), \u0275\u0275injectAttribute("tabindex"), \u0275\u0275directiveInject(MAT_BUTTON_TOGGLE_DEFAULT_OPTIONS, 8));
+};
+_MatButtonToggle.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
+  type: _MatButtonToggle,
+  selectors: [["mat-button-toggle"]],
+  viewQuery: function MatButtonToggle_Query(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275viewQuery(_c08, 5);
+    }
+    if (rf & 2) {
+      let _t;
+      \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx._buttonElement = _t.first);
+    }
+  },
+  hostAttrs: ["role", "presentation", 1, "mat-button-toggle"],
+  hostVars: 12,
+  hostBindings: function MatButtonToggle_HostBindings(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275listener("focus", function MatButtonToggle_focus_HostBindingHandler() {
+        return ctx.focus();
+      });
+    }
+    if (rf & 2) {
+      \u0275\u0275attribute("aria-label", null)("aria-labelledby", null)("id", ctx.id)("name", null);
+      \u0275\u0275classProp("mat-button-toggle-standalone", !ctx.buttonToggleGroup)("mat-button-toggle-checked", ctx.checked)("mat-button-toggle-disabled", ctx.disabled)("mat-button-toggle-appearance-standard", ctx.appearance === "standard");
+    }
+  },
+  inputs: {
+    ariaLabel: [0, "aria-label", "ariaLabel"],
+    ariaLabelledby: [0, "aria-labelledby", "ariaLabelledby"],
+    id: "id",
+    name: "name",
+    value: "value",
+    tabIndex: "tabIndex",
+    disableRipple: [2, "disableRipple", "disableRipple", booleanAttribute],
+    appearance: "appearance",
+    checked: [2, "checked", "checked", booleanAttribute],
+    disabled: [2, "disabled", "disabled", booleanAttribute]
+  },
+  outputs: {
+    change: "change"
+  },
+  exportAs: ["matButtonToggle"],
+  standalone: true,
+  features: [\u0275\u0275InputTransformsFeature, \u0275\u0275StandaloneFeature],
+  ngContentSelectors: _c17,
+  decls: 8,
+  vars: 13,
+  consts: [["button", ""], ["type", "button", 1, "mat-button-toggle-button", "mat-focus-indicator", 3, "click", "id", "disabled"], [1, "mat-button-toggle-label-content"], ["state", "checked", "aria-hidden", "true", "appearance", "minimal", 1, "mat-mdc-option-pseudo-checkbox", 3, "disabled"], [1, "mat-button-toggle-focus-overlay"], ["matRipple", "", 1, "mat-button-toggle-ripple", 3, "matRippleTrigger", "matRippleDisabled"]],
+  template: function MatButtonToggle_Template(rf, ctx) {
+    if (rf & 1) {
+      const _r1 = \u0275\u0275getCurrentView();
+      \u0275\u0275projectionDef();
+      \u0275\u0275elementStart(0, "button", 1, 0);
+      \u0275\u0275listener("click", function MatButtonToggle_Template_button_click_0_listener() {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx._onButtonClick());
+      });
+      \u0275\u0275elementStart(2, "span", 2);
+      \u0275\u0275template(3, MatButtonToggle_Conditional_3_Template, 1, 1, "mat-pseudo-checkbox", 3)(4, MatButtonToggle_Conditional_4_Template, 1, 1, "mat-pseudo-checkbox", 3);
+      \u0275\u0275projection(5);
+      \u0275\u0275elementEnd()();
+      \u0275\u0275element(6, "span", 4)(7, "span", 5);
+    }
+    if (rf & 2) {
+      const button_r3 = \u0275\u0275reference(1);
+      \u0275\u0275property("id", ctx.buttonId)("disabled", ctx.disabled || null);
+      \u0275\u0275attribute("role", ctx.isSingleSelector() ? "radio" : "button")("tabindex", ctx.disabled ? -1 : ctx.tabIndex)("aria-pressed", !ctx.isSingleSelector() ? ctx.checked : null)("aria-checked", ctx.isSingleSelector() ? ctx.checked : null)("name", ctx._getButtonName())("aria-label", ctx.ariaLabel)("aria-labelledby", ctx.ariaLabelledby);
+      \u0275\u0275advance(3);
+      \u0275\u0275conditional(ctx.buttonToggleGroup && ctx.checked && !ctx.buttonToggleGroup.multiple && !ctx.buttonToggleGroup.hideSingleSelectionIndicator ? 3 : -1);
+      \u0275\u0275advance();
+      \u0275\u0275conditional(ctx.buttonToggleGroup && ctx.checked && ctx.buttonToggleGroup.multiple && !ctx.buttonToggleGroup.hideMultipleSelectionIndicator ? 4 : -1);
+      \u0275\u0275advance(3);
+      \u0275\u0275property("matRippleTrigger", button_r3)("matRippleDisabled", ctx.disableRipple || ctx.disabled);
+    }
+  },
+  dependencies: [MatRipple, MatPseudoCheckbox],
+  styles: [".mat-button-toggle-standalone,.mat-button-toggle-group{position:relative;display:inline-flex;flex-direction:row;white-space:nowrap;overflow:hidden;-webkit-tap-highlight-color:rgba(0,0,0,0);transform:translateZ(0);border-radius:var(--mat-legacy-button-toggle-shape)}.mat-button-toggle-standalone:not([class*=mat-elevation-z]),.mat-button-toggle-group:not([class*=mat-elevation-z]){box-shadow:0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)}.cdk-high-contrast-active .mat-button-toggle-standalone,.cdk-high-contrast-active .mat-button-toggle-group{outline:solid 1px}.mat-button-toggle-standalone.mat-button-toggle-appearance-standard,.mat-button-toggle-group-appearance-standard{border-radius:var(--mat-standard-button-toggle-shape);border:solid 1px var(--mat-standard-button-toggle-divider-color)}.mat-button-toggle-standalone.mat-button-toggle-appearance-standard .mat-pseudo-checkbox,.mat-button-toggle-group-appearance-standard .mat-pseudo-checkbox{--mat-minimal-pseudo-checkbox-selected-checkmark-color: var(--mat-standard-button-toggle-selected-state-text-color)}.mat-button-toggle-standalone.mat-button-toggle-appearance-standard:not([class*=mat-elevation-z]),.mat-button-toggle-group-appearance-standard:not([class*=mat-elevation-z]){box-shadow:none}.cdk-high-contrast-active .mat-button-toggle-standalone.mat-button-toggle-appearance-standard,.cdk-high-contrast-active .mat-button-toggle-group-appearance-standard{outline:0}.mat-button-toggle-vertical{flex-direction:column}.mat-button-toggle-vertical .mat-button-toggle-label-content{display:block}.mat-button-toggle{white-space:nowrap;position:relative;color:var(--mat-legacy-button-toggle-text-color);font-family:var(--mat-legacy-button-toggle-label-text-font);font-size:var(--mat-legacy-button-toggle-label-text-size);line-height:var(--mat-legacy-button-toggle-label-text-line-height);font-weight:var(--mat-legacy-button-toggle-label-text-weight);letter-spacing:var(--mat-legacy-button-toggle-label-text-tracking);--mat-minimal-pseudo-checkbox-selected-checkmark-color: var(--mat-legacy-button-toggle-selected-state-text-color)}.mat-button-toggle.cdk-keyboard-focused .mat-button-toggle-focus-overlay{opacity:var(--mat-legacy-button-toggle-focus-state-layer-opacity)}.mat-button-toggle .mat-icon svg{vertical-align:top}.mat-button-toggle .mat-pseudo-checkbox{margin-right:12px}[dir=rtl] .mat-button-toggle .mat-pseudo-checkbox{margin-right:0;margin-left:12px}.mat-button-toggle-checked{color:var(--mat-legacy-button-toggle-selected-state-text-color);background-color:var(--mat-legacy-button-toggle-selected-state-background-color)}.mat-button-toggle-disabled{color:var(--mat-legacy-button-toggle-disabled-state-text-color);background-color:var(--mat-legacy-button-toggle-disabled-state-background-color);--mat-minimal-pseudo-checkbox-disabled-selected-checkmark-color: var(--mat-legacy-button-toggle-disabled-state-text-color)}.mat-button-toggle-disabled.mat-button-toggle-checked{background-color:var(--mat-legacy-button-toggle-disabled-selected-state-background-color)}.mat-button-toggle-appearance-standard{color:var(--mat-standard-button-toggle-text-color);background-color:var(--mat-standard-button-toggle-background-color);font-family:var(--mat-standard-button-toggle-label-text-font);font-size:var(--mat-standard-button-toggle-label-text-size);line-height:var(--mat-standard-button-toggle-label-text-line-height);font-weight:var(--mat-standard-button-toggle-label-text-weight);letter-spacing:var(--mat-standard-button-toggle-label-text-tracking)}.mat-button-toggle-group-appearance-standard .mat-button-toggle-appearance-standard+.mat-button-toggle-appearance-standard{border-left:solid 1px var(--mat-standard-button-toggle-divider-color)}[dir=rtl] .mat-button-toggle-group-appearance-standard .mat-button-toggle-appearance-standard+.mat-button-toggle-appearance-standard{border-left:none;border-right:solid 1px var(--mat-standard-button-toggle-divider-color)}.mat-button-toggle-group-appearance-standard.mat-button-toggle-vertical .mat-button-toggle-appearance-standard+.mat-button-toggle-appearance-standard{border-left:none;border-right:none;border-top:solid 1px var(--mat-standard-button-toggle-divider-color)}.mat-button-toggle-appearance-standard.mat-button-toggle-checked{color:var(--mat-standard-button-toggle-selected-state-text-color);background-color:var(--mat-standard-button-toggle-selected-state-background-color)}.mat-button-toggle-appearance-standard.mat-button-toggle-disabled{color:var(--mat-standard-button-toggle-disabled-state-text-color);background-color:var(--mat-standard-button-toggle-disabled-state-background-color)}.mat-button-toggle-appearance-standard.mat-button-toggle-disabled .mat-pseudo-checkbox{--mat-minimal-pseudo-checkbox-disabled-selected-checkmark-color: var(--mat-standard-button-toggle-disabled-selected-state-text-color)}.mat-button-toggle-appearance-standard.mat-button-toggle-disabled.mat-button-toggle-checked{color:var(--mat-standard-button-toggle-disabled-selected-state-text-color);background-color:var(--mat-standard-button-toggle-disabled-selected-state-background-color)}.mat-button-toggle-appearance-standard .mat-button-toggle-focus-overlay{background-color:var(--mat-standard-button-toggle-state-layer-color)}.mat-button-toggle-appearance-standard:not(.mat-button-toggle-disabled):hover .mat-button-toggle-focus-overlay{opacity:var(--mat-standard-button-toggle-hover-state-layer-opacity)}.mat-button-toggle-appearance-standard.cdk-keyboard-focused:not(.mat-button-toggle-disabled) .mat-button-toggle-focus-overlay{opacity:var(--mat-standard-button-toggle-focus-state-layer-opacity)}@media(hover: none){.mat-button-toggle-appearance-standard:not(.mat-button-toggle-disabled):hover .mat-button-toggle-focus-overlay{display:none}}.mat-button-toggle-label-content{-webkit-user-select:none;user-select:none;display:inline-block;padding:0 16px;line-height:var(--mat-legacy-button-toggle-height);position:relative}.mat-button-toggle-appearance-standard .mat-button-toggle-label-content{padding:0 12px;line-height:var(--mat-standard-button-toggle-height)}.mat-button-toggle-label-content>*{vertical-align:middle}.mat-button-toggle-focus-overlay{top:0;left:0;right:0;bottom:0;position:absolute;border-radius:inherit;pointer-events:none;opacity:0;background-color:var(--mat-legacy-button-toggle-state-layer-color)}.cdk-high-contrast-active .mat-button-toggle-checked .mat-button-toggle-focus-overlay{border-bottom:solid 500px;opacity:.5;height:0}.cdk-high-contrast-active .mat-button-toggle-checked:hover .mat-button-toggle-focus-overlay{opacity:.6}.cdk-high-contrast-active .mat-button-toggle-checked.mat-button-toggle-appearance-standard .mat-button-toggle-focus-overlay{border-bottom:solid 500px}.mat-button-toggle .mat-button-toggle-ripple{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none}.mat-button-toggle-button{border:0;background:none;color:inherit;padding:0;margin:0;font:inherit;outline:none;width:100%;cursor:pointer}.mat-button-toggle-disabled .mat-button-toggle-button{cursor:default}.mat-button-toggle-button::-moz-focus-inner{border:0}.mat-button-toggle-standalone.mat-button-toggle-appearance-standard{--mat-focus-indicator-border-radius:var(--mat-standard-button-toggle-shape)}.mat-button-toggle-group-appearance-standard .mat-button-toggle:last-of-type .mat-button-toggle-button::before{border-top-right-radius:var(--mat-standard-button-toggle-shape);border-bottom-right-radius:var(--mat-standard-button-toggle-shape)}.mat-button-toggle-group-appearance-standard .mat-button-toggle:first-of-type .mat-button-toggle-button::before{border-top-left-radius:var(--mat-standard-button-toggle-shape);border-bottom-left-radius:var(--mat-standard-button-toggle-shape)}"],
+  encapsulation: 2,
+  changeDetection: 0
+});
+var MatButtonToggle = _MatButtonToggle;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatButtonToggle, [{
+    type: Component,
+    args: [{
+      selector: "mat-button-toggle",
+      encapsulation: ViewEncapsulation$1.None,
+      exportAs: "matButtonToggle",
+      changeDetection: ChangeDetectionStrategy.OnPush,
+      host: {
+        "[class.mat-button-toggle-standalone]": "!buttonToggleGroup",
+        "[class.mat-button-toggle-checked]": "checked",
+        "[class.mat-button-toggle-disabled]": "disabled",
+        "[class.mat-button-toggle-appearance-standard]": 'appearance === "standard"',
+        "class": "mat-button-toggle",
+        "[attr.aria-label]": "null",
+        "[attr.aria-labelledby]": "null",
+        "[attr.id]": "id",
+        "[attr.name]": "null",
+        "(focus)": "focus()",
+        "role": "presentation"
+      },
+      standalone: true,
+      imports: [MatRipple, MatPseudoCheckbox],
+      template: `<button #button class="mat-button-toggle-button mat-focus-indicator"
+        type="button"
+        [id]="buttonId"
+        [attr.role]="isSingleSelector() ? 'radio' : 'button'"
+        [attr.tabindex]="disabled ? -1 : tabIndex"
+        [attr.aria-pressed]="!isSingleSelector() ? checked : null"
+        [attr.aria-checked]="isSingleSelector() ? checked : null"
+        [disabled]="disabled || null"
+        [attr.name]="_getButtonName()"
+        [attr.aria-label]="ariaLabel"
+        [attr.aria-labelledby]="ariaLabelledby"
+        (click)="_onButtonClick()">
+  <span class="mat-button-toggle-label-content">
+    <!-- Render checkmark at the beginning for single-selection. -->
+    @if (buttonToggleGroup && checked && !buttonToggleGroup.multiple && !buttonToggleGroup.hideSingleSelectionIndicator) {
+      <mat-pseudo-checkbox
+          class="mat-mdc-option-pseudo-checkbox"
+          [disabled]="disabled"
+          state="checked"
+          aria-hidden="true"
+          appearance="minimal"></mat-pseudo-checkbox>
+    }
+    <!-- Render checkmark at the beginning for multiple-selection. -->
+    @if (buttonToggleGroup && checked && buttonToggleGroup.multiple && !buttonToggleGroup.hideMultipleSelectionIndicator) {
+      <mat-pseudo-checkbox
+          class="mat-mdc-option-pseudo-checkbox"
+          [disabled]="disabled"
+          state="checked"
+          aria-hidden="true"
+          appearance="minimal"></mat-pseudo-checkbox>
+    }
+    <ng-content></ng-content>
+  </span>
+</button>
+
+<span class="mat-button-toggle-focus-overlay"></span>
+<span class="mat-button-toggle-ripple" matRipple
+     [matRippleTrigger]="button"
+     [matRippleDisabled]="this.disableRipple || this.disabled">
+</span>
+`,
+      styles: [".mat-button-toggle-standalone,.mat-button-toggle-group{position:relative;display:inline-flex;flex-direction:row;white-space:nowrap;overflow:hidden;-webkit-tap-highlight-color:rgba(0,0,0,0);transform:translateZ(0);border-radius:var(--mat-legacy-button-toggle-shape)}.mat-button-toggle-standalone:not([class*=mat-elevation-z]),.mat-button-toggle-group:not([class*=mat-elevation-z]){box-shadow:0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)}.cdk-high-contrast-active .mat-button-toggle-standalone,.cdk-high-contrast-active .mat-button-toggle-group{outline:solid 1px}.mat-button-toggle-standalone.mat-button-toggle-appearance-standard,.mat-button-toggle-group-appearance-standard{border-radius:var(--mat-standard-button-toggle-shape);border:solid 1px var(--mat-standard-button-toggle-divider-color)}.mat-button-toggle-standalone.mat-button-toggle-appearance-standard .mat-pseudo-checkbox,.mat-button-toggle-group-appearance-standard .mat-pseudo-checkbox{--mat-minimal-pseudo-checkbox-selected-checkmark-color: var(--mat-standard-button-toggle-selected-state-text-color)}.mat-button-toggle-standalone.mat-button-toggle-appearance-standard:not([class*=mat-elevation-z]),.mat-button-toggle-group-appearance-standard:not([class*=mat-elevation-z]){box-shadow:none}.cdk-high-contrast-active .mat-button-toggle-standalone.mat-button-toggle-appearance-standard,.cdk-high-contrast-active .mat-button-toggle-group-appearance-standard{outline:0}.mat-button-toggle-vertical{flex-direction:column}.mat-button-toggle-vertical .mat-button-toggle-label-content{display:block}.mat-button-toggle{white-space:nowrap;position:relative;color:var(--mat-legacy-button-toggle-text-color);font-family:var(--mat-legacy-button-toggle-label-text-font);font-size:var(--mat-legacy-button-toggle-label-text-size);line-height:var(--mat-legacy-button-toggle-label-text-line-height);font-weight:var(--mat-legacy-button-toggle-label-text-weight);letter-spacing:var(--mat-legacy-button-toggle-label-text-tracking);--mat-minimal-pseudo-checkbox-selected-checkmark-color: var(--mat-legacy-button-toggle-selected-state-text-color)}.mat-button-toggle.cdk-keyboard-focused .mat-button-toggle-focus-overlay{opacity:var(--mat-legacy-button-toggle-focus-state-layer-opacity)}.mat-button-toggle .mat-icon svg{vertical-align:top}.mat-button-toggle .mat-pseudo-checkbox{margin-right:12px}[dir=rtl] .mat-button-toggle .mat-pseudo-checkbox{margin-right:0;margin-left:12px}.mat-button-toggle-checked{color:var(--mat-legacy-button-toggle-selected-state-text-color);background-color:var(--mat-legacy-button-toggle-selected-state-background-color)}.mat-button-toggle-disabled{color:var(--mat-legacy-button-toggle-disabled-state-text-color);background-color:var(--mat-legacy-button-toggle-disabled-state-background-color);--mat-minimal-pseudo-checkbox-disabled-selected-checkmark-color: var(--mat-legacy-button-toggle-disabled-state-text-color)}.mat-button-toggle-disabled.mat-button-toggle-checked{background-color:var(--mat-legacy-button-toggle-disabled-selected-state-background-color)}.mat-button-toggle-appearance-standard{color:var(--mat-standard-button-toggle-text-color);background-color:var(--mat-standard-button-toggle-background-color);font-family:var(--mat-standard-button-toggle-label-text-font);font-size:var(--mat-standard-button-toggle-label-text-size);line-height:var(--mat-standard-button-toggle-label-text-line-height);font-weight:var(--mat-standard-button-toggle-label-text-weight);letter-spacing:var(--mat-standard-button-toggle-label-text-tracking)}.mat-button-toggle-group-appearance-standard .mat-button-toggle-appearance-standard+.mat-button-toggle-appearance-standard{border-left:solid 1px var(--mat-standard-button-toggle-divider-color)}[dir=rtl] .mat-button-toggle-group-appearance-standard .mat-button-toggle-appearance-standard+.mat-button-toggle-appearance-standard{border-left:none;border-right:solid 1px var(--mat-standard-button-toggle-divider-color)}.mat-button-toggle-group-appearance-standard.mat-button-toggle-vertical .mat-button-toggle-appearance-standard+.mat-button-toggle-appearance-standard{border-left:none;border-right:none;border-top:solid 1px var(--mat-standard-button-toggle-divider-color)}.mat-button-toggle-appearance-standard.mat-button-toggle-checked{color:var(--mat-standard-button-toggle-selected-state-text-color);background-color:var(--mat-standard-button-toggle-selected-state-background-color)}.mat-button-toggle-appearance-standard.mat-button-toggle-disabled{color:var(--mat-standard-button-toggle-disabled-state-text-color);background-color:var(--mat-standard-button-toggle-disabled-state-background-color)}.mat-button-toggle-appearance-standard.mat-button-toggle-disabled .mat-pseudo-checkbox{--mat-minimal-pseudo-checkbox-disabled-selected-checkmark-color: var(--mat-standard-button-toggle-disabled-selected-state-text-color)}.mat-button-toggle-appearance-standard.mat-button-toggle-disabled.mat-button-toggle-checked{color:var(--mat-standard-button-toggle-disabled-selected-state-text-color);background-color:var(--mat-standard-button-toggle-disabled-selected-state-background-color)}.mat-button-toggle-appearance-standard .mat-button-toggle-focus-overlay{background-color:var(--mat-standard-button-toggle-state-layer-color)}.mat-button-toggle-appearance-standard:not(.mat-button-toggle-disabled):hover .mat-button-toggle-focus-overlay{opacity:var(--mat-standard-button-toggle-hover-state-layer-opacity)}.mat-button-toggle-appearance-standard.cdk-keyboard-focused:not(.mat-button-toggle-disabled) .mat-button-toggle-focus-overlay{opacity:var(--mat-standard-button-toggle-focus-state-layer-opacity)}@media(hover: none){.mat-button-toggle-appearance-standard:not(.mat-button-toggle-disabled):hover .mat-button-toggle-focus-overlay{display:none}}.mat-button-toggle-label-content{-webkit-user-select:none;user-select:none;display:inline-block;padding:0 16px;line-height:var(--mat-legacy-button-toggle-height);position:relative}.mat-button-toggle-appearance-standard .mat-button-toggle-label-content{padding:0 12px;line-height:var(--mat-standard-button-toggle-height)}.mat-button-toggle-label-content>*{vertical-align:middle}.mat-button-toggle-focus-overlay{top:0;left:0;right:0;bottom:0;position:absolute;border-radius:inherit;pointer-events:none;opacity:0;background-color:var(--mat-legacy-button-toggle-state-layer-color)}.cdk-high-contrast-active .mat-button-toggle-checked .mat-button-toggle-focus-overlay{border-bottom:solid 500px;opacity:.5;height:0}.cdk-high-contrast-active .mat-button-toggle-checked:hover .mat-button-toggle-focus-overlay{opacity:.6}.cdk-high-contrast-active .mat-button-toggle-checked.mat-button-toggle-appearance-standard .mat-button-toggle-focus-overlay{border-bottom:solid 500px}.mat-button-toggle .mat-button-toggle-ripple{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none}.mat-button-toggle-button{border:0;background:none;color:inherit;padding:0;margin:0;font:inherit;outline:none;width:100%;cursor:pointer}.mat-button-toggle-disabled .mat-button-toggle-button{cursor:default}.mat-button-toggle-button::-moz-focus-inner{border:0}.mat-button-toggle-standalone.mat-button-toggle-appearance-standard{--mat-focus-indicator-border-radius:var(--mat-standard-button-toggle-shape)}.mat-button-toggle-group-appearance-standard .mat-button-toggle:last-of-type .mat-button-toggle-button::before{border-top-right-radius:var(--mat-standard-button-toggle-shape);border-bottom-right-radius:var(--mat-standard-button-toggle-shape)}.mat-button-toggle-group-appearance-standard .mat-button-toggle:first-of-type .mat-button-toggle-button::before{border-top-left-radius:var(--mat-standard-button-toggle-shape);border-bottom-left-radius:var(--mat-standard-button-toggle-shape)}"]
+    }]
+  }], () => [{
+    type: MatButtonToggleGroup,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [MAT_BUTTON_TOGGLE_GROUP]
+    }]
+  }, {
+    type: ChangeDetectorRef
+  }, {
+    type: ElementRef
+  }, {
+    type: FocusMonitor
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Attribute,
+      args: ["tabindex"]
+    }]
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [MAT_BUTTON_TOGGLE_DEFAULT_OPTIONS]
+    }]
+  }], {
+    ariaLabel: [{
+      type: Input,
+      args: ["aria-label"]
+    }],
+    ariaLabelledby: [{
+      type: Input,
+      args: ["aria-labelledby"]
+    }],
+    _buttonElement: [{
+      type: ViewChild,
+      args: ["button"]
+    }],
+    id: [{
+      type: Input
+    }],
+    name: [{
+      type: Input
+    }],
+    value: [{
+      type: Input
+    }],
+    tabIndex: [{
+      type: Input
+    }],
+    disableRipple: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }],
+    appearance: [{
+      type: Input
+    }],
+    checked: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }],
+    disabled: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }],
+    change: [{
+      type: Output
+    }]
+  });
+})();
+var _MatButtonToggleModule = class _MatButtonToggleModule {
+};
+_MatButtonToggleModule.\u0275fac = function MatButtonToggleModule_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatButtonToggleModule)();
+};
+_MatButtonToggleModule.\u0275mod = /* @__PURE__ */ \u0275\u0275defineNgModule({
+  type: _MatButtonToggleModule
+});
+_MatButtonToggleModule.\u0275inj = /* @__PURE__ */ \u0275\u0275defineInjector({
+  imports: [MatCommonModule, MatRippleModule, MatButtonToggle, MatCommonModule]
+});
+var MatButtonToggleModule = _MatButtonToggleModule;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatButtonToggleModule, [{
+    type: NgModule,
+    args: [{
+      imports: [MatCommonModule, MatRippleModule, MatButtonToggleGroup, MatButtonToggle],
+      exports: [MatCommonModule, MatButtonToggleGroup, MatButtonToggle]
+    }]
+  }], null, null);
+})();
+
+// src/app/component/form/create-registered-task-form/create-registered-task-form.component.ts
+function CreateRegisteredTaskFormComponent_For_7_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "mat-option", 4);
     \u0275\u0275text(1);
     \u0275\u0275elementEnd();
   }
   if (rf & 2) {
-    const option_r2 = ctx.$implicit;
-    \u0275\u0275property("disabled", option_r2.name === "...")("value", option_r2);
+    const option_r1 = ctx.$implicit;
+    \u0275\u0275property("disabled", option_r1.name === "...")("value", option_r1);
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate1(" ", option_r2.name, " ");
+    \u0275\u0275textInterpolate1(" ", option_r1.name, " ");
   }
 }
-function HomeComponent_Conditional_31_For_1_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275element(0, "app-task-registration", 10);
-  }
-  if (rf & 2) {
-    const task_r3 = ctx.$implicit;
-    \u0275\u0275property("task", task_r3);
-  }
-}
-function HomeComponent_Conditional_31_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275repeaterCreate(0, HomeComponent_Conditional_31_For_1_Template, 1, 1, "app-task-registration", 10, \u0275\u0275repeaterTrackByIdentity);
-  }
-  if (rf & 2) {
-    let tmp_2_0;
-    const ctx_r3 = \u0275\u0275nextContext();
-    \u0275\u0275repeater((tmp_2_0 = ctx_r3.timeRegistrationByTaskSignal()) == null ? null : tmp_2_0.taskTimeRegistrations);
-  }
-}
-var _HomeComponent = class _HomeComponent {
+var _CreateRegisteredTaskFormComponent = class _CreateRegisteredTaskFormComponent {
   constructor() {
-    this.timeRegistrationService = inject(TimeRegistrationService);
     this.taskService = inject(TaskService);
-    this.formBuilder = inject(FormBuilder);
+    this.onRegisteredTaskRegistered = new EventEmitter();
     this.taskSearchControl = new FormControl("");
     this.taskSearchSignal = toSignal(this.taskSearchControl.valueChanges);
     this.filteredOptionsSignal = computed(() => {
@@ -40144,21 +42888,17 @@ var _HomeComponent = class _HomeComponent {
       }
       return [];
     });
-    this.taskControl = new FormControl("");
-    this.timeRegistrationByTaskSignal = signal(void 0);
     this.tasksSignal = signal(void 0);
     this.effectRef = effect(() => {
-      this.timeRegistrationService.getTaskTimeRegistrationsOverview(DateTime.now().toISODate(), OverviewPeriod.Week).subscribe({
-        next: (value) => {
-          this.timeRegistrationByTaskSignal.set(value);
-        }
-      });
       this.taskService.getTasksForUser().subscribe({
         next: (value) => {
           this.tasksSignal.set(value);
         }
       });
     }, { allowSignalWrites: true });
+  }
+  ngOnInit() {
+    this.onRegisteredTaskRegistered.emit(this.taskSearchControl);
   }
   narrowSearch(tasks) {
     if (tasks.length <= 5) {
@@ -40170,6 +42910,285 @@ var _HomeComponent = class _HomeComponent {
   }
   displayFn(task) {
     return task?.name || "";
+  }
+};
+_CreateRegisteredTaskFormComponent.\u0275fac = function CreateRegisteredTaskFormComponent_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _CreateRegisteredTaskFormComponent)();
+};
+_CreateRegisteredTaskFormComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _CreateRegisteredTaskFormComponent, selectors: [["app-create-registered-task-form"]], outputs: { onRegisteredTaskRegistered: "onRegisteredTaskRegistered" }, standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 8, vars: 3, consts: [["auto", "matAutocomplete"], [2, "width", "100%"], ["type", "text", "placeholder", "Search for task..", "aria-label", "Task", "matInput", "", 3, "formControl", "matAutocomplete"], [3, "displayWith"], [3, "disabled", "value"]], template: function CreateRegisteredTaskFormComponent_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "mat-form-field", 1)(1, "mat-label");
+    \u0275\u0275text(2, "Task");
+    \u0275\u0275elementEnd();
+    \u0275\u0275element(3, "input", 2);
+    \u0275\u0275elementStart(4, "mat-autocomplete", 3, 0);
+    \u0275\u0275repeaterCreate(6, CreateRegisteredTaskFormComponent_For_7_Template, 2, 3, "mat-option", 4, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const auto_r2 = \u0275\u0275reference(5);
+    \u0275\u0275advance(3);
+    \u0275\u0275property("formControl", ctx.taskSearchControl)("matAutocomplete", auto_r2);
+    \u0275\u0275advance();
+    \u0275\u0275property("displayWith", ctx.displayFn);
+    \u0275\u0275advance(2);
+    \u0275\u0275repeater(ctx.filteredOptionsSignal());
+  }
+}, dependencies: [
+  MatAutocomplete,
+  MatAutocompleteTrigger,
+  MatFormField,
+  MatInput,
+  MatLabel,
+  MatOption,
+  ReactiveFormsModule,
+  DefaultValueAccessor,
+  NgControlStatus,
+  FormControlDirective
+] });
+var CreateRegisteredTaskFormComponent = _CreateRegisteredTaskFormComponent;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(CreateRegisteredTaskFormComponent, { className: "CreateRegisteredTaskFormComponent", filePath: "src\\app\\component\\form\\create-registered-task-form\\create-registered-task-form.component.ts", lineNumber: 41 });
+})();
+
+// src/app/component/form/create-unregistered-task-form/create-unregistered-task-form.component.ts
+var _CreateUnregisteredTaskFormComponent = class _CreateUnregisteredTaskFormComponent {
+  constructor() {
+    this.onUnRegisteredTaskRegistered = new EventEmitter();
+    this.descriptionFormControl = new FormControl("");
+  }
+  ngOnInit() {
+    this.onUnRegisteredTaskRegistered.emit(this.descriptionFormControl);
+  }
+};
+_CreateUnregisteredTaskFormComponent.\u0275fac = function CreateUnregisteredTaskFormComponent_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _CreateUnregisteredTaskFormComponent)();
+};
+_CreateUnregisteredTaskFormComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _CreateUnregisteredTaskFormComponent, selectors: [["app-create-unregistered-task-form"]], outputs: { onUnRegisteredTaskRegistered: "onUnRegisteredTaskRegistered" }, standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 4, vars: 1, consts: [[2, "width", "100%"], ["required", "", "matInput", "", 3, "formControl"]], template: function CreateUnregisteredTaskFormComponent_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "mat-form-field", 0)(1, "mat-label");
+    \u0275\u0275text(2, "Description");
+    \u0275\u0275elementEnd();
+    \u0275\u0275element(3, "input", 1);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    \u0275\u0275advance(3);
+    \u0275\u0275property("formControl", ctx.descriptionFormControl);
+  }
+}, dependencies: [
+  FormsModule,
+  DefaultValueAccessor,
+  NgControlStatus,
+  RequiredValidator,
+  MatFormField,
+  MatInput,
+  MatLabel,
+  ReactiveFormsModule,
+  FormControlDirective
+] });
+var CreateUnregisteredTaskFormComponent = _CreateUnregisteredTaskFormComponent;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(CreateUnregisteredTaskFormComponent, { className: "CreateUnregisteredTaskFormComponent", filePath: "src\\app\\component\\form\\create-unregistered-task-form\\create-unregistered-task-form.component.ts", lineNumber: 21 });
+})();
+
+// src/app/component/dialog/create-task-dialog/create-task-dialog.component.ts
+function CreateTaskDialogComponent_Conditional_11_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r1 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "app-create-registered-task-form", 9);
+    \u0275\u0275listener("onRegisteredTaskRegistered", function CreateTaskDialogComponent_Conditional_11_Template_app_create_registered_task_form_onRegisteredTaskRegistered_0_listener($event) {
+      \u0275\u0275restoreView(_r1);
+      const ctx_r1 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r1.registeredTaskRegistered($event));
+    });
+    \u0275\u0275elementEnd();
+  }
+}
+function CreateTaskDialogComponent_Conditional_12_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r3 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "app-create-unregistered-task-form", 10);
+    \u0275\u0275listener("onUnRegisteredTaskRegistered", function CreateTaskDialogComponent_Conditional_12_Template_app_create_unregistered_task_form_onUnRegisteredTaskRegistered_0_listener($event) {
+      \u0275\u0275restoreView(_r3);
+      const ctx_r1 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r1.unRegisteredTaskRegistered($event));
+    });
+    \u0275\u0275elementEnd();
+  }
+}
+var _CreateTaskDialogComponent = class _CreateTaskDialogComponent {
+  constructor() {
+    this.taskToggleButtonControl = new FormControl("registered");
+    this.taskToggleButtonValueChangeSignal = toSignal(this.taskToggleButtonControl.valueChanges);
+    this.useEffect = effect(() => {
+      const toggleButtonValue = this.taskToggleButtonValueChangeSignal();
+      if (toggleButtonValue) {
+        switch (toggleButtonValue) {
+          case "registered":
+            this.formGroup.controls.registeredTask?.enable();
+            this.formGroup.controls.unRegisteredTask?.disable();
+            break;
+          case "unregistered":
+            this.formGroup.controls.registeredTask?.disable();
+            this.formGroup.controls.unRegisteredTask?.enable();
+            break;
+        }
+      }
+    });
+    this.dialogRef = inject(MatDialogRef);
+    this.formGroup = new FormGroup({});
+  }
+  unRegisteredTaskRegistered(formControl) {
+    this.formGroup.addControl("unRegisteredTask", formControl);
+  }
+  registeredTaskRegistered(formControl) {
+    this.formGroup.addControl("registeredTask", formControl);
+  }
+  createTask() {
+    if (this.formGroup.valid) {
+      this.dialogRef.close(this.getTimeRegistrationRequest());
+    }
+  }
+  getTimeRegistrationRequest() {
+    const { registeredTask, unRegisteredTask } = this.formGroup.value;
+    return {
+      description: unRegisteredTask || void 0,
+      taskId: typeof registeredTask === "string" ? void 0 : registeredTask?.taskId
+    };
+  }
+};
+_CreateTaskDialogComponent.\u0275fac = function CreateTaskDialogComponent_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _CreateTaskDialogComponent)();
+};
+_CreateTaskDialogComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _CreateTaskDialogComponent, selectors: [["app-create-task-dialog"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 18, vars: 3, consts: [[1, "flex-column", "half-gap", 3, "ngSubmit", "formGroup"], ["mat-dialog-title", ""], [1, "flex-column"], ["name", "task", "aria-label", "Indtast CPR eller v\xE6lg en personliste", 3, "formControl"], ["value", "registered"], ["value", "unregistered"], ["align", "end"], ["type", "button", "mat-button", "", "mat-dialog-close", ""], ["type", "submit", "mat-button", "", "cdkFocusInitial", ""], [3, "onRegisteredTaskRegistered"], [3, "onUnRegisteredTaskRegistered"]], template: function CreateTaskDialogComponent_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "form", 0);
+    \u0275\u0275listener("ngSubmit", function CreateTaskDialogComponent_Template_form_ngSubmit_0_listener() {
+      return ctx.createTask();
+    });
+    \u0275\u0275elementStart(1, "h2", 1);
+    \u0275\u0275text(2, "Create new task");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(3, "mat-dialog-content")(4, "div", 2)(5, "div")(6, "mat-button-toggle-group", 3)(7, "mat-button-toggle", 4);
+    \u0275\u0275text(8, "Registered Task");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(9, "mat-button-toggle", 5);
+    \u0275\u0275text(10, "Unregistered task");
+    \u0275\u0275elementEnd()()();
+    \u0275\u0275template(11, CreateTaskDialogComponent_Conditional_11_Template, 1, 0, "app-create-registered-task-form")(12, CreateTaskDialogComponent_Conditional_12_Template, 1, 0, "app-create-unregistered-task-form");
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(13, "mat-dialog-actions", 6)(14, "button", 7);
+    \u0275\u0275text(15, "Cancel");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(16, "button", 8);
+    \u0275\u0275text(17, "Create");
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    \u0275\u0275property("formGroup", ctx.formGroup);
+    \u0275\u0275advance(6);
+    \u0275\u0275property("formControl", ctx.taskToggleButtonControl);
+    \u0275\u0275advance(5);
+    \u0275\u0275conditional(ctx.taskToggleButtonControl.value === "registered" ? 11 : ctx.taskToggleButtonControl.value === "unregistered" ? 12 : -1);
+  }
+}, dependencies: [
+  MatDialogModule,
+  MatDialogClose,
+  MatDialogTitle,
+  MatDialogActions,
+  MatDialogContent,
+  MatButtonModule,
+  MatButton,
+  MatButtonToggleModule,
+  MatButtonToggleGroup,
+  MatButtonToggle,
+  ReactiveFormsModule,
+  \u0275NgNoValidate,
+  NgControlStatus,
+  NgControlStatusGroup,
+  FormControlDirective,
+  FormGroupDirective,
+  CreateRegisteredTaskFormComponent,
+  CreateUnregisteredTaskFormComponent
+] });
+var CreateTaskDialogComponent = _CreateTaskDialogComponent;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(CreateTaskDialogComponent, { className: "CreateTaskDialogComponent", filePath: "src\\app\\component\\dialog\\create-task-dialog\\create-task-dialog.component.ts", lineNumber: 37 });
+})();
+
+// src/app/component/home/home.component.ts
+function HomeComponent_Conditional_12_For_1_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275element(0, "app-unregistered-task-registration", 6);
+  }
+  if (rf & 2) {
+    const task_r1 = ctx.$implicit;
+    \u0275\u0275property("task", task_r1);
+  }
+}
+function HomeComponent_Conditional_12_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275repeaterCreate(0, HomeComponent_Conditional_12_For_1_Template, 1, 1, "app-unregistered-task-registration", 6, \u0275\u0275repeaterTrackByIdentity);
+  }
+  if (rf & 2) {
+    let tmp_1_0;
+    const ctx_r1 = \u0275\u0275nextContext();
+    \u0275\u0275repeater((tmp_1_0 = ctx_r1.timeRegistrationByTaskSignal()) == null ? null : tmp_1_0.tasklessTimeRegistrations);
+  }
+}
+function HomeComponent_Conditional_18_For_2_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275element(0, "app-task-registration", 6);
+  }
+  if (rf & 2) {
+    const task_r3 = ctx.$implicit;
+    \u0275\u0275property("task", task_r3);
+  }
+}
+function HomeComponent_Conditional_18_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 2);
+    \u0275\u0275repeaterCreate(1, HomeComponent_Conditional_18_For_2_Template, 1, 1, "app-task-registration", 6, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    let tmp_1_0;
+    const ctx_r1 = \u0275\u0275nextContext();
+    \u0275\u0275advance();
+    \u0275\u0275repeater((tmp_1_0 = ctx_r1.timeRegistrationByTaskSignal()) == null ? null : tmp_1_0.taskTimeRegistrations);
+  }
+}
+var _HomeComponent = class _HomeComponent {
+  constructor() {
+    this.timeRegistrationService = inject(TimeRegistrationService);
+    this.totalTimeService = inject(TotalTimeService);
+    this.dialog = inject(MatDialog);
+    this.timeRegistrationByTaskSignal = signal(void 0);
+    this.effectRef = effect(() => {
+      this.timeRegistrationService.getTaskTimeRegistrationsOverview(DateTime.now().toISODate(), OverviewPeriod.Week).subscribe({
+        next: (value) => {
+          this.totalTimeService.next(value);
+          this.timeRegistrationByTaskSignal.set(value);
+        }
+      });
+    }, { allowSignalWrites: true });
+  }
+  openCreateDialog() {
+    const dialogRef = this.dialog.open(CreateTaskDialogComponent, { width: "800px" });
+    dialogRef.afterClosed().subscribe({
+      next: (value) => __async(this, null, function* () {
+        if (value) {
+          const extraTasks = value.taskId ? [value.taskId] : [0];
+          this.timeRegistrationService.getTaskTimeRegistrationsOverview(DateTime.now().toISODate(), OverviewPeriod.Week, extraTasks).subscribe({
+            next: (value2) => {
+              this.totalTimeService.next(value2);
+              this.timeRegistrationByTaskSignal.set(value2);
+            }
+          });
+        }
+      })
+    });
   }
   addTimeRegistration(timeRegistrationId) {
     return __async(this, null, function* () {
@@ -40183,74 +43202,53 @@ var _HomeComponent = class _HomeComponent {
   getWeekRangeAsString() {
     const startOfWeek = DateTime.now().startOf("week");
     const endOfWeek = DateTime.now().endOf("week");
-    return `Total for week: ${startOfWeek.weekNumber}; ${startOfWeek.toFormat("dd-MM-yyyy")} \u2013 ${endOfWeek.toFormat("dd-MM-yyyy")}`;
-  }
-  selected($event) {
-    const task = $event.option.value;
-    this.addTimeRegistration(task.taskId);
-    this.taskSearchControl.reset();
+    return `Total for week ${startOfWeek.weekNumber} - ${startOfWeek.toFormat("dd-MM-yyyy")} to ${endOfWeek.toFormat("dd-MM-yyyy")}`;
   }
 };
 _HomeComponent.\u0275fac = function HomeComponent_Factory(__ngFactoryType__) {
   return new (__ngFactoryType__ || _HomeComponent)();
 };
-_HomeComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _HomeComponent, selectors: [["app-home"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 32, vars: 6, consts: [["auto", "matAutocomplete"], [1, "example-form"], [2, "width", "100%"], ["type", "text", "placeholder", "Search for task..", "aria-label", "Task", "matInput", "", 3, "formControl", "matAutocomplete"], [3, "optionSelected", "displayWith"], [3, "disabled", "value"], ["appearance", "outlined", 1, "card-1"], [2, "padding", "0 1rem", 3, "taskResponse"], [1, "flex-column"], ["appearance", "outlined"], [3, "task"]], template: function HomeComponent_Template(rf, ctx) {
+_HomeComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _HomeComponent, selectors: [["app-home"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 24, vars: 3, consts: [["appearance", "outlined", 1, "card-1"], [2, "padding", "0 1rem"], [1, "flex-column"], ["appearance", "outlined"], [1, "bottom-right-fab-button"], ["mat-fab", "", "extended", "", 3, "click"], [3, "task"]], template: function HomeComponent_Template(rf, ctx) {
   if (rf & 1) {
-    const _r1 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "h1");
-    \u0275\u0275text(1, " Add new task\n");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(2, "form", 1)(3, "mat-form-field", 2)(4, "mat-label");
-    \u0275\u0275text(5, "Task");
-    \u0275\u0275elementEnd();
-    \u0275\u0275element(6, "input", 3);
-    \u0275\u0275elementStart(7, "mat-autocomplete", 4, 0);
-    \u0275\u0275listener("optionSelected", function HomeComponent_Template_mat_autocomplete_optionSelected_7_listener($event) {
-      \u0275\u0275restoreView(_r1);
-      return \u0275\u0275resetView(ctx.selected($event));
-    });
-    \u0275\u0275repeaterCreate(9, HomeComponent_For_10_Template, 2, 3, "mat-option", 5, \u0275\u0275repeaterTrackByIdentity);
-    \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(11, "h1");
-    \u0275\u0275text(12);
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(13, "mat-card", 6)(14, "mat-card-header")(15, "mat-card-title");
-    \u0275\u0275text(16, "Total hours");
+    \u0275\u0275elementStart(0, "mat-card", 0)(1, "mat-card-header")(2, "mat-card-title");
+    \u0275\u0275text(3);
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(4, "mat-card-content");
+    \u0275\u0275element(5, "app-total-line", 1);
+    \u0275\u0275elementStart(6, "div", 2)(7, "mat-card", 3)(8, "mat-card-header")(9, "mat-card-title");
+    \u0275\u0275text(10, "Unregistered tasks");
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(11, "mat-card-content");
+    \u0275\u0275template(12, HomeComponent_Conditional_12_Template, 2, 0);
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(13, "mat-card", 3)(14, "mat-card-header")(15, "mat-card-title");
+    \u0275\u0275text(16, "Registered tasks");
     \u0275\u0275elementEnd()();
     \u0275\u0275elementStart(17, "mat-card-content");
-    \u0275\u0275element(18, "app-total-line", 7);
-    \u0275\u0275elementStart(19, "div", 8)(20, "mat-card", 9)(21, "mat-card-header")(22, "mat-card-title");
-    \u0275\u0275text(23, "Unregistered tasks");
-    \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(24, "mat-card-content");
-    \u0275\u0275text(25, " TODO ");
-    \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(26, "mat-card", 9)(27, "mat-card-header")(28, "mat-card-title");
-    \u0275\u0275text(29, "Registered tasks");
-    \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(30, "mat-card-content");
-    \u0275\u0275template(31, HomeComponent_Conditional_31_Template, 2, 0);
+    \u0275\u0275template(18, HomeComponent_Conditional_18_Template, 3, 0, "div", 2);
     \u0275\u0275elementEnd()()()()();
+    \u0275\u0275elementStart(19, "div", 4)(20, "button", 5);
+    \u0275\u0275listener("click", function HomeComponent_Template_button_click_20_listener() {
+      return ctx.openCreateDialog();
+    });
+    \u0275\u0275elementStart(21, "mat-icon");
+    \u0275\u0275text(22, "add");
+    \u0275\u0275elementEnd();
+    \u0275\u0275text(23, " New task ");
+    \u0275\u0275elementEnd()();
   }
   if (rf & 2) {
-    const auto_r5 = \u0275\u0275reference(8);
-    \u0275\u0275advance(6);
-    \u0275\u0275property("formControl", ctx.taskSearchControl)("matAutocomplete", auto_r5);
-    \u0275\u0275advance();
-    \u0275\u0275property("displayWith", ctx.displayFn);
-    \u0275\u0275advance(2);
-    \u0275\u0275repeater(ctx.filteredOptionsSignal());
     \u0275\u0275advance(3);
-    \u0275\u0275textInterpolate1(" ", ctx.getWeekRangeAsString(), "\n");
+    \u0275\u0275textInterpolate(ctx.getWeekRangeAsString());
+    \u0275\u0275advance(9);
+    \u0275\u0275conditional(ctx.timeRegistrationByTaskSignal() ? 12 : -1);
     \u0275\u0275advance(6);
-    \u0275\u0275property("taskResponse", ctx.timeRegistrationByTaskSignal());
-    \u0275\u0275advance(13);
-    \u0275\u0275conditional(ctx.timeRegistrationByTaskSignal() ? 31 : -1);
+    \u0275\u0275conditional(ctx.timeRegistrationByTaskSignal() ? 18 : -1);
   }
-}, dependencies: [MatFormFieldModule, MatFormField, MatLabel, MatIconModule, MatInputModule, MatInput, ReactiveFormsModule, \u0275NgNoValidate, DefaultValueAccessor, NgControlStatus, NgControlStatusGroup, FormControlDirective, MatAutocompleteModule, MatAutocomplete, MatOption, MatAutocompleteTrigger, MatOptionModule, TotalLineComponent, MatCardModule, MatCard, MatCardContent, MatCardHeader, MatCardTitle, TaskRegistrationComponent], styles: ["\n\n[_nghost-%COMP%] {\n  padding: 1rem;\n}\n/*# sourceMappingURL=home.component.css.map */"] });
+}, dependencies: [MatFormFieldModule, MatIconModule, MatIcon, MatInputModule, ReactiveFormsModule, MatAutocompleteModule, MatOptionModule, TotalLineComponent, MatCardModule, MatCard, MatCardContent, MatCardHeader, MatCardTitle, TaskRegistrationComponent, UnregisteredTaskRegistrationComponent, MatFabButton], styles: ["\n\n[_nghost-%COMP%] {\n  padding: 1rem;\n}\n/*# sourceMappingURL=home.component.css.map */"] });
 var HomeComponent = _HomeComponent;
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(HomeComponent, { className: "HomeComponent", filePath: "src\\app\\component\\home\\home.component.ts", lineNumber: 31 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(HomeComponent, { className: "HomeComponent", filePath: "src\\app\\component\\home\\home.component.ts", lineNumber: 30 });
 })();
 
 // src/app/component/login/login.component.ts
@@ -40322,7 +43320,7 @@ var _AsyncAnimationRendererFactory = class _AsyncAnimationRendererFactory {
    * @internal
    */
   loadImpl() {
-    const moduleImpl = this.moduleImpl ?? import("./chunk-ZAUCXWBG.js").then((m) => m);
+    const moduleImpl = this.moduleImpl ?? import("./chunk-L43IZHEO.js").then((m) => m);
     return moduleImpl.catch((e) => {
       throw new RuntimeError(5300, (typeof ngDevMode === "undefined" || ngDevMode) && "Async loading for animations package was enabled, but loading failed. Angular falls back to using regular rendering. No animations will be displayed and their styles won't be applied.");
     }).then(({
@@ -40550,8 +43548,8 @@ var appConfig = {
 };
 
 // node_modules/@angular/material/fesm2022/sidenav.mjs
-var _c08 = ["*"];
-var _c17 = ["content"];
+var _c09 = ["*"];
+var _c18 = ["content"];
 var _c25 = [[["mat-drawer"]], [["mat-drawer-content"]], "*"];
 var _c35 = ["mat-drawer", "mat-drawer-content", "*"];
 function MatDrawerContainer_Conditional_0_Template(rf, ctx) {
@@ -40664,7 +43662,7 @@ _MatDrawerContent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
     provide: CdkScrollable,
     useExisting: _MatDrawerContent
   }]), \u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
-  ngContentSelectors: _c08,
+  ngContentSelectors: _c09,
   decls: 1,
   vars: 0,
   template: function MatDrawerContent_Template(rf, ctx) {
@@ -41055,7 +44053,7 @@ _MatDrawer.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
   selectors: [["mat-drawer"]],
   viewQuery: function MatDrawer_Query(rf, ctx) {
     if (rf & 1) {
-      \u0275\u0275viewQuery(_c17, 5);
+      \u0275\u0275viewQuery(_c18, 5);
     }
     if (rf & 2) {
       let _t;
@@ -41096,7 +44094,7 @@ _MatDrawer.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
   exportAs: ["matDrawer"],
   standalone: true,
   features: [\u0275\u0275StandaloneFeature],
-  ngContentSelectors: _c08,
+  ngContentSelectors: _c09,
   decls: 3,
   vars: 0,
   consts: [["content", ""], ["cdkScrollable", "", 1, "mat-drawer-inner-container"]],
@@ -41629,7 +44627,7 @@ _MatSidenavContent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
     provide: CdkScrollable,
     useExisting: _MatSidenavContent
   }]), \u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
-  ngContentSelectors: _c08,
+  ngContentSelectors: _c09,
   decls: 1,
   vars: 0,
   template: function MatSidenavContent_Template(rf, ctx) {
@@ -41738,7 +44736,7 @@ _MatSidenav.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
   exportAs: ["matSidenav"],
   standalone: true,
   features: [\u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
-  ngContentSelectors: _c08,
+  ngContentSelectors: _c09,
   decls: 3,
   vars: 0,
   consts: [["content", ""], ["cdkScrollable", "", 1, "mat-drawer-inner-container"]],
@@ -41920,8 +44918,8 @@ var MatSidenavModule = _MatSidenavModule;
 })();
 
 // node_modules/@angular/material/fesm2022/toolbar.mjs
-var _c09 = ["*", [["mat-toolbar-row"]]];
-var _c18 = ["*", "mat-toolbar-row"];
+var _c010 = ["*", [["mat-toolbar-row"]]];
+var _c19 = ["*", "mat-toolbar-row"];
 var _MatToolbarRow = class _MatToolbarRow {
 };
 _MatToolbarRow.\u0275fac = function MatToolbarRow_Factory(__ngFactoryType__) {
@@ -42001,12 +44999,12 @@ _MatToolbar.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
   exportAs: ["matToolbar"],
   standalone: true,
   features: [\u0275\u0275StandaloneFeature],
-  ngContentSelectors: _c18,
+  ngContentSelectors: _c19,
   decls: 2,
   vars: 0,
   template: function MatToolbar_Template(rf, ctx) {
     if (rf & 1) {
-      \u0275\u0275projectionDef(_c09);
+      \u0275\u0275projectionDef(_c010);
       \u0275\u0275projection(0);
       \u0275\u0275projection(1, 1);
     }

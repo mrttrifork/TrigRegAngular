@@ -633,7 +633,7 @@ ApiResponse<[**DefaultDeleteResponse**](DefaultDeleteResponse.md)>
 
 ## getTaskTimeRegistrationsOverview
 
-> TimeRegistrationsByTaskResponse getTaskTimeRegistrationsOverview(date, period)
+> TimeRegistrationsByTaskResponse getTaskTimeRegistrationsOverview(date, period, extraTasks)
 
 
 
@@ -664,8 +664,9 @@ public class Example {
         TimeRegistrationApi apiInstance = new TimeRegistrationApi(defaultClient);
         LocalDate date = LocalDate.now(); // LocalDate | The date to consider when fetching active tasks and time registrations
         OverviewPeriod period = OverviewPeriod.fromValue("DAY"); // OverviewPeriod | The time period to use when deciding in which time period tasks are considered active. Defaults to 'WEEK'. 
+        List<Long> extraTasks = Arrays.asList(); // List<Long> | An optional collection of extra tasks to include in the response, regardless of whether they are active or not
         try {
-            TimeRegistrationsByTaskResponse result = apiInstance.getTaskTimeRegistrationsOverview(date, period);
+            TimeRegistrationsByTaskResponse result = apiInstance.getTaskTimeRegistrationsOverview(date, period, extraTasks);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling TimeRegistrationApi#getTaskTimeRegistrationsOverview");
@@ -685,6 +686,7 @@ public class Example {
 |------------- | ------------- | ------------- | -------------|
 | **date** | **LocalDate**| The date to consider when fetching active tasks and time registrations | |
 | **period** | [**OverviewPeriod**](.md)| The time period to use when deciding in which time period tasks are considered active. Defaults to &#39;WEEK&#39;.  | [optional] [enum: DAY, WEEK, MONTH] |
+| **extraTasks** | [**List&lt;Long&gt;**](Long.md)| An optional collection of extra tasks to include in the response, regardless of whether they are active or not | [optional] |
 
 ### Return type
 
@@ -709,7 +711,7 @@ public class Example {
 
 ## getTaskTimeRegistrationsOverviewWithHttpInfo
 
-> ApiResponse<TimeRegistrationsByTaskResponse> getTaskTimeRegistrationsOverview getTaskTimeRegistrationsOverviewWithHttpInfo(date, period)
+> ApiResponse<TimeRegistrationsByTaskResponse> getTaskTimeRegistrationsOverview getTaskTimeRegistrationsOverviewWithHttpInfo(date, period, extraTasks)
 
 
 
@@ -741,8 +743,9 @@ public class Example {
         TimeRegistrationApi apiInstance = new TimeRegistrationApi(defaultClient);
         LocalDate date = LocalDate.now(); // LocalDate | The date to consider when fetching active tasks and time registrations
         OverviewPeriod period = OverviewPeriod.fromValue("DAY"); // OverviewPeriod | The time period to use when deciding in which time period tasks are considered active. Defaults to 'WEEK'. 
+        List<Long> extraTasks = Arrays.asList(); // List<Long> | An optional collection of extra tasks to include in the response, regardless of whether they are active or not
         try {
-            ApiResponse<TimeRegistrationsByTaskResponse> response = apiInstance.getTaskTimeRegistrationsOverviewWithHttpInfo(date, period);
+            ApiResponse<TimeRegistrationsByTaskResponse> response = apiInstance.getTaskTimeRegistrationsOverviewWithHttpInfo(date, period, extraTasks);
             System.out.println("Status code: " + response.getStatusCode());
             System.out.println("Response headers: " + response.getHeaders());
             System.out.println("Response body: " + response.getData());
@@ -764,6 +767,7 @@ public class Example {
 |------------- | ------------- | ------------- | -------------|
 | **date** | **LocalDate**| The date to consider when fetching active tasks and time registrations | |
 | **period** | [**OverviewPeriod**](.md)| The time period to use when deciding in which time period tasks are considered active. Defaults to &#39;WEEK&#39;.  | [optional] [enum: DAY, WEEK, MONTH] |
+| **extraTasks** | [**List&lt;Long&gt;**](Long.md)| An optional collection of extra tasks to include in the response, regardless of whether they are active or not | [optional] |
 
 ### Return type
 

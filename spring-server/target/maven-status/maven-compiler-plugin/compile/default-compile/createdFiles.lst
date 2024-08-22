@@ -5,6 +5,7 @@ com\trifork\trireg\server\configuration\OAuth2LoginSecurityConfig.class
 com\trifork\trireg\server\util\CopyUtil.class
 com\trifork\trireg\server\util\HTTPResponseUtil.class
 com\trifork\trireg\server\service\TagService$1.class
+com\trifork\trireg\server\service\TimeRegistrationService$6.class
 com\trifork\trireg\client\configuration\WSClientConfiguration.class
 com\trifork\trireg\server\configuration\MVCConfiguration.class
 com\trifork\trireg\server\controller\TaskController.class
@@ -13,6 +14,7 @@ com\trifork\trireg\server\service\TimeRegistrationService$4.class
 com\trifork\trireg\server\controller\TimeRegistrationController.class
 com\trifork\trireg\server\controller\LoginController.class
 com\trifork\trireg\server\service\TagService.class
+com\trifork\trireg\server\service\TimeRegistrationService$7.class
 com\trifork\trireg\server\controller\ExceptionControllerAdvice.class
 com\trifork\trireg\server\controller\TagController.class
 com\trifork\trireg\SpringBootServer.class
@@ -26,5 +28,6 @@ com\trifork\trireg\server\service\TimeRegistrationService.class
 com\trifork\trireg\client\httpClient\TriforkTagHttpClient.class
 com\trifork\trireg\server\service\OIDCTokenService.class
 com\trifork\trireg\server\configuration\RefreshAccessTokenFilter.class
+com\trifork\trireg\server\service\TimeRegistrationService$5.class
 com\trifork\trireg\server\service\TimeRegistrationService$2.class
 com\trifork\trireg\server\service\TaskService.class

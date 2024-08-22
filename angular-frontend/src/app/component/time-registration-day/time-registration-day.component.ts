@@ -7,6 +7,7 @@ import {AbstractControl, FormControl, ReactiveFormsModule, ValidationErrors} fro
 import {toSignal} from "@angular/core/rxjs-interop";
 import {MatInputModule} from "@angular/material/input";
 import {firstValueFrom} from "rxjs/internal/firstValueFrom";
+import {TotalTimeService} from "../../service/total-time.service";
 
 @Component({
   selector: 'app-time-registration-day',
@@ -22,6 +23,7 @@ import {firstValueFrom} from "rxjs/internal/firstValueFrom";
 export class TimeRegistrationDayComponent {
 
   private timeRegistrationService = inject(TimeRegistrationService);
+  private totalTimeService = inject(TotalTimeService);
   private _dayTimeRegistrations!: DayTimeRegistrations;
 
   dayRegistrationFormControl: FormControl<string | null> = new FormControl('', {
@@ -46,7 +48,8 @@ export class TimeRegistrationDayComponent {
     return this._dayTimeRegistrations;
   }
 
-  @Input({required: true}) taskId!: number;
+  @Input() taskId?: number;
+  @Input() taskDescription?: string;
 
   @Input({required: true}) set dayTimeRegistrations(value: DayTimeRegistrations) {
     this._dayTimeRegistrations = value;
@@ -66,7 +69,8 @@ export class TimeRegistrationDayComponent {
         const newRegistration = {
           date: this.dayTimeRegistrations.date,
           duration: formattedTimeChange,
-          taskId: this.taskId
+          taskId: this.taskId,
+          description: this.taskDescription
         };
         const response = await firstValueFrom(this.timeRegistrationService.addTimeRegistrationForUser(newRegistration));
         const newTimeRegistration: TimeRegistration = {
@@ -76,7 +80,7 @@ export class TimeRegistrationDayComponent {
             tags: []
           }
         };
-        this.dayTimeRegistrations.timeRegistrations.push(newTimeRegistration)
+        this.dayTimeRegistrations.timeRegistrations.push(newTimeRegistration);
       } else {
         if (formattedTimeChange) {
           const response = await firstValueFrom(this.timeRegistrationService.updateTimeRegistrationForUser(firstRegistration.timeRegistrationId, {
@@ -93,6 +97,7 @@ export class TimeRegistrationDayComponent {
           this.dayTimeRegistrations.timeRegistrations.splice(0, 1);
         }
       }
+      this.totalTimeService.patch();
     }
   });
 

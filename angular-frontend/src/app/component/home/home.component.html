@@ -1,41 +1,20 @@
-<h1>
-  Add new task
-</h1>
-<form class="example-form">
-  <mat-form-field style="width: 100%">
-    <mat-label>Task</mat-label>
-    <input type="text"
-           placeholder="Search for task.."
-           aria-label="Task"
-           matInput
-           [formControl]="taskSearchControl"
-           [matAutocomplete]="auto">
-    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="selected($event)">
-      @for (option of filteredOptionsSignal(); track option) {
-        <mat-option [disabled]="option.name === '...'" [value]="option">
-          {{ option.name }}
-        </mat-option>
-      }
-    </mat-autocomplete>
-  </mat-form-field>
-</form>
-
-<h1>
-  {{ getWeekRangeAsString() }}
-</h1>
 <mat-card appearance="outlined" class="card-1">
   <mat-card-header>
-    <mat-card-title>Total hours</mat-card-title>
+    <mat-card-title>{{ getWeekRangeAsString() }}</mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <app-total-line [taskResponse]="timeRegistrationByTaskSignal()" style="padding: 0 1rem;"></app-total-line>
+    <app-total-line style="padding: 0 1rem;"></app-total-line>
     <div class="flex-column">
       <mat-card appearance="outlined">
         <mat-card-header>
           <mat-card-title>Unregistered tasks</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          TODO
+          @if (timeRegistrationByTaskSignal()) {
+            @for (task of timeRegistrationByTaskSignal()?.tasklessTimeRegistrations; track task) {
+              <app-unregistered-task-registration [task]="task"></app-unregistered-task-registration>
+            }
+          }
         </mat-card-content>
       </mat-card>
       <mat-card appearance="outlined">
@@ -44,12 +23,20 @@
         </mat-card-header>
         <mat-card-content>
           @if (timeRegistrationByTaskSignal()) {
-            @for (task of timeRegistrationByTaskSignal()?.taskTimeRegistrations; track task) {
-              <app-task-registration [task]="task"></app-task-registration>
-            }
+            <div class="flex-column">
+              @for (task of timeRegistrationByTaskSignal()?.taskTimeRegistrations; track task) {
+                <app-task-registration [task]="task"></app-task-registration>
+              }
+            </div>
           }
         </mat-card-content>
       </mat-card>
     </div>
   </mat-card-content>
 </mat-card>
+<div class="bottom-right-fab-button">
+  <button mat-fab extended (click)="openCreateDialog()">
+    <mat-icon>add</mat-icon>
+    New task
+  </button>
+</div>

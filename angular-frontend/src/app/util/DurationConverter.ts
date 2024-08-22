@@ -21,20 +21,17 @@ export default class DurationConverter {
     return fromISO.as("minutes");
   }
 
+  public static toHumanFromMinutes(minutes: number): string {
+    const fromMinutes = Duration.fromObject({minutes});
+    return DurationConverter.convertToHumanDuration(fromMinutes.toISO());
+  }
+
   public static convertToHumanDuration(iso8601Duration: string): string {
     const fromISO = Duration.fromISO(iso8601Duration);
-    const hours = fromISO.hours;
-    const minutes = fromISO.minutes;
-
-    const minutesAsHours = minutes ? minutes / 6 : undefined;
-    if (hours && minutesAsHours) {
-      return `${hours},${minutesAsHours}`
-    } else if (hours) {
-      return `${hours}`;
-    } else if (minutesAsHours) {
-      return `0,${minutesAsHours}`
-    }
-    return "";
+    return fromISO.as("hours").toLocaleString("da-DK", {
+      maximumFractionDigits: 1,
+      minimumFractionDigits: 1
+    });
   }
 
   public static isValidHumanDuration(humanDuration: string): boolean {

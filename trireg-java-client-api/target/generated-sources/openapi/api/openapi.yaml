@@ -240,6 +240,18 @@ paths:
         schema:
           $ref: '#/components/schemas/OverviewPeriod'
         style: form
+      - description: "An optional collection of extra tasks to include in the response,\
+          \ regardless of whether they are active or not"
+        explode: true
+        in: query
+        name: extraTasks
+        required: false
+        schema:
+          items:
+            format: int64
+            type: integer
+          type: array
+        style: form
       responses:
         "200":
           content:

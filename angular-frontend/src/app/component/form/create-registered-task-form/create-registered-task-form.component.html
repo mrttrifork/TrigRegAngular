@@ -1,0 +1,16 @@
+  <mat-form-field style="width: 100%">
+    <mat-label>Task</mat-label>
+    <input type="text"
+           placeholder="Search for task.."
+           aria-label="Task"
+           matInput
+           [formControl]="taskSearchControl"
+           [matAutocomplete]="auto">
+    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+      @for (option of filteredOptionsSignal(); track option) {
+        <mat-option [disabled]="option.name === '...'" [value]="option">
+          {{ option.name }}
+        </mat-option>
+      }
+    </mat-autocomplete>
+  </mat-form-field>

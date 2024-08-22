@@ -53,7 +53,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-20T10:30:34.295836300+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-21T22:43:45.700872200+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 public class TimeRegistrationApi {
   private final HttpClient memberVarHttpClient;
   private final ObjectMapper memberVarObjectMapper;
@@ -412,11 +412,12 @@ public class TimeRegistrationApi {
    * Returns time registrations for a user grouped by task
    * @param date The date to consider when fetching active tasks and time registrations (required)
    * @param period The time period to use when deciding in which time period tasks are considered active. Defaults to &#39;WEEK&#39;.  (optional)
+   * @param extraTasks An optional collection of extra tasks to include in the response, regardless of whether they are active or not (optional)
    * @return TimeRegistrationsByTaskResponse
    * @throws ApiException if fails to make API call
    */
-  public TimeRegistrationsByTaskResponse getTaskTimeRegistrationsOverview(LocalDate date, OverviewPeriod period) throws ApiException {
-    ApiResponse<TimeRegistrationsByTaskResponse> localVarResponse = getTaskTimeRegistrationsOverviewWithHttpInfo(date, period);
+  public TimeRegistrationsByTaskResponse getTaskTimeRegistrationsOverview(LocalDate date, OverviewPeriod period, List<Long> extraTasks) throws ApiException {
+    ApiResponse<TimeRegistrationsByTaskResponse> localVarResponse = getTaskTimeRegistrationsOverviewWithHttpInfo(date, period, extraTasks);
     return localVarResponse.getData();
   }
 
@@ -425,11 +426,12 @@ public class TimeRegistrationApi {
    * Returns time registrations for a user grouped by task
    * @param date The date to consider when fetching active tasks and time registrations (required)
    * @param period The time period to use when deciding in which time period tasks are considered active. Defaults to &#39;WEEK&#39;.  (optional)
+   * @param extraTasks An optional collection of extra tasks to include in the response, regardless of whether they are active or not (optional)
    * @return ApiResponse&lt;TimeRegistrationsByTaskResponse&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<TimeRegistrationsByTaskResponse> getTaskTimeRegistrationsOverviewWithHttpInfo(LocalDate date, OverviewPeriod period) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getTaskTimeRegistrationsOverviewRequestBuilder(date, period);
+  public ApiResponse<TimeRegistrationsByTaskResponse> getTaskTimeRegistrationsOverviewWithHttpInfo(LocalDate date, OverviewPeriod period, List<Long> extraTasks) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getTaskTimeRegistrationsOverviewRequestBuilder(date, period, extraTasks);
     try {
       HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
           localVarRequestBuilder.build(),
@@ -457,7 +459,7 @@ public class TimeRegistrationApi {
     }
   }
 
-  private HttpRequest.Builder getTaskTimeRegistrationsOverviewRequestBuilder(LocalDate date, OverviewPeriod period) throws ApiException {
+  private HttpRequest.Builder getTaskTimeRegistrationsOverviewRequestBuilder(LocalDate date, OverviewPeriod period, List<Long> extraTasks) throws ApiException {
     // verify the required parameter 'date' is set
     if (date == null) {
       throw new ApiException(400, "Missing the required parameter 'date' when calling getTaskTimeRegistrationsOverview");
@@ -474,6 +476,8 @@ public class TimeRegistrationApi {
     localVarQueryParams.addAll(ApiClient.parameterToPairs("date", date));
     localVarQueryParameterBaseName = "period";
     localVarQueryParams.addAll(ApiClient.parameterToPairs("period", period));
+    localVarQueryParameterBaseName = "extraTasks";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "extraTasks", extraTasks));
 
     if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
       StringJoiner queryJoiner = new StringJoiner("&");

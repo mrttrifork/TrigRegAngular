@@ -2,15 +2,12 @@
   <div>
     Total time
   </div>
-  <div class="days">
-    @if (dateToMinuteSignal(); as map) {
-      @for (entry of Object.entries(map); track entry) {
-        <div class="flex-column no-gap">
-          <p>{{ DateTime.fromISO(entry[0]).toFormat("dd-MM") }}</p>
-          <p>{{ DateTime.fromISO(entry[0]).toFormat("EEE") }}</p>
-          <p>{{ entry[1] }}</p>
-        </div>
-      }
+  <div class="flex-row flex-wrap-wrap">
+    @for (dateAndMinutes of dateToMinuteSignal(); track dateAndMinutes) {
+      <div class="flex-column half-gap" style="width: 5rem">
+        <span>{{ formatDanishDate(dateAndMinutes.date) }}</span>
+        <span>{{ DurationConverter.toHumanFromMinutes(dateAndMinutes.minutes) }}</span>
+      </div>
     }
   </div>
 </div>

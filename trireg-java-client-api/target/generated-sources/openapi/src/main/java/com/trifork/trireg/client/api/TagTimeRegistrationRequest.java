@@ -35,7 +35,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
   TagTimeRegistrationRequest.JSON_PROPERTY_TAG_CONFIGURATION_ID,
   TagTimeRegistrationRequest.JSON_PROPERTY_VALUE
 })
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-20T10:30:34.295836300+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-08-21T22:43:45.700872200+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 public class TagTimeRegistrationRequest {
   public static final String JSON_PROPERTY_TAG_CONFIGURATION_ID = "tagConfigurationId";
   private Long tagConfigurationId;

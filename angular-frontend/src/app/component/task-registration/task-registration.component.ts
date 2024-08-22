@@ -4,6 +4,7 @@ import {MatInput} from "@angular/material/input";
 import {ReactiveFormsModule} from "@angular/forms";
 import {TaskTimeRegistrationsInterval} from "../../generated";
 import {TimeRegistrationDayComponent} from "../time-registration-day/time-registration-day.component";
+import {MatCardModule} from "@angular/material/card";
 
 @Component({
   selector: 'app-task-registration',
@@ -14,11 +15,20 @@ import {TimeRegistrationDayComponent} from "../time-registration-day/time-regist
     MatInput,
     MatLabel,
     ReactiveFormsModule,
-    TimeRegistrationDayComponent
+    TimeRegistrationDayComponent,
+    MatCardModule
   ],
   templateUrl: './task-registration.component.html',
   styleUrl: './task-registration.component.scss'
 })
 export class TaskRegistrationComponent {
   @Input({required: true}) task!: TaskTimeRegistrationsInterval;
+
+  public getTaskName(taskName: string): string[] {
+    return taskName.split(" / ");
+  }
+
+  public getMarginLeft(index: number): string[] {
+    return [`ml-${index}`];
+  }
 }

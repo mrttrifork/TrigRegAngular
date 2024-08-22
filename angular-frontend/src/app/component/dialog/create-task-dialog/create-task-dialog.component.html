@@ -1,0 +1,25 @@
+<form [formGroup]="formGroup" class="flex-column half-gap" (ngSubmit)="createTask()">
+  <h2 mat-dialog-title>Create new task</h2>
+  <mat-dialog-content>
+    <div class="flex-column">
+      <div>
+        <mat-button-toggle-group name="task" aria-label="Indtast CPR eller vælg en personliste"
+                                 [formControl]="taskToggleButtonControl">
+          <mat-button-toggle value="registered">Registered Task</mat-button-toggle>
+          <mat-button-toggle value="unregistered">Unregistered task</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+      @if (taskToggleButtonControl.value === 'registered') {
+        <app-create-registered-task-form
+          (onRegisteredTaskRegistered)="registeredTaskRegistered($event)"></app-create-registered-task-form>
+      } @else if (taskToggleButtonControl.value === 'unregistered') {
+        <app-create-unregistered-task-form
+          (onUnRegisteredTaskRegistered)="unRegisteredTaskRegistered($event)"></app-create-unregistered-task-form>
+      }
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button type="button" mat-button mat-dialog-close>Cancel</button>
+    <button type="submit" mat-button cdkFocusInitial>Create</button>
+  </mat-dialog-actions>
+</form>

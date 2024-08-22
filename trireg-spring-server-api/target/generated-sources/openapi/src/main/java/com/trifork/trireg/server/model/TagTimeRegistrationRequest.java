@@ -19,7 +19,7 @@ import jakarta.annotation.Generated;
  */
 
 @Schema(name = "TagTimeRegistrationRequest", description = "A request to set a tag value for a tag configuration for a time registration. Administrators configure the rules for tags for time registrations. This includes the format of the tag value, and whether tags are mandatory or optional. When setting a tag value for a time registration, the request must follow these rules. ")
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-20T10:30:37.943553100+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-21T22:43:49.173986300+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 public class TagTimeRegistrationRequest {
 
   private Long tagConfigurationId;

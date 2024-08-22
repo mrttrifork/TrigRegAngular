@@ -39,9 +39,9 @@ public class TimeRegistrationService {
         }
     }
 
-    public TimeRegistrationsByTaskResponse getTaskTimeRegistrationsOverview(LocalDate date, @Nullable OverviewPeriod period) {
+    public TimeRegistrationsByTaskResponse getTaskTimeRegistrationsOverview(LocalDate date, @Nullable OverviewPeriod period, @Nullable List<Long> extraTasks) {
         try {
-            com.trifork.trireg.client.api.TimeRegistrationsByTaskResponse response = client.getTaskTimeRegistrationsOverview(date, period);
+            com.trifork.trireg.client.api.TimeRegistrationsByTaskResponse response = client.getTaskTimeRegistrationsOverview(date, period, extraTasks);
             logger.info(response.toString());
             return CopyUtil.transferToTarget(response, new TypeReference<>() {
             });

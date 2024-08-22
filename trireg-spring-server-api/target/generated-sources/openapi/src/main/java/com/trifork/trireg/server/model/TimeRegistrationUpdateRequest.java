@@ -22,7 +22,7 @@ import jakarta.annotation.Generated;
  * TimeRegistrationUpdateRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-20T10:30:37.943553100+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-08-21T22:43:49.173986300+02:00[Europe/Copenhagen]", comments = "Generator version: 7.4.0")
 public class TimeRegistrationUpdateRequest {
 
   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
