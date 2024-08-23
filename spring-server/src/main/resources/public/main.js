@@ -49,6 +49,7 @@ import {
   LOCATION_INITIALIZED,
   Location,
   LocationStrategy,
+  NgClass,
   NgModule,
   NgModuleFactory$1,
   NgTemplateOutlet,
@@ -112,6 +113,7 @@ import {
   concat,
   concatMap,
   contentChild,
+  createComponent,
   createEnvironmentInjector,
   createPlatformFactory,
   debounceTime,
@@ -179,6 +181,7 @@ import {
   takeWhile,
   tap,
   throwError,
+  timer,
   transition,
   trigger,
   untracked,
@@ -218,6 +221,8 @@ import {
   ɵɵprojection,
   ɵɵprojectionDef,
   ɵɵproperty,
+  ɵɵpureFunction1,
+  ɵɵpureFunction2,
   ɵɵqueryAdvance,
   ɵɵqueryRefresh,
   ɵɵreference,
@@ -236,7 +241,7 @@ import {
   ɵɵtextInterpolate,
   ɵɵtextInterpolate1,
   ɵɵviewQuery
-} from "./chunk-JPWGOBWI.js";
+} from "./chunk-NKSW6AZX.js";
 
 // node_modules/@angular/common/fesm2022/http.mjs
 var HttpHandler = class {
@@ -9260,1745 +9265,6 @@ function provideRouterInitializer() {
 }
 var VERSION2 = new Version("18.1.4");
 
-// src/app/generated/encoder.ts
-var CustomHttpParameterCodec = class {
-  encodeKey(k) {
-    return encodeURIComponent(k);
-  }
-  encodeValue(v) {
-    return encodeURIComponent(v);
-  }
-  decodeKey(k) {
-    return decodeURIComponent(k);
-  }
-  decodeValue(v) {
-    return decodeURIComponent(v);
-  }
-};
-
-// src/app/generated/variables.ts
-var BASE_PATH = new InjectionToken("basePath");
-
-// src/app/generated/configuration.ts
-var Configuration = class {
-  constructor(configurationParameters = {}) {
-    this.apiKeys = configurationParameters.apiKeys;
-    this.username = configurationParameters.username;
-    this.password = configurationParameters.password;
-    this.accessToken = configurationParameters.accessToken;
-    this.basePath = configurationParameters.basePath;
-    this.withCredentials = configurationParameters.withCredentials;
-    this.encoder = configurationParameters.encoder;
-    if (configurationParameters.encodeParam) {
-      this.encodeParam = configurationParameters.encodeParam;
-    } else {
-      this.encodeParam = (param) => this.defaultEncodeParam(param);
-    }
-    if (configurationParameters.credentials) {
-      this.credentials = configurationParameters.credentials;
-    } else {
-      this.credentials = {};
-    }
-    if (!this.credentials["openId"]) {
-    }
-    if (!this.credentials["basicAuth"]) {
-      this.credentials["basicAuth"] = () => {
-        return this.username || this.password ? btoa(this.username + ":" + this.password) : void 0;
-      };
-    }
-  }
-  /**
-   * Select the correct content-type to use for a request.
-   * Uses {@link Configuration#isJsonMime} to determine the correct content-type.
-   * If no content type is found return the first found type if the contentTypes is not empty
-   * @param contentTypes - the array of content types that are available for selection
-   * @returns the selected content-type or <code>undefined</code> if no selection could be made.
-   */
-  selectHeaderContentType(contentTypes) {
-    if (contentTypes.length === 0) {
-      return void 0;
-    }
-    const type = contentTypes.find((x) => this.isJsonMime(x));
-    if (type === void 0) {
-      return contentTypes[0];
-    }
-    return type;
-  }
-  /**
-   * Select the correct accept content-type to use for a request.
-   * Uses {@link Configuration#isJsonMime} to determine the correct accept content-type.
-   * If no content type is found return the first found type if the contentTypes is not empty
-   * @param accepts - the array of content types that are available for selection.
-   * @returns the selected content-type or <code>undefined</code> if no selection could be made.
-   */
-  selectHeaderAccept(accepts) {
-    if (accepts.length === 0) {
-      return void 0;
-    }
-    const type = accepts.find((x) => this.isJsonMime(x));
-    if (type === void 0) {
-      return accepts[0];
-    }
-    return type;
-  }
-  /**
-   * Check if the given MIME is a JSON MIME.
-   * JSON MIME examples:
-   *   application/json
-   *   application/json; charset=UTF8
-   *   APPLICATION/JSON
-   *   application/vnd.company+json
-   * @param mime - MIME (Multipurpose Internet Mail Extensions)
-   * @return True if the given MIME is JSON, false otherwise.
-   */
-  isJsonMime(mime) {
-    const jsonMime = new RegExp("^(application/json|[^;/ 	]+/[^;/ 	]+[+]json)[ 	]*(;.*)?$", "i");
-    return mime !== null && (jsonMime.test(mime) || mime.toLowerCase() === "application/json-patch+json");
-  }
-  lookupCredential(key) {
-    const value = this.credentials[key];
-    return typeof value === "function" ? value() : value;
-  }
-  defaultEncodeParam(param) {
-    const value = param.dataFormat === "date-time" && param.value instanceof Date ? param.value.toISOString() : param.value;
-    return encodeURIComponent(String(value));
-  }
-};
-
-// src/app/generated/api/export.service.ts
-var _ExportService = class _ExportService {
-  constructor(httpClient, basePath, configuration) {
-    this.httpClient = httpClient;
-    this.basePath = "https://trireg2.tcs.trifork.dev";
-    this.defaultHeaders = new HttpHeaders();
-    this.configuration = new Configuration();
-    if (configuration) {
-      this.configuration = configuration;
-    }
-    if (typeof this.configuration.basePath !== "string") {
-      if (Array.isArray(basePath) && basePath.length > 0) {
-        basePath = basePath[0];
-      }
-      if (typeof basePath !== "string") {
-        basePath = this.basePath;
-      }
-      this.configuration.basePath = basePath;
-    }
-    this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
-  }
-  // @ts-ignore
-  addToHttpParams(httpParams, value, key) {
-    if (typeof value === "object" && value instanceof Date === false) {
-      httpParams = this.addToHttpParamsRecursive(httpParams, value);
-    } else {
-      httpParams = this.addToHttpParamsRecursive(httpParams, value, key);
-    }
-    return httpParams;
-  }
-  addToHttpParamsRecursive(httpParams, value, key) {
-    if (value == null) {
-      return httpParams;
-    }
-    if (typeof value === "object") {
-      if (Array.isArray(value)) {
-        value.forEach((elem) => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
-      } else if (value instanceof Date) {
-        if (key != null) {
-          httpParams = httpParams.append(key, value.toISOString().substring(0, 10));
-        } else {
-          throw Error("key may not be null if value is Date");
-        }
-      } else {
-        Object.keys(value).forEach((k) => httpParams = this.addToHttpParamsRecursive(httpParams, value[k], key != null ? `${key}.${k}` : k));
-      }
-    } else if (key != null) {
-      httpParams = httpParams.append(key, value);
-    } else {
-      throw Error("key may not be null if value is not object or array");
-    }
-    return httpParams;
-  }
-  exportTimeRegistrationsForUser(start, end, observe = "body", reportProgress = false, options) {
-    if (start === null || start === void 0) {
-      throw new Error("Required parameter start was null or undefined when calling exportTimeRegistrationsForUser.");
-    }
-    if (end === null || end === void 0) {
-      throw new Error("Required parameter end was null or undefined when calling exportTimeRegistrationsForUser.");
-    }
-    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
-    if (start !== void 0 && start !== null) {
-      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, start, "start");
-    }
-    if (end !== void 0 && end !== null) {
-      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, end, "end");
-    }
-    let localVarHeaders = this.defaultHeaders;
-    let localVarCredential;
-    localVarCredential = this.configuration.lookupCredential("openId");
-    if (localVarCredential) {
-    }
-    localVarCredential = this.configuration.lookupCredential("basicAuth");
-    if (localVarCredential) {
-      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
-    }
-    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
-    if (localVarHttpHeaderAcceptSelected === void 0) {
-      const httpHeaderAccepts = [
-        "text/plain"
-      ];
-      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-    }
-    if (localVarHttpHeaderAcceptSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
-    }
-    let localVarHttpContext = options && options.context;
-    if (localVarHttpContext === void 0) {
-      localVarHttpContext = new HttpContext();
-    }
-    let localVarTransferCache = options && options.transferCache;
-    if (localVarTransferCache === void 0) {
-      localVarTransferCache = true;
-    }
-    let responseType_ = "json";
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
-        responseType_ = "text";
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = "json";
-      } else {
-        responseType_ = "blob";
-      }
-    }
-    let localVarPath = `/export`;
-    return this.httpClient.request("post", `${this.configuration.basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      params: localVarQueryParameters,
-      responseType: responseType_,
-      withCredentials: this.configuration.withCredentials,
-      headers: localVarHeaders,
-      observe,
-      transferCache: localVarTransferCache,
-      reportProgress
-    });
-  }
-};
-_ExportService.\u0275fac = function ExportService_Factory(__ngFactoryType__) {
-  return new (__ngFactoryType__ || _ExportService)(\u0275\u0275inject(HttpClient), \u0275\u0275inject(BASE_PATH, 8), \u0275\u0275inject(Configuration, 8));
-};
-_ExportService.\u0275prov = /* @__PURE__ */ \u0275\u0275defineInjectable({ token: _ExportService, factory: _ExportService.\u0275fac, providedIn: "root" });
-var ExportService = _ExportService;
-
-// src/app/generated/api/import.service.ts
-var _ImportService = class _ImportService {
-  constructor(httpClient, basePath, configuration) {
-    this.httpClient = httpClient;
-    this.basePath = "https://trireg2.tcs.trifork.dev";
-    this.defaultHeaders = new HttpHeaders();
-    this.configuration = new Configuration();
-    if (configuration) {
-      this.configuration = configuration;
-    }
-    if (typeof this.configuration.basePath !== "string") {
-      if (Array.isArray(basePath) && basePath.length > 0) {
-        basePath = basePath[0];
-      }
-      if (typeof basePath !== "string") {
-        basePath = this.basePath;
-      }
-      this.configuration.basePath = basePath;
-    }
-    this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
-  }
-  // @ts-ignore
-  addToHttpParams(httpParams, value, key) {
-    if (typeof value === "object" && value instanceof Date === false) {
-      httpParams = this.addToHttpParamsRecursive(httpParams, value);
-    } else {
-      httpParams = this.addToHttpParamsRecursive(httpParams, value, key);
-    }
-    return httpParams;
-  }
-  addToHttpParamsRecursive(httpParams, value, key) {
-    if (value == null) {
-      return httpParams;
-    }
-    if (typeof value === "object") {
-      if (Array.isArray(value)) {
-        value.forEach((elem) => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
-      } else if (value instanceof Date) {
-        if (key != null) {
-          httpParams = httpParams.append(key, value.toISOString().substring(0, 10));
-        } else {
-          throw Error("key may not be null if value is Date");
-        }
-      } else {
-        Object.keys(value).forEach((k) => httpParams = this.addToHttpParamsRecursive(httpParams, value[k], key != null ? `${key}.${k}` : k));
-      }
-    } else if (key != null) {
-      httpParams = httpParams.append(key, value);
-    } else {
-      throw Error("key may not be null if value is not object or array");
-    }
-    return httpParams;
-  }
-  importTimeRegistrations(importTimeRegistrationRequestInner, observe = "body", reportProgress = false, options) {
-    if (importTimeRegistrationRequestInner === null || importTimeRegistrationRequestInner === void 0) {
-      throw new Error("Required parameter importTimeRegistrationRequestInner was null or undefined when calling importTimeRegistrations.");
-    }
-    let localVarHeaders = this.defaultHeaders;
-    let localVarCredential;
-    localVarCredential = this.configuration.lookupCredential("openId");
-    if (localVarCredential) {
-    }
-    localVarCredential = this.configuration.lookupCredential("basicAuth");
-    if (localVarCredential) {
-      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
-    }
-    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
-    if (localVarHttpHeaderAcceptSelected === void 0) {
-      const httpHeaderAccepts = [
-        "application/json"
-      ];
-      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-    }
-    if (localVarHttpHeaderAcceptSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
-    }
-    let localVarHttpContext = options && options.context;
-    if (localVarHttpContext === void 0) {
-      localVarHttpContext = new HttpContext();
-    }
-    let localVarTransferCache = options && options.transferCache;
-    if (localVarTransferCache === void 0) {
-      localVarTransferCache = true;
-    }
-    const consumes = [
-      "application/json"
-    ];
-    const httpContentTypeSelected = this.configuration.selectHeaderContentType(consumes);
-    if (httpContentTypeSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Content-Type", httpContentTypeSelected);
-    }
-    let responseType_ = "json";
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
-        responseType_ = "text";
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = "json";
-      } else {
-        responseType_ = "blob";
-      }
-    }
-    let localVarPath = `/import`;
-    return this.httpClient.request("post", `${this.configuration.basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      body: importTimeRegistrationRequestInner,
-      responseType: responseType_,
-      withCredentials: this.configuration.withCredentials,
-      headers: localVarHeaders,
-      observe,
-      transferCache: localVarTransferCache,
-      reportProgress
-    });
-  }
-};
-_ImportService.\u0275fac = function ImportService_Factory(__ngFactoryType__) {
-  return new (__ngFactoryType__ || _ImportService)(\u0275\u0275inject(HttpClient), \u0275\u0275inject(BASE_PATH, 8), \u0275\u0275inject(Configuration, 8));
-};
-_ImportService.\u0275prov = /* @__PURE__ */ \u0275\u0275defineInjectable({ token: _ImportService, factory: _ImportService.\u0275fac, providedIn: "root" });
-var ImportService = _ImportService;
-
-// src/app/generated/api/kmRegistration.service.ts
-var _KmRegistrationService = class _KmRegistrationService {
-  constructor(httpClient, basePath, configuration) {
-    this.httpClient = httpClient;
-    this.basePath = "https://trireg2.tcs.trifork.dev";
-    this.defaultHeaders = new HttpHeaders();
-    this.configuration = new Configuration();
-    if (configuration) {
-      this.configuration = configuration;
-    }
-    if (typeof this.configuration.basePath !== "string") {
-      if (Array.isArray(basePath) && basePath.length > 0) {
-        basePath = basePath[0];
-      }
-      if (typeof basePath !== "string") {
-        basePath = this.basePath;
-      }
-      this.configuration.basePath = basePath;
-    }
-    this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
-  }
-  // @ts-ignore
-  addToHttpParams(httpParams, value, key) {
-    if (typeof value === "object" && value instanceof Date === false) {
-      httpParams = this.addToHttpParamsRecursive(httpParams, value);
-    } else {
-      httpParams = this.addToHttpParamsRecursive(httpParams, value, key);
-    }
-    return httpParams;
-  }
-  addToHttpParamsRecursive(httpParams, value, key) {
-    if (value == null) {
-      return httpParams;
-    }
-    if (typeof value === "object") {
-      if (Array.isArray(value)) {
-        value.forEach((elem) => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
-      } else if (value instanceof Date) {
-        if (key != null) {
-          httpParams = httpParams.append(key, value.toISOString().substring(0, 10));
-        } else {
-          throw Error("key may not be null if value is Date");
-        }
-      } else {
-        Object.keys(value).forEach((k) => httpParams = this.addToHttpParamsRecursive(httpParams, value[k], key != null ? `${key}.${k}` : k));
-      }
-    } else if (key != null) {
-      httpParams = httpParams.append(key, value);
-    } else {
-      throw Error("key may not be null if value is not object or array");
-    }
-    return httpParams;
-  }
-  createKmRegistration(kmRegistrationRequest, observe = "body", reportProgress = false, options) {
-    if (kmRegistrationRequest === null || kmRegistrationRequest === void 0) {
-      throw new Error("Required parameter kmRegistrationRequest was null or undefined when calling createKmRegistration.");
-    }
-    let localVarHeaders = this.defaultHeaders;
-    let localVarCredential;
-    localVarCredential = this.configuration.lookupCredential("openId");
-    if (localVarCredential) {
-    }
-    localVarCredential = this.configuration.lookupCredential("basicAuth");
-    if (localVarCredential) {
-      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
-    }
-    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
-    if (localVarHttpHeaderAcceptSelected === void 0) {
-      const httpHeaderAccepts = [
-        "application/json",
-        "text/plain"
-      ];
-      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-    }
-    if (localVarHttpHeaderAcceptSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
-    }
-    let localVarHttpContext = options && options.context;
-    if (localVarHttpContext === void 0) {
-      localVarHttpContext = new HttpContext();
-    }
-    let localVarTransferCache = options && options.transferCache;
-    if (localVarTransferCache === void 0) {
-      localVarTransferCache = true;
-    }
-    const consumes = [
-      "application/json"
-    ];
-    const httpContentTypeSelected = this.configuration.selectHeaderContentType(consumes);
-    if (httpContentTypeSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Content-Type", httpContentTypeSelected);
-    }
-    let responseType_ = "json";
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
-        responseType_ = "text";
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = "json";
-      } else {
-        responseType_ = "blob";
-      }
-    }
-    let localVarPath = `/km-registration`;
-    return this.httpClient.request("post", `${this.configuration.basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      body: kmRegistrationRequest,
-      responseType: responseType_,
-      withCredentials: this.configuration.withCredentials,
-      headers: localVarHeaders,
-      observe,
-      transferCache: localVarTransferCache,
-      reportProgress
-    });
-  }
-  deleteKmRegistration(kmRegistrationId, observe = "body", reportProgress = false, options) {
-    if (kmRegistrationId === null || kmRegistrationId === void 0) {
-      throw new Error("Required parameter kmRegistrationId was null or undefined when calling deleteKmRegistration.");
-    }
-    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
-    if (kmRegistrationId !== void 0 && kmRegistrationId !== null) {
-      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, kmRegistrationId, "kmRegistrationId");
-    }
-    let localVarHeaders = this.defaultHeaders;
-    let localVarCredential;
-    localVarCredential = this.configuration.lookupCredential("openId");
-    if (localVarCredential) {
-    }
-    localVarCredential = this.configuration.lookupCredential("basicAuth");
-    if (localVarCredential) {
-      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
-    }
-    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
-    if (localVarHttpHeaderAcceptSelected === void 0) {
-      const httpHeaderAccepts = [
-        "application/json",
-        "text/plain"
-      ];
-      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-    }
-    if (localVarHttpHeaderAcceptSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
-    }
-    let localVarHttpContext = options && options.context;
-    if (localVarHttpContext === void 0) {
-      localVarHttpContext = new HttpContext();
-    }
-    let localVarTransferCache = options && options.transferCache;
-    if (localVarTransferCache === void 0) {
-      localVarTransferCache = true;
-    }
-    let responseType_ = "json";
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
-        responseType_ = "text";
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = "json";
-      } else {
-        responseType_ = "blob";
-      }
-    }
-    let localVarPath = `/km-registration`;
-    return this.httpClient.request("delete", `${this.configuration.basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      params: localVarQueryParameters,
-      responseType: responseType_,
-      withCredentials: this.configuration.withCredentials,
-      headers: localVarHeaders,
-      observe,
-      transferCache: localVarTransferCache,
-      reportProgress
-    });
-  }
-  getKmRegistrationsForUser(userId, observe = "body", reportProgress = false, options) {
-    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
-    if (userId !== void 0 && userId !== null) {
-      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, userId, "userId");
-    }
-    let localVarHeaders = this.defaultHeaders;
-    let localVarCredential;
-    localVarCredential = this.configuration.lookupCredential("openId");
-    if (localVarCredential) {
-    }
-    localVarCredential = this.configuration.lookupCredential("basicAuth");
-    if (localVarCredential) {
-      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
-    }
-    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
-    if (localVarHttpHeaderAcceptSelected === void 0) {
-      const httpHeaderAccepts = [
-        "application/json",
-        "text/plain"
-      ];
-      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-    }
-    if (localVarHttpHeaderAcceptSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
-    }
-    let localVarHttpContext = options && options.context;
-    if (localVarHttpContext === void 0) {
-      localVarHttpContext = new HttpContext();
-    }
-    let localVarTransferCache = options && options.transferCache;
-    if (localVarTransferCache === void 0) {
-      localVarTransferCache = true;
-    }
-    let responseType_ = "json";
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
-        responseType_ = "text";
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = "json";
-      } else {
-        responseType_ = "blob";
-      }
-    }
-    let localVarPath = `/km-registration`;
-    return this.httpClient.request("get", `${this.configuration.basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      params: localVarQueryParameters,
-      responseType: responseType_,
-      withCredentials: this.configuration.withCredentials,
-      headers: localVarHeaders,
-      observe,
-      transferCache: localVarTransferCache,
-      reportProgress
-    });
-  }
-  updateKmRegistration(kmRegistrationId, kmRegistrationUpdateRequest, observe = "body", reportProgress = false, options) {
-    if (kmRegistrationId === null || kmRegistrationId === void 0) {
-      throw new Error("Required parameter kmRegistrationId was null or undefined when calling updateKmRegistration.");
-    }
-    if (kmRegistrationUpdateRequest === null || kmRegistrationUpdateRequest === void 0) {
-      throw new Error("Required parameter kmRegistrationUpdateRequest was null or undefined when calling updateKmRegistration.");
-    }
-    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
-    if (kmRegistrationId !== void 0 && kmRegistrationId !== null) {
-      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, kmRegistrationId, "kmRegistrationId");
-    }
-    let localVarHeaders = this.defaultHeaders;
-    let localVarCredential;
-    localVarCredential = this.configuration.lookupCredential("openId");
-    if (localVarCredential) {
-    }
-    localVarCredential = this.configuration.lookupCredential("basicAuth");
-    if (localVarCredential) {
-      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
-    }
-    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
-    if (localVarHttpHeaderAcceptSelected === void 0) {
-      const httpHeaderAccepts = [
-        "application/json",
-        "text/plain"
-      ];
-      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-    }
-    if (localVarHttpHeaderAcceptSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
-    }
-    let localVarHttpContext = options && options.context;
-    if (localVarHttpContext === void 0) {
-      localVarHttpContext = new HttpContext();
-    }
-    let localVarTransferCache = options && options.transferCache;
-    if (localVarTransferCache === void 0) {
-      localVarTransferCache = true;
-    }
-    const consumes = [
-      "application/json"
-    ];
-    const httpContentTypeSelected = this.configuration.selectHeaderContentType(consumes);
-    if (httpContentTypeSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Content-Type", httpContentTypeSelected);
-    }
-    let responseType_ = "json";
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
-        responseType_ = "text";
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = "json";
-      } else {
-        responseType_ = "blob";
-      }
-    }
-    let localVarPath = `/km-registration`;
-    return this.httpClient.request("put", `${this.configuration.basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      body: kmRegistrationUpdateRequest,
-      params: localVarQueryParameters,
-      responseType: responseType_,
-      withCredentials: this.configuration.withCredentials,
-      headers: localVarHeaders,
-      observe,
-      transferCache: localVarTransferCache,
-      reportProgress
-    });
-  }
-};
-_KmRegistrationService.\u0275fac = function KmRegistrationService_Factory(__ngFactoryType__) {
-  return new (__ngFactoryType__ || _KmRegistrationService)(\u0275\u0275inject(HttpClient), \u0275\u0275inject(BASE_PATH, 8), \u0275\u0275inject(Configuration, 8));
-};
-_KmRegistrationService.\u0275prov = /* @__PURE__ */ \u0275\u0275defineInjectable({ token: _KmRegistrationService, factory: _KmRegistrationService.\u0275fac, providedIn: "root" });
-var KmRegistrationService = _KmRegistrationService;
-
-// src/app/generated/api/login.service.ts
-var _LoginService = class _LoginService {
-  constructor(httpClient, basePath, configuration) {
-    this.httpClient = httpClient;
-    this.basePath = "https://trireg2.tcs.trifork.dev";
-    this.defaultHeaders = new HttpHeaders();
-    this.configuration = new Configuration();
-    if (configuration) {
-      this.configuration = configuration;
-    }
-    if (typeof this.configuration.basePath !== "string") {
-      if (Array.isArray(basePath) && basePath.length > 0) {
-        basePath = basePath[0];
-      }
-      if (typeof basePath !== "string") {
-        basePath = this.basePath;
-      }
-      this.configuration.basePath = basePath;
-    }
-    this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
-  }
-  // @ts-ignore
-  addToHttpParams(httpParams, value, key) {
-    if (typeof value === "object" && value instanceof Date === false) {
-      httpParams = this.addToHttpParamsRecursive(httpParams, value);
-    } else {
-      httpParams = this.addToHttpParamsRecursive(httpParams, value, key);
-    }
-    return httpParams;
-  }
-  addToHttpParamsRecursive(httpParams, value, key) {
-    if (value == null) {
-      return httpParams;
-    }
-    if (typeof value === "object") {
-      if (Array.isArray(value)) {
-        value.forEach((elem) => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
-      } else if (value instanceof Date) {
-        if (key != null) {
-          httpParams = httpParams.append(key, value.toISOString().substring(0, 10));
-        } else {
-          throw Error("key may not be null if value is Date");
-        }
-      } else {
-        Object.keys(value).forEach((k) => httpParams = this.addToHttpParamsRecursive(httpParams, value[k], key != null ? `${key}.${k}` : k));
-      }
-    } else if (key != null) {
-      httpParams = httpParams.append(key, value);
-    } else {
-      throw Error("key may not be null if value is not object or array");
-    }
-    return httpParams;
-  }
-  login(observe = "body", reportProgress = false, options) {
-    let localVarHeaders = this.defaultHeaders;
-    let localVarCredential;
-    localVarCredential = this.configuration.lookupCredential("openId");
-    if (localVarCredential) {
-    }
-    localVarCredential = this.configuration.lookupCredential("basicAuth");
-    if (localVarCredential) {
-      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
-    }
-    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
-    if (localVarHttpHeaderAcceptSelected === void 0) {
-      const httpHeaderAccepts = [];
-      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-    }
-    if (localVarHttpHeaderAcceptSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
-    }
-    let localVarHttpContext = options && options.context;
-    if (localVarHttpContext === void 0) {
-      localVarHttpContext = new HttpContext();
-    }
-    let localVarTransferCache = options && options.transferCache;
-    if (localVarTransferCache === void 0) {
-      localVarTransferCache = true;
-    }
-    let responseType_ = "json";
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
-        responseType_ = "text";
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = "json";
-      } else {
-        responseType_ = "blob";
-      }
-    }
-    let localVarPath = `/login`;
-    return this.httpClient.request("get", `${this.configuration.basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      responseType: responseType_,
-      withCredentials: this.configuration.withCredentials,
-      headers: localVarHeaders,
-      observe,
-      transferCache: localVarTransferCache,
-      reportProgress
-    });
-  }
-};
-_LoginService.\u0275fac = function LoginService_Factory(__ngFactoryType__) {
-  return new (__ngFactoryType__ || _LoginService)(\u0275\u0275inject(HttpClient), \u0275\u0275inject(BASE_PATH, 8), \u0275\u0275inject(Configuration, 8));
-};
-_LoginService.\u0275prov = /* @__PURE__ */ \u0275\u0275defineInjectable({ token: _LoginService, factory: _LoginService.\u0275fac, providedIn: "root" });
-var LoginService = _LoginService;
-
-// src/app/generated/api/tag.service.ts
-var _TagService = class _TagService {
-  constructor(httpClient, basePath, configuration) {
-    this.httpClient = httpClient;
-    this.basePath = "https://trireg2.tcs.trifork.dev";
-    this.defaultHeaders = new HttpHeaders();
-    this.configuration = new Configuration();
-    if (configuration) {
-      this.configuration = configuration;
-    }
-    if (typeof this.configuration.basePath !== "string") {
-      if (Array.isArray(basePath) && basePath.length > 0) {
-        basePath = basePath[0];
-      }
-      if (typeof basePath !== "string") {
-        basePath = this.basePath;
-      }
-      this.configuration.basePath = basePath;
-    }
-    this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
-  }
-  // @ts-ignore
-  addToHttpParams(httpParams, value, key) {
-    if (typeof value === "object" && value instanceof Date === false) {
-      httpParams = this.addToHttpParamsRecursive(httpParams, value);
-    } else {
-      httpParams = this.addToHttpParamsRecursive(httpParams, value, key);
-    }
-    return httpParams;
-  }
-  addToHttpParamsRecursive(httpParams, value, key) {
-    if (value == null) {
-      return httpParams;
-    }
-    if (typeof value === "object") {
-      if (Array.isArray(value)) {
-        value.forEach((elem) => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
-      } else if (value instanceof Date) {
-        if (key != null) {
-          httpParams = httpParams.append(key, value.toISOString().substring(0, 10));
-        } else {
-          throw Error("key may not be null if value is Date");
-        }
-      } else {
-        Object.keys(value).forEach((k) => httpParams = this.addToHttpParamsRecursive(httpParams, value[k], key != null ? `${key}.${k}` : k));
-      }
-    } else if (key != null) {
-      httpParams = httpParams.append(key, value);
-    } else {
-      throw Error("key may not be null if value is not object or array");
-    }
-    return httpParams;
-  }
-  deleteTagRegistration(tagId, observe = "body", reportProgress = false, options) {
-    if (tagId === null || tagId === void 0) {
-      throw new Error("Required parameter tagId was null or undefined when calling deleteTagRegistration.");
-    }
-    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
-    if (tagId !== void 0 && tagId !== null) {
-      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, tagId, "tagId");
-    }
-    let localVarHeaders = this.defaultHeaders;
-    let localVarCredential;
-    localVarCredential = this.configuration.lookupCredential("openId");
-    if (localVarCredential) {
-    }
-    localVarCredential = this.configuration.lookupCredential("basicAuth");
-    if (localVarCredential) {
-      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
-    }
-    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
-    if (localVarHttpHeaderAcceptSelected === void 0) {
-      const httpHeaderAccepts = [
-        "application/json"
-      ];
-      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-    }
-    if (localVarHttpHeaderAcceptSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
-    }
-    let localVarHttpContext = options && options.context;
-    if (localVarHttpContext === void 0) {
-      localVarHttpContext = new HttpContext();
-    }
-    let localVarTransferCache = options && options.transferCache;
-    if (localVarTransferCache === void 0) {
-      localVarTransferCache = true;
-    }
-    let responseType_ = "json";
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
-        responseType_ = "text";
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = "json";
-      } else {
-        responseType_ = "blob";
-      }
-    }
-    let localVarPath = `/tag`;
-    return this.httpClient.request("delete", `${this.configuration.basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      params: localVarQueryParameters,
-      responseType: responseType_,
-      withCredentials: this.configuration.withCredentials,
-      headers: localVarHeaders,
-      observe,
-      transferCache: localVarTransferCache,
-      reportProgress
-    });
-  }
-  getTimeRegistrationTags(timeRegistrationId, observe = "body", reportProgress = false, options) {
-    if (timeRegistrationId === null || timeRegistrationId === void 0) {
-      throw new Error("Required parameter timeRegistrationId was null or undefined when calling getTimeRegistrationTags.");
-    }
-    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
-    if (timeRegistrationId !== void 0 && timeRegistrationId !== null) {
-      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, timeRegistrationId, "timeRegistrationId");
-    }
-    let localVarHeaders = this.defaultHeaders;
-    let localVarCredential;
-    localVarCredential = this.configuration.lookupCredential("openId");
-    if (localVarCredential) {
-    }
-    localVarCredential = this.configuration.lookupCredential("basicAuth");
-    if (localVarCredential) {
-      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
-    }
-    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
-    if (localVarHttpHeaderAcceptSelected === void 0) {
-      const httpHeaderAccepts = [
-        "application/json"
-      ];
-      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-    }
-    if (localVarHttpHeaderAcceptSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
-    }
-    let localVarHttpContext = options && options.context;
-    if (localVarHttpContext === void 0) {
-      localVarHttpContext = new HttpContext();
-    }
-    let localVarTransferCache = options && options.transferCache;
-    if (localVarTransferCache === void 0) {
-      localVarTransferCache = true;
-    }
-    let responseType_ = "json";
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
-        responseType_ = "text";
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = "json";
-      } else {
-        responseType_ = "blob";
-      }
-    }
-    let localVarPath = `/tag`;
-    return this.httpClient.request("get", `${this.configuration.basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      params: localVarQueryParameters,
-      responseType: responseType_,
-      withCredentials: this.configuration.withCredentials,
-      headers: localVarHeaders,
-      observe,
-      transferCache: localVarTransferCache,
-      reportProgress
-    });
-  }
-  tagTimeRegistration(timeRegistrationId, tagTimeRegistrationRequest, observe = "body", reportProgress = false, options) {
-    if (timeRegistrationId === null || timeRegistrationId === void 0) {
-      throw new Error("Required parameter timeRegistrationId was null or undefined when calling tagTimeRegistration.");
-    }
-    if (tagTimeRegistrationRequest === null || tagTimeRegistrationRequest === void 0) {
-      throw new Error("Required parameter tagTimeRegistrationRequest was null or undefined when calling tagTimeRegistration.");
-    }
-    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
-    if (timeRegistrationId !== void 0 && timeRegistrationId !== null) {
-      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, timeRegistrationId, "timeRegistrationId");
-    }
-    let localVarHeaders = this.defaultHeaders;
-    let localVarCredential;
-    localVarCredential = this.configuration.lookupCredential("openId");
-    if (localVarCredential) {
-    }
-    localVarCredential = this.configuration.lookupCredential("basicAuth");
-    if (localVarCredential) {
-      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
-    }
-    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
-    if (localVarHttpHeaderAcceptSelected === void 0) {
-      const httpHeaderAccepts = [
-        "application/json"
-      ];
-      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-    }
-    if (localVarHttpHeaderAcceptSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
-    }
-    let localVarHttpContext = options && options.context;
-    if (localVarHttpContext === void 0) {
-      localVarHttpContext = new HttpContext();
-    }
-    let localVarTransferCache = options && options.transferCache;
-    if (localVarTransferCache === void 0) {
-      localVarTransferCache = true;
-    }
-    const consumes = [
-      "application/json"
-    ];
-    const httpContentTypeSelected = this.configuration.selectHeaderContentType(consumes);
-    if (httpContentTypeSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Content-Type", httpContentTypeSelected);
-    }
-    let responseType_ = "json";
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
-        responseType_ = "text";
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = "json";
-      } else {
-        responseType_ = "blob";
-      }
-    }
-    let localVarPath = `/tag`;
-    return this.httpClient.request("post", `${this.configuration.basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      body: tagTimeRegistrationRequest,
-      params: localVarQueryParameters,
-      responseType: responseType_,
-      withCredentials: this.configuration.withCredentials,
-      headers: localVarHeaders,
-      observe,
-      transferCache: localVarTransferCache,
-      reportProgress
-    });
-  }
-  updateTagRegistration(tagRegistration, observe = "body", reportProgress = false, options) {
-    if (tagRegistration === null || tagRegistration === void 0) {
-      throw new Error("Required parameter tagRegistration was null or undefined when calling updateTagRegistration.");
-    }
-    let localVarHeaders = this.defaultHeaders;
-    let localVarCredential;
-    localVarCredential = this.configuration.lookupCredential("openId");
-    if (localVarCredential) {
-    }
-    localVarCredential = this.configuration.lookupCredential("basicAuth");
-    if (localVarCredential) {
-      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
-    }
-    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
-    if (localVarHttpHeaderAcceptSelected === void 0) {
-      const httpHeaderAccepts = [
-        "application/json"
-      ];
-      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-    }
-    if (localVarHttpHeaderAcceptSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
-    }
-    let localVarHttpContext = options && options.context;
-    if (localVarHttpContext === void 0) {
-      localVarHttpContext = new HttpContext();
-    }
-    let localVarTransferCache = options && options.transferCache;
-    if (localVarTransferCache === void 0) {
-      localVarTransferCache = true;
-    }
-    const consumes = [
-      "application/json"
-    ];
-    const httpContentTypeSelected = this.configuration.selectHeaderContentType(consumes);
-    if (httpContentTypeSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Content-Type", httpContentTypeSelected);
-    }
-    let responseType_ = "json";
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
-        responseType_ = "text";
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = "json";
-      } else {
-        responseType_ = "blob";
-      }
-    }
-    let localVarPath = `/tag`;
-    return this.httpClient.request("put", `${this.configuration.basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      body: tagRegistration,
-      responseType: responseType_,
-      withCredentials: this.configuration.withCredentials,
-      headers: localVarHeaders,
-      observe,
-      transferCache: localVarTransferCache,
-      reportProgress
-    });
-  }
-};
-_TagService.\u0275fac = function TagService_Factory(__ngFactoryType__) {
-  return new (__ngFactoryType__ || _TagService)(\u0275\u0275inject(HttpClient), \u0275\u0275inject(BASE_PATH, 8), \u0275\u0275inject(Configuration, 8));
-};
-_TagService.\u0275prov = /* @__PURE__ */ \u0275\u0275defineInjectable({ token: _TagService, factory: _TagService.\u0275fac, providedIn: "root" });
-var TagService = _TagService;
-
-// src/app/generated/api/task.service.ts
-var _TaskService = class _TaskService {
-  constructor(httpClient, basePath, configuration) {
-    this.httpClient = httpClient;
-    this.basePath = "https://trireg2.tcs.trifork.dev";
-    this.defaultHeaders = new HttpHeaders();
-    this.configuration = new Configuration();
-    if (configuration) {
-      this.configuration = configuration;
-    }
-    if (typeof this.configuration.basePath !== "string") {
-      if (Array.isArray(basePath) && basePath.length > 0) {
-        basePath = basePath[0];
-      }
-      if (typeof basePath !== "string") {
-        basePath = this.basePath;
-      }
-      this.configuration.basePath = basePath;
-    }
-    this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
-  }
-  // @ts-ignore
-  addToHttpParams(httpParams, value, key) {
-    if (typeof value === "object" && value instanceof Date === false) {
-      httpParams = this.addToHttpParamsRecursive(httpParams, value);
-    } else {
-      httpParams = this.addToHttpParamsRecursive(httpParams, value, key);
-    }
-    return httpParams;
-  }
-  addToHttpParamsRecursive(httpParams, value, key) {
-    if (value == null) {
-      return httpParams;
-    }
-    if (typeof value === "object") {
-      if (Array.isArray(value)) {
-        value.forEach((elem) => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
-      } else if (value instanceof Date) {
-        if (key != null) {
-          httpParams = httpParams.append(key, value.toISOString().substring(0, 10));
-        } else {
-          throw Error("key may not be null if value is Date");
-        }
-      } else {
-        Object.keys(value).forEach((k) => httpParams = this.addToHttpParamsRecursive(httpParams, value[k], key != null ? `${key}.${k}` : k));
-      }
-    } else if (key != null) {
-      httpParams = httpParams.append(key, value);
-    } else {
-      throw Error("key may not be null if value is not object or array");
-    }
-    return httpParams;
-  }
-  getTasksForUser(userId, observe = "body", reportProgress = false, options) {
-    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
-    if (userId !== void 0 && userId !== null) {
-      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, userId, "userId");
-    }
-    let localVarHeaders = this.defaultHeaders;
-    let localVarCredential;
-    localVarCredential = this.configuration.lookupCredential("openId");
-    if (localVarCredential) {
-    }
-    localVarCredential = this.configuration.lookupCredential("basicAuth");
-    if (localVarCredential) {
-      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
-    }
-    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
-    if (localVarHttpHeaderAcceptSelected === void 0) {
-      const httpHeaderAccepts = [
-        "application/json"
-      ];
-      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-    }
-    if (localVarHttpHeaderAcceptSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
-    }
-    let localVarHttpContext = options && options.context;
-    if (localVarHttpContext === void 0) {
-      localVarHttpContext = new HttpContext();
-    }
-    let localVarTransferCache = options && options.transferCache;
-    if (localVarTransferCache === void 0) {
-      localVarTransferCache = true;
-    }
-    let responseType_ = "json";
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
-        responseType_ = "text";
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = "json";
-      } else {
-        responseType_ = "blob";
-      }
-    }
-    let localVarPath = `/task`;
-    return this.httpClient.request("get", `${this.configuration.basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      params: localVarQueryParameters,
-      responseType: responseType_,
-      withCredentials: this.configuration.withCredentials,
-      headers: localVarHeaders,
-      observe,
-      transferCache: localVarTransferCache,
-      reportProgress
-    });
-  }
-};
-_TaskService.\u0275fac = function TaskService_Factory(__ngFactoryType__) {
-  return new (__ngFactoryType__ || _TaskService)(\u0275\u0275inject(HttpClient), \u0275\u0275inject(BASE_PATH, 8), \u0275\u0275inject(Configuration, 8));
-};
-_TaskService.\u0275prov = /* @__PURE__ */ \u0275\u0275defineInjectable({ token: _TaskService, factory: _TaskService.\u0275fac, providedIn: "root" });
-var TaskService = _TaskService;
-
-// src/app/generated/api/timeRegistration.service.ts
-var _TimeRegistrationService = class _TimeRegistrationService {
-  constructor(httpClient, basePath, configuration) {
-    this.httpClient = httpClient;
-    this.basePath = "https://trireg2.tcs.trifork.dev";
-    this.defaultHeaders = new HttpHeaders();
-    this.configuration = new Configuration();
-    if (configuration) {
-      this.configuration = configuration;
-    }
-    if (typeof this.configuration.basePath !== "string") {
-      if (Array.isArray(basePath) && basePath.length > 0) {
-        basePath = basePath[0];
-      }
-      if (typeof basePath !== "string") {
-        basePath = this.basePath;
-      }
-      this.configuration.basePath = basePath;
-    }
-    this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
-  }
-  // @ts-ignore
-  addToHttpParams(httpParams, value, key) {
-    if (typeof value === "object" && value instanceof Date === false) {
-      httpParams = this.addToHttpParamsRecursive(httpParams, value);
-    } else {
-      httpParams = this.addToHttpParamsRecursive(httpParams, value, key);
-    }
-    return httpParams;
-  }
-  addToHttpParamsRecursive(httpParams, value, key) {
-    if (value == null) {
-      return httpParams;
-    }
-    if (typeof value === "object") {
-      if (Array.isArray(value)) {
-        value.forEach((elem) => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
-      } else if (value instanceof Date) {
-        if (key != null) {
-          httpParams = httpParams.append(key, value.toISOString().substring(0, 10));
-        } else {
-          throw Error("key may not be null if value is Date");
-        }
-      } else {
-        Object.keys(value).forEach((k) => httpParams = this.addToHttpParamsRecursive(httpParams, value[k], key != null ? `${key}.${k}` : k));
-      }
-    } else if (key != null) {
-      httpParams = httpParams.append(key, value);
-    } else {
-      throw Error("key may not be null if value is not object or array");
-    }
-    return httpParams;
-  }
-  addBulkTimeRegistrationForUser(timeRegistrationRequest, observe = "body", reportProgress = false, options) {
-    if (timeRegistrationRequest === null || timeRegistrationRequest === void 0) {
-      throw new Error("Required parameter timeRegistrationRequest was null or undefined when calling addBulkTimeRegistrationForUser.");
-    }
-    let localVarHeaders = this.defaultHeaders;
-    let localVarCredential;
-    localVarCredential = this.configuration.lookupCredential("openId");
-    if (localVarCredential) {
-    }
-    localVarCredential = this.configuration.lookupCredential("basicAuth");
-    if (localVarCredential) {
-      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
-    }
-    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
-    if (localVarHttpHeaderAcceptSelected === void 0) {
-      const httpHeaderAccepts = [
-        "application/json",
-        "text/plain"
-      ];
-      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-    }
-    if (localVarHttpHeaderAcceptSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
-    }
-    let localVarHttpContext = options && options.context;
-    if (localVarHttpContext === void 0) {
-      localVarHttpContext = new HttpContext();
-    }
-    let localVarTransferCache = options && options.transferCache;
-    if (localVarTransferCache === void 0) {
-      localVarTransferCache = true;
-    }
-    const consumes = [
-      "application/json"
-    ];
-    const httpContentTypeSelected = this.configuration.selectHeaderContentType(consumes);
-    if (httpContentTypeSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Content-Type", httpContentTypeSelected);
-    }
-    let responseType_ = "json";
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
-        responseType_ = "text";
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = "json";
-      } else {
-        responseType_ = "blob";
-      }
-    }
-    let localVarPath = `/time-registration/bulk`;
-    return this.httpClient.request("post", `${this.configuration.basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      body: timeRegistrationRequest,
-      responseType: responseType_,
-      withCredentials: this.configuration.withCredentials,
-      headers: localVarHeaders,
-      observe,
-      transferCache: localVarTransferCache,
-      reportProgress
-    });
-  }
-  addTimeRegistrationForUser(timeRegistrationRequest, observe = "body", reportProgress = false, options) {
-    if (timeRegistrationRequest === null || timeRegistrationRequest === void 0) {
-      throw new Error("Required parameter timeRegistrationRequest was null or undefined when calling addTimeRegistrationForUser.");
-    }
-    let localVarHeaders = this.defaultHeaders;
-    let localVarCredential;
-    localVarCredential = this.configuration.lookupCredential("openId");
-    if (localVarCredential) {
-    }
-    localVarCredential = this.configuration.lookupCredential("basicAuth");
-    if (localVarCredential) {
-      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
-    }
-    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
-    if (localVarHttpHeaderAcceptSelected === void 0) {
-      const httpHeaderAccepts = [
-        "application/json"
-      ];
-      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-    }
-    if (localVarHttpHeaderAcceptSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
-    }
-    let localVarHttpContext = options && options.context;
-    if (localVarHttpContext === void 0) {
-      localVarHttpContext = new HttpContext();
-    }
-    let localVarTransferCache = options && options.transferCache;
-    if (localVarTransferCache === void 0) {
-      localVarTransferCache = true;
-    }
-    const consumes = [
-      "application/json"
-    ];
-    const httpContentTypeSelected = this.configuration.selectHeaderContentType(consumes);
-    if (httpContentTypeSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Content-Type", httpContentTypeSelected);
-    }
-    let responseType_ = "json";
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
-        responseType_ = "text";
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = "json";
-      } else {
-        responseType_ = "blob";
-      }
-    }
-    let localVarPath = `/time-registration`;
-    return this.httpClient.request("post", `${this.configuration.basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      body: timeRegistrationRequest,
-      responseType: responseType_,
-      withCredentials: this.configuration.withCredentials,
-      headers: localVarHeaders,
-      observe,
-      transferCache: localVarTransferCache,
-      reportProgress
-    });
-  }
-  associateTimeRegistrationWithTask(timeRegistrationAssociateTaskRequest, observe = "body", reportProgress = false, options) {
-    if (timeRegistrationAssociateTaskRequest === null || timeRegistrationAssociateTaskRequest === void 0) {
-      throw new Error("Required parameter timeRegistrationAssociateTaskRequest was null or undefined when calling associateTimeRegistrationWithTask.");
-    }
-    let localVarHeaders = this.defaultHeaders;
-    let localVarCredential;
-    localVarCredential = this.configuration.lookupCredential("openId");
-    if (localVarCredential) {
-    }
-    localVarCredential = this.configuration.lookupCredential("basicAuth");
-    if (localVarCredential) {
-      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
-    }
-    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
-    if (localVarHttpHeaderAcceptSelected === void 0) {
-      const httpHeaderAccepts = [
-        "application/json",
-        "text/plain"
-      ];
-      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-    }
-    if (localVarHttpHeaderAcceptSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
-    }
-    let localVarHttpContext = options && options.context;
-    if (localVarHttpContext === void 0) {
-      localVarHttpContext = new HttpContext();
-    }
-    let localVarTransferCache = options && options.transferCache;
-    if (localVarTransferCache === void 0) {
-      localVarTransferCache = true;
-    }
-    const consumes = [
-      "application/json"
-    ];
-    const httpContentTypeSelected = this.configuration.selectHeaderContentType(consumes);
-    if (httpContentTypeSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Content-Type", httpContentTypeSelected);
-    }
-    let responseType_ = "json";
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
-        responseType_ = "text";
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = "json";
-      } else {
-        responseType_ = "blob";
-      }
-    }
-    let localVarPath = `/time-registration/associate-task`;
-    return this.httpClient.request("post", `${this.configuration.basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      body: timeRegistrationAssociateTaskRequest,
-      responseType: responseType_,
-      withCredentials: this.configuration.withCredentials,
-      headers: localVarHeaders,
-      observe,
-      transferCache: localVarTransferCache,
-      reportProgress
-    });
-  }
-  deleteTimeRegistration(timeRegistrationId, observe = "body", reportProgress = false, options) {
-    if (timeRegistrationId === null || timeRegistrationId === void 0) {
-      throw new Error("Required parameter timeRegistrationId was null or undefined when calling deleteTimeRegistration.");
-    }
-    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
-    if (timeRegistrationId !== void 0 && timeRegistrationId !== null) {
-      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, timeRegistrationId, "timeRegistrationId");
-    }
-    let localVarHeaders = this.defaultHeaders;
-    let localVarCredential;
-    localVarCredential = this.configuration.lookupCredential("openId");
-    if (localVarCredential) {
-    }
-    localVarCredential = this.configuration.lookupCredential("basicAuth");
-    if (localVarCredential) {
-      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
-    }
-    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
-    if (localVarHttpHeaderAcceptSelected === void 0) {
-      const httpHeaderAccepts = [
-        "application/json",
-        "text/plain"
-      ];
-      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-    }
-    if (localVarHttpHeaderAcceptSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
-    }
-    let localVarHttpContext = options && options.context;
-    if (localVarHttpContext === void 0) {
-      localVarHttpContext = new HttpContext();
-    }
-    let localVarTransferCache = options && options.transferCache;
-    if (localVarTransferCache === void 0) {
-      localVarTransferCache = true;
-    }
-    let responseType_ = "json";
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
-        responseType_ = "text";
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = "json";
-      } else {
-        responseType_ = "blob";
-      }
-    }
-    let localVarPath = `/time-registration`;
-    return this.httpClient.request("delete", `${this.configuration.basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      params: localVarQueryParameters,
-      responseType: responseType_,
-      withCredentials: this.configuration.withCredentials,
-      headers: localVarHeaders,
-      observe,
-      transferCache: localVarTransferCache,
-      reportProgress
-    });
-  }
-  getTaskTimeRegistrationsOverview(date, period, extraTasks, observe = "body", reportProgress = false, options) {
-    if (date === null || date === void 0) {
-      throw new Error("Required parameter date was null or undefined when calling getTaskTimeRegistrationsOverview.");
-    }
-    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
-    if (date !== void 0 && date !== null) {
-      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, date, "date");
-    }
-    if (period !== void 0 && period !== null) {
-      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, period, "period");
-    }
-    if (extraTasks) {
-      extraTasks.forEach((element) => {
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, element, "extraTasks");
-      });
-    }
-    let localVarHeaders = this.defaultHeaders;
-    let localVarCredential;
-    localVarCredential = this.configuration.lookupCredential("openId");
-    if (localVarCredential) {
-    }
-    localVarCredential = this.configuration.lookupCredential("basicAuth");
-    if (localVarCredential) {
-      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
-    }
-    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
-    if (localVarHttpHeaderAcceptSelected === void 0) {
-      const httpHeaderAccepts = [
-        "application/json",
-        "text/plain"
-      ];
-      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-    }
-    if (localVarHttpHeaderAcceptSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
-    }
-    let localVarHttpContext = options && options.context;
-    if (localVarHttpContext === void 0) {
-      localVarHttpContext = new HttpContext();
-    }
-    let localVarTransferCache = options && options.transferCache;
-    if (localVarTransferCache === void 0) {
-      localVarTransferCache = true;
-    }
-    let responseType_ = "json";
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
-        responseType_ = "text";
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = "json";
-      } else {
-        responseType_ = "blob";
-      }
-    }
-    let localVarPath = `/time-registration/active-task`;
-    return this.httpClient.request("get", `${this.configuration.basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      params: localVarQueryParameters,
-      responseType: responseType_,
-      withCredentials: this.configuration.withCredentials,
-      headers: localVarHeaders,
-      observe,
-      transferCache: localVarTransferCache,
-      reportProgress
-    });
-  }
-  getTimeRegistrationsForUser(observe = "body", reportProgress = false, options) {
-    let localVarHeaders = this.defaultHeaders;
-    let localVarCredential;
-    localVarCredential = this.configuration.lookupCredential("openId");
-    if (localVarCredential) {
-    }
-    localVarCredential = this.configuration.lookupCredential("basicAuth");
-    if (localVarCredential) {
-      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
-    }
-    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
-    if (localVarHttpHeaderAcceptSelected === void 0) {
-      const httpHeaderAccepts = [
-        "application/json"
-      ];
-      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-    }
-    if (localVarHttpHeaderAcceptSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
-    }
-    let localVarHttpContext = options && options.context;
-    if (localVarHttpContext === void 0) {
-      localVarHttpContext = new HttpContext();
-    }
-    let localVarTransferCache = options && options.transferCache;
-    if (localVarTransferCache === void 0) {
-      localVarTransferCache = true;
-    }
-    let responseType_ = "json";
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
-        responseType_ = "text";
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = "json";
-      } else {
-        responseType_ = "blob";
-      }
-    }
-    let localVarPath = `/time-registration`;
-    return this.httpClient.request("get", `${this.configuration.basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      responseType: responseType_,
-      withCredentials: this.configuration.withCredentials,
-      headers: localVarHeaders,
-      observe,
-      transferCache: localVarTransferCache,
-      reportProgress
-    });
-  }
-  updateTimeRegistrationForUser(timeRegistrationId, timeRegistrationUpdateRequest, observe = "body", reportProgress = false, options) {
-    if (timeRegistrationId === null || timeRegistrationId === void 0) {
-      throw new Error("Required parameter timeRegistrationId was null or undefined when calling updateTimeRegistrationForUser.");
-    }
-    if (timeRegistrationUpdateRequest === null || timeRegistrationUpdateRequest === void 0) {
-      throw new Error("Required parameter timeRegistrationUpdateRequest was null or undefined when calling updateTimeRegistrationForUser.");
-    }
-    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
-    if (timeRegistrationId !== void 0 && timeRegistrationId !== null) {
-      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, timeRegistrationId, "timeRegistrationId");
-    }
-    let localVarHeaders = this.defaultHeaders;
-    let localVarCredential;
-    localVarCredential = this.configuration.lookupCredential("openId");
-    if (localVarCredential) {
-    }
-    localVarCredential = this.configuration.lookupCredential("basicAuth");
-    if (localVarCredential) {
-      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
-    }
-    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
-    if (localVarHttpHeaderAcceptSelected === void 0) {
-      const httpHeaderAccepts = [
-        "application/json",
-        "text/plain"
-      ];
-      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-    }
-    if (localVarHttpHeaderAcceptSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
-    }
-    let localVarHttpContext = options && options.context;
-    if (localVarHttpContext === void 0) {
-      localVarHttpContext = new HttpContext();
-    }
-    let localVarTransferCache = options && options.transferCache;
-    if (localVarTransferCache === void 0) {
-      localVarTransferCache = true;
-    }
-    const consumes = [
-      "application/json"
-    ];
-    const httpContentTypeSelected = this.configuration.selectHeaderContentType(consumes);
-    if (httpContentTypeSelected !== void 0) {
-      localVarHeaders = localVarHeaders.set("Content-Type", httpContentTypeSelected);
-    }
-    let responseType_ = "json";
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
-        responseType_ = "text";
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = "json";
-      } else {
-        responseType_ = "blob";
-      }
-    }
-    let localVarPath = `/time-registration`;
-    return this.httpClient.request("put", `${this.configuration.basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      body: timeRegistrationUpdateRequest,
-      params: localVarQueryParameters,
-      responseType: responseType_,
-      withCredentials: this.configuration.withCredentials,
-      headers: localVarHeaders,
-      observe,
-      transferCache: localVarTransferCache,
-      reportProgress
-    });
-  }
-};
-_TimeRegistrationService.\u0275fac = function TimeRegistrationService_Factory(__ngFactoryType__) {
-  return new (__ngFactoryType__ || _TimeRegistrationService)(\u0275\u0275inject(HttpClient), \u0275\u0275inject(BASE_PATH, 8), \u0275\u0275inject(Configuration, 8));
-};
-_TimeRegistrationService.\u0275prov = /* @__PURE__ */ \u0275\u0275defineInjectable({ token: _TimeRegistrationService, factory: _TimeRegistrationService.\u0275fac, providedIn: "root" });
-var TimeRegistrationService = _TimeRegistrationService;
-
-// src/app/generated/model/importTimeRegistrationStatus.ts
-var ImportTimeRegistrationStatus;
-(function(ImportTimeRegistrationStatus2) {
-  ImportTimeRegistrationStatus2["Valid"] = "VALID";
-  ImportTimeRegistrationStatus2["Pending"] = "PENDING";
-  ImportTimeRegistrationStatus2["Failed"] = "FAILED";
-})(ImportTimeRegistrationStatus || (ImportTimeRegistrationStatus = {}));
-
-// src/app/generated/model/kmRegistrationStatus.ts
-var KmRegistrationStatus;
-(function(KmRegistrationStatus2) {
-  KmRegistrationStatus2["Pending"] = "PENDING";
-  KmRegistrationStatus2["Accepted"] = "ACCEPTED";
-  KmRegistrationStatus2["Rejected"] = "REJECTED";
-  KmRegistrationStatus2["Deleted"] = "DELETED";
-})(KmRegistrationStatus || (KmRegistrationStatus = {}));
-
-// src/app/generated/model/kmRegistrationUpdateRequest.ts
-var KmRegistrationUpdateRequestStatusEnum;
-(function(KmRegistrationUpdateRequestStatusEnum2) {
-  KmRegistrationUpdateRequestStatusEnum2["Approve"] = "APPROVE";
-  KmRegistrationUpdateRequestStatusEnum2["Reject"] = "REJECT";
-  KmRegistrationUpdateRequestStatusEnum2["Pending"] = "PENDING";
-})(KmRegistrationUpdateRequestStatusEnum || (KmRegistrationUpdateRequestStatusEnum = {}));
-
-// src/app/generated/model/overviewPeriod.ts
-var OverviewPeriod;
-(function(OverviewPeriod2) {
-  OverviewPeriod2["Day"] = "DAY";
-  OverviewPeriod2["Week"] = "WEEK";
-  OverviewPeriod2["Month"] = "MONTH";
-})(OverviewPeriod || (OverviewPeriod = {}));
-
-// src/app/generated/model/tagConfigurationMetadata.ts
-var TagConfigurationMetadataCardinalityEnum;
-(function(TagConfigurationMetadataCardinalityEnum2) {
-  TagConfigurationMetadataCardinalityEnum2["Optional"] = "OPTIONAL";
-  TagConfigurationMetadataCardinalityEnum2["Mandatory"] = "MANDATORY";
-  TagConfigurationMetadataCardinalityEnum2["Managed"] = "MANAGED";
-})(TagConfigurationMetadataCardinalityEnum || (TagConfigurationMetadataCardinalityEnum = {}));
-var TagConfigurationMetadataValueTypeEnum;
-(function(TagConfigurationMetadataValueTypeEnum2) {
-  TagConfigurationMetadataValueTypeEnum2["String"] = "STRING";
-  TagConfigurationMetadataValueTypeEnum2["Bool"] = "BOOL";
-  TagConfigurationMetadataValueTypeEnum2["Int"] = "INT";
-})(TagConfigurationMetadataValueTypeEnum || (TagConfigurationMetadataValueTypeEnum = {}));
-
-// src/app/generated/model/timeRegistrationStatus.ts
-var TimeRegistrationStatus;
-(function(TimeRegistrationStatus2) {
-  TimeRegistrationStatus2["Valid"] = "VALID";
-  TimeRegistrationStatus2["Pending"] = "PENDING";
-  TimeRegistrationStatus2["Invalid"] = "INVALID";
-  TimeRegistrationStatus2["Deleted"] = "DELETED";
-  TimeRegistrationStatus2["Rejected"] = "REJECTED";
-})(TimeRegistrationStatus || (TimeRegistrationStatus = {}));
-
-// src/app/generated/api.module.ts
-var _ApiModule = class _ApiModule {
-  static forRoot(configurationFactory) {
-    return {
-      ngModule: _ApiModule,
-      providers: [{ provide: Configuration, useFactory: configurationFactory }]
-    };
-  }
-  constructor(parentModule, http) {
-    if (parentModule) {
-      throw new Error("ApiModule is already loaded. Import in your base AppModule only.");
-    }
-    if (!http) {
-      throw new Error("You need to import the HttpClientModule in your AppModule! \nSee also https://github.com/angular/angular/issues/20575");
-    }
-  }
-};
-_ApiModule.\u0275fac = function ApiModule_Factory(__ngFactoryType__) {
-  return new (__ngFactoryType__ || _ApiModule)(\u0275\u0275inject(_ApiModule, 12), \u0275\u0275inject(HttpClient, 8));
-};
-_ApiModule.\u0275mod = /* @__PURE__ */ \u0275\u0275defineNgModule({ type: _ApiModule });
-_ApiModule.\u0275inj = /* @__PURE__ */ \u0275\u0275defineInjector({});
-var ApiModule = _ApiModule;
-
 // node_modules/@angular/cdk/fesm2022/platform.mjs
 var hasV8BreakIterator;
 try {
@@ -12290,6 +10556,26 @@ var ActiveDescendantKeyManager = class extends ListKeyManager {
     }
   }
 };
+var FocusKeyManager = class extends ListKeyManager {
+  constructor() {
+    super(...arguments);
+    this._origin = "program";
+  }
+  /**
+   * Sets the focus origin that will be passed in to the items for any subsequent `focus` calls.
+   * @param origin Focus origin to be used when focusing items.
+   */
+  setFocusOrigin(origin) {
+    this._origin = origin;
+    return this;
+  }
+  setActiveItem(item) {
+    super.setActiveItem(item);
+    if (this.activeItem) {
+      this.activeItem.focus(this._origin);
+    }
+  }
+};
 var _InteractivityChecker = class _InteractivityChecker {
   constructor(_platform) {
     this._platform = _platform;
@@ -12325,12 +10611,12 @@ var _InteractivityChecker = class _InteractivityChecker {
     if (!this._platform.isBrowser) {
       return false;
     }
-    const frameElement = getFrameElement(getWindow(element));
-    if (frameElement) {
-      if (getTabIndexValue(frameElement) === -1) {
+    const frameElement2 = getFrameElement(getWindow(element));
+    if (frameElement2) {
+      if (getTabIndexValue(frameElement2) === -1) {
         return false;
       }
-      if (!this.isVisible(frameElement)) {
+      if (!this.isVisible(frameElement2)) {
         return false;
       }
     }
@@ -31754,6 +30040,1124 @@ var MatInputModule = _MatInputModule;
   }], null, null);
 })();
 
+// node_modules/@angular/material/fesm2022/button.mjs
+var _c06 = ["mat-button", ""];
+var _c15 = [[["", 8, "material-icons", 3, "iconPositionEnd", ""], ["mat-icon", 3, "iconPositionEnd", ""], ["", "matButtonIcon", "", 3, "iconPositionEnd", ""]], "*", [["", "iconPositionEnd", "", 8, "material-icons"], ["mat-icon", "iconPositionEnd", ""], ["", "matButtonIcon", "", "iconPositionEnd", ""]]];
+var _c23 = [".material-icons:not([iconPositionEnd]), mat-icon:not([iconPositionEnd]), [matButtonIcon]:not([iconPositionEnd])", "*", ".material-icons[iconPositionEnd], mat-icon[iconPositionEnd], [matButtonIcon][iconPositionEnd]"];
+var _c33 = '.mat-mdc-button-base{text-decoration:none}.mdc-button{-webkit-user-select:none;user-select:none;position:relative;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-width:64px;border:none;outline:none;line-height:inherit;-webkit-appearance:none;overflow:visible;vertical-align:middle;background:rgba(0,0,0,0);padding:0 8px}.mdc-button::-moz-focus-inner{padding:0;border:0}.mdc-button:active{outline:none}.mdc-button:hover{cursor:pointer}.mdc-button:disabled{cursor:default;pointer-events:none}.mdc-button[hidden]{display:none}.mdc-button .mdc-button__label{position:relative}.mat-mdc-button{padding:0 var(--mat-text-button-horizontal-padding, 8px);height:var(--mdc-text-button-container-height);font-family:var(--mdc-text-button-label-text-font);font-size:var(--mdc-text-button-label-text-size);letter-spacing:var(--mdc-text-button-label-text-tracking);text-transform:var(--mdc-text-button-label-text-transform);font-weight:var(--mdc-text-button-label-text-weight)}.mat-mdc-button:has(.material-icons,mat-icon,[matButtonIcon]){padding:0 var(--mat-text-button-with-icon-horizontal-padding, 8px)}.mat-mdc-button>.mat-icon{margin-right:var(--mat-text-button-icon-spacing, 8px);margin-left:var(--mat-text-button-icon-offset, 0)}[dir=rtl] .mat-mdc-button>.mat-icon{margin-right:var(--mat-text-button-icon-offset, 0);margin-left:var(--mat-text-button-icon-spacing, 8px)}.mat-mdc-button .mdc-button__label+.mat-icon{margin-right:var(--mat-text-button-icon-offset, 0);margin-left:var(--mat-text-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-button .mdc-button__label+.mat-icon{margin-right:var(--mat-text-button-icon-spacing, 8px);margin-left:var(--mat-text-button-icon-offset, 0)}.mat-mdc-button .mat-ripple-element{background-color:var(--mat-text-button-ripple-color)}.mat-mdc-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-text-button-state-layer-color)}.mat-mdc-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-text-button-disabled-state-layer-color)}.mat-mdc-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-text-button-hover-state-layer-opacity)}.mat-mdc-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-text-button-focus-state-layer-opacity)}.mat-mdc-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-text-button-pressed-state-layer-opacity)}.mat-mdc-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-text-button-touch-target-display)}.mat-mdc-button,.mat-mdc-button .mdc-button__ripple{border-radius:var(--mdc-text-button-container-shape)}.mat-mdc-button:not(:disabled){color:var(--mdc-text-button-label-text-color)}.mat-mdc-button[disabled],.mat-mdc-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-text-button-disabled-label-text-color)}.mat-mdc-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-unelevated-button{transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);padding:0 var(--mat-filled-button-horizontal-padding, 16px);height:var(--mdc-filled-button-container-height);font-family:var(--mdc-filled-button-label-text-font);font-size:var(--mdc-filled-button-label-text-size);letter-spacing:var(--mdc-filled-button-label-text-tracking);text-transform:var(--mdc-filled-button-label-text-transform);font-weight:var(--mdc-filled-button-label-text-weight)}.mat-mdc-unelevated-button>.mat-icon{margin-right:var(--mat-filled-button-icon-spacing, 8px);margin-left:var(--mat-filled-button-icon-offset, -4px)}[dir=rtl] .mat-mdc-unelevated-button>.mat-icon{margin-right:var(--mat-filled-button-icon-offset, -4px);margin-left:var(--mat-filled-button-icon-spacing, 8px)}.mat-mdc-unelevated-button .mdc-button__label+.mat-icon{margin-right:var(--mat-filled-button-icon-offset, -4px);margin-left:var(--mat-filled-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-unelevated-button .mdc-button__label+.mat-icon{margin-right:var(--mat-filled-button-icon-spacing, 8px);margin-left:var(--mat-filled-button-icon-offset, -4px)}.mat-mdc-unelevated-button .mat-ripple-element{background-color:var(--mat-filled-button-ripple-color)}.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-filled-button-state-layer-color)}.mat-mdc-unelevated-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-filled-button-disabled-state-layer-color)}.mat-mdc-unelevated-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-filled-button-hover-state-layer-opacity)}.mat-mdc-unelevated-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-filled-button-focus-state-layer-opacity)}.mat-mdc-unelevated-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-filled-button-pressed-state-layer-opacity)}.mat-mdc-unelevated-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-filled-button-touch-target-display)}.mat-mdc-unelevated-button:not(:disabled){color:var(--mdc-filled-button-label-text-color);background-color:var(--mdc-filled-button-container-color)}.mat-mdc-unelevated-button,.mat-mdc-unelevated-button .mdc-button__ripple{border-radius:var(--mdc-filled-button-container-shape)}.mat-mdc-unelevated-button[disabled],.mat-mdc-unelevated-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-filled-button-disabled-label-text-color);background-color:var(--mdc-filled-button-disabled-container-color)}.mat-mdc-unelevated-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-raised-button{transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);padding:0 var(--mat-protected-button-horizontal-padding, 16px);box-shadow:var(--mdc-protected-button-container-elevation-shadow);height:var(--mdc-protected-button-container-height);font-family:var(--mdc-protected-button-label-text-font);font-size:var(--mdc-protected-button-label-text-size);letter-spacing:var(--mdc-protected-button-label-text-tracking);text-transform:var(--mdc-protected-button-label-text-transform);font-weight:var(--mdc-protected-button-label-text-weight)}.mat-mdc-raised-button>.mat-icon{margin-right:var(--mat-protected-button-icon-spacing, 8px);margin-left:var(--mat-protected-button-icon-offset, -4px)}[dir=rtl] .mat-mdc-raised-button>.mat-icon{margin-right:var(--mat-protected-button-icon-offset, -4px);margin-left:var(--mat-protected-button-icon-spacing, 8px)}.mat-mdc-raised-button .mdc-button__label+.mat-icon{margin-right:var(--mat-protected-button-icon-offset, -4px);margin-left:var(--mat-protected-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-raised-button .mdc-button__label+.mat-icon{margin-right:var(--mat-protected-button-icon-spacing, 8px);margin-left:var(--mat-protected-button-icon-offset, -4px)}.mat-mdc-raised-button .mat-ripple-element{background-color:var(--mat-protected-button-ripple-color)}.mat-mdc-raised-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-protected-button-state-layer-color)}.mat-mdc-raised-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-protected-button-disabled-state-layer-color)}.mat-mdc-raised-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-protected-button-hover-state-layer-opacity)}.mat-mdc-raised-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-protected-button-focus-state-layer-opacity)}.mat-mdc-raised-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-protected-button-pressed-state-layer-opacity)}.mat-mdc-raised-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-protected-button-touch-target-display)}.mat-mdc-raised-button:not(:disabled){color:var(--mdc-protected-button-label-text-color);background-color:var(--mdc-protected-button-container-color)}.mat-mdc-raised-button,.mat-mdc-raised-button .mdc-button__ripple{border-radius:var(--mdc-protected-button-container-shape)}.mat-mdc-raised-button:hover{box-shadow:var(--mdc-protected-button-hover-container-elevation-shadow)}.mat-mdc-raised-button:focus{box-shadow:var(--mdc-protected-button-focus-container-elevation-shadow)}.mat-mdc-raised-button:active,.mat-mdc-raised-button:focus:active{box-shadow:var(--mdc-protected-button-pressed-container-elevation-shadow)}.mat-mdc-raised-button[disabled],.mat-mdc-raised-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-protected-button-disabled-label-text-color);background-color:var(--mdc-protected-button-disabled-container-color)}.mat-mdc-raised-button[disabled].mat-mdc-button-disabled,.mat-mdc-raised-button.mat-mdc-button-disabled.mat-mdc-button-disabled{box-shadow:var(--mdc-protected-button-disabled-container-elevation-shadow)}.mat-mdc-raised-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-outlined-button{border-style:solid;transition:border 280ms cubic-bezier(0.4, 0, 0.2, 1);padding:0 var(--mat-outlined-button-horizontal-padding, 15px);height:var(--mdc-outlined-button-container-height);font-family:var(--mdc-outlined-button-label-text-font);font-size:var(--mdc-outlined-button-label-text-size);letter-spacing:var(--mdc-outlined-button-label-text-tracking);text-transform:var(--mdc-outlined-button-label-text-transform);font-weight:var(--mdc-outlined-button-label-text-weight);border-radius:var(--mdc-outlined-button-container-shape);border-width:var(--mdc-outlined-button-outline-width)}.mat-mdc-outlined-button>.mat-icon{margin-right:var(--mat-outlined-button-icon-spacing, 8px);margin-left:var(--mat-outlined-button-icon-offset, -4px)}[dir=rtl] .mat-mdc-outlined-button>.mat-icon{margin-right:var(--mat-outlined-button-icon-offset, -4px);margin-left:var(--mat-outlined-button-icon-spacing, 8px)}.mat-mdc-outlined-button .mdc-button__label+.mat-icon{margin-right:var(--mat-outlined-button-icon-offset, -4px);margin-left:var(--mat-outlined-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-outlined-button .mdc-button__label+.mat-icon{margin-right:var(--mat-outlined-button-icon-spacing, 8px);margin-left:var(--mat-outlined-button-icon-offset, -4px)}.mat-mdc-outlined-button .mat-ripple-element{background-color:var(--mat-outlined-button-ripple-color)}.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-outlined-button-state-layer-color)}.mat-mdc-outlined-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-outlined-button-disabled-state-layer-color)}.mat-mdc-outlined-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-outlined-button-hover-state-layer-opacity)}.mat-mdc-outlined-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-outlined-button-focus-state-layer-opacity)}.mat-mdc-outlined-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-outlined-button-pressed-state-layer-opacity)}.mat-mdc-outlined-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-outlined-button-touch-target-display)}.mat-mdc-outlined-button:not(:disabled){color:var(--mdc-outlined-button-label-text-color);border-color:var(--mdc-outlined-button-outline-color)}.mat-mdc-outlined-button[disabled],.mat-mdc-outlined-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-outlined-button-disabled-label-text-color);border-color:var(--mdc-outlined-button-disabled-outline-color)}.mat-mdc-outlined-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-outlined-button .mdc-button__ripple{border-width:var(--mdc-outlined-button-outline-width);border-style:solid;border-color:rgba(0,0,0,0)}.mat-mdc-button,.mat-mdc-unelevated-button,.mat-mdc-raised-button,.mat-mdc-outlined-button{-webkit-tap-highlight-color:rgba(0,0,0,0)}.mat-mdc-button .mat-mdc-button-ripple,.mat-mdc-button .mat-mdc-button-persistent-ripple,.mat-mdc-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button .mat-mdc-button-ripple,.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple,.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button .mat-mdc-button-ripple,.mat-mdc-raised-button .mat-mdc-button-persistent-ripple,.mat-mdc-raised-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button .mat-mdc-button-ripple,.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple,.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-button .mat-mdc-button-ripple,.mat-mdc-unelevated-button .mat-mdc-button-ripple,.mat-mdc-raised-button .mat-mdc-button-ripple,.mat-mdc-outlined-button .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-button .mdc-button__label,.mat-mdc-button .mat-icon,.mat-mdc-unelevated-button .mdc-button__label,.mat-mdc-unelevated-button .mat-icon,.mat-mdc-raised-button .mdc-button__label,.mat-mdc-raised-button .mat-icon,.mat-mdc-outlined-button .mdc-button__label,.mat-mdc-outlined-button .mat-icon{z-index:1;position:relative}.mat-mdc-button .mat-mdc-focus-indicator,.mat-mdc-unelevated-button .mat-mdc-focus-indicator,.mat-mdc-raised-button .mat-mdc-focus-indicator,.mat-mdc-outlined-button .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-button:focus .mat-mdc-focus-indicator::before,.mat-mdc-unelevated-button:focus .mat-mdc-focus-indicator::before,.mat-mdc-raised-button:focus .mat-mdc-focus-indicator::before,.mat-mdc-outlined-button:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-button._mat-animation-noopable,.mat-mdc-unelevated-button._mat-animation-noopable,.mat-mdc-raised-button._mat-animation-noopable,.mat-mdc-outlined-button._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-button>.mat-icon,.mat-mdc-unelevated-button>.mat-icon,.mat-mdc-raised-button>.mat-icon,.mat-mdc-outlined-button>.mat-icon{display:inline-block;position:relative;vertical-align:top;font-size:1.125rem;height:1.125rem;width:1.125rem}.mat-mdc-outlined-button .mat-mdc-button-ripple,.mat-mdc-outlined-button .mdc-button__ripple{top:-1px;left:-1px;bottom:-1px;right:-1px}.mat-mdc-unelevated-button .mat-mdc-focus-indicator::before,.mat-mdc-raised-button .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 2px)*-1)}.mat-mdc-outlined-button .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 3px)*-1)}';
+var _c43 = ".cdk-high-contrast-active .mat-mdc-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-unelevated-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-raised-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-outlined-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-icon-button{outline:solid 1px}";
+var _c53 = ["mat-fab", ""];
+var _c63 = ["mat-mini-fab", ""];
+var _c72 = '.mat-mdc-fab-base{-webkit-tap-highlight-color:rgba(0,0,0,0);-webkit-user-select:none;user-select:none;position:relative;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:56px;height:56px;padding:0;border:none;fill:currentColor;text-decoration:none;cursor:pointer;-moz-appearance:none;-webkit-appearance:none;overflow:visible;transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1),opacity 15ms linear 30ms,transform 270ms 0ms cubic-bezier(0, 0, 0.2, 1);flex-shrink:0}.mat-mdc-fab-base .mat-mdc-button-ripple,.mat-mdc-fab-base .mat-mdc-button-persistent-ripple,.mat-mdc-fab-base .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-fab-base .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-fab-base .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-fab-base .mdc-button__label,.mat-mdc-fab-base .mat-icon{z-index:1;position:relative}.mat-mdc-fab-base .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-fab-base:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-fab-base._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-fab-base::before{position:absolute;box-sizing:border-box;width:100%;height:100%;top:0;left:0;border:1px solid rgba(0,0,0,0);border-radius:inherit;content:"";pointer-events:none}.mat-mdc-fab-base[hidden]{display:none}.mat-mdc-fab-base::-moz-focus-inner{padding:0;border:0}.mat-mdc-fab-base:active,.mat-mdc-fab-base:focus{outline:none}.mat-mdc-fab-base:hover{cursor:pointer}.mat-mdc-fab-base>svg{width:100%}.mat-mdc-fab-base .mat-icon,.mat-mdc-fab-base .material-icons{transition:transform 180ms 90ms cubic-bezier(0, 0, 0.2, 1);fill:currentColor;will-change:transform}.mat-mdc-fab-base .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 2px)*-1)}.mat-mdc-fab-base[disabled],.mat-mdc-fab-base.mat-mdc-button-disabled{cursor:default;pointer-events:none}.mat-mdc-fab-base[disabled],.mat-mdc-fab-base[disabled]:focus,.mat-mdc-fab-base.mat-mdc-button-disabled,.mat-mdc-fab-base.mat-mdc-button-disabled:focus{box-shadow:none}.mat-mdc-fab-base.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-fab{background-color:var(--mdc-fab-container-color);border-radius:var(--mdc-fab-container-shape);color:var(--mat-fab-foreground-color, inherit);box-shadow:var(--mdc-fab-container-elevation-shadow)}.mat-mdc-fab .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-fab-touch-target-display)}.mat-mdc-fab .mat-ripple-element{background-color:var(--mat-fab-ripple-color)}.mat-mdc-fab .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-state-layer-color)}.mat-mdc-fab.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-disabled-state-layer-color)}.mat-mdc-fab:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-hover-state-layer-opacity)}.mat-mdc-fab.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-fab.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-fab.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-focus-state-layer-opacity)}.mat-mdc-fab:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-pressed-state-layer-opacity)}.mat-mdc-fab:hover{box-shadow:var(--mdc-fab-hover-container-elevation-shadow)}.mat-mdc-fab:focus{box-shadow:var(--mdc-fab-focus-container-elevation-shadow)}.mat-mdc-fab:active,.mat-mdc-fab:focus:active{box-shadow:var(--mdc-fab-pressed-container-elevation-shadow)}.mat-mdc-fab[disabled],.mat-mdc-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mat-fab-disabled-state-foreground-color);background-color:var(--mat-fab-disabled-state-container-color)}.mat-mdc-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-mini-fab{width:40px;height:40px;background-color:var(--mdc-fab-small-container-color);border-radius:var(--mdc-fab-small-container-shape);color:var(--mat-fab-small-foreground-color, inherit);box-shadow:var(--mdc-fab-small-container-elevation-shadow)}.mat-mdc-mini-fab .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-fab-small-touch-target-display)}.mat-mdc-mini-fab .mat-ripple-element{background-color:var(--mat-fab-small-ripple-color)}.mat-mdc-mini-fab .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-small-state-layer-color)}.mat-mdc-mini-fab.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-small-disabled-state-layer-color)}.mat-mdc-mini-fab:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-hover-state-layer-opacity)}.mat-mdc-mini-fab.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-mini-fab.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-mini-fab.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-focus-state-layer-opacity)}.mat-mdc-mini-fab:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-pressed-state-layer-opacity)}.mat-mdc-mini-fab:hover{box-shadow:var(--mdc-fab-small-hover-container-elevation-shadow)}.mat-mdc-mini-fab:focus{box-shadow:var(--mdc-fab-small-focus-container-elevation-shadow)}.mat-mdc-mini-fab:active,.mat-mdc-mini-fab:focus:active{box-shadow:var(--mdc-fab-small-pressed-container-elevation-shadow)}.mat-mdc-mini-fab[disabled],.mat-mdc-mini-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mat-fab-small-disabled-state-foreground-color);background-color:var(--mat-fab-small-disabled-state-container-color)}.mat-mdc-mini-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-extended-fab{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;border-radius:24px;padding-left:20px;padding-right:20px;width:auto;max-width:100%;line-height:normal;box-shadow:var(--mdc-extended-fab-container-elevation-shadow);height:var(--mdc-extended-fab-container-height);border-radius:var(--mdc-extended-fab-container-shape);font-family:var(--mdc-extended-fab-label-text-font);font-size:var(--mdc-extended-fab-label-text-size);font-weight:var(--mdc-extended-fab-label-text-weight);letter-spacing:var(--mdc-extended-fab-label-text-tracking)}.mat-mdc-extended-fab:hover{box-shadow:var(--mdc-extended-fab-hover-container-elevation-shadow)}.mat-mdc-extended-fab:focus{box-shadow:var(--mdc-extended-fab-focus-container-elevation-shadow)}.mat-mdc-extended-fab:active,.mat-mdc-extended-fab:focus:active{box-shadow:var(--mdc-extended-fab-pressed-container-elevation-shadow)}.mat-mdc-extended-fab[disabled],.mat-mdc-extended-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none}.mat-mdc-extended-fab[disabled],.mat-mdc-extended-fab[disabled]:focus,.mat-mdc-extended-fab.mat-mdc-button-disabled,.mat-mdc-extended-fab.mat-mdc-button-disabled:focus{box-shadow:none}.mat-mdc-extended-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}[dir=rtl] .mat-mdc-extended-fab .mdc-button__label+.mat-icon,[dir=rtl] .mat-mdc-extended-fab .mdc-button__label+.material-icons,.mat-mdc-extended-fab>.mat-icon,.mat-mdc-extended-fab>.material-icons{margin-left:-8px;margin-right:12px}.mat-mdc-extended-fab .mdc-button__label+.mat-icon,.mat-mdc-extended-fab .mdc-button__label+.material-icons,[dir=rtl] .mat-mdc-extended-fab>.mat-icon,[dir=rtl] .mat-mdc-extended-fab>.material-icons{margin-left:12px;margin-right:-8px}.mat-mdc-extended-fab .mat-mdc-button-touch-target{width:100%}';
+var _c8 = ["mat-icon-button", ""];
+var _c9 = ["*"];
+var _c10 = '.mat-mdc-icon-button{-webkit-user-select:none;user-select:none;display:inline-block;position:relative;box-sizing:border-box;border:none;outline:none;background-color:rgba(0,0,0,0);fill:currentColor;color:inherit;text-decoration:none;cursor:pointer;z-index:0;overflow:visible;border-radius:50%;flex-shrink:0;text-align:center;width:var(--mdc-icon-button-state-layer-size, 48px);height:var(--mdc-icon-button-state-layer-size, 48px);padding:calc(calc(var(--mdc-icon-button-state-layer-size, 48px) - var(--mdc-icon-button-icon-size, 24px)) / 2);font-size:var(--mdc-icon-button-icon-size);color:var(--mdc-icon-button-icon-color);-webkit-tap-highlight-color:rgba(0,0,0,0)}.mat-mdc-icon-button[disabled],.mat-mdc-icon-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-icon-button-disabled-icon-color)}.mat-mdc-icon-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-icon-button img,.mat-mdc-icon-button svg{width:var(--mdc-icon-button-icon-size);height:var(--mdc-icon-button-icon-size);vertical-align:baseline}.mat-mdc-icon-button .mat-mdc-button-ripple,.mat-mdc-icon-button .mat-mdc-button-persistent-ripple,.mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-icon-button .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-icon-button .mdc-button__label,.mat-mdc-icon-button .mat-icon{z-index:1;position:relative}.mat-mdc-icon-button .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-icon-button:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-icon-button .mat-ripple-element{background-color:var(--mat-icon-button-ripple-color)}.mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-icon-button-state-layer-color)}.mat-mdc-icon-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-icon-button-disabled-state-layer-color)}.mat-mdc-icon-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-hover-state-layer-opacity)}.mat-mdc-icon-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-icon-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-icon-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-focus-state-layer-opacity)}.mat-mdc-icon-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-pressed-state-layer-opacity)}.mat-mdc-icon-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-icon-button-touch-target-display)}.mat-mdc-icon-button._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-icon-button .mat-mdc-button-persistent-ripple{border-radius:50%}.mat-mdc-icon-button[hidden]{display:none}.mat-mdc-icon-button.mat-unthemed:not(.mdc-ripple-upgraded):focus::before,.mat-mdc-icon-button.mat-primary:not(.mdc-ripple-upgraded):focus::before,.mat-mdc-icon-button.mat-accent:not(.mdc-ripple-upgraded):focus::before,.mat-mdc-icon-button.mat-warn:not(.mdc-ripple-upgraded):focus::before{background:rgba(0,0,0,0);opacity:1}';
+var MAT_BUTTON_CONFIG = new InjectionToken("MAT_BUTTON_CONFIG");
+var MAT_BUTTON_HOST = {
+  "[attr.disabled]": "_getDisabledAttribute()",
+  "[attr.aria-disabled]": "_getAriaDisabled()",
+  "[class.mat-mdc-button-disabled]": "disabled",
+  "[class.mat-mdc-button-disabled-interactive]": "disabledInteractive",
+  "[class._mat-animation-noopable]": '_animationMode === "NoopAnimations"',
+  // MDC automatically applies the primary theme color to the button, but we want to support
+  // an unthemed version. If color is undefined, apply a CSS class that makes it easy to
+  // select and style this "theme".
+  "[class.mat-unthemed]": "!color",
+  // Add a class that applies to all buttons. This makes it easier to target if somebody
+  // wants to target all Material buttons.
+  "[class.mat-mdc-button-base]": "true",
+  "[class]": 'color ? "mat-" + color : ""'
+};
+var HOST_SELECTOR_MDC_CLASS_PAIR = [{
+  attribute: "mat-button",
+  mdcClasses: ["mdc-button", "mat-mdc-button"]
+}, {
+  attribute: "mat-flat-button",
+  mdcClasses: ["mdc-button", "mdc-button--unelevated", "mat-mdc-unelevated-button"]
+}, {
+  attribute: "mat-raised-button",
+  mdcClasses: ["mdc-button", "mdc-button--raised", "mat-mdc-raised-button"]
+}, {
+  attribute: "mat-stroked-button",
+  mdcClasses: ["mdc-button", "mdc-button--outlined", "mat-mdc-outlined-button"]
+}, {
+  attribute: "mat-fab",
+  mdcClasses: ["mdc-fab", "mat-mdc-fab-base", "mat-mdc-fab"]
+}, {
+  attribute: "mat-mini-fab",
+  mdcClasses: ["mdc-fab", "mat-mdc-fab-base", "mdc-fab--mini", "mat-mdc-mini-fab"]
+}, {
+  attribute: "mat-icon-button",
+  mdcClasses: ["mdc-icon-button", "mat-mdc-icon-button"]
+}];
+var _MatButtonBase = class _MatButtonBase {
+  /**
+   * Reference to the MatRipple instance of the button.
+   * @deprecated Considered an implementation detail. To be removed.
+   * @breaking-change 17.0.0
+   */
+  get ripple() {
+    return this._rippleLoader?.getRipple(this._elementRef.nativeElement);
+  }
+  set ripple(v) {
+    this._rippleLoader?.attachRipple(this._elementRef.nativeElement, v);
+  }
+  /** Whether the ripple effect is disabled or not. */
+  get disableRipple() {
+    return this._disableRipple;
+  }
+  set disableRipple(value) {
+    this._disableRipple = value;
+    this._updateRippleDisabled();
+  }
+  /** Whether the button is disabled. */
+  get disabled() {
+    return this._disabled;
+  }
+  set disabled(value) {
+    this._disabled = value;
+    this._updateRippleDisabled();
+  }
+  constructor(_elementRef, _platform, _ngZone, _animationMode) {
+    this._elementRef = _elementRef;
+    this._platform = _platform;
+    this._ngZone = _ngZone;
+    this._animationMode = _animationMode;
+    this._focusMonitor = inject(FocusMonitor);
+    this._rippleLoader = inject(MatRippleLoader);
+    this._isFab = false;
+    this._disableRipple = false;
+    this._disabled = false;
+    const config = inject(MAT_BUTTON_CONFIG, {
+      optional: true
+    });
+    const element = _elementRef.nativeElement;
+    const classList = element.classList;
+    this.disabledInteractive = config?.disabledInteractive ?? false;
+    this.color = config?.color ?? null;
+    this._rippleLoader?.configureRipple(element, {
+      className: "mat-mdc-button-ripple"
+    });
+    for (const {
+      attribute,
+      mdcClasses
+    } of HOST_SELECTOR_MDC_CLASS_PAIR) {
+      if (element.hasAttribute(attribute)) {
+        classList.add(...mdcClasses);
+      }
+    }
+  }
+  ngAfterViewInit() {
+    this._focusMonitor.monitor(this._elementRef, true);
+  }
+  ngOnDestroy() {
+    this._focusMonitor.stopMonitoring(this._elementRef);
+    this._rippleLoader?.destroyRipple(this._elementRef.nativeElement);
+  }
+  /** Focuses the button. */
+  focus(origin = "program", options) {
+    if (origin) {
+      this._focusMonitor.focusVia(this._elementRef.nativeElement, origin, options);
+    } else {
+      this._elementRef.nativeElement.focus(options);
+    }
+  }
+  _getAriaDisabled() {
+    if (this.ariaDisabled != null) {
+      return this.ariaDisabled;
+    }
+    return this.disabled && this.disabledInteractive ? true : null;
+  }
+  _getDisabledAttribute() {
+    return this.disabledInteractive || !this.disabled ? null : true;
+  }
+  _updateRippleDisabled() {
+    this._rippleLoader?.setDisabled(this._elementRef.nativeElement, this.disableRipple || this.disabled);
+  }
+};
+_MatButtonBase.\u0275fac = function MatButtonBase_Factory(__ngFactoryType__) {
+  \u0275\u0275invalidFactory();
+};
+_MatButtonBase.\u0275dir = /* @__PURE__ */ \u0275\u0275defineDirective({
+  type: _MatButtonBase,
+  inputs: {
+    color: "color",
+    disableRipple: [2, "disableRipple", "disableRipple", booleanAttribute],
+    disabled: [2, "disabled", "disabled", booleanAttribute],
+    ariaDisabled: [2, "aria-disabled", "ariaDisabled", booleanAttribute],
+    disabledInteractive: [2, "disabledInteractive", "disabledInteractive", booleanAttribute]
+  },
+  features: [\u0275\u0275InputTransformsFeature]
+});
+var MatButtonBase = _MatButtonBase;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatButtonBase, [{
+    type: Directive
+  }], () => [{
+    type: ElementRef
+  }, {
+    type: Platform
+  }, {
+    type: NgZone
+  }, {
+    type: void 0
+  }], {
+    color: [{
+      type: Input
+    }],
+    disableRipple: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }],
+    disabled: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }],
+    ariaDisabled: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute,
+        alias: "aria-disabled"
+      }]
+    }],
+    disabledInteractive: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }]
+  });
+})();
+var MAT_ANCHOR_HOST = {
+  "[attr.disabled]": "_getDisabledAttribute()",
+  "[class.mat-mdc-button-disabled]": "disabled",
+  "[class.mat-mdc-button-disabled-interactive]": "disabledInteractive",
+  "[class._mat-animation-noopable]": '_animationMode === "NoopAnimations"',
+  // Note that we ignore the user-specified tabindex when it's disabled for
+  // consistency with the `mat-button` applied on native buttons where even
+  // though they have an index, they're not tabbable.
+  "[attr.tabindex]": "disabled && !disabledInteractive ? -1 : tabIndex",
+  "[attr.aria-disabled]": "_getDisabledAttribute()",
+  // MDC automatically applies the primary theme color to the button, but we want to support
+  // an unthemed version. If color is undefined, apply a CSS class that makes it easy to
+  // select and style this "theme".
+  "[class.mat-unthemed]": "!color",
+  // Add a class that applies to all buttons. This makes it easier to target if somebody
+  // wants to target all Material buttons.
+  "[class.mat-mdc-button-base]": "true",
+  "[class]": 'color ? "mat-" + color : ""'
+};
+var _MatAnchorBase = class _MatAnchorBase extends MatButtonBase {
+  constructor(elementRef, platform, ngZone, animationMode) {
+    super(elementRef, platform, ngZone, animationMode);
+    this._haltDisabledEvents = (event) => {
+      if (this.disabled) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    };
+  }
+  ngOnInit() {
+    this._ngZone.runOutsideAngular(() => {
+      this._elementRef.nativeElement.addEventListener("click", this._haltDisabledEvents);
+    });
+  }
+  ngOnDestroy() {
+    super.ngOnDestroy();
+    this._elementRef.nativeElement.removeEventListener("click", this._haltDisabledEvents);
+  }
+  _getAriaDisabled() {
+    return this.ariaDisabled == null ? this.disabled : this.ariaDisabled;
+  }
+};
+_MatAnchorBase.\u0275fac = function MatAnchorBase_Factory(__ngFactoryType__) {
+  \u0275\u0275invalidFactory();
+};
+_MatAnchorBase.\u0275dir = /* @__PURE__ */ \u0275\u0275defineDirective({
+  type: _MatAnchorBase,
+  inputs: {
+    tabIndex: [2, "tabIndex", "tabIndex", (value) => {
+      return value == null ? void 0 : numberAttribute(value);
+    }]
+  },
+  features: [\u0275\u0275InputTransformsFeature, \u0275\u0275InheritDefinitionFeature]
+});
+var MatAnchorBase = _MatAnchorBase;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatAnchorBase, [{
+    type: Directive
+  }], () => [{
+    type: ElementRef
+  }, {
+    type: Platform
+  }, {
+    type: NgZone
+  }, {
+    type: void 0
+  }], {
+    tabIndex: [{
+      type: Input,
+      args: [{
+        transform: (value) => {
+          return value == null ? void 0 : numberAttribute(value);
+        }
+      }]
+    }]
+  });
+})();
+var _MatButton = class _MatButton extends MatButtonBase {
+  constructor(elementRef, platform, ngZone, animationMode) {
+    super(elementRef, platform, ngZone, animationMode);
+  }
+};
+_MatButton.\u0275fac = function MatButton_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatButton)(\u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(Platform), \u0275\u0275directiveInject(NgZone), \u0275\u0275directiveInject(ANIMATION_MODULE_TYPE, 8));
+};
+_MatButton.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
+  type: _MatButton,
+  selectors: [["button", "mat-button", ""], ["button", "mat-raised-button", ""], ["button", "mat-flat-button", ""], ["button", "mat-stroked-button", ""]],
+  hostVars: 14,
+  hostBindings: function MatButton_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      \u0275\u0275attribute("disabled", ctx._getDisabledAttribute())("aria-disabled", ctx._getAriaDisabled());
+      \u0275\u0275classMap(ctx.color ? "mat-" + ctx.color : "");
+      \u0275\u0275classProp("mat-mdc-button-disabled", ctx.disabled)("mat-mdc-button-disabled-interactive", ctx.disabledInteractive)("_mat-animation-noopable", ctx._animationMode === "NoopAnimations")("mat-unthemed", !ctx.color)("mat-mdc-button-base", true);
+    }
+  },
+  exportAs: ["matButton"],
+  standalone: true,
+  features: [\u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
+  attrs: _c06,
+  ngContentSelectors: _c23,
+  decls: 7,
+  vars: 4,
+  consts: [[1, "mat-mdc-button-persistent-ripple"], [1, "mdc-button__label"], [1, "mat-mdc-focus-indicator"], [1, "mat-mdc-button-touch-target"]],
+  template: function MatButton_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275projectionDef(_c15);
+      \u0275\u0275element(0, "span", 0);
+      \u0275\u0275projection(1);
+      \u0275\u0275elementStart(2, "span", 1);
+      \u0275\u0275projection(3, 1);
+      \u0275\u0275elementEnd();
+      \u0275\u0275projection(4, 2);
+      \u0275\u0275element(5, "span", 2)(6, "span", 3);
+    }
+    if (rf & 2) {
+      \u0275\u0275classProp("mdc-button__ripple", !ctx._isFab)("mdc-fab__ripple", ctx._isFab);
+    }
+  },
+  styles: ['.mat-mdc-button-base{text-decoration:none}.mdc-button{-webkit-user-select:none;user-select:none;position:relative;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-width:64px;border:none;outline:none;line-height:inherit;-webkit-appearance:none;overflow:visible;vertical-align:middle;background:rgba(0,0,0,0);padding:0 8px}.mdc-button::-moz-focus-inner{padding:0;border:0}.mdc-button:active{outline:none}.mdc-button:hover{cursor:pointer}.mdc-button:disabled{cursor:default;pointer-events:none}.mdc-button[hidden]{display:none}.mdc-button .mdc-button__label{position:relative}.mat-mdc-button{padding:0 var(--mat-text-button-horizontal-padding, 8px);height:var(--mdc-text-button-container-height);font-family:var(--mdc-text-button-label-text-font);font-size:var(--mdc-text-button-label-text-size);letter-spacing:var(--mdc-text-button-label-text-tracking);text-transform:var(--mdc-text-button-label-text-transform);font-weight:var(--mdc-text-button-label-text-weight)}.mat-mdc-button:has(.material-icons,mat-icon,[matButtonIcon]){padding:0 var(--mat-text-button-with-icon-horizontal-padding, 8px)}.mat-mdc-button>.mat-icon{margin-right:var(--mat-text-button-icon-spacing, 8px);margin-left:var(--mat-text-button-icon-offset, 0)}[dir=rtl] .mat-mdc-button>.mat-icon{margin-right:var(--mat-text-button-icon-offset, 0);margin-left:var(--mat-text-button-icon-spacing, 8px)}.mat-mdc-button .mdc-button__label+.mat-icon{margin-right:var(--mat-text-button-icon-offset, 0);margin-left:var(--mat-text-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-button .mdc-button__label+.mat-icon{margin-right:var(--mat-text-button-icon-spacing, 8px);margin-left:var(--mat-text-button-icon-offset, 0)}.mat-mdc-button .mat-ripple-element{background-color:var(--mat-text-button-ripple-color)}.mat-mdc-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-text-button-state-layer-color)}.mat-mdc-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-text-button-disabled-state-layer-color)}.mat-mdc-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-text-button-hover-state-layer-opacity)}.mat-mdc-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-text-button-focus-state-layer-opacity)}.mat-mdc-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-text-button-pressed-state-layer-opacity)}.mat-mdc-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-text-button-touch-target-display)}.mat-mdc-button,.mat-mdc-button .mdc-button__ripple{border-radius:var(--mdc-text-button-container-shape)}.mat-mdc-button:not(:disabled){color:var(--mdc-text-button-label-text-color)}.mat-mdc-button[disabled],.mat-mdc-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-text-button-disabled-label-text-color)}.mat-mdc-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-unelevated-button{transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);padding:0 var(--mat-filled-button-horizontal-padding, 16px);height:var(--mdc-filled-button-container-height);font-family:var(--mdc-filled-button-label-text-font);font-size:var(--mdc-filled-button-label-text-size);letter-spacing:var(--mdc-filled-button-label-text-tracking);text-transform:var(--mdc-filled-button-label-text-transform);font-weight:var(--mdc-filled-button-label-text-weight)}.mat-mdc-unelevated-button>.mat-icon{margin-right:var(--mat-filled-button-icon-spacing, 8px);margin-left:var(--mat-filled-button-icon-offset, -4px)}[dir=rtl] .mat-mdc-unelevated-button>.mat-icon{margin-right:var(--mat-filled-button-icon-offset, -4px);margin-left:var(--mat-filled-button-icon-spacing, 8px)}.mat-mdc-unelevated-button .mdc-button__label+.mat-icon{margin-right:var(--mat-filled-button-icon-offset, -4px);margin-left:var(--mat-filled-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-unelevated-button .mdc-button__label+.mat-icon{margin-right:var(--mat-filled-button-icon-spacing, 8px);margin-left:var(--mat-filled-button-icon-offset, -4px)}.mat-mdc-unelevated-button .mat-ripple-element{background-color:var(--mat-filled-button-ripple-color)}.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-filled-button-state-layer-color)}.mat-mdc-unelevated-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-filled-button-disabled-state-layer-color)}.mat-mdc-unelevated-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-filled-button-hover-state-layer-opacity)}.mat-mdc-unelevated-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-filled-button-focus-state-layer-opacity)}.mat-mdc-unelevated-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-filled-button-pressed-state-layer-opacity)}.mat-mdc-unelevated-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-filled-button-touch-target-display)}.mat-mdc-unelevated-button:not(:disabled){color:var(--mdc-filled-button-label-text-color);background-color:var(--mdc-filled-button-container-color)}.mat-mdc-unelevated-button,.mat-mdc-unelevated-button .mdc-button__ripple{border-radius:var(--mdc-filled-button-container-shape)}.mat-mdc-unelevated-button[disabled],.mat-mdc-unelevated-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-filled-button-disabled-label-text-color);background-color:var(--mdc-filled-button-disabled-container-color)}.mat-mdc-unelevated-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-raised-button{transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);padding:0 var(--mat-protected-button-horizontal-padding, 16px);box-shadow:var(--mdc-protected-button-container-elevation-shadow);height:var(--mdc-protected-button-container-height);font-family:var(--mdc-protected-button-label-text-font);font-size:var(--mdc-protected-button-label-text-size);letter-spacing:var(--mdc-protected-button-label-text-tracking);text-transform:var(--mdc-protected-button-label-text-transform);font-weight:var(--mdc-protected-button-label-text-weight)}.mat-mdc-raised-button>.mat-icon{margin-right:var(--mat-protected-button-icon-spacing, 8px);margin-left:var(--mat-protected-button-icon-offset, -4px)}[dir=rtl] .mat-mdc-raised-button>.mat-icon{margin-right:var(--mat-protected-button-icon-offset, -4px);margin-left:var(--mat-protected-button-icon-spacing, 8px)}.mat-mdc-raised-button .mdc-button__label+.mat-icon{margin-right:var(--mat-protected-button-icon-offset, -4px);margin-left:var(--mat-protected-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-raised-button .mdc-button__label+.mat-icon{margin-right:var(--mat-protected-button-icon-spacing, 8px);margin-left:var(--mat-protected-button-icon-offset, -4px)}.mat-mdc-raised-button .mat-ripple-element{background-color:var(--mat-protected-button-ripple-color)}.mat-mdc-raised-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-protected-button-state-layer-color)}.mat-mdc-raised-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-protected-button-disabled-state-layer-color)}.mat-mdc-raised-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-protected-button-hover-state-layer-opacity)}.mat-mdc-raised-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-protected-button-focus-state-layer-opacity)}.mat-mdc-raised-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-protected-button-pressed-state-layer-opacity)}.mat-mdc-raised-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-protected-button-touch-target-display)}.mat-mdc-raised-button:not(:disabled){color:var(--mdc-protected-button-label-text-color);background-color:var(--mdc-protected-button-container-color)}.mat-mdc-raised-button,.mat-mdc-raised-button .mdc-button__ripple{border-radius:var(--mdc-protected-button-container-shape)}.mat-mdc-raised-button:hover{box-shadow:var(--mdc-protected-button-hover-container-elevation-shadow)}.mat-mdc-raised-button:focus{box-shadow:var(--mdc-protected-button-focus-container-elevation-shadow)}.mat-mdc-raised-button:active,.mat-mdc-raised-button:focus:active{box-shadow:var(--mdc-protected-button-pressed-container-elevation-shadow)}.mat-mdc-raised-button[disabled],.mat-mdc-raised-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-protected-button-disabled-label-text-color);background-color:var(--mdc-protected-button-disabled-container-color)}.mat-mdc-raised-button[disabled].mat-mdc-button-disabled,.mat-mdc-raised-button.mat-mdc-button-disabled.mat-mdc-button-disabled{box-shadow:var(--mdc-protected-button-disabled-container-elevation-shadow)}.mat-mdc-raised-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-outlined-button{border-style:solid;transition:border 280ms cubic-bezier(0.4, 0, 0.2, 1);padding:0 var(--mat-outlined-button-horizontal-padding, 15px);height:var(--mdc-outlined-button-container-height);font-family:var(--mdc-outlined-button-label-text-font);font-size:var(--mdc-outlined-button-label-text-size);letter-spacing:var(--mdc-outlined-button-label-text-tracking);text-transform:var(--mdc-outlined-button-label-text-transform);font-weight:var(--mdc-outlined-button-label-text-weight);border-radius:var(--mdc-outlined-button-container-shape);border-width:var(--mdc-outlined-button-outline-width)}.mat-mdc-outlined-button>.mat-icon{margin-right:var(--mat-outlined-button-icon-spacing, 8px);margin-left:var(--mat-outlined-button-icon-offset, -4px)}[dir=rtl] .mat-mdc-outlined-button>.mat-icon{margin-right:var(--mat-outlined-button-icon-offset, -4px);margin-left:var(--mat-outlined-button-icon-spacing, 8px)}.mat-mdc-outlined-button .mdc-button__label+.mat-icon{margin-right:var(--mat-outlined-button-icon-offset, -4px);margin-left:var(--mat-outlined-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-outlined-button .mdc-button__label+.mat-icon{margin-right:var(--mat-outlined-button-icon-spacing, 8px);margin-left:var(--mat-outlined-button-icon-offset, -4px)}.mat-mdc-outlined-button .mat-ripple-element{background-color:var(--mat-outlined-button-ripple-color)}.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-outlined-button-state-layer-color)}.mat-mdc-outlined-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-outlined-button-disabled-state-layer-color)}.mat-mdc-outlined-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-outlined-button-hover-state-layer-opacity)}.mat-mdc-outlined-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-outlined-button-focus-state-layer-opacity)}.mat-mdc-outlined-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-outlined-button-pressed-state-layer-opacity)}.mat-mdc-outlined-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-outlined-button-touch-target-display)}.mat-mdc-outlined-button:not(:disabled){color:var(--mdc-outlined-button-label-text-color);border-color:var(--mdc-outlined-button-outline-color)}.mat-mdc-outlined-button[disabled],.mat-mdc-outlined-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-outlined-button-disabled-label-text-color);border-color:var(--mdc-outlined-button-disabled-outline-color)}.mat-mdc-outlined-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-outlined-button .mdc-button__ripple{border-width:var(--mdc-outlined-button-outline-width);border-style:solid;border-color:rgba(0,0,0,0)}.mat-mdc-button,.mat-mdc-unelevated-button,.mat-mdc-raised-button,.mat-mdc-outlined-button{-webkit-tap-highlight-color:rgba(0,0,0,0)}.mat-mdc-button .mat-mdc-button-ripple,.mat-mdc-button .mat-mdc-button-persistent-ripple,.mat-mdc-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button .mat-mdc-button-ripple,.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple,.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button .mat-mdc-button-ripple,.mat-mdc-raised-button .mat-mdc-button-persistent-ripple,.mat-mdc-raised-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button .mat-mdc-button-ripple,.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple,.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-button .mat-mdc-button-ripple,.mat-mdc-unelevated-button .mat-mdc-button-ripple,.mat-mdc-raised-button .mat-mdc-button-ripple,.mat-mdc-outlined-button .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-button .mdc-button__label,.mat-mdc-button .mat-icon,.mat-mdc-unelevated-button .mdc-button__label,.mat-mdc-unelevated-button .mat-icon,.mat-mdc-raised-button .mdc-button__label,.mat-mdc-raised-button .mat-icon,.mat-mdc-outlined-button .mdc-button__label,.mat-mdc-outlined-button .mat-icon{z-index:1;position:relative}.mat-mdc-button .mat-mdc-focus-indicator,.mat-mdc-unelevated-button .mat-mdc-focus-indicator,.mat-mdc-raised-button .mat-mdc-focus-indicator,.mat-mdc-outlined-button .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-button:focus .mat-mdc-focus-indicator::before,.mat-mdc-unelevated-button:focus .mat-mdc-focus-indicator::before,.mat-mdc-raised-button:focus .mat-mdc-focus-indicator::before,.mat-mdc-outlined-button:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-button._mat-animation-noopable,.mat-mdc-unelevated-button._mat-animation-noopable,.mat-mdc-raised-button._mat-animation-noopable,.mat-mdc-outlined-button._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-button>.mat-icon,.mat-mdc-unelevated-button>.mat-icon,.mat-mdc-raised-button>.mat-icon,.mat-mdc-outlined-button>.mat-icon{display:inline-block;position:relative;vertical-align:top;font-size:1.125rem;height:1.125rem;width:1.125rem}.mat-mdc-outlined-button .mat-mdc-button-ripple,.mat-mdc-outlined-button .mdc-button__ripple{top:-1px;left:-1px;bottom:-1px;right:-1px}.mat-mdc-unelevated-button .mat-mdc-focus-indicator::before,.mat-mdc-raised-button .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 2px)*-1)}.mat-mdc-outlined-button .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 3px)*-1)}', ".cdk-high-contrast-active .mat-mdc-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-unelevated-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-raised-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-outlined-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-icon-button{outline:solid 1px}"],
+  encapsulation: 2,
+  changeDetection: 0
+});
+var MatButton = _MatButton;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatButton, [{
+    type: Component,
+    args: [{
+      selector: `
+    button[mat-button], button[mat-raised-button], button[mat-flat-button],
+    button[mat-stroked-button]
+  `,
+      host: MAT_BUTTON_HOST,
+      exportAs: "matButton",
+      encapsulation: ViewEncapsulation$1.None,
+      changeDetection: ChangeDetectionStrategy.OnPush,
+      standalone: true,
+      template: `<span
+    class="mat-mdc-button-persistent-ripple"
+    [class.mdc-button__ripple]="!_isFab"
+    [class.mdc-fab__ripple]="_isFab"></span>
+
+<ng-content select=".material-icons:not([iconPositionEnd]), mat-icon:not([iconPositionEnd]), [matButtonIcon]:not([iconPositionEnd])">
+</ng-content>
+
+<span class="mdc-button__label"><ng-content></ng-content></span>
+
+<ng-content select=".material-icons[iconPositionEnd], mat-icon[iconPositionEnd], [matButtonIcon][iconPositionEnd]">
+</ng-content>
+
+<!--
+  The indicator can't be directly on the button, because MDC uses ::before for high contrast
+  indication and it can't be on the ripple, because it has a border radius and overflow: hidden.
+-->
+<span class="mat-mdc-focus-indicator"></span>
+
+<span class="mat-mdc-button-touch-target"></span>
+`,
+      styles: ['.mat-mdc-button-base{text-decoration:none}.mdc-button{-webkit-user-select:none;user-select:none;position:relative;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-width:64px;border:none;outline:none;line-height:inherit;-webkit-appearance:none;overflow:visible;vertical-align:middle;background:rgba(0,0,0,0);padding:0 8px}.mdc-button::-moz-focus-inner{padding:0;border:0}.mdc-button:active{outline:none}.mdc-button:hover{cursor:pointer}.mdc-button:disabled{cursor:default;pointer-events:none}.mdc-button[hidden]{display:none}.mdc-button .mdc-button__label{position:relative}.mat-mdc-button{padding:0 var(--mat-text-button-horizontal-padding, 8px);height:var(--mdc-text-button-container-height);font-family:var(--mdc-text-button-label-text-font);font-size:var(--mdc-text-button-label-text-size);letter-spacing:var(--mdc-text-button-label-text-tracking);text-transform:var(--mdc-text-button-label-text-transform);font-weight:var(--mdc-text-button-label-text-weight)}.mat-mdc-button:has(.material-icons,mat-icon,[matButtonIcon]){padding:0 var(--mat-text-button-with-icon-horizontal-padding, 8px)}.mat-mdc-button>.mat-icon{margin-right:var(--mat-text-button-icon-spacing, 8px);margin-left:var(--mat-text-button-icon-offset, 0)}[dir=rtl] .mat-mdc-button>.mat-icon{margin-right:var(--mat-text-button-icon-offset, 0);margin-left:var(--mat-text-button-icon-spacing, 8px)}.mat-mdc-button .mdc-button__label+.mat-icon{margin-right:var(--mat-text-button-icon-offset, 0);margin-left:var(--mat-text-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-button .mdc-button__label+.mat-icon{margin-right:var(--mat-text-button-icon-spacing, 8px);margin-left:var(--mat-text-button-icon-offset, 0)}.mat-mdc-button .mat-ripple-element{background-color:var(--mat-text-button-ripple-color)}.mat-mdc-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-text-button-state-layer-color)}.mat-mdc-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-text-button-disabled-state-layer-color)}.mat-mdc-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-text-button-hover-state-layer-opacity)}.mat-mdc-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-text-button-focus-state-layer-opacity)}.mat-mdc-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-text-button-pressed-state-layer-opacity)}.mat-mdc-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-text-button-touch-target-display)}.mat-mdc-button,.mat-mdc-button .mdc-button__ripple{border-radius:var(--mdc-text-button-container-shape)}.mat-mdc-button:not(:disabled){color:var(--mdc-text-button-label-text-color)}.mat-mdc-button[disabled],.mat-mdc-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-text-button-disabled-label-text-color)}.mat-mdc-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-unelevated-button{transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);padding:0 var(--mat-filled-button-horizontal-padding, 16px);height:var(--mdc-filled-button-container-height);font-family:var(--mdc-filled-button-label-text-font);font-size:var(--mdc-filled-button-label-text-size);letter-spacing:var(--mdc-filled-button-label-text-tracking);text-transform:var(--mdc-filled-button-label-text-transform);font-weight:var(--mdc-filled-button-label-text-weight)}.mat-mdc-unelevated-button>.mat-icon{margin-right:var(--mat-filled-button-icon-spacing, 8px);margin-left:var(--mat-filled-button-icon-offset, -4px)}[dir=rtl] .mat-mdc-unelevated-button>.mat-icon{margin-right:var(--mat-filled-button-icon-offset, -4px);margin-left:var(--mat-filled-button-icon-spacing, 8px)}.mat-mdc-unelevated-button .mdc-button__label+.mat-icon{margin-right:var(--mat-filled-button-icon-offset, -4px);margin-left:var(--mat-filled-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-unelevated-button .mdc-button__label+.mat-icon{margin-right:var(--mat-filled-button-icon-spacing, 8px);margin-left:var(--mat-filled-button-icon-offset, -4px)}.mat-mdc-unelevated-button .mat-ripple-element{background-color:var(--mat-filled-button-ripple-color)}.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-filled-button-state-layer-color)}.mat-mdc-unelevated-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-filled-button-disabled-state-layer-color)}.mat-mdc-unelevated-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-filled-button-hover-state-layer-opacity)}.mat-mdc-unelevated-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-filled-button-focus-state-layer-opacity)}.mat-mdc-unelevated-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-filled-button-pressed-state-layer-opacity)}.mat-mdc-unelevated-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-filled-button-touch-target-display)}.mat-mdc-unelevated-button:not(:disabled){color:var(--mdc-filled-button-label-text-color);background-color:var(--mdc-filled-button-container-color)}.mat-mdc-unelevated-button,.mat-mdc-unelevated-button .mdc-button__ripple{border-radius:var(--mdc-filled-button-container-shape)}.mat-mdc-unelevated-button[disabled],.mat-mdc-unelevated-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-filled-button-disabled-label-text-color);background-color:var(--mdc-filled-button-disabled-container-color)}.mat-mdc-unelevated-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-raised-button{transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);padding:0 var(--mat-protected-button-horizontal-padding, 16px);box-shadow:var(--mdc-protected-button-container-elevation-shadow);height:var(--mdc-protected-button-container-height);font-family:var(--mdc-protected-button-label-text-font);font-size:var(--mdc-protected-button-label-text-size);letter-spacing:var(--mdc-protected-button-label-text-tracking);text-transform:var(--mdc-protected-button-label-text-transform);font-weight:var(--mdc-protected-button-label-text-weight)}.mat-mdc-raised-button>.mat-icon{margin-right:var(--mat-protected-button-icon-spacing, 8px);margin-left:var(--mat-protected-button-icon-offset, -4px)}[dir=rtl] .mat-mdc-raised-button>.mat-icon{margin-right:var(--mat-protected-button-icon-offset, -4px);margin-left:var(--mat-protected-button-icon-spacing, 8px)}.mat-mdc-raised-button .mdc-button__label+.mat-icon{margin-right:var(--mat-protected-button-icon-offset, -4px);margin-left:var(--mat-protected-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-raised-button .mdc-button__label+.mat-icon{margin-right:var(--mat-protected-button-icon-spacing, 8px);margin-left:var(--mat-protected-button-icon-offset, -4px)}.mat-mdc-raised-button .mat-ripple-element{background-color:var(--mat-protected-button-ripple-color)}.mat-mdc-raised-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-protected-button-state-layer-color)}.mat-mdc-raised-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-protected-button-disabled-state-layer-color)}.mat-mdc-raised-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-protected-button-hover-state-layer-opacity)}.mat-mdc-raised-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-protected-button-focus-state-layer-opacity)}.mat-mdc-raised-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-protected-button-pressed-state-layer-opacity)}.mat-mdc-raised-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-protected-button-touch-target-display)}.mat-mdc-raised-button:not(:disabled){color:var(--mdc-protected-button-label-text-color);background-color:var(--mdc-protected-button-container-color)}.mat-mdc-raised-button,.mat-mdc-raised-button .mdc-button__ripple{border-radius:var(--mdc-protected-button-container-shape)}.mat-mdc-raised-button:hover{box-shadow:var(--mdc-protected-button-hover-container-elevation-shadow)}.mat-mdc-raised-button:focus{box-shadow:var(--mdc-protected-button-focus-container-elevation-shadow)}.mat-mdc-raised-button:active,.mat-mdc-raised-button:focus:active{box-shadow:var(--mdc-protected-button-pressed-container-elevation-shadow)}.mat-mdc-raised-button[disabled],.mat-mdc-raised-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-protected-button-disabled-label-text-color);background-color:var(--mdc-protected-button-disabled-container-color)}.mat-mdc-raised-button[disabled].mat-mdc-button-disabled,.mat-mdc-raised-button.mat-mdc-button-disabled.mat-mdc-button-disabled{box-shadow:var(--mdc-protected-button-disabled-container-elevation-shadow)}.mat-mdc-raised-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-outlined-button{border-style:solid;transition:border 280ms cubic-bezier(0.4, 0, 0.2, 1);padding:0 var(--mat-outlined-button-horizontal-padding, 15px);height:var(--mdc-outlined-button-container-height);font-family:var(--mdc-outlined-button-label-text-font);font-size:var(--mdc-outlined-button-label-text-size);letter-spacing:var(--mdc-outlined-button-label-text-tracking);text-transform:var(--mdc-outlined-button-label-text-transform);font-weight:var(--mdc-outlined-button-label-text-weight);border-radius:var(--mdc-outlined-button-container-shape);border-width:var(--mdc-outlined-button-outline-width)}.mat-mdc-outlined-button>.mat-icon{margin-right:var(--mat-outlined-button-icon-spacing, 8px);margin-left:var(--mat-outlined-button-icon-offset, -4px)}[dir=rtl] .mat-mdc-outlined-button>.mat-icon{margin-right:var(--mat-outlined-button-icon-offset, -4px);margin-left:var(--mat-outlined-button-icon-spacing, 8px)}.mat-mdc-outlined-button .mdc-button__label+.mat-icon{margin-right:var(--mat-outlined-button-icon-offset, -4px);margin-left:var(--mat-outlined-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-outlined-button .mdc-button__label+.mat-icon{margin-right:var(--mat-outlined-button-icon-spacing, 8px);margin-left:var(--mat-outlined-button-icon-offset, -4px)}.mat-mdc-outlined-button .mat-ripple-element{background-color:var(--mat-outlined-button-ripple-color)}.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-outlined-button-state-layer-color)}.mat-mdc-outlined-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-outlined-button-disabled-state-layer-color)}.mat-mdc-outlined-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-outlined-button-hover-state-layer-opacity)}.mat-mdc-outlined-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-outlined-button-focus-state-layer-opacity)}.mat-mdc-outlined-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-outlined-button-pressed-state-layer-opacity)}.mat-mdc-outlined-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-outlined-button-touch-target-display)}.mat-mdc-outlined-button:not(:disabled){color:var(--mdc-outlined-button-label-text-color);border-color:var(--mdc-outlined-button-outline-color)}.mat-mdc-outlined-button[disabled],.mat-mdc-outlined-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-outlined-button-disabled-label-text-color);border-color:var(--mdc-outlined-button-disabled-outline-color)}.mat-mdc-outlined-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-outlined-button .mdc-button__ripple{border-width:var(--mdc-outlined-button-outline-width);border-style:solid;border-color:rgba(0,0,0,0)}.mat-mdc-button,.mat-mdc-unelevated-button,.mat-mdc-raised-button,.mat-mdc-outlined-button{-webkit-tap-highlight-color:rgba(0,0,0,0)}.mat-mdc-button .mat-mdc-button-ripple,.mat-mdc-button .mat-mdc-button-persistent-ripple,.mat-mdc-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button .mat-mdc-button-ripple,.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple,.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button .mat-mdc-button-ripple,.mat-mdc-raised-button .mat-mdc-button-persistent-ripple,.mat-mdc-raised-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button .mat-mdc-button-ripple,.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple,.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-button .mat-mdc-button-ripple,.mat-mdc-unelevated-button .mat-mdc-button-ripple,.mat-mdc-raised-button .mat-mdc-button-ripple,.mat-mdc-outlined-button .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-button .mdc-button__label,.mat-mdc-button .mat-icon,.mat-mdc-unelevated-button .mdc-button__label,.mat-mdc-unelevated-button .mat-icon,.mat-mdc-raised-button .mdc-button__label,.mat-mdc-raised-button .mat-icon,.mat-mdc-outlined-button .mdc-button__label,.mat-mdc-outlined-button .mat-icon{z-index:1;position:relative}.mat-mdc-button .mat-mdc-focus-indicator,.mat-mdc-unelevated-button .mat-mdc-focus-indicator,.mat-mdc-raised-button .mat-mdc-focus-indicator,.mat-mdc-outlined-button .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-button:focus .mat-mdc-focus-indicator::before,.mat-mdc-unelevated-button:focus .mat-mdc-focus-indicator::before,.mat-mdc-raised-button:focus .mat-mdc-focus-indicator::before,.mat-mdc-outlined-button:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-button._mat-animation-noopable,.mat-mdc-unelevated-button._mat-animation-noopable,.mat-mdc-raised-button._mat-animation-noopable,.mat-mdc-outlined-button._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-button>.mat-icon,.mat-mdc-unelevated-button>.mat-icon,.mat-mdc-raised-button>.mat-icon,.mat-mdc-outlined-button>.mat-icon{display:inline-block;position:relative;vertical-align:top;font-size:1.125rem;height:1.125rem;width:1.125rem}.mat-mdc-outlined-button .mat-mdc-button-ripple,.mat-mdc-outlined-button .mdc-button__ripple{top:-1px;left:-1px;bottom:-1px;right:-1px}.mat-mdc-unelevated-button .mat-mdc-focus-indicator::before,.mat-mdc-raised-button .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 2px)*-1)}.mat-mdc-outlined-button .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 3px)*-1)}', ".cdk-high-contrast-active .mat-mdc-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-unelevated-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-raised-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-outlined-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-icon-button{outline:solid 1px}"]
+    }]
+  }], () => [{
+    type: ElementRef
+  }, {
+    type: Platform
+  }, {
+    type: NgZone
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [ANIMATION_MODULE_TYPE]
+    }]
+  }], null);
+})();
+var _MatAnchor = class _MatAnchor extends MatAnchorBase {
+  constructor(elementRef, platform, ngZone, animationMode) {
+    super(elementRef, platform, ngZone, animationMode);
+  }
+};
+_MatAnchor.\u0275fac = function MatAnchor_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatAnchor)(\u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(Platform), \u0275\u0275directiveInject(NgZone), \u0275\u0275directiveInject(ANIMATION_MODULE_TYPE, 8));
+};
+_MatAnchor.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
+  type: _MatAnchor,
+  selectors: [["a", "mat-button", ""], ["a", "mat-raised-button", ""], ["a", "mat-flat-button", ""], ["a", "mat-stroked-button", ""]],
+  hostVars: 15,
+  hostBindings: function MatAnchor_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      \u0275\u0275attribute("disabled", ctx._getDisabledAttribute())("tabindex", ctx.disabled && !ctx.disabledInteractive ? -1 : ctx.tabIndex)("aria-disabled", ctx._getDisabledAttribute());
+      \u0275\u0275classMap(ctx.color ? "mat-" + ctx.color : "");
+      \u0275\u0275classProp("mat-mdc-button-disabled", ctx.disabled)("mat-mdc-button-disabled-interactive", ctx.disabledInteractive)("_mat-animation-noopable", ctx._animationMode === "NoopAnimations")("mat-unthemed", !ctx.color)("mat-mdc-button-base", true);
+    }
+  },
+  exportAs: ["matButton", "matAnchor"],
+  standalone: true,
+  features: [\u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
+  attrs: _c06,
+  ngContentSelectors: _c23,
+  decls: 7,
+  vars: 4,
+  consts: [[1, "mat-mdc-button-persistent-ripple"], [1, "mdc-button__label"], [1, "mat-mdc-focus-indicator"], [1, "mat-mdc-button-touch-target"]],
+  template: function MatAnchor_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275projectionDef(_c15);
+      \u0275\u0275element(0, "span", 0);
+      \u0275\u0275projection(1);
+      \u0275\u0275elementStart(2, "span", 1);
+      \u0275\u0275projection(3, 1);
+      \u0275\u0275elementEnd();
+      \u0275\u0275projection(4, 2);
+      \u0275\u0275element(5, "span", 2)(6, "span", 3);
+    }
+    if (rf & 2) {
+      \u0275\u0275classProp("mdc-button__ripple", !ctx._isFab)("mdc-fab__ripple", ctx._isFab);
+    }
+  },
+  styles: [_c33, _c43],
+  encapsulation: 2,
+  changeDetection: 0
+});
+var MatAnchor = _MatAnchor;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatAnchor, [{
+    type: Component,
+    args: [{
+      selector: `a[mat-button], a[mat-raised-button], a[mat-flat-button], a[mat-stroked-button]`,
+      exportAs: "matButton, matAnchor",
+      host: MAT_ANCHOR_HOST,
+      encapsulation: ViewEncapsulation$1.None,
+      changeDetection: ChangeDetectionStrategy.OnPush,
+      standalone: true,
+      template: `<span
+    class="mat-mdc-button-persistent-ripple"
+    [class.mdc-button__ripple]="!_isFab"
+    [class.mdc-fab__ripple]="_isFab"></span>
+
+<ng-content select=".material-icons:not([iconPositionEnd]), mat-icon:not([iconPositionEnd]), [matButtonIcon]:not([iconPositionEnd])">
+</ng-content>
+
+<span class="mdc-button__label"><ng-content></ng-content></span>
+
+<ng-content select=".material-icons[iconPositionEnd], mat-icon[iconPositionEnd], [matButtonIcon][iconPositionEnd]">
+</ng-content>
+
+<!--
+  The indicator can't be directly on the button, because MDC uses ::before for high contrast
+  indication and it can't be on the ripple, because it has a border radius and overflow: hidden.
+-->
+<span class="mat-mdc-focus-indicator"></span>
+
+<span class="mat-mdc-button-touch-target"></span>
+`,
+      styles: ['.mat-mdc-button-base{text-decoration:none}.mdc-button{-webkit-user-select:none;user-select:none;position:relative;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-width:64px;border:none;outline:none;line-height:inherit;-webkit-appearance:none;overflow:visible;vertical-align:middle;background:rgba(0,0,0,0);padding:0 8px}.mdc-button::-moz-focus-inner{padding:0;border:0}.mdc-button:active{outline:none}.mdc-button:hover{cursor:pointer}.mdc-button:disabled{cursor:default;pointer-events:none}.mdc-button[hidden]{display:none}.mdc-button .mdc-button__label{position:relative}.mat-mdc-button{padding:0 var(--mat-text-button-horizontal-padding, 8px);height:var(--mdc-text-button-container-height);font-family:var(--mdc-text-button-label-text-font);font-size:var(--mdc-text-button-label-text-size);letter-spacing:var(--mdc-text-button-label-text-tracking);text-transform:var(--mdc-text-button-label-text-transform);font-weight:var(--mdc-text-button-label-text-weight)}.mat-mdc-button:has(.material-icons,mat-icon,[matButtonIcon]){padding:0 var(--mat-text-button-with-icon-horizontal-padding, 8px)}.mat-mdc-button>.mat-icon{margin-right:var(--mat-text-button-icon-spacing, 8px);margin-left:var(--mat-text-button-icon-offset, 0)}[dir=rtl] .mat-mdc-button>.mat-icon{margin-right:var(--mat-text-button-icon-offset, 0);margin-left:var(--mat-text-button-icon-spacing, 8px)}.mat-mdc-button .mdc-button__label+.mat-icon{margin-right:var(--mat-text-button-icon-offset, 0);margin-left:var(--mat-text-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-button .mdc-button__label+.mat-icon{margin-right:var(--mat-text-button-icon-spacing, 8px);margin-left:var(--mat-text-button-icon-offset, 0)}.mat-mdc-button .mat-ripple-element{background-color:var(--mat-text-button-ripple-color)}.mat-mdc-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-text-button-state-layer-color)}.mat-mdc-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-text-button-disabled-state-layer-color)}.mat-mdc-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-text-button-hover-state-layer-opacity)}.mat-mdc-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-text-button-focus-state-layer-opacity)}.mat-mdc-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-text-button-pressed-state-layer-opacity)}.mat-mdc-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-text-button-touch-target-display)}.mat-mdc-button,.mat-mdc-button .mdc-button__ripple{border-radius:var(--mdc-text-button-container-shape)}.mat-mdc-button:not(:disabled){color:var(--mdc-text-button-label-text-color)}.mat-mdc-button[disabled],.mat-mdc-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-text-button-disabled-label-text-color)}.mat-mdc-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-unelevated-button{transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);padding:0 var(--mat-filled-button-horizontal-padding, 16px);height:var(--mdc-filled-button-container-height);font-family:var(--mdc-filled-button-label-text-font);font-size:var(--mdc-filled-button-label-text-size);letter-spacing:var(--mdc-filled-button-label-text-tracking);text-transform:var(--mdc-filled-button-label-text-transform);font-weight:var(--mdc-filled-button-label-text-weight)}.mat-mdc-unelevated-button>.mat-icon{margin-right:var(--mat-filled-button-icon-spacing, 8px);margin-left:var(--mat-filled-button-icon-offset, -4px)}[dir=rtl] .mat-mdc-unelevated-button>.mat-icon{margin-right:var(--mat-filled-button-icon-offset, -4px);margin-left:var(--mat-filled-button-icon-spacing, 8px)}.mat-mdc-unelevated-button .mdc-button__label+.mat-icon{margin-right:var(--mat-filled-button-icon-offset, -4px);margin-left:var(--mat-filled-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-unelevated-button .mdc-button__label+.mat-icon{margin-right:var(--mat-filled-button-icon-spacing, 8px);margin-left:var(--mat-filled-button-icon-offset, -4px)}.mat-mdc-unelevated-button .mat-ripple-element{background-color:var(--mat-filled-button-ripple-color)}.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-filled-button-state-layer-color)}.mat-mdc-unelevated-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-filled-button-disabled-state-layer-color)}.mat-mdc-unelevated-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-filled-button-hover-state-layer-opacity)}.mat-mdc-unelevated-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-filled-button-focus-state-layer-opacity)}.mat-mdc-unelevated-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-filled-button-pressed-state-layer-opacity)}.mat-mdc-unelevated-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-filled-button-touch-target-display)}.mat-mdc-unelevated-button:not(:disabled){color:var(--mdc-filled-button-label-text-color);background-color:var(--mdc-filled-button-container-color)}.mat-mdc-unelevated-button,.mat-mdc-unelevated-button .mdc-button__ripple{border-radius:var(--mdc-filled-button-container-shape)}.mat-mdc-unelevated-button[disabled],.mat-mdc-unelevated-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-filled-button-disabled-label-text-color);background-color:var(--mdc-filled-button-disabled-container-color)}.mat-mdc-unelevated-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-raised-button{transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);padding:0 var(--mat-protected-button-horizontal-padding, 16px);box-shadow:var(--mdc-protected-button-container-elevation-shadow);height:var(--mdc-protected-button-container-height);font-family:var(--mdc-protected-button-label-text-font);font-size:var(--mdc-protected-button-label-text-size);letter-spacing:var(--mdc-protected-button-label-text-tracking);text-transform:var(--mdc-protected-button-label-text-transform);font-weight:var(--mdc-protected-button-label-text-weight)}.mat-mdc-raised-button>.mat-icon{margin-right:var(--mat-protected-button-icon-spacing, 8px);margin-left:var(--mat-protected-button-icon-offset, -4px)}[dir=rtl] .mat-mdc-raised-button>.mat-icon{margin-right:var(--mat-protected-button-icon-offset, -4px);margin-left:var(--mat-protected-button-icon-spacing, 8px)}.mat-mdc-raised-button .mdc-button__label+.mat-icon{margin-right:var(--mat-protected-button-icon-offset, -4px);margin-left:var(--mat-protected-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-raised-button .mdc-button__label+.mat-icon{margin-right:var(--mat-protected-button-icon-spacing, 8px);margin-left:var(--mat-protected-button-icon-offset, -4px)}.mat-mdc-raised-button .mat-ripple-element{background-color:var(--mat-protected-button-ripple-color)}.mat-mdc-raised-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-protected-button-state-layer-color)}.mat-mdc-raised-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-protected-button-disabled-state-layer-color)}.mat-mdc-raised-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-protected-button-hover-state-layer-opacity)}.mat-mdc-raised-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-protected-button-focus-state-layer-opacity)}.mat-mdc-raised-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-protected-button-pressed-state-layer-opacity)}.mat-mdc-raised-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-protected-button-touch-target-display)}.mat-mdc-raised-button:not(:disabled){color:var(--mdc-protected-button-label-text-color);background-color:var(--mdc-protected-button-container-color)}.mat-mdc-raised-button,.mat-mdc-raised-button .mdc-button__ripple{border-radius:var(--mdc-protected-button-container-shape)}.mat-mdc-raised-button:hover{box-shadow:var(--mdc-protected-button-hover-container-elevation-shadow)}.mat-mdc-raised-button:focus{box-shadow:var(--mdc-protected-button-focus-container-elevation-shadow)}.mat-mdc-raised-button:active,.mat-mdc-raised-button:focus:active{box-shadow:var(--mdc-protected-button-pressed-container-elevation-shadow)}.mat-mdc-raised-button[disabled],.mat-mdc-raised-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-protected-button-disabled-label-text-color);background-color:var(--mdc-protected-button-disabled-container-color)}.mat-mdc-raised-button[disabled].mat-mdc-button-disabled,.mat-mdc-raised-button.mat-mdc-button-disabled.mat-mdc-button-disabled{box-shadow:var(--mdc-protected-button-disabled-container-elevation-shadow)}.mat-mdc-raised-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-outlined-button{border-style:solid;transition:border 280ms cubic-bezier(0.4, 0, 0.2, 1);padding:0 var(--mat-outlined-button-horizontal-padding, 15px);height:var(--mdc-outlined-button-container-height);font-family:var(--mdc-outlined-button-label-text-font);font-size:var(--mdc-outlined-button-label-text-size);letter-spacing:var(--mdc-outlined-button-label-text-tracking);text-transform:var(--mdc-outlined-button-label-text-transform);font-weight:var(--mdc-outlined-button-label-text-weight);border-radius:var(--mdc-outlined-button-container-shape);border-width:var(--mdc-outlined-button-outline-width)}.mat-mdc-outlined-button>.mat-icon{margin-right:var(--mat-outlined-button-icon-spacing, 8px);margin-left:var(--mat-outlined-button-icon-offset, -4px)}[dir=rtl] .mat-mdc-outlined-button>.mat-icon{margin-right:var(--mat-outlined-button-icon-offset, -4px);margin-left:var(--mat-outlined-button-icon-spacing, 8px)}.mat-mdc-outlined-button .mdc-button__label+.mat-icon{margin-right:var(--mat-outlined-button-icon-offset, -4px);margin-left:var(--mat-outlined-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-outlined-button .mdc-button__label+.mat-icon{margin-right:var(--mat-outlined-button-icon-spacing, 8px);margin-left:var(--mat-outlined-button-icon-offset, -4px)}.mat-mdc-outlined-button .mat-ripple-element{background-color:var(--mat-outlined-button-ripple-color)}.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-outlined-button-state-layer-color)}.mat-mdc-outlined-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-outlined-button-disabled-state-layer-color)}.mat-mdc-outlined-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-outlined-button-hover-state-layer-opacity)}.mat-mdc-outlined-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-outlined-button-focus-state-layer-opacity)}.mat-mdc-outlined-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-outlined-button-pressed-state-layer-opacity)}.mat-mdc-outlined-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-outlined-button-touch-target-display)}.mat-mdc-outlined-button:not(:disabled){color:var(--mdc-outlined-button-label-text-color);border-color:var(--mdc-outlined-button-outline-color)}.mat-mdc-outlined-button[disabled],.mat-mdc-outlined-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-outlined-button-disabled-label-text-color);border-color:var(--mdc-outlined-button-disabled-outline-color)}.mat-mdc-outlined-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-outlined-button .mdc-button__ripple{border-width:var(--mdc-outlined-button-outline-width);border-style:solid;border-color:rgba(0,0,0,0)}.mat-mdc-button,.mat-mdc-unelevated-button,.mat-mdc-raised-button,.mat-mdc-outlined-button{-webkit-tap-highlight-color:rgba(0,0,0,0)}.mat-mdc-button .mat-mdc-button-ripple,.mat-mdc-button .mat-mdc-button-persistent-ripple,.mat-mdc-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button .mat-mdc-button-ripple,.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple,.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button .mat-mdc-button-ripple,.mat-mdc-raised-button .mat-mdc-button-persistent-ripple,.mat-mdc-raised-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button .mat-mdc-button-ripple,.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple,.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-button .mat-mdc-button-ripple,.mat-mdc-unelevated-button .mat-mdc-button-ripple,.mat-mdc-raised-button .mat-mdc-button-ripple,.mat-mdc-outlined-button .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-button .mdc-button__label,.mat-mdc-button .mat-icon,.mat-mdc-unelevated-button .mdc-button__label,.mat-mdc-unelevated-button .mat-icon,.mat-mdc-raised-button .mdc-button__label,.mat-mdc-raised-button .mat-icon,.mat-mdc-outlined-button .mdc-button__label,.mat-mdc-outlined-button .mat-icon{z-index:1;position:relative}.mat-mdc-button .mat-mdc-focus-indicator,.mat-mdc-unelevated-button .mat-mdc-focus-indicator,.mat-mdc-raised-button .mat-mdc-focus-indicator,.mat-mdc-outlined-button .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-button:focus .mat-mdc-focus-indicator::before,.mat-mdc-unelevated-button:focus .mat-mdc-focus-indicator::before,.mat-mdc-raised-button:focus .mat-mdc-focus-indicator::before,.mat-mdc-outlined-button:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-button._mat-animation-noopable,.mat-mdc-unelevated-button._mat-animation-noopable,.mat-mdc-raised-button._mat-animation-noopable,.mat-mdc-outlined-button._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-button>.mat-icon,.mat-mdc-unelevated-button>.mat-icon,.mat-mdc-raised-button>.mat-icon,.mat-mdc-outlined-button>.mat-icon{display:inline-block;position:relative;vertical-align:top;font-size:1.125rem;height:1.125rem;width:1.125rem}.mat-mdc-outlined-button .mat-mdc-button-ripple,.mat-mdc-outlined-button .mdc-button__ripple{top:-1px;left:-1px;bottom:-1px;right:-1px}.mat-mdc-unelevated-button .mat-mdc-focus-indicator::before,.mat-mdc-raised-button .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 2px)*-1)}.mat-mdc-outlined-button .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 3px)*-1)}', ".cdk-high-contrast-active .mat-mdc-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-unelevated-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-raised-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-outlined-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-icon-button{outline:solid 1px}"]
+    }]
+  }], () => [{
+    type: ElementRef
+  }, {
+    type: Platform
+  }, {
+    type: NgZone
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [ANIMATION_MODULE_TYPE]
+    }]
+  }], null);
+})();
+var MAT_FAB_DEFAULT_OPTIONS = new InjectionToken("mat-mdc-fab-default-options", {
+  providedIn: "root",
+  factory: MAT_FAB_DEFAULT_OPTIONS_FACTORY
+});
+function MAT_FAB_DEFAULT_OPTIONS_FACTORY() {
+  return {
+    // The FAB by default has its color set to accent.
+    color: "accent"
+  };
+}
+var defaults = MAT_FAB_DEFAULT_OPTIONS_FACTORY();
+var _MatFabButton = class _MatFabButton extends MatButtonBase {
+  constructor(elementRef, platform, ngZone, animationMode, _options) {
+    super(elementRef, platform, ngZone, animationMode);
+    this._options = _options;
+    this._isFab = true;
+    this._options = this._options || defaults;
+    this.color = this._options.color || defaults.color;
+  }
+};
+_MatFabButton.\u0275fac = function MatFabButton_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatFabButton)(\u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(Platform), \u0275\u0275directiveInject(NgZone), \u0275\u0275directiveInject(ANIMATION_MODULE_TYPE, 8), \u0275\u0275directiveInject(MAT_FAB_DEFAULT_OPTIONS, 8));
+};
+_MatFabButton.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
+  type: _MatFabButton,
+  selectors: [["button", "mat-fab", ""]],
+  hostVars: 18,
+  hostBindings: function MatFabButton_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      \u0275\u0275attribute("disabled", ctx._getDisabledAttribute())("aria-disabled", ctx._getAriaDisabled());
+      \u0275\u0275classMap(ctx.color ? "mat-" + ctx.color : "");
+      \u0275\u0275classProp("mat-mdc-button-disabled", ctx.disabled)("mat-mdc-button-disabled-interactive", ctx.disabledInteractive)("_mat-animation-noopable", ctx._animationMode === "NoopAnimations")("mat-unthemed", !ctx.color)("mat-mdc-button-base", true)("mdc-fab--extended", ctx.extended)("mat-mdc-extended-fab", ctx.extended);
+    }
+  },
+  inputs: {
+    extended: [2, "extended", "extended", booleanAttribute]
+  },
+  exportAs: ["matButton"],
+  standalone: true,
+  features: [\u0275\u0275InputTransformsFeature, \u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
+  attrs: _c53,
+  ngContentSelectors: _c23,
+  decls: 7,
+  vars: 4,
+  consts: [[1, "mat-mdc-button-persistent-ripple"], [1, "mdc-button__label"], [1, "mat-mdc-focus-indicator"], [1, "mat-mdc-button-touch-target"]],
+  template: function MatFabButton_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275projectionDef(_c15);
+      \u0275\u0275element(0, "span", 0);
+      \u0275\u0275projection(1);
+      \u0275\u0275elementStart(2, "span", 1);
+      \u0275\u0275projection(3, 1);
+      \u0275\u0275elementEnd();
+      \u0275\u0275projection(4, 2);
+      \u0275\u0275element(5, "span", 2)(6, "span", 3);
+    }
+    if (rf & 2) {
+      \u0275\u0275classProp("mdc-button__ripple", !ctx._isFab)("mdc-fab__ripple", ctx._isFab);
+    }
+  },
+  styles: ['.mat-mdc-fab-base{-webkit-tap-highlight-color:rgba(0,0,0,0);-webkit-user-select:none;user-select:none;position:relative;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:56px;height:56px;padding:0;border:none;fill:currentColor;text-decoration:none;cursor:pointer;-moz-appearance:none;-webkit-appearance:none;overflow:visible;transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1),opacity 15ms linear 30ms,transform 270ms 0ms cubic-bezier(0, 0, 0.2, 1);flex-shrink:0}.mat-mdc-fab-base .mat-mdc-button-ripple,.mat-mdc-fab-base .mat-mdc-button-persistent-ripple,.mat-mdc-fab-base .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-fab-base .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-fab-base .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-fab-base .mdc-button__label,.mat-mdc-fab-base .mat-icon{z-index:1;position:relative}.mat-mdc-fab-base .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-fab-base:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-fab-base._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-fab-base::before{position:absolute;box-sizing:border-box;width:100%;height:100%;top:0;left:0;border:1px solid rgba(0,0,0,0);border-radius:inherit;content:"";pointer-events:none}.mat-mdc-fab-base[hidden]{display:none}.mat-mdc-fab-base::-moz-focus-inner{padding:0;border:0}.mat-mdc-fab-base:active,.mat-mdc-fab-base:focus{outline:none}.mat-mdc-fab-base:hover{cursor:pointer}.mat-mdc-fab-base>svg{width:100%}.mat-mdc-fab-base .mat-icon,.mat-mdc-fab-base .material-icons{transition:transform 180ms 90ms cubic-bezier(0, 0, 0.2, 1);fill:currentColor;will-change:transform}.mat-mdc-fab-base .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 2px)*-1)}.mat-mdc-fab-base[disabled],.mat-mdc-fab-base.mat-mdc-button-disabled{cursor:default;pointer-events:none}.mat-mdc-fab-base[disabled],.mat-mdc-fab-base[disabled]:focus,.mat-mdc-fab-base.mat-mdc-button-disabled,.mat-mdc-fab-base.mat-mdc-button-disabled:focus{box-shadow:none}.mat-mdc-fab-base.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-fab{background-color:var(--mdc-fab-container-color);border-radius:var(--mdc-fab-container-shape);color:var(--mat-fab-foreground-color, inherit);box-shadow:var(--mdc-fab-container-elevation-shadow)}.mat-mdc-fab .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-fab-touch-target-display)}.mat-mdc-fab .mat-ripple-element{background-color:var(--mat-fab-ripple-color)}.mat-mdc-fab .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-state-layer-color)}.mat-mdc-fab.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-disabled-state-layer-color)}.mat-mdc-fab:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-hover-state-layer-opacity)}.mat-mdc-fab.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-fab.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-fab.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-focus-state-layer-opacity)}.mat-mdc-fab:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-pressed-state-layer-opacity)}.mat-mdc-fab:hover{box-shadow:var(--mdc-fab-hover-container-elevation-shadow)}.mat-mdc-fab:focus{box-shadow:var(--mdc-fab-focus-container-elevation-shadow)}.mat-mdc-fab:active,.mat-mdc-fab:focus:active{box-shadow:var(--mdc-fab-pressed-container-elevation-shadow)}.mat-mdc-fab[disabled],.mat-mdc-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mat-fab-disabled-state-foreground-color);background-color:var(--mat-fab-disabled-state-container-color)}.mat-mdc-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-mini-fab{width:40px;height:40px;background-color:var(--mdc-fab-small-container-color);border-radius:var(--mdc-fab-small-container-shape);color:var(--mat-fab-small-foreground-color, inherit);box-shadow:var(--mdc-fab-small-container-elevation-shadow)}.mat-mdc-mini-fab .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-fab-small-touch-target-display)}.mat-mdc-mini-fab .mat-ripple-element{background-color:var(--mat-fab-small-ripple-color)}.mat-mdc-mini-fab .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-small-state-layer-color)}.mat-mdc-mini-fab.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-small-disabled-state-layer-color)}.mat-mdc-mini-fab:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-hover-state-layer-opacity)}.mat-mdc-mini-fab.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-mini-fab.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-mini-fab.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-focus-state-layer-opacity)}.mat-mdc-mini-fab:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-pressed-state-layer-opacity)}.mat-mdc-mini-fab:hover{box-shadow:var(--mdc-fab-small-hover-container-elevation-shadow)}.mat-mdc-mini-fab:focus{box-shadow:var(--mdc-fab-small-focus-container-elevation-shadow)}.mat-mdc-mini-fab:active,.mat-mdc-mini-fab:focus:active{box-shadow:var(--mdc-fab-small-pressed-container-elevation-shadow)}.mat-mdc-mini-fab[disabled],.mat-mdc-mini-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mat-fab-small-disabled-state-foreground-color);background-color:var(--mat-fab-small-disabled-state-container-color)}.mat-mdc-mini-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-extended-fab{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;border-radius:24px;padding-left:20px;padding-right:20px;width:auto;max-width:100%;line-height:normal;box-shadow:var(--mdc-extended-fab-container-elevation-shadow);height:var(--mdc-extended-fab-container-height);border-radius:var(--mdc-extended-fab-container-shape);font-family:var(--mdc-extended-fab-label-text-font);font-size:var(--mdc-extended-fab-label-text-size);font-weight:var(--mdc-extended-fab-label-text-weight);letter-spacing:var(--mdc-extended-fab-label-text-tracking)}.mat-mdc-extended-fab:hover{box-shadow:var(--mdc-extended-fab-hover-container-elevation-shadow)}.mat-mdc-extended-fab:focus{box-shadow:var(--mdc-extended-fab-focus-container-elevation-shadow)}.mat-mdc-extended-fab:active,.mat-mdc-extended-fab:focus:active{box-shadow:var(--mdc-extended-fab-pressed-container-elevation-shadow)}.mat-mdc-extended-fab[disabled],.mat-mdc-extended-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none}.mat-mdc-extended-fab[disabled],.mat-mdc-extended-fab[disabled]:focus,.mat-mdc-extended-fab.mat-mdc-button-disabled,.mat-mdc-extended-fab.mat-mdc-button-disabled:focus{box-shadow:none}.mat-mdc-extended-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}[dir=rtl] .mat-mdc-extended-fab .mdc-button__label+.mat-icon,[dir=rtl] .mat-mdc-extended-fab .mdc-button__label+.material-icons,.mat-mdc-extended-fab>.mat-icon,.mat-mdc-extended-fab>.material-icons{margin-left:-8px;margin-right:12px}.mat-mdc-extended-fab .mdc-button__label+.mat-icon,.mat-mdc-extended-fab .mdc-button__label+.material-icons,[dir=rtl] .mat-mdc-extended-fab>.mat-icon,[dir=rtl] .mat-mdc-extended-fab>.material-icons{margin-left:12px;margin-right:-8px}.mat-mdc-extended-fab .mat-mdc-button-touch-target{width:100%}'],
+  encapsulation: 2,
+  changeDetection: 0
+});
+var MatFabButton = _MatFabButton;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatFabButton, [{
+    type: Component,
+    args: [{
+      selector: `button[mat-fab]`,
+      host: __spreadProps(__spreadValues({}, MAT_BUTTON_HOST), {
+        "[class.mdc-fab--extended]": "extended",
+        "[class.mat-mdc-extended-fab]": "extended"
+      }),
+      exportAs: "matButton",
+      encapsulation: ViewEncapsulation$1.None,
+      changeDetection: ChangeDetectionStrategy.OnPush,
+      standalone: true,
+      template: `<span
+    class="mat-mdc-button-persistent-ripple"
+    [class.mdc-button__ripple]="!_isFab"
+    [class.mdc-fab__ripple]="_isFab"></span>
+
+<ng-content select=".material-icons:not([iconPositionEnd]), mat-icon:not([iconPositionEnd]), [matButtonIcon]:not([iconPositionEnd])">
+</ng-content>
+
+<span class="mdc-button__label"><ng-content></ng-content></span>
+
+<ng-content select=".material-icons[iconPositionEnd], mat-icon[iconPositionEnd], [matButtonIcon][iconPositionEnd]">
+</ng-content>
+
+<!--
+  The indicator can't be directly on the button, because MDC uses ::before for high contrast
+  indication and it can't be on the ripple, because it has a border radius and overflow: hidden.
+-->
+<span class="mat-mdc-focus-indicator"></span>
+
+<span class="mat-mdc-button-touch-target"></span>
+`,
+      styles: ['.mat-mdc-fab-base{-webkit-tap-highlight-color:rgba(0,0,0,0);-webkit-user-select:none;user-select:none;position:relative;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:56px;height:56px;padding:0;border:none;fill:currentColor;text-decoration:none;cursor:pointer;-moz-appearance:none;-webkit-appearance:none;overflow:visible;transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1),opacity 15ms linear 30ms,transform 270ms 0ms cubic-bezier(0, 0, 0.2, 1);flex-shrink:0}.mat-mdc-fab-base .mat-mdc-button-ripple,.mat-mdc-fab-base .mat-mdc-button-persistent-ripple,.mat-mdc-fab-base .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-fab-base .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-fab-base .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-fab-base .mdc-button__label,.mat-mdc-fab-base .mat-icon{z-index:1;position:relative}.mat-mdc-fab-base .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-fab-base:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-fab-base._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-fab-base::before{position:absolute;box-sizing:border-box;width:100%;height:100%;top:0;left:0;border:1px solid rgba(0,0,0,0);border-radius:inherit;content:"";pointer-events:none}.mat-mdc-fab-base[hidden]{display:none}.mat-mdc-fab-base::-moz-focus-inner{padding:0;border:0}.mat-mdc-fab-base:active,.mat-mdc-fab-base:focus{outline:none}.mat-mdc-fab-base:hover{cursor:pointer}.mat-mdc-fab-base>svg{width:100%}.mat-mdc-fab-base .mat-icon,.mat-mdc-fab-base .material-icons{transition:transform 180ms 90ms cubic-bezier(0, 0, 0.2, 1);fill:currentColor;will-change:transform}.mat-mdc-fab-base .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 2px)*-1)}.mat-mdc-fab-base[disabled],.mat-mdc-fab-base.mat-mdc-button-disabled{cursor:default;pointer-events:none}.mat-mdc-fab-base[disabled],.mat-mdc-fab-base[disabled]:focus,.mat-mdc-fab-base.mat-mdc-button-disabled,.mat-mdc-fab-base.mat-mdc-button-disabled:focus{box-shadow:none}.mat-mdc-fab-base.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-fab{background-color:var(--mdc-fab-container-color);border-radius:var(--mdc-fab-container-shape);color:var(--mat-fab-foreground-color, inherit);box-shadow:var(--mdc-fab-container-elevation-shadow)}.mat-mdc-fab .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-fab-touch-target-display)}.mat-mdc-fab .mat-ripple-element{background-color:var(--mat-fab-ripple-color)}.mat-mdc-fab .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-state-layer-color)}.mat-mdc-fab.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-disabled-state-layer-color)}.mat-mdc-fab:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-hover-state-layer-opacity)}.mat-mdc-fab.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-fab.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-fab.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-focus-state-layer-opacity)}.mat-mdc-fab:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-pressed-state-layer-opacity)}.mat-mdc-fab:hover{box-shadow:var(--mdc-fab-hover-container-elevation-shadow)}.mat-mdc-fab:focus{box-shadow:var(--mdc-fab-focus-container-elevation-shadow)}.mat-mdc-fab:active,.mat-mdc-fab:focus:active{box-shadow:var(--mdc-fab-pressed-container-elevation-shadow)}.mat-mdc-fab[disabled],.mat-mdc-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mat-fab-disabled-state-foreground-color);background-color:var(--mat-fab-disabled-state-container-color)}.mat-mdc-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-mini-fab{width:40px;height:40px;background-color:var(--mdc-fab-small-container-color);border-radius:var(--mdc-fab-small-container-shape);color:var(--mat-fab-small-foreground-color, inherit);box-shadow:var(--mdc-fab-small-container-elevation-shadow)}.mat-mdc-mini-fab .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-fab-small-touch-target-display)}.mat-mdc-mini-fab .mat-ripple-element{background-color:var(--mat-fab-small-ripple-color)}.mat-mdc-mini-fab .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-small-state-layer-color)}.mat-mdc-mini-fab.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-small-disabled-state-layer-color)}.mat-mdc-mini-fab:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-hover-state-layer-opacity)}.mat-mdc-mini-fab.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-mini-fab.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-mini-fab.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-focus-state-layer-opacity)}.mat-mdc-mini-fab:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-pressed-state-layer-opacity)}.mat-mdc-mini-fab:hover{box-shadow:var(--mdc-fab-small-hover-container-elevation-shadow)}.mat-mdc-mini-fab:focus{box-shadow:var(--mdc-fab-small-focus-container-elevation-shadow)}.mat-mdc-mini-fab:active,.mat-mdc-mini-fab:focus:active{box-shadow:var(--mdc-fab-small-pressed-container-elevation-shadow)}.mat-mdc-mini-fab[disabled],.mat-mdc-mini-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mat-fab-small-disabled-state-foreground-color);background-color:var(--mat-fab-small-disabled-state-container-color)}.mat-mdc-mini-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-extended-fab{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;border-radius:24px;padding-left:20px;padding-right:20px;width:auto;max-width:100%;line-height:normal;box-shadow:var(--mdc-extended-fab-container-elevation-shadow);height:var(--mdc-extended-fab-container-height);border-radius:var(--mdc-extended-fab-container-shape);font-family:var(--mdc-extended-fab-label-text-font);font-size:var(--mdc-extended-fab-label-text-size);font-weight:var(--mdc-extended-fab-label-text-weight);letter-spacing:var(--mdc-extended-fab-label-text-tracking)}.mat-mdc-extended-fab:hover{box-shadow:var(--mdc-extended-fab-hover-container-elevation-shadow)}.mat-mdc-extended-fab:focus{box-shadow:var(--mdc-extended-fab-focus-container-elevation-shadow)}.mat-mdc-extended-fab:active,.mat-mdc-extended-fab:focus:active{box-shadow:var(--mdc-extended-fab-pressed-container-elevation-shadow)}.mat-mdc-extended-fab[disabled],.mat-mdc-extended-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none}.mat-mdc-extended-fab[disabled],.mat-mdc-extended-fab[disabled]:focus,.mat-mdc-extended-fab.mat-mdc-button-disabled,.mat-mdc-extended-fab.mat-mdc-button-disabled:focus{box-shadow:none}.mat-mdc-extended-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}[dir=rtl] .mat-mdc-extended-fab .mdc-button__label+.mat-icon,[dir=rtl] .mat-mdc-extended-fab .mdc-button__label+.material-icons,.mat-mdc-extended-fab>.mat-icon,.mat-mdc-extended-fab>.material-icons{margin-left:-8px;margin-right:12px}.mat-mdc-extended-fab .mdc-button__label+.mat-icon,.mat-mdc-extended-fab .mdc-button__label+.material-icons,[dir=rtl] .mat-mdc-extended-fab>.mat-icon,[dir=rtl] .mat-mdc-extended-fab>.material-icons{margin-left:12px;margin-right:-8px}.mat-mdc-extended-fab .mat-mdc-button-touch-target{width:100%}']
+    }]
+  }], () => [{
+    type: ElementRef
+  }, {
+    type: Platform
+  }, {
+    type: NgZone
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [ANIMATION_MODULE_TYPE]
+    }]
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [MAT_FAB_DEFAULT_OPTIONS]
+    }]
+  }], {
+    extended: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }]
+  });
+})();
+var _MatMiniFabButton = class _MatMiniFabButton extends MatButtonBase {
+  constructor(elementRef, platform, ngZone, animationMode, _options) {
+    super(elementRef, platform, ngZone, animationMode);
+    this._options = _options;
+    this._isFab = true;
+    this._options = this._options || defaults;
+    this.color = this._options.color || defaults.color;
+  }
+};
+_MatMiniFabButton.\u0275fac = function MatMiniFabButton_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatMiniFabButton)(\u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(Platform), \u0275\u0275directiveInject(NgZone), \u0275\u0275directiveInject(ANIMATION_MODULE_TYPE, 8), \u0275\u0275directiveInject(MAT_FAB_DEFAULT_OPTIONS, 8));
+};
+_MatMiniFabButton.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
+  type: _MatMiniFabButton,
+  selectors: [["button", "mat-mini-fab", ""]],
+  hostVars: 14,
+  hostBindings: function MatMiniFabButton_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      \u0275\u0275attribute("disabled", ctx._getDisabledAttribute())("aria-disabled", ctx._getAriaDisabled());
+      \u0275\u0275classMap(ctx.color ? "mat-" + ctx.color : "");
+      \u0275\u0275classProp("mat-mdc-button-disabled", ctx.disabled)("mat-mdc-button-disabled-interactive", ctx.disabledInteractive)("_mat-animation-noopable", ctx._animationMode === "NoopAnimations")("mat-unthemed", !ctx.color)("mat-mdc-button-base", true);
+    }
+  },
+  exportAs: ["matButton"],
+  standalone: true,
+  features: [\u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
+  attrs: _c63,
+  ngContentSelectors: _c23,
+  decls: 7,
+  vars: 4,
+  consts: [[1, "mat-mdc-button-persistent-ripple"], [1, "mdc-button__label"], [1, "mat-mdc-focus-indicator"], [1, "mat-mdc-button-touch-target"]],
+  template: function MatMiniFabButton_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275projectionDef(_c15);
+      \u0275\u0275element(0, "span", 0);
+      \u0275\u0275projection(1);
+      \u0275\u0275elementStart(2, "span", 1);
+      \u0275\u0275projection(3, 1);
+      \u0275\u0275elementEnd();
+      \u0275\u0275projection(4, 2);
+      \u0275\u0275element(5, "span", 2)(6, "span", 3);
+    }
+    if (rf & 2) {
+      \u0275\u0275classProp("mdc-button__ripple", !ctx._isFab)("mdc-fab__ripple", ctx._isFab);
+    }
+  },
+  styles: [_c72],
+  encapsulation: 2,
+  changeDetection: 0
+});
+var MatMiniFabButton = _MatMiniFabButton;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatMiniFabButton, [{
+    type: Component,
+    args: [{
+      selector: `button[mat-mini-fab]`,
+      host: MAT_BUTTON_HOST,
+      exportAs: "matButton",
+      encapsulation: ViewEncapsulation$1.None,
+      changeDetection: ChangeDetectionStrategy.OnPush,
+      standalone: true,
+      template: `<span
+    class="mat-mdc-button-persistent-ripple"
+    [class.mdc-button__ripple]="!_isFab"
+    [class.mdc-fab__ripple]="_isFab"></span>
+
+<ng-content select=".material-icons:not([iconPositionEnd]), mat-icon:not([iconPositionEnd]), [matButtonIcon]:not([iconPositionEnd])">
+</ng-content>
+
+<span class="mdc-button__label"><ng-content></ng-content></span>
+
+<ng-content select=".material-icons[iconPositionEnd], mat-icon[iconPositionEnd], [matButtonIcon][iconPositionEnd]">
+</ng-content>
+
+<!--
+  The indicator can't be directly on the button, because MDC uses ::before for high contrast
+  indication and it can't be on the ripple, because it has a border radius and overflow: hidden.
+-->
+<span class="mat-mdc-focus-indicator"></span>
+
+<span class="mat-mdc-button-touch-target"></span>
+`,
+      styles: ['.mat-mdc-fab-base{-webkit-tap-highlight-color:rgba(0,0,0,0);-webkit-user-select:none;user-select:none;position:relative;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:56px;height:56px;padding:0;border:none;fill:currentColor;text-decoration:none;cursor:pointer;-moz-appearance:none;-webkit-appearance:none;overflow:visible;transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1),opacity 15ms linear 30ms,transform 270ms 0ms cubic-bezier(0, 0, 0.2, 1);flex-shrink:0}.mat-mdc-fab-base .mat-mdc-button-ripple,.mat-mdc-fab-base .mat-mdc-button-persistent-ripple,.mat-mdc-fab-base .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-fab-base .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-fab-base .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-fab-base .mdc-button__label,.mat-mdc-fab-base .mat-icon{z-index:1;position:relative}.mat-mdc-fab-base .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-fab-base:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-fab-base._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-fab-base::before{position:absolute;box-sizing:border-box;width:100%;height:100%;top:0;left:0;border:1px solid rgba(0,0,0,0);border-radius:inherit;content:"";pointer-events:none}.mat-mdc-fab-base[hidden]{display:none}.mat-mdc-fab-base::-moz-focus-inner{padding:0;border:0}.mat-mdc-fab-base:active,.mat-mdc-fab-base:focus{outline:none}.mat-mdc-fab-base:hover{cursor:pointer}.mat-mdc-fab-base>svg{width:100%}.mat-mdc-fab-base .mat-icon,.mat-mdc-fab-base .material-icons{transition:transform 180ms 90ms cubic-bezier(0, 0, 0.2, 1);fill:currentColor;will-change:transform}.mat-mdc-fab-base .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 2px)*-1)}.mat-mdc-fab-base[disabled],.mat-mdc-fab-base.mat-mdc-button-disabled{cursor:default;pointer-events:none}.mat-mdc-fab-base[disabled],.mat-mdc-fab-base[disabled]:focus,.mat-mdc-fab-base.mat-mdc-button-disabled,.mat-mdc-fab-base.mat-mdc-button-disabled:focus{box-shadow:none}.mat-mdc-fab-base.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-fab{background-color:var(--mdc-fab-container-color);border-radius:var(--mdc-fab-container-shape);color:var(--mat-fab-foreground-color, inherit);box-shadow:var(--mdc-fab-container-elevation-shadow)}.mat-mdc-fab .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-fab-touch-target-display)}.mat-mdc-fab .mat-ripple-element{background-color:var(--mat-fab-ripple-color)}.mat-mdc-fab .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-state-layer-color)}.mat-mdc-fab.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-disabled-state-layer-color)}.mat-mdc-fab:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-hover-state-layer-opacity)}.mat-mdc-fab.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-fab.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-fab.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-focus-state-layer-opacity)}.mat-mdc-fab:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-pressed-state-layer-opacity)}.mat-mdc-fab:hover{box-shadow:var(--mdc-fab-hover-container-elevation-shadow)}.mat-mdc-fab:focus{box-shadow:var(--mdc-fab-focus-container-elevation-shadow)}.mat-mdc-fab:active,.mat-mdc-fab:focus:active{box-shadow:var(--mdc-fab-pressed-container-elevation-shadow)}.mat-mdc-fab[disabled],.mat-mdc-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mat-fab-disabled-state-foreground-color);background-color:var(--mat-fab-disabled-state-container-color)}.mat-mdc-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-mini-fab{width:40px;height:40px;background-color:var(--mdc-fab-small-container-color);border-radius:var(--mdc-fab-small-container-shape);color:var(--mat-fab-small-foreground-color, inherit);box-shadow:var(--mdc-fab-small-container-elevation-shadow)}.mat-mdc-mini-fab .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-fab-small-touch-target-display)}.mat-mdc-mini-fab .mat-ripple-element{background-color:var(--mat-fab-small-ripple-color)}.mat-mdc-mini-fab .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-small-state-layer-color)}.mat-mdc-mini-fab.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-small-disabled-state-layer-color)}.mat-mdc-mini-fab:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-hover-state-layer-opacity)}.mat-mdc-mini-fab.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-mini-fab.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-mini-fab.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-focus-state-layer-opacity)}.mat-mdc-mini-fab:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-pressed-state-layer-opacity)}.mat-mdc-mini-fab:hover{box-shadow:var(--mdc-fab-small-hover-container-elevation-shadow)}.mat-mdc-mini-fab:focus{box-shadow:var(--mdc-fab-small-focus-container-elevation-shadow)}.mat-mdc-mini-fab:active,.mat-mdc-mini-fab:focus:active{box-shadow:var(--mdc-fab-small-pressed-container-elevation-shadow)}.mat-mdc-mini-fab[disabled],.mat-mdc-mini-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mat-fab-small-disabled-state-foreground-color);background-color:var(--mat-fab-small-disabled-state-container-color)}.mat-mdc-mini-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-extended-fab{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;border-radius:24px;padding-left:20px;padding-right:20px;width:auto;max-width:100%;line-height:normal;box-shadow:var(--mdc-extended-fab-container-elevation-shadow);height:var(--mdc-extended-fab-container-height);border-radius:var(--mdc-extended-fab-container-shape);font-family:var(--mdc-extended-fab-label-text-font);font-size:var(--mdc-extended-fab-label-text-size);font-weight:var(--mdc-extended-fab-label-text-weight);letter-spacing:var(--mdc-extended-fab-label-text-tracking)}.mat-mdc-extended-fab:hover{box-shadow:var(--mdc-extended-fab-hover-container-elevation-shadow)}.mat-mdc-extended-fab:focus{box-shadow:var(--mdc-extended-fab-focus-container-elevation-shadow)}.mat-mdc-extended-fab:active,.mat-mdc-extended-fab:focus:active{box-shadow:var(--mdc-extended-fab-pressed-container-elevation-shadow)}.mat-mdc-extended-fab[disabled],.mat-mdc-extended-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none}.mat-mdc-extended-fab[disabled],.mat-mdc-extended-fab[disabled]:focus,.mat-mdc-extended-fab.mat-mdc-button-disabled,.mat-mdc-extended-fab.mat-mdc-button-disabled:focus{box-shadow:none}.mat-mdc-extended-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}[dir=rtl] .mat-mdc-extended-fab .mdc-button__label+.mat-icon,[dir=rtl] .mat-mdc-extended-fab .mdc-button__label+.material-icons,.mat-mdc-extended-fab>.mat-icon,.mat-mdc-extended-fab>.material-icons{margin-left:-8px;margin-right:12px}.mat-mdc-extended-fab .mdc-button__label+.mat-icon,.mat-mdc-extended-fab .mdc-button__label+.material-icons,[dir=rtl] .mat-mdc-extended-fab>.mat-icon,[dir=rtl] .mat-mdc-extended-fab>.material-icons{margin-left:12px;margin-right:-8px}.mat-mdc-extended-fab .mat-mdc-button-touch-target{width:100%}']
+    }]
+  }], () => [{
+    type: ElementRef
+  }, {
+    type: Platform
+  }, {
+    type: NgZone
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [ANIMATION_MODULE_TYPE]
+    }]
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [MAT_FAB_DEFAULT_OPTIONS]
+    }]
+  }], null);
+})();
+var _MatFabAnchor = class _MatFabAnchor extends MatAnchor {
+  constructor(elementRef, platform, ngZone, animationMode, _options) {
+    super(elementRef, platform, ngZone, animationMode);
+    this._options = _options;
+    this._isFab = true;
+    this._options = this._options || defaults;
+    this.color = this._options.color || defaults.color;
+  }
+};
+_MatFabAnchor.\u0275fac = function MatFabAnchor_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatFabAnchor)(\u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(Platform), \u0275\u0275directiveInject(NgZone), \u0275\u0275directiveInject(ANIMATION_MODULE_TYPE, 8), \u0275\u0275directiveInject(MAT_FAB_DEFAULT_OPTIONS, 8));
+};
+_MatFabAnchor.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
+  type: _MatFabAnchor,
+  selectors: [["a", "mat-fab", ""]],
+  hostVars: 19,
+  hostBindings: function MatFabAnchor_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      \u0275\u0275attribute("disabled", ctx._getDisabledAttribute())("tabindex", ctx.disabled && !ctx.disabledInteractive ? -1 : ctx.tabIndex)("aria-disabled", ctx._getDisabledAttribute());
+      \u0275\u0275classMap(ctx.color ? "mat-" + ctx.color : "");
+      \u0275\u0275classProp("mat-mdc-button-disabled", ctx.disabled)("mat-mdc-button-disabled-interactive", ctx.disabledInteractive)("_mat-animation-noopable", ctx._animationMode === "NoopAnimations")("mat-unthemed", !ctx.color)("mat-mdc-button-base", true)("mdc-fab--extended", ctx.extended)("mat-mdc-extended-fab", ctx.extended);
+    }
+  },
+  inputs: {
+    extended: [2, "extended", "extended", booleanAttribute]
+  },
+  exportAs: ["matButton", "matAnchor"],
+  standalone: true,
+  features: [\u0275\u0275InputTransformsFeature, \u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
+  attrs: _c53,
+  ngContentSelectors: _c23,
+  decls: 7,
+  vars: 4,
+  consts: [[1, "mat-mdc-button-persistent-ripple"], [1, "mdc-button__label"], [1, "mat-mdc-focus-indicator"], [1, "mat-mdc-button-touch-target"]],
+  template: function MatFabAnchor_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275projectionDef(_c15);
+      \u0275\u0275element(0, "span", 0);
+      \u0275\u0275projection(1);
+      \u0275\u0275elementStart(2, "span", 1);
+      \u0275\u0275projection(3, 1);
+      \u0275\u0275elementEnd();
+      \u0275\u0275projection(4, 2);
+      \u0275\u0275element(5, "span", 2)(6, "span", 3);
+    }
+    if (rf & 2) {
+      \u0275\u0275classProp("mdc-button__ripple", !ctx._isFab)("mdc-fab__ripple", ctx._isFab);
+    }
+  },
+  styles: [_c72],
+  encapsulation: 2,
+  changeDetection: 0
+});
+var MatFabAnchor = _MatFabAnchor;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatFabAnchor, [{
+    type: Component,
+    args: [{
+      selector: `a[mat-fab]`,
+      host: __spreadProps(__spreadValues({}, MAT_ANCHOR_HOST), {
+        "[class.mdc-fab--extended]": "extended",
+        "[class.mat-mdc-extended-fab]": "extended"
+      }),
+      exportAs: "matButton, matAnchor",
+      encapsulation: ViewEncapsulation$1.None,
+      changeDetection: ChangeDetectionStrategy.OnPush,
+      standalone: true,
+      template: `<span
+    class="mat-mdc-button-persistent-ripple"
+    [class.mdc-button__ripple]="!_isFab"
+    [class.mdc-fab__ripple]="_isFab"></span>
+
+<ng-content select=".material-icons:not([iconPositionEnd]), mat-icon:not([iconPositionEnd]), [matButtonIcon]:not([iconPositionEnd])">
+</ng-content>
+
+<span class="mdc-button__label"><ng-content></ng-content></span>
+
+<ng-content select=".material-icons[iconPositionEnd], mat-icon[iconPositionEnd], [matButtonIcon][iconPositionEnd]">
+</ng-content>
+
+<!--
+  The indicator can't be directly on the button, because MDC uses ::before for high contrast
+  indication and it can't be on the ripple, because it has a border radius and overflow: hidden.
+-->
+<span class="mat-mdc-focus-indicator"></span>
+
+<span class="mat-mdc-button-touch-target"></span>
+`,
+      styles: ['.mat-mdc-fab-base{-webkit-tap-highlight-color:rgba(0,0,0,0);-webkit-user-select:none;user-select:none;position:relative;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:56px;height:56px;padding:0;border:none;fill:currentColor;text-decoration:none;cursor:pointer;-moz-appearance:none;-webkit-appearance:none;overflow:visible;transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1),opacity 15ms linear 30ms,transform 270ms 0ms cubic-bezier(0, 0, 0.2, 1);flex-shrink:0}.mat-mdc-fab-base .mat-mdc-button-ripple,.mat-mdc-fab-base .mat-mdc-button-persistent-ripple,.mat-mdc-fab-base .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-fab-base .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-fab-base .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-fab-base .mdc-button__label,.mat-mdc-fab-base .mat-icon{z-index:1;position:relative}.mat-mdc-fab-base .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-fab-base:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-fab-base._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-fab-base::before{position:absolute;box-sizing:border-box;width:100%;height:100%;top:0;left:0;border:1px solid rgba(0,0,0,0);border-radius:inherit;content:"";pointer-events:none}.mat-mdc-fab-base[hidden]{display:none}.mat-mdc-fab-base::-moz-focus-inner{padding:0;border:0}.mat-mdc-fab-base:active,.mat-mdc-fab-base:focus{outline:none}.mat-mdc-fab-base:hover{cursor:pointer}.mat-mdc-fab-base>svg{width:100%}.mat-mdc-fab-base .mat-icon,.mat-mdc-fab-base .material-icons{transition:transform 180ms 90ms cubic-bezier(0, 0, 0.2, 1);fill:currentColor;will-change:transform}.mat-mdc-fab-base .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 2px)*-1)}.mat-mdc-fab-base[disabled],.mat-mdc-fab-base.mat-mdc-button-disabled{cursor:default;pointer-events:none}.mat-mdc-fab-base[disabled],.mat-mdc-fab-base[disabled]:focus,.mat-mdc-fab-base.mat-mdc-button-disabled,.mat-mdc-fab-base.mat-mdc-button-disabled:focus{box-shadow:none}.mat-mdc-fab-base.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-fab{background-color:var(--mdc-fab-container-color);border-radius:var(--mdc-fab-container-shape);color:var(--mat-fab-foreground-color, inherit);box-shadow:var(--mdc-fab-container-elevation-shadow)}.mat-mdc-fab .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-fab-touch-target-display)}.mat-mdc-fab .mat-ripple-element{background-color:var(--mat-fab-ripple-color)}.mat-mdc-fab .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-state-layer-color)}.mat-mdc-fab.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-disabled-state-layer-color)}.mat-mdc-fab:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-hover-state-layer-opacity)}.mat-mdc-fab.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-fab.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-fab.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-focus-state-layer-opacity)}.mat-mdc-fab:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-pressed-state-layer-opacity)}.mat-mdc-fab:hover{box-shadow:var(--mdc-fab-hover-container-elevation-shadow)}.mat-mdc-fab:focus{box-shadow:var(--mdc-fab-focus-container-elevation-shadow)}.mat-mdc-fab:active,.mat-mdc-fab:focus:active{box-shadow:var(--mdc-fab-pressed-container-elevation-shadow)}.mat-mdc-fab[disabled],.mat-mdc-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mat-fab-disabled-state-foreground-color);background-color:var(--mat-fab-disabled-state-container-color)}.mat-mdc-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-mini-fab{width:40px;height:40px;background-color:var(--mdc-fab-small-container-color);border-radius:var(--mdc-fab-small-container-shape);color:var(--mat-fab-small-foreground-color, inherit);box-shadow:var(--mdc-fab-small-container-elevation-shadow)}.mat-mdc-mini-fab .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-fab-small-touch-target-display)}.mat-mdc-mini-fab .mat-ripple-element{background-color:var(--mat-fab-small-ripple-color)}.mat-mdc-mini-fab .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-small-state-layer-color)}.mat-mdc-mini-fab.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-small-disabled-state-layer-color)}.mat-mdc-mini-fab:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-hover-state-layer-opacity)}.mat-mdc-mini-fab.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-mini-fab.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-mini-fab.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-focus-state-layer-opacity)}.mat-mdc-mini-fab:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-pressed-state-layer-opacity)}.mat-mdc-mini-fab:hover{box-shadow:var(--mdc-fab-small-hover-container-elevation-shadow)}.mat-mdc-mini-fab:focus{box-shadow:var(--mdc-fab-small-focus-container-elevation-shadow)}.mat-mdc-mini-fab:active,.mat-mdc-mini-fab:focus:active{box-shadow:var(--mdc-fab-small-pressed-container-elevation-shadow)}.mat-mdc-mini-fab[disabled],.mat-mdc-mini-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mat-fab-small-disabled-state-foreground-color);background-color:var(--mat-fab-small-disabled-state-container-color)}.mat-mdc-mini-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-extended-fab{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;border-radius:24px;padding-left:20px;padding-right:20px;width:auto;max-width:100%;line-height:normal;box-shadow:var(--mdc-extended-fab-container-elevation-shadow);height:var(--mdc-extended-fab-container-height);border-radius:var(--mdc-extended-fab-container-shape);font-family:var(--mdc-extended-fab-label-text-font);font-size:var(--mdc-extended-fab-label-text-size);font-weight:var(--mdc-extended-fab-label-text-weight);letter-spacing:var(--mdc-extended-fab-label-text-tracking)}.mat-mdc-extended-fab:hover{box-shadow:var(--mdc-extended-fab-hover-container-elevation-shadow)}.mat-mdc-extended-fab:focus{box-shadow:var(--mdc-extended-fab-focus-container-elevation-shadow)}.mat-mdc-extended-fab:active,.mat-mdc-extended-fab:focus:active{box-shadow:var(--mdc-extended-fab-pressed-container-elevation-shadow)}.mat-mdc-extended-fab[disabled],.mat-mdc-extended-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none}.mat-mdc-extended-fab[disabled],.mat-mdc-extended-fab[disabled]:focus,.mat-mdc-extended-fab.mat-mdc-button-disabled,.mat-mdc-extended-fab.mat-mdc-button-disabled:focus{box-shadow:none}.mat-mdc-extended-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}[dir=rtl] .mat-mdc-extended-fab .mdc-button__label+.mat-icon,[dir=rtl] .mat-mdc-extended-fab .mdc-button__label+.material-icons,.mat-mdc-extended-fab>.mat-icon,.mat-mdc-extended-fab>.material-icons{margin-left:-8px;margin-right:12px}.mat-mdc-extended-fab .mdc-button__label+.mat-icon,.mat-mdc-extended-fab .mdc-button__label+.material-icons,[dir=rtl] .mat-mdc-extended-fab>.mat-icon,[dir=rtl] .mat-mdc-extended-fab>.material-icons{margin-left:12px;margin-right:-8px}.mat-mdc-extended-fab .mat-mdc-button-touch-target{width:100%}']
+    }]
+  }], () => [{
+    type: ElementRef
+  }, {
+    type: Platform
+  }, {
+    type: NgZone
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [ANIMATION_MODULE_TYPE]
+    }]
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [MAT_FAB_DEFAULT_OPTIONS]
+    }]
+  }], {
+    extended: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }]
+  });
+})();
+var _MatMiniFabAnchor = class _MatMiniFabAnchor extends MatAnchor {
+  constructor(elementRef, platform, ngZone, animationMode, _options) {
+    super(elementRef, platform, ngZone, animationMode);
+    this._options = _options;
+    this._isFab = true;
+    this._options = this._options || defaults;
+    this.color = this._options.color || defaults.color;
+  }
+};
+_MatMiniFabAnchor.\u0275fac = function MatMiniFabAnchor_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatMiniFabAnchor)(\u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(Platform), \u0275\u0275directiveInject(NgZone), \u0275\u0275directiveInject(ANIMATION_MODULE_TYPE, 8), \u0275\u0275directiveInject(MAT_FAB_DEFAULT_OPTIONS, 8));
+};
+_MatMiniFabAnchor.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
+  type: _MatMiniFabAnchor,
+  selectors: [["a", "mat-mini-fab", ""]],
+  hostVars: 15,
+  hostBindings: function MatMiniFabAnchor_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      \u0275\u0275attribute("disabled", ctx._getDisabledAttribute())("tabindex", ctx.disabled && !ctx.disabledInteractive ? -1 : ctx.tabIndex)("aria-disabled", ctx._getDisabledAttribute());
+      \u0275\u0275classMap(ctx.color ? "mat-" + ctx.color : "");
+      \u0275\u0275classProp("mat-mdc-button-disabled", ctx.disabled)("mat-mdc-button-disabled-interactive", ctx.disabledInteractive)("_mat-animation-noopable", ctx._animationMode === "NoopAnimations")("mat-unthemed", !ctx.color)("mat-mdc-button-base", true);
+    }
+  },
+  exportAs: ["matButton", "matAnchor"],
+  standalone: true,
+  features: [\u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
+  attrs: _c63,
+  ngContentSelectors: _c23,
+  decls: 7,
+  vars: 4,
+  consts: [[1, "mat-mdc-button-persistent-ripple"], [1, "mdc-button__label"], [1, "mat-mdc-focus-indicator"], [1, "mat-mdc-button-touch-target"]],
+  template: function MatMiniFabAnchor_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275projectionDef(_c15);
+      \u0275\u0275element(0, "span", 0);
+      \u0275\u0275projection(1);
+      \u0275\u0275elementStart(2, "span", 1);
+      \u0275\u0275projection(3, 1);
+      \u0275\u0275elementEnd();
+      \u0275\u0275projection(4, 2);
+      \u0275\u0275element(5, "span", 2)(6, "span", 3);
+    }
+    if (rf & 2) {
+      \u0275\u0275classProp("mdc-button__ripple", !ctx._isFab)("mdc-fab__ripple", ctx._isFab);
+    }
+  },
+  styles: [_c72],
+  encapsulation: 2,
+  changeDetection: 0
+});
+var MatMiniFabAnchor = _MatMiniFabAnchor;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatMiniFabAnchor, [{
+    type: Component,
+    args: [{
+      selector: `a[mat-mini-fab]`,
+      host: MAT_ANCHOR_HOST,
+      exportAs: "matButton, matAnchor",
+      encapsulation: ViewEncapsulation$1.None,
+      changeDetection: ChangeDetectionStrategy.OnPush,
+      standalone: true,
+      template: `<span
+    class="mat-mdc-button-persistent-ripple"
+    [class.mdc-button__ripple]="!_isFab"
+    [class.mdc-fab__ripple]="_isFab"></span>
+
+<ng-content select=".material-icons:not([iconPositionEnd]), mat-icon:not([iconPositionEnd]), [matButtonIcon]:not([iconPositionEnd])">
+</ng-content>
+
+<span class="mdc-button__label"><ng-content></ng-content></span>
+
+<ng-content select=".material-icons[iconPositionEnd], mat-icon[iconPositionEnd], [matButtonIcon][iconPositionEnd]">
+</ng-content>
+
+<!--
+  The indicator can't be directly on the button, because MDC uses ::before for high contrast
+  indication and it can't be on the ripple, because it has a border radius and overflow: hidden.
+-->
+<span class="mat-mdc-focus-indicator"></span>
+
+<span class="mat-mdc-button-touch-target"></span>
+`,
+      styles: ['.mat-mdc-fab-base{-webkit-tap-highlight-color:rgba(0,0,0,0);-webkit-user-select:none;user-select:none;position:relative;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:56px;height:56px;padding:0;border:none;fill:currentColor;text-decoration:none;cursor:pointer;-moz-appearance:none;-webkit-appearance:none;overflow:visible;transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1),opacity 15ms linear 30ms,transform 270ms 0ms cubic-bezier(0, 0, 0.2, 1);flex-shrink:0}.mat-mdc-fab-base .mat-mdc-button-ripple,.mat-mdc-fab-base .mat-mdc-button-persistent-ripple,.mat-mdc-fab-base .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-fab-base .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-fab-base .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-fab-base .mdc-button__label,.mat-mdc-fab-base .mat-icon{z-index:1;position:relative}.mat-mdc-fab-base .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-fab-base:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-fab-base._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-fab-base::before{position:absolute;box-sizing:border-box;width:100%;height:100%;top:0;left:0;border:1px solid rgba(0,0,0,0);border-radius:inherit;content:"";pointer-events:none}.mat-mdc-fab-base[hidden]{display:none}.mat-mdc-fab-base::-moz-focus-inner{padding:0;border:0}.mat-mdc-fab-base:active,.mat-mdc-fab-base:focus{outline:none}.mat-mdc-fab-base:hover{cursor:pointer}.mat-mdc-fab-base>svg{width:100%}.mat-mdc-fab-base .mat-icon,.mat-mdc-fab-base .material-icons{transition:transform 180ms 90ms cubic-bezier(0, 0, 0.2, 1);fill:currentColor;will-change:transform}.mat-mdc-fab-base .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 2px)*-1)}.mat-mdc-fab-base[disabled],.mat-mdc-fab-base.mat-mdc-button-disabled{cursor:default;pointer-events:none}.mat-mdc-fab-base[disabled],.mat-mdc-fab-base[disabled]:focus,.mat-mdc-fab-base.mat-mdc-button-disabled,.mat-mdc-fab-base.mat-mdc-button-disabled:focus{box-shadow:none}.mat-mdc-fab-base.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-fab{background-color:var(--mdc-fab-container-color);border-radius:var(--mdc-fab-container-shape);color:var(--mat-fab-foreground-color, inherit);box-shadow:var(--mdc-fab-container-elevation-shadow)}.mat-mdc-fab .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-fab-touch-target-display)}.mat-mdc-fab .mat-ripple-element{background-color:var(--mat-fab-ripple-color)}.mat-mdc-fab .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-state-layer-color)}.mat-mdc-fab.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-disabled-state-layer-color)}.mat-mdc-fab:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-hover-state-layer-opacity)}.mat-mdc-fab.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-fab.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-fab.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-focus-state-layer-opacity)}.mat-mdc-fab:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-pressed-state-layer-opacity)}.mat-mdc-fab:hover{box-shadow:var(--mdc-fab-hover-container-elevation-shadow)}.mat-mdc-fab:focus{box-shadow:var(--mdc-fab-focus-container-elevation-shadow)}.mat-mdc-fab:active,.mat-mdc-fab:focus:active{box-shadow:var(--mdc-fab-pressed-container-elevation-shadow)}.mat-mdc-fab[disabled],.mat-mdc-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mat-fab-disabled-state-foreground-color);background-color:var(--mat-fab-disabled-state-container-color)}.mat-mdc-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-mini-fab{width:40px;height:40px;background-color:var(--mdc-fab-small-container-color);border-radius:var(--mdc-fab-small-container-shape);color:var(--mat-fab-small-foreground-color, inherit);box-shadow:var(--mdc-fab-small-container-elevation-shadow)}.mat-mdc-mini-fab .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-fab-small-touch-target-display)}.mat-mdc-mini-fab .mat-ripple-element{background-color:var(--mat-fab-small-ripple-color)}.mat-mdc-mini-fab .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-small-state-layer-color)}.mat-mdc-mini-fab.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-small-disabled-state-layer-color)}.mat-mdc-mini-fab:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-hover-state-layer-opacity)}.mat-mdc-mini-fab.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-mini-fab.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-mini-fab.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-focus-state-layer-opacity)}.mat-mdc-mini-fab:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-pressed-state-layer-opacity)}.mat-mdc-mini-fab:hover{box-shadow:var(--mdc-fab-small-hover-container-elevation-shadow)}.mat-mdc-mini-fab:focus{box-shadow:var(--mdc-fab-small-focus-container-elevation-shadow)}.mat-mdc-mini-fab:active,.mat-mdc-mini-fab:focus:active{box-shadow:var(--mdc-fab-small-pressed-container-elevation-shadow)}.mat-mdc-mini-fab[disabled],.mat-mdc-mini-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mat-fab-small-disabled-state-foreground-color);background-color:var(--mat-fab-small-disabled-state-container-color)}.mat-mdc-mini-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-extended-fab{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;border-radius:24px;padding-left:20px;padding-right:20px;width:auto;max-width:100%;line-height:normal;box-shadow:var(--mdc-extended-fab-container-elevation-shadow);height:var(--mdc-extended-fab-container-height);border-radius:var(--mdc-extended-fab-container-shape);font-family:var(--mdc-extended-fab-label-text-font);font-size:var(--mdc-extended-fab-label-text-size);font-weight:var(--mdc-extended-fab-label-text-weight);letter-spacing:var(--mdc-extended-fab-label-text-tracking)}.mat-mdc-extended-fab:hover{box-shadow:var(--mdc-extended-fab-hover-container-elevation-shadow)}.mat-mdc-extended-fab:focus{box-shadow:var(--mdc-extended-fab-focus-container-elevation-shadow)}.mat-mdc-extended-fab:active,.mat-mdc-extended-fab:focus:active{box-shadow:var(--mdc-extended-fab-pressed-container-elevation-shadow)}.mat-mdc-extended-fab[disabled],.mat-mdc-extended-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none}.mat-mdc-extended-fab[disabled],.mat-mdc-extended-fab[disabled]:focus,.mat-mdc-extended-fab.mat-mdc-button-disabled,.mat-mdc-extended-fab.mat-mdc-button-disabled:focus{box-shadow:none}.mat-mdc-extended-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}[dir=rtl] .mat-mdc-extended-fab .mdc-button__label+.mat-icon,[dir=rtl] .mat-mdc-extended-fab .mdc-button__label+.material-icons,.mat-mdc-extended-fab>.mat-icon,.mat-mdc-extended-fab>.material-icons{margin-left:-8px;margin-right:12px}.mat-mdc-extended-fab .mdc-button__label+.mat-icon,.mat-mdc-extended-fab .mdc-button__label+.material-icons,[dir=rtl] .mat-mdc-extended-fab>.mat-icon,[dir=rtl] .mat-mdc-extended-fab>.material-icons{margin-left:12px;margin-right:-8px}.mat-mdc-extended-fab .mat-mdc-button-touch-target{width:100%}']
+    }]
+  }], () => [{
+    type: ElementRef
+  }, {
+    type: Platform
+  }, {
+    type: NgZone
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [ANIMATION_MODULE_TYPE]
+    }]
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [MAT_FAB_DEFAULT_OPTIONS]
+    }]
+  }], null);
+})();
+var _MatIconButton = class _MatIconButton extends MatButtonBase {
+  constructor(elementRef, platform, ngZone, animationMode) {
+    super(elementRef, platform, ngZone, animationMode);
+    this._rippleLoader.configureRipple(this._elementRef.nativeElement, {
+      centered: true
+    });
+  }
+};
+_MatIconButton.\u0275fac = function MatIconButton_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatIconButton)(\u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(Platform), \u0275\u0275directiveInject(NgZone), \u0275\u0275directiveInject(ANIMATION_MODULE_TYPE, 8));
+};
+_MatIconButton.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
+  type: _MatIconButton,
+  selectors: [["button", "mat-icon-button", ""]],
+  hostVars: 14,
+  hostBindings: function MatIconButton_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      \u0275\u0275attribute("disabled", ctx._getDisabledAttribute())("aria-disabled", ctx._getAriaDisabled());
+      \u0275\u0275classMap(ctx.color ? "mat-" + ctx.color : "");
+      \u0275\u0275classProp("mat-mdc-button-disabled", ctx.disabled)("mat-mdc-button-disabled-interactive", ctx.disabledInteractive)("_mat-animation-noopable", ctx._animationMode === "NoopAnimations")("mat-unthemed", !ctx.color)("mat-mdc-button-base", true);
+    }
+  },
+  exportAs: ["matButton"],
+  standalone: true,
+  features: [\u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
+  attrs: _c8,
+  ngContentSelectors: _c9,
+  decls: 4,
+  vars: 0,
+  consts: [[1, "mat-mdc-button-persistent-ripple", "mdc-icon-button__ripple"], [1, "mat-mdc-focus-indicator"], [1, "mat-mdc-button-touch-target"]],
+  template: function MatIconButton_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275projectionDef();
+      \u0275\u0275element(0, "span", 0);
+      \u0275\u0275projection(1);
+      \u0275\u0275element(2, "span", 1)(3, "span", 2);
+    }
+  },
+  styles: ['.mat-mdc-icon-button{-webkit-user-select:none;user-select:none;display:inline-block;position:relative;box-sizing:border-box;border:none;outline:none;background-color:rgba(0,0,0,0);fill:currentColor;color:inherit;text-decoration:none;cursor:pointer;z-index:0;overflow:visible;border-radius:50%;flex-shrink:0;text-align:center;width:var(--mdc-icon-button-state-layer-size, 48px);height:var(--mdc-icon-button-state-layer-size, 48px);padding:calc(calc(var(--mdc-icon-button-state-layer-size, 48px) - var(--mdc-icon-button-icon-size, 24px)) / 2);font-size:var(--mdc-icon-button-icon-size);color:var(--mdc-icon-button-icon-color);-webkit-tap-highlight-color:rgba(0,0,0,0)}.mat-mdc-icon-button[disabled],.mat-mdc-icon-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-icon-button-disabled-icon-color)}.mat-mdc-icon-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-icon-button img,.mat-mdc-icon-button svg{width:var(--mdc-icon-button-icon-size);height:var(--mdc-icon-button-icon-size);vertical-align:baseline}.mat-mdc-icon-button .mat-mdc-button-ripple,.mat-mdc-icon-button .mat-mdc-button-persistent-ripple,.mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-icon-button .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-icon-button .mdc-button__label,.mat-mdc-icon-button .mat-icon{z-index:1;position:relative}.mat-mdc-icon-button .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-icon-button:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-icon-button .mat-ripple-element{background-color:var(--mat-icon-button-ripple-color)}.mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-icon-button-state-layer-color)}.mat-mdc-icon-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-icon-button-disabled-state-layer-color)}.mat-mdc-icon-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-hover-state-layer-opacity)}.mat-mdc-icon-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-icon-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-icon-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-focus-state-layer-opacity)}.mat-mdc-icon-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-pressed-state-layer-opacity)}.mat-mdc-icon-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-icon-button-touch-target-display)}.mat-mdc-icon-button._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-icon-button .mat-mdc-button-persistent-ripple{border-radius:50%}.mat-mdc-icon-button[hidden]{display:none}.mat-mdc-icon-button.mat-unthemed:not(.mdc-ripple-upgraded):focus::before,.mat-mdc-icon-button.mat-primary:not(.mdc-ripple-upgraded):focus::before,.mat-mdc-icon-button.mat-accent:not(.mdc-ripple-upgraded):focus::before,.mat-mdc-icon-button.mat-warn:not(.mdc-ripple-upgraded):focus::before{background:rgba(0,0,0,0);opacity:1}', _c43],
+  encapsulation: 2,
+  changeDetection: 0
+});
+var MatIconButton = _MatIconButton;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatIconButton, [{
+    type: Component,
+    args: [{
+      selector: `button[mat-icon-button]`,
+      host: MAT_BUTTON_HOST,
+      exportAs: "matButton",
+      encapsulation: ViewEncapsulation$1.None,
+      changeDetection: ChangeDetectionStrategy.OnPush,
+      standalone: true,
+      template: `<span class="mat-mdc-button-persistent-ripple mdc-icon-button__ripple"></span>
+
+<ng-content></ng-content>
+
+<!--
+  The indicator can't be directly on the button, because MDC uses ::before for high contrast
+  indication and it can't be on the ripple, because it has a border radius and overflow: hidden.
+-->
+<span class="mat-mdc-focus-indicator"></span>
+
+<span class="mat-mdc-button-touch-target"></span>
+`,
+      styles: ['.mat-mdc-icon-button{-webkit-user-select:none;user-select:none;display:inline-block;position:relative;box-sizing:border-box;border:none;outline:none;background-color:rgba(0,0,0,0);fill:currentColor;color:inherit;text-decoration:none;cursor:pointer;z-index:0;overflow:visible;border-radius:50%;flex-shrink:0;text-align:center;width:var(--mdc-icon-button-state-layer-size, 48px);height:var(--mdc-icon-button-state-layer-size, 48px);padding:calc(calc(var(--mdc-icon-button-state-layer-size, 48px) - var(--mdc-icon-button-icon-size, 24px)) / 2);font-size:var(--mdc-icon-button-icon-size);color:var(--mdc-icon-button-icon-color);-webkit-tap-highlight-color:rgba(0,0,0,0)}.mat-mdc-icon-button[disabled],.mat-mdc-icon-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-icon-button-disabled-icon-color)}.mat-mdc-icon-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-icon-button img,.mat-mdc-icon-button svg{width:var(--mdc-icon-button-icon-size);height:var(--mdc-icon-button-icon-size);vertical-align:baseline}.mat-mdc-icon-button .mat-mdc-button-ripple,.mat-mdc-icon-button .mat-mdc-button-persistent-ripple,.mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-icon-button .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-icon-button .mdc-button__label,.mat-mdc-icon-button .mat-icon{z-index:1;position:relative}.mat-mdc-icon-button .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-icon-button:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-icon-button .mat-ripple-element{background-color:var(--mat-icon-button-ripple-color)}.mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-icon-button-state-layer-color)}.mat-mdc-icon-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-icon-button-disabled-state-layer-color)}.mat-mdc-icon-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-hover-state-layer-opacity)}.mat-mdc-icon-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-icon-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-icon-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-focus-state-layer-opacity)}.mat-mdc-icon-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-pressed-state-layer-opacity)}.mat-mdc-icon-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-icon-button-touch-target-display)}.mat-mdc-icon-button._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-icon-button .mat-mdc-button-persistent-ripple{border-radius:50%}.mat-mdc-icon-button[hidden]{display:none}.mat-mdc-icon-button.mat-unthemed:not(.mdc-ripple-upgraded):focus::before,.mat-mdc-icon-button.mat-primary:not(.mdc-ripple-upgraded):focus::before,.mat-mdc-icon-button.mat-accent:not(.mdc-ripple-upgraded):focus::before,.mat-mdc-icon-button.mat-warn:not(.mdc-ripple-upgraded):focus::before{background:rgba(0,0,0,0);opacity:1}', ".cdk-high-contrast-active .mat-mdc-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-unelevated-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-raised-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-outlined-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-icon-button{outline:solid 1px}"]
+    }]
+  }], () => [{
+    type: ElementRef
+  }, {
+    type: Platform
+  }, {
+    type: NgZone
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [ANIMATION_MODULE_TYPE]
+    }]
+  }], null);
+})();
+var _MatIconAnchor = class _MatIconAnchor extends MatAnchorBase {
+  constructor(elementRef, platform, ngZone, animationMode) {
+    super(elementRef, platform, ngZone, animationMode);
+  }
+};
+_MatIconAnchor.\u0275fac = function MatIconAnchor_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatIconAnchor)(\u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(Platform), \u0275\u0275directiveInject(NgZone), \u0275\u0275directiveInject(ANIMATION_MODULE_TYPE, 8));
+};
+_MatIconAnchor.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
+  type: _MatIconAnchor,
+  selectors: [["a", "mat-icon-button", ""]],
+  hostVars: 15,
+  hostBindings: function MatIconAnchor_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      \u0275\u0275attribute("disabled", ctx._getDisabledAttribute())("tabindex", ctx.disabled && !ctx.disabledInteractive ? -1 : ctx.tabIndex)("aria-disabled", ctx._getDisabledAttribute());
+      \u0275\u0275classMap(ctx.color ? "mat-" + ctx.color : "");
+      \u0275\u0275classProp("mat-mdc-button-disabled", ctx.disabled)("mat-mdc-button-disabled-interactive", ctx.disabledInteractive)("_mat-animation-noopable", ctx._animationMode === "NoopAnimations")("mat-unthemed", !ctx.color)("mat-mdc-button-base", true);
+    }
+  },
+  exportAs: ["matButton", "matAnchor"],
+  standalone: true,
+  features: [\u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
+  attrs: _c8,
+  ngContentSelectors: _c9,
+  decls: 4,
+  vars: 0,
+  consts: [[1, "mat-mdc-button-persistent-ripple", "mdc-icon-button__ripple"], [1, "mat-mdc-focus-indicator"], [1, "mat-mdc-button-touch-target"]],
+  template: function MatIconAnchor_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275projectionDef();
+      \u0275\u0275element(0, "span", 0);
+      \u0275\u0275projection(1);
+      \u0275\u0275element(2, "span", 1)(3, "span", 2);
+    }
+  },
+  styles: [_c10, _c43],
+  encapsulation: 2,
+  changeDetection: 0
+});
+var MatIconAnchor = _MatIconAnchor;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatIconAnchor, [{
+    type: Component,
+    args: [{
+      selector: `a[mat-icon-button]`,
+      host: MAT_ANCHOR_HOST,
+      exportAs: "matButton, matAnchor",
+      encapsulation: ViewEncapsulation$1.None,
+      changeDetection: ChangeDetectionStrategy.OnPush,
+      standalone: true,
+      template: `<span class="mat-mdc-button-persistent-ripple mdc-icon-button__ripple"></span>
+
+<ng-content></ng-content>
+
+<!--
+  The indicator can't be directly on the button, because MDC uses ::before for high contrast
+  indication and it can't be on the ripple, because it has a border radius and overflow: hidden.
+-->
+<span class="mat-mdc-focus-indicator"></span>
+
+<span class="mat-mdc-button-touch-target"></span>
+`,
+      styles: ['.mat-mdc-icon-button{-webkit-user-select:none;user-select:none;display:inline-block;position:relative;box-sizing:border-box;border:none;outline:none;background-color:rgba(0,0,0,0);fill:currentColor;color:inherit;text-decoration:none;cursor:pointer;z-index:0;overflow:visible;border-radius:50%;flex-shrink:0;text-align:center;width:var(--mdc-icon-button-state-layer-size, 48px);height:var(--mdc-icon-button-state-layer-size, 48px);padding:calc(calc(var(--mdc-icon-button-state-layer-size, 48px) - var(--mdc-icon-button-icon-size, 24px)) / 2);font-size:var(--mdc-icon-button-icon-size);color:var(--mdc-icon-button-icon-color);-webkit-tap-highlight-color:rgba(0,0,0,0)}.mat-mdc-icon-button[disabled],.mat-mdc-icon-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-icon-button-disabled-icon-color)}.mat-mdc-icon-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-icon-button img,.mat-mdc-icon-button svg{width:var(--mdc-icon-button-icon-size);height:var(--mdc-icon-button-icon-size);vertical-align:baseline}.mat-mdc-icon-button .mat-mdc-button-ripple,.mat-mdc-icon-button .mat-mdc-button-persistent-ripple,.mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-icon-button .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-icon-button .mdc-button__label,.mat-mdc-icon-button .mat-icon{z-index:1;position:relative}.mat-mdc-icon-button .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-icon-button:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-icon-button .mat-ripple-element{background-color:var(--mat-icon-button-ripple-color)}.mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-icon-button-state-layer-color)}.mat-mdc-icon-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-icon-button-disabled-state-layer-color)}.mat-mdc-icon-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-hover-state-layer-opacity)}.mat-mdc-icon-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-icon-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-icon-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-focus-state-layer-opacity)}.mat-mdc-icon-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-pressed-state-layer-opacity)}.mat-mdc-icon-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-icon-button-touch-target-display)}.mat-mdc-icon-button._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-icon-button .mat-mdc-button-persistent-ripple{border-radius:50%}.mat-mdc-icon-button[hidden]{display:none}.mat-mdc-icon-button.mat-unthemed:not(.mdc-ripple-upgraded):focus::before,.mat-mdc-icon-button.mat-primary:not(.mdc-ripple-upgraded):focus::before,.mat-mdc-icon-button.mat-accent:not(.mdc-ripple-upgraded):focus::before,.mat-mdc-icon-button.mat-warn:not(.mdc-ripple-upgraded):focus::before{background:rgba(0,0,0,0);opacity:1}', ".cdk-high-contrast-active .mat-mdc-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-unelevated-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-raised-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-outlined-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-icon-button{outline:solid 1px}"]
+    }]
+  }], () => [{
+    type: ElementRef
+  }, {
+    type: Platform
+  }, {
+    type: NgZone
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [ANIMATION_MODULE_TYPE]
+    }]
+  }], null);
+})();
+var _MatButtonModule = class _MatButtonModule {
+};
+_MatButtonModule.\u0275fac = function MatButtonModule_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatButtonModule)();
+};
+_MatButtonModule.\u0275mod = /* @__PURE__ */ \u0275\u0275defineNgModule({
+  type: _MatButtonModule
+});
+_MatButtonModule.\u0275inj = /* @__PURE__ */ \u0275\u0275defineInjector({
+  imports: [MatCommonModule, MatRippleModule, MatCommonModule]
+});
+var MatButtonModule = _MatButtonModule;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatButtonModule, [{
+    type: NgModule,
+    args: [{
+      imports: [MatCommonModule, MatRippleModule, MatAnchor, MatButton, MatIconAnchor, MatMiniFabAnchor, MatMiniFabButton, MatIconButton, MatFabAnchor, MatFabButton],
+      exports: [MatAnchor, MatButton, MatIconAnchor, MatIconButton, MatMiniFabAnchor, MatMiniFabButton, MatFabAnchor, MatFabButton, MatCommonModule]
+    }]
+  }], null, null);
+})();
+
 // node_modules/luxon/src/errors.js
 var LuxonError = class extends Error {
 };
@@ -38335,1124 +37739,6 @@ function friendlyDateTime(dateTimeish) {
   }
 }
 
-// node_modules/@angular/material/fesm2022/button.mjs
-var _c06 = ["mat-button", ""];
-var _c15 = [[["", 8, "material-icons", 3, "iconPositionEnd", ""], ["mat-icon", 3, "iconPositionEnd", ""], ["", "matButtonIcon", "", 3, "iconPositionEnd", ""]], "*", [["", "iconPositionEnd", "", 8, "material-icons"], ["mat-icon", "iconPositionEnd", ""], ["", "matButtonIcon", "", "iconPositionEnd", ""]]];
-var _c23 = [".material-icons:not([iconPositionEnd]), mat-icon:not([iconPositionEnd]), [matButtonIcon]:not([iconPositionEnd])", "*", ".material-icons[iconPositionEnd], mat-icon[iconPositionEnd], [matButtonIcon][iconPositionEnd]"];
-var _c33 = '.mat-mdc-button-base{text-decoration:none}.mdc-button{-webkit-user-select:none;user-select:none;position:relative;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-width:64px;border:none;outline:none;line-height:inherit;-webkit-appearance:none;overflow:visible;vertical-align:middle;background:rgba(0,0,0,0);padding:0 8px}.mdc-button::-moz-focus-inner{padding:0;border:0}.mdc-button:active{outline:none}.mdc-button:hover{cursor:pointer}.mdc-button:disabled{cursor:default;pointer-events:none}.mdc-button[hidden]{display:none}.mdc-button .mdc-button__label{position:relative}.mat-mdc-button{padding:0 var(--mat-text-button-horizontal-padding, 8px);height:var(--mdc-text-button-container-height);font-family:var(--mdc-text-button-label-text-font);font-size:var(--mdc-text-button-label-text-size);letter-spacing:var(--mdc-text-button-label-text-tracking);text-transform:var(--mdc-text-button-label-text-transform);font-weight:var(--mdc-text-button-label-text-weight)}.mat-mdc-button:has(.material-icons,mat-icon,[matButtonIcon]){padding:0 var(--mat-text-button-with-icon-horizontal-padding, 8px)}.mat-mdc-button>.mat-icon{margin-right:var(--mat-text-button-icon-spacing, 8px);margin-left:var(--mat-text-button-icon-offset, 0)}[dir=rtl] .mat-mdc-button>.mat-icon{margin-right:var(--mat-text-button-icon-offset, 0);margin-left:var(--mat-text-button-icon-spacing, 8px)}.mat-mdc-button .mdc-button__label+.mat-icon{margin-right:var(--mat-text-button-icon-offset, 0);margin-left:var(--mat-text-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-button .mdc-button__label+.mat-icon{margin-right:var(--mat-text-button-icon-spacing, 8px);margin-left:var(--mat-text-button-icon-offset, 0)}.mat-mdc-button .mat-ripple-element{background-color:var(--mat-text-button-ripple-color)}.mat-mdc-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-text-button-state-layer-color)}.mat-mdc-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-text-button-disabled-state-layer-color)}.mat-mdc-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-text-button-hover-state-layer-opacity)}.mat-mdc-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-text-button-focus-state-layer-opacity)}.mat-mdc-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-text-button-pressed-state-layer-opacity)}.mat-mdc-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-text-button-touch-target-display)}.mat-mdc-button,.mat-mdc-button .mdc-button__ripple{border-radius:var(--mdc-text-button-container-shape)}.mat-mdc-button:not(:disabled){color:var(--mdc-text-button-label-text-color)}.mat-mdc-button[disabled],.mat-mdc-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-text-button-disabled-label-text-color)}.mat-mdc-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-unelevated-button{transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);padding:0 var(--mat-filled-button-horizontal-padding, 16px);height:var(--mdc-filled-button-container-height);font-family:var(--mdc-filled-button-label-text-font);font-size:var(--mdc-filled-button-label-text-size);letter-spacing:var(--mdc-filled-button-label-text-tracking);text-transform:var(--mdc-filled-button-label-text-transform);font-weight:var(--mdc-filled-button-label-text-weight)}.mat-mdc-unelevated-button>.mat-icon{margin-right:var(--mat-filled-button-icon-spacing, 8px);margin-left:var(--mat-filled-button-icon-offset, -4px)}[dir=rtl] .mat-mdc-unelevated-button>.mat-icon{margin-right:var(--mat-filled-button-icon-offset, -4px);margin-left:var(--mat-filled-button-icon-spacing, 8px)}.mat-mdc-unelevated-button .mdc-button__label+.mat-icon{margin-right:var(--mat-filled-button-icon-offset, -4px);margin-left:var(--mat-filled-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-unelevated-button .mdc-button__label+.mat-icon{margin-right:var(--mat-filled-button-icon-spacing, 8px);margin-left:var(--mat-filled-button-icon-offset, -4px)}.mat-mdc-unelevated-button .mat-ripple-element{background-color:var(--mat-filled-button-ripple-color)}.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-filled-button-state-layer-color)}.mat-mdc-unelevated-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-filled-button-disabled-state-layer-color)}.mat-mdc-unelevated-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-filled-button-hover-state-layer-opacity)}.mat-mdc-unelevated-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-filled-button-focus-state-layer-opacity)}.mat-mdc-unelevated-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-filled-button-pressed-state-layer-opacity)}.mat-mdc-unelevated-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-filled-button-touch-target-display)}.mat-mdc-unelevated-button:not(:disabled){color:var(--mdc-filled-button-label-text-color);background-color:var(--mdc-filled-button-container-color)}.mat-mdc-unelevated-button,.mat-mdc-unelevated-button .mdc-button__ripple{border-radius:var(--mdc-filled-button-container-shape)}.mat-mdc-unelevated-button[disabled],.mat-mdc-unelevated-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-filled-button-disabled-label-text-color);background-color:var(--mdc-filled-button-disabled-container-color)}.mat-mdc-unelevated-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-raised-button{transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);padding:0 var(--mat-protected-button-horizontal-padding, 16px);box-shadow:var(--mdc-protected-button-container-elevation-shadow);height:var(--mdc-protected-button-container-height);font-family:var(--mdc-protected-button-label-text-font);font-size:var(--mdc-protected-button-label-text-size);letter-spacing:var(--mdc-protected-button-label-text-tracking);text-transform:var(--mdc-protected-button-label-text-transform);font-weight:var(--mdc-protected-button-label-text-weight)}.mat-mdc-raised-button>.mat-icon{margin-right:var(--mat-protected-button-icon-spacing, 8px);margin-left:var(--mat-protected-button-icon-offset, -4px)}[dir=rtl] .mat-mdc-raised-button>.mat-icon{margin-right:var(--mat-protected-button-icon-offset, -4px);margin-left:var(--mat-protected-button-icon-spacing, 8px)}.mat-mdc-raised-button .mdc-button__label+.mat-icon{margin-right:var(--mat-protected-button-icon-offset, -4px);margin-left:var(--mat-protected-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-raised-button .mdc-button__label+.mat-icon{margin-right:var(--mat-protected-button-icon-spacing, 8px);margin-left:var(--mat-protected-button-icon-offset, -4px)}.mat-mdc-raised-button .mat-ripple-element{background-color:var(--mat-protected-button-ripple-color)}.mat-mdc-raised-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-protected-button-state-layer-color)}.mat-mdc-raised-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-protected-button-disabled-state-layer-color)}.mat-mdc-raised-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-protected-button-hover-state-layer-opacity)}.mat-mdc-raised-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-protected-button-focus-state-layer-opacity)}.mat-mdc-raised-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-protected-button-pressed-state-layer-opacity)}.mat-mdc-raised-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-protected-button-touch-target-display)}.mat-mdc-raised-button:not(:disabled){color:var(--mdc-protected-button-label-text-color);background-color:var(--mdc-protected-button-container-color)}.mat-mdc-raised-button,.mat-mdc-raised-button .mdc-button__ripple{border-radius:var(--mdc-protected-button-container-shape)}.mat-mdc-raised-button:hover{box-shadow:var(--mdc-protected-button-hover-container-elevation-shadow)}.mat-mdc-raised-button:focus{box-shadow:var(--mdc-protected-button-focus-container-elevation-shadow)}.mat-mdc-raised-button:active,.mat-mdc-raised-button:focus:active{box-shadow:var(--mdc-protected-button-pressed-container-elevation-shadow)}.mat-mdc-raised-button[disabled],.mat-mdc-raised-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-protected-button-disabled-label-text-color);background-color:var(--mdc-protected-button-disabled-container-color)}.mat-mdc-raised-button[disabled].mat-mdc-button-disabled,.mat-mdc-raised-button.mat-mdc-button-disabled.mat-mdc-button-disabled{box-shadow:var(--mdc-protected-button-disabled-container-elevation-shadow)}.mat-mdc-raised-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-outlined-button{border-style:solid;transition:border 280ms cubic-bezier(0.4, 0, 0.2, 1);padding:0 var(--mat-outlined-button-horizontal-padding, 15px);height:var(--mdc-outlined-button-container-height);font-family:var(--mdc-outlined-button-label-text-font);font-size:var(--mdc-outlined-button-label-text-size);letter-spacing:var(--mdc-outlined-button-label-text-tracking);text-transform:var(--mdc-outlined-button-label-text-transform);font-weight:var(--mdc-outlined-button-label-text-weight);border-radius:var(--mdc-outlined-button-container-shape);border-width:var(--mdc-outlined-button-outline-width)}.mat-mdc-outlined-button>.mat-icon{margin-right:var(--mat-outlined-button-icon-spacing, 8px);margin-left:var(--mat-outlined-button-icon-offset, -4px)}[dir=rtl] .mat-mdc-outlined-button>.mat-icon{margin-right:var(--mat-outlined-button-icon-offset, -4px);margin-left:var(--mat-outlined-button-icon-spacing, 8px)}.mat-mdc-outlined-button .mdc-button__label+.mat-icon{margin-right:var(--mat-outlined-button-icon-offset, -4px);margin-left:var(--mat-outlined-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-outlined-button .mdc-button__label+.mat-icon{margin-right:var(--mat-outlined-button-icon-spacing, 8px);margin-left:var(--mat-outlined-button-icon-offset, -4px)}.mat-mdc-outlined-button .mat-ripple-element{background-color:var(--mat-outlined-button-ripple-color)}.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-outlined-button-state-layer-color)}.mat-mdc-outlined-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-outlined-button-disabled-state-layer-color)}.mat-mdc-outlined-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-outlined-button-hover-state-layer-opacity)}.mat-mdc-outlined-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-outlined-button-focus-state-layer-opacity)}.mat-mdc-outlined-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-outlined-button-pressed-state-layer-opacity)}.mat-mdc-outlined-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-outlined-button-touch-target-display)}.mat-mdc-outlined-button:not(:disabled){color:var(--mdc-outlined-button-label-text-color);border-color:var(--mdc-outlined-button-outline-color)}.mat-mdc-outlined-button[disabled],.mat-mdc-outlined-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-outlined-button-disabled-label-text-color);border-color:var(--mdc-outlined-button-disabled-outline-color)}.mat-mdc-outlined-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-outlined-button .mdc-button__ripple{border-width:var(--mdc-outlined-button-outline-width);border-style:solid;border-color:rgba(0,0,0,0)}.mat-mdc-button,.mat-mdc-unelevated-button,.mat-mdc-raised-button,.mat-mdc-outlined-button{-webkit-tap-highlight-color:rgba(0,0,0,0)}.mat-mdc-button .mat-mdc-button-ripple,.mat-mdc-button .mat-mdc-button-persistent-ripple,.mat-mdc-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button .mat-mdc-button-ripple,.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple,.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button .mat-mdc-button-ripple,.mat-mdc-raised-button .mat-mdc-button-persistent-ripple,.mat-mdc-raised-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button .mat-mdc-button-ripple,.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple,.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-button .mat-mdc-button-ripple,.mat-mdc-unelevated-button .mat-mdc-button-ripple,.mat-mdc-raised-button .mat-mdc-button-ripple,.mat-mdc-outlined-button .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-button .mdc-button__label,.mat-mdc-button .mat-icon,.mat-mdc-unelevated-button .mdc-button__label,.mat-mdc-unelevated-button .mat-icon,.mat-mdc-raised-button .mdc-button__label,.mat-mdc-raised-button .mat-icon,.mat-mdc-outlined-button .mdc-button__label,.mat-mdc-outlined-button .mat-icon{z-index:1;position:relative}.mat-mdc-button .mat-mdc-focus-indicator,.mat-mdc-unelevated-button .mat-mdc-focus-indicator,.mat-mdc-raised-button .mat-mdc-focus-indicator,.mat-mdc-outlined-button .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-button:focus .mat-mdc-focus-indicator::before,.mat-mdc-unelevated-button:focus .mat-mdc-focus-indicator::before,.mat-mdc-raised-button:focus .mat-mdc-focus-indicator::before,.mat-mdc-outlined-button:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-button._mat-animation-noopable,.mat-mdc-unelevated-button._mat-animation-noopable,.mat-mdc-raised-button._mat-animation-noopable,.mat-mdc-outlined-button._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-button>.mat-icon,.mat-mdc-unelevated-button>.mat-icon,.mat-mdc-raised-button>.mat-icon,.mat-mdc-outlined-button>.mat-icon{display:inline-block;position:relative;vertical-align:top;font-size:1.125rem;height:1.125rem;width:1.125rem}.mat-mdc-outlined-button .mat-mdc-button-ripple,.mat-mdc-outlined-button .mdc-button__ripple{top:-1px;left:-1px;bottom:-1px;right:-1px}.mat-mdc-unelevated-button .mat-mdc-focus-indicator::before,.mat-mdc-raised-button .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 2px)*-1)}.mat-mdc-outlined-button .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 3px)*-1)}';
-var _c43 = ".cdk-high-contrast-active .mat-mdc-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-unelevated-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-raised-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-outlined-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-icon-button{outline:solid 1px}";
-var _c53 = ["mat-fab", ""];
-var _c63 = ["mat-mini-fab", ""];
-var _c72 = '.mat-mdc-fab-base{-webkit-tap-highlight-color:rgba(0,0,0,0);-webkit-user-select:none;user-select:none;position:relative;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:56px;height:56px;padding:0;border:none;fill:currentColor;text-decoration:none;cursor:pointer;-moz-appearance:none;-webkit-appearance:none;overflow:visible;transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1),opacity 15ms linear 30ms,transform 270ms 0ms cubic-bezier(0, 0, 0.2, 1);flex-shrink:0}.mat-mdc-fab-base .mat-mdc-button-ripple,.mat-mdc-fab-base .mat-mdc-button-persistent-ripple,.mat-mdc-fab-base .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-fab-base .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-fab-base .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-fab-base .mdc-button__label,.mat-mdc-fab-base .mat-icon{z-index:1;position:relative}.mat-mdc-fab-base .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-fab-base:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-fab-base._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-fab-base::before{position:absolute;box-sizing:border-box;width:100%;height:100%;top:0;left:0;border:1px solid rgba(0,0,0,0);border-radius:inherit;content:"";pointer-events:none}.mat-mdc-fab-base[hidden]{display:none}.mat-mdc-fab-base::-moz-focus-inner{padding:0;border:0}.mat-mdc-fab-base:active,.mat-mdc-fab-base:focus{outline:none}.mat-mdc-fab-base:hover{cursor:pointer}.mat-mdc-fab-base>svg{width:100%}.mat-mdc-fab-base .mat-icon,.mat-mdc-fab-base .material-icons{transition:transform 180ms 90ms cubic-bezier(0, 0, 0.2, 1);fill:currentColor;will-change:transform}.mat-mdc-fab-base .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 2px)*-1)}.mat-mdc-fab-base[disabled],.mat-mdc-fab-base.mat-mdc-button-disabled{cursor:default;pointer-events:none}.mat-mdc-fab-base[disabled],.mat-mdc-fab-base[disabled]:focus,.mat-mdc-fab-base.mat-mdc-button-disabled,.mat-mdc-fab-base.mat-mdc-button-disabled:focus{box-shadow:none}.mat-mdc-fab-base.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-fab{background-color:var(--mdc-fab-container-color);border-radius:var(--mdc-fab-container-shape);color:var(--mat-fab-foreground-color, inherit);box-shadow:var(--mdc-fab-container-elevation-shadow)}.mat-mdc-fab .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-fab-touch-target-display)}.mat-mdc-fab .mat-ripple-element{background-color:var(--mat-fab-ripple-color)}.mat-mdc-fab .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-state-layer-color)}.mat-mdc-fab.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-disabled-state-layer-color)}.mat-mdc-fab:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-hover-state-layer-opacity)}.mat-mdc-fab.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-fab.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-fab.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-focus-state-layer-opacity)}.mat-mdc-fab:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-pressed-state-layer-opacity)}.mat-mdc-fab:hover{box-shadow:var(--mdc-fab-hover-container-elevation-shadow)}.mat-mdc-fab:focus{box-shadow:var(--mdc-fab-focus-container-elevation-shadow)}.mat-mdc-fab:active,.mat-mdc-fab:focus:active{box-shadow:var(--mdc-fab-pressed-container-elevation-shadow)}.mat-mdc-fab[disabled],.mat-mdc-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mat-fab-disabled-state-foreground-color);background-color:var(--mat-fab-disabled-state-container-color)}.mat-mdc-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-mini-fab{width:40px;height:40px;background-color:var(--mdc-fab-small-container-color);border-radius:var(--mdc-fab-small-container-shape);color:var(--mat-fab-small-foreground-color, inherit);box-shadow:var(--mdc-fab-small-container-elevation-shadow)}.mat-mdc-mini-fab .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-fab-small-touch-target-display)}.mat-mdc-mini-fab .mat-ripple-element{background-color:var(--mat-fab-small-ripple-color)}.mat-mdc-mini-fab .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-small-state-layer-color)}.mat-mdc-mini-fab.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-small-disabled-state-layer-color)}.mat-mdc-mini-fab:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-hover-state-layer-opacity)}.mat-mdc-mini-fab.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-mini-fab.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-mini-fab.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-focus-state-layer-opacity)}.mat-mdc-mini-fab:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-pressed-state-layer-opacity)}.mat-mdc-mini-fab:hover{box-shadow:var(--mdc-fab-small-hover-container-elevation-shadow)}.mat-mdc-mini-fab:focus{box-shadow:var(--mdc-fab-small-focus-container-elevation-shadow)}.mat-mdc-mini-fab:active,.mat-mdc-mini-fab:focus:active{box-shadow:var(--mdc-fab-small-pressed-container-elevation-shadow)}.mat-mdc-mini-fab[disabled],.mat-mdc-mini-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mat-fab-small-disabled-state-foreground-color);background-color:var(--mat-fab-small-disabled-state-container-color)}.mat-mdc-mini-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-extended-fab{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;border-radius:24px;padding-left:20px;padding-right:20px;width:auto;max-width:100%;line-height:normal;box-shadow:var(--mdc-extended-fab-container-elevation-shadow);height:var(--mdc-extended-fab-container-height);border-radius:var(--mdc-extended-fab-container-shape);font-family:var(--mdc-extended-fab-label-text-font);font-size:var(--mdc-extended-fab-label-text-size);font-weight:var(--mdc-extended-fab-label-text-weight);letter-spacing:var(--mdc-extended-fab-label-text-tracking)}.mat-mdc-extended-fab:hover{box-shadow:var(--mdc-extended-fab-hover-container-elevation-shadow)}.mat-mdc-extended-fab:focus{box-shadow:var(--mdc-extended-fab-focus-container-elevation-shadow)}.mat-mdc-extended-fab:active,.mat-mdc-extended-fab:focus:active{box-shadow:var(--mdc-extended-fab-pressed-container-elevation-shadow)}.mat-mdc-extended-fab[disabled],.mat-mdc-extended-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none}.mat-mdc-extended-fab[disabled],.mat-mdc-extended-fab[disabled]:focus,.mat-mdc-extended-fab.mat-mdc-button-disabled,.mat-mdc-extended-fab.mat-mdc-button-disabled:focus{box-shadow:none}.mat-mdc-extended-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}[dir=rtl] .mat-mdc-extended-fab .mdc-button__label+.mat-icon,[dir=rtl] .mat-mdc-extended-fab .mdc-button__label+.material-icons,.mat-mdc-extended-fab>.mat-icon,.mat-mdc-extended-fab>.material-icons{margin-left:-8px;margin-right:12px}.mat-mdc-extended-fab .mdc-button__label+.mat-icon,.mat-mdc-extended-fab .mdc-button__label+.material-icons,[dir=rtl] .mat-mdc-extended-fab>.mat-icon,[dir=rtl] .mat-mdc-extended-fab>.material-icons{margin-left:12px;margin-right:-8px}.mat-mdc-extended-fab .mat-mdc-button-touch-target{width:100%}';
-var _c8 = ["mat-icon-button", ""];
-var _c9 = ["*"];
-var _c10 = '.mat-mdc-icon-button{-webkit-user-select:none;user-select:none;display:inline-block;position:relative;box-sizing:border-box;border:none;outline:none;background-color:rgba(0,0,0,0);fill:currentColor;color:inherit;text-decoration:none;cursor:pointer;z-index:0;overflow:visible;border-radius:50%;flex-shrink:0;text-align:center;width:var(--mdc-icon-button-state-layer-size, 48px);height:var(--mdc-icon-button-state-layer-size, 48px);padding:calc(calc(var(--mdc-icon-button-state-layer-size, 48px) - var(--mdc-icon-button-icon-size, 24px)) / 2);font-size:var(--mdc-icon-button-icon-size);color:var(--mdc-icon-button-icon-color);-webkit-tap-highlight-color:rgba(0,0,0,0)}.mat-mdc-icon-button[disabled],.mat-mdc-icon-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-icon-button-disabled-icon-color)}.mat-mdc-icon-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-icon-button img,.mat-mdc-icon-button svg{width:var(--mdc-icon-button-icon-size);height:var(--mdc-icon-button-icon-size);vertical-align:baseline}.mat-mdc-icon-button .mat-mdc-button-ripple,.mat-mdc-icon-button .mat-mdc-button-persistent-ripple,.mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-icon-button .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-icon-button .mdc-button__label,.mat-mdc-icon-button .mat-icon{z-index:1;position:relative}.mat-mdc-icon-button .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-icon-button:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-icon-button .mat-ripple-element{background-color:var(--mat-icon-button-ripple-color)}.mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-icon-button-state-layer-color)}.mat-mdc-icon-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-icon-button-disabled-state-layer-color)}.mat-mdc-icon-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-hover-state-layer-opacity)}.mat-mdc-icon-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-icon-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-icon-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-focus-state-layer-opacity)}.mat-mdc-icon-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-pressed-state-layer-opacity)}.mat-mdc-icon-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-icon-button-touch-target-display)}.mat-mdc-icon-button._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-icon-button .mat-mdc-button-persistent-ripple{border-radius:50%}.mat-mdc-icon-button[hidden]{display:none}.mat-mdc-icon-button.mat-unthemed:not(.mdc-ripple-upgraded):focus::before,.mat-mdc-icon-button.mat-primary:not(.mdc-ripple-upgraded):focus::before,.mat-mdc-icon-button.mat-accent:not(.mdc-ripple-upgraded):focus::before,.mat-mdc-icon-button.mat-warn:not(.mdc-ripple-upgraded):focus::before{background:rgba(0,0,0,0);opacity:1}';
-var MAT_BUTTON_CONFIG = new InjectionToken("MAT_BUTTON_CONFIG");
-var MAT_BUTTON_HOST = {
-  "[attr.disabled]": "_getDisabledAttribute()",
-  "[attr.aria-disabled]": "_getAriaDisabled()",
-  "[class.mat-mdc-button-disabled]": "disabled",
-  "[class.mat-mdc-button-disabled-interactive]": "disabledInteractive",
-  "[class._mat-animation-noopable]": '_animationMode === "NoopAnimations"',
-  // MDC automatically applies the primary theme color to the button, but we want to support
-  // an unthemed version. If color is undefined, apply a CSS class that makes it easy to
-  // select and style this "theme".
-  "[class.mat-unthemed]": "!color",
-  // Add a class that applies to all buttons. This makes it easier to target if somebody
-  // wants to target all Material buttons.
-  "[class.mat-mdc-button-base]": "true",
-  "[class]": 'color ? "mat-" + color : ""'
-};
-var HOST_SELECTOR_MDC_CLASS_PAIR = [{
-  attribute: "mat-button",
-  mdcClasses: ["mdc-button", "mat-mdc-button"]
-}, {
-  attribute: "mat-flat-button",
-  mdcClasses: ["mdc-button", "mdc-button--unelevated", "mat-mdc-unelevated-button"]
-}, {
-  attribute: "mat-raised-button",
-  mdcClasses: ["mdc-button", "mdc-button--raised", "mat-mdc-raised-button"]
-}, {
-  attribute: "mat-stroked-button",
-  mdcClasses: ["mdc-button", "mdc-button--outlined", "mat-mdc-outlined-button"]
-}, {
-  attribute: "mat-fab",
-  mdcClasses: ["mdc-fab", "mat-mdc-fab-base", "mat-mdc-fab"]
-}, {
-  attribute: "mat-mini-fab",
-  mdcClasses: ["mdc-fab", "mat-mdc-fab-base", "mdc-fab--mini", "mat-mdc-mini-fab"]
-}, {
-  attribute: "mat-icon-button",
-  mdcClasses: ["mdc-icon-button", "mat-mdc-icon-button"]
-}];
-var _MatButtonBase = class _MatButtonBase {
-  /**
-   * Reference to the MatRipple instance of the button.
-   * @deprecated Considered an implementation detail. To be removed.
-   * @breaking-change 17.0.0
-   */
-  get ripple() {
-    return this._rippleLoader?.getRipple(this._elementRef.nativeElement);
-  }
-  set ripple(v) {
-    this._rippleLoader?.attachRipple(this._elementRef.nativeElement, v);
-  }
-  /** Whether the ripple effect is disabled or not. */
-  get disableRipple() {
-    return this._disableRipple;
-  }
-  set disableRipple(value) {
-    this._disableRipple = value;
-    this._updateRippleDisabled();
-  }
-  /** Whether the button is disabled. */
-  get disabled() {
-    return this._disabled;
-  }
-  set disabled(value) {
-    this._disabled = value;
-    this._updateRippleDisabled();
-  }
-  constructor(_elementRef, _platform, _ngZone, _animationMode) {
-    this._elementRef = _elementRef;
-    this._platform = _platform;
-    this._ngZone = _ngZone;
-    this._animationMode = _animationMode;
-    this._focusMonitor = inject(FocusMonitor);
-    this._rippleLoader = inject(MatRippleLoader);
-    this._isFab = false;
-    this._disableRipple = false;
-    this._disabled = false;
-    const config = inject(MAT_BUTTON_CONFIG, {
-      optional: true
-    });
-    const element = _elementRef.nativeElement;
-    const classList = element.classList;
-    this.disabledInteractive = config?.disabledInteractive ?? false;
-    this.color = config?.color ?? null;
-    this._rippleLoader?.configureRipple(element, {
-      className: "mat-mdc-button-ripple"
-    });
-    for (const {
-      attribute,
-      mdcClasses
-    } of HOST_SELECTOR_MDC_CLASS_PAIR) {
-      if (element.hasAttribute(attribute)) {
-        classList.add(...mdcClasses);
-      }
-    }
-  }
-  ngAfterViewInit() {
-    this._focusMonitor.monitor(this._elementRef, true);
-  }
-  ngOnDestroy() {
-    this._focusMonitor.stopMonitoring(this._elementRef);
-    this._rippleLoader?.destroyRipple(this._elementRef.nativeElement);
-  }
-  /** Focuses the button. */
-  focus(origin = "program", options) {
-    if (origin) {
-      this._focusMonitor.focusVia(this._elementRef.nativeElement, origin, options);
-    } else {
-      this._elementRef.nativeElement.focus(options);
-    }
-  }
-  _getAriaDisabled() {
-    if (this.ariaDisabled != null) {
-      return this.ariaDisabled;
-    }
-    return this.disabled && this.disabledInteractive ? true : null;
-  }
-  _getDisabledAttribute() {
-    return this.disabledInteractive || !this.disabled ? null : true;
-  }
-  _updateRippleDisabled() {
-    this._rippleLoader?.setDisabled(this._elementRef.nativeElement, this.disableRipple || this.disabled);
-  }
-};
-_MatButtonBase.\u0275fac = function MatButtonBase_Factory(__ngFactoryType__) {
-  \u0275\u0275invalidFactory();
-};
-_MatButtonBase.\u0275dir = /* @__PURE__ */ \u0275\u0275defineDirective({
-  type: _MatButtonBase,
-  inputs: {
-    color: "color",
-    disableRipple: [2, "disableRipple", "disableRipple", booleanAttribute],
-    disabled: [2, "disabled", "disabled", booleanAttribute],
-    ariaDisabled: [2, "aria-disabled", "ariaDisabled", booleanAttribute],
-    disabledInteractive: [2, "disabledInteractive", "disabledInteractive", booleanAttribute]
-  },
-  features: [\u0275\u0275InputTransformsFeature]
-});
-var MatButtonBase = _MatButtonBase;
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatButtonBase, [{
-    type: Directive
-  }], () => [{
-    type: ElementRef
-  }, {
-    type: Platform
-  }, {
-    type: NgZone
-  }, {
-    type: void 0
-  }], {
-    color: [{
-      type: Input
-    }],
-    disableRipple: [{
-      type: Input,
-      args: [{
-        transform: booleanAttribute
-      }]
-    }],
-    disabled: [{
-      type: Input,
-      args: [{
-        transform: booleanAttribute
-      }]
-    }],
-    ariaDisabled: [{
-      type: Input,
-      args: [{
-        transform: booleanAttribute,
-        alias: "aria-disabled"
-      }]
-    }],
-    disabledInteractive: [{
-      type: Input,
-      args: [{
-        transform: booleanAttribute
-      }]
-    }]
-  });
-})();
-var MAT_ANCHOR_HOST = {
-  "[attr.disabled]": "_getDisabledAttribute()",
-  "[class.mat-mdc-button-disabled]": "disabled",
-  "[class.mat-mdc-button-disabled-interactive]": "disabledInteractive",
-  "[class._mat-animation-noopable]": '_animationMode === "NoopAnimations"',
-  // Note that we ignore the user-specified tabindex when it's disabled for
-  // consistency with the `mat-button` applied on native buttons where even
-  // though they have an index, they're not tabbable.
-  "[attr.tabindex]": "disabled && !disabledInteractive ? -1 : tabIndex",
-  "[attr.aria-disabled]": "_getDisabledAttribute()",
-  // MDC automatically applies the primary theme color to the button, but we want to support
-  // an unthemed version. If color is undefined, apply a CSS class that makes it easy to
-  // select and style this "theme".
-  "[class.mat-unthemed]": "!color",
-  // Add a class that applies to all buttons. This makes it easier to target if somebody
-  // wants to target all Material buttons.
-  "[class.mat-mdc-button-base]": "true",
-  "[class]": 'color ? "mat-" + color : ""'
-};
-var _MatAnchorBase = class _MatAnchorBase extends MatButtonBase {
-  constructor(elementRef, platform, ngZone, animationMode) {
-    super(elementRef, platform, ngZone, animationMode);
-    this._haltDisabledEvents = (event) => {
-      if (this.disabled) {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-      }
-    };
-  }
-  ngOnInit() {
-    this._ngZone.runOutsideAngular(() => {
-      this._elementRef.nativeElement.addEventListener("click", this._haltDisabledEvents);
-    });
-  }
-  ngOnDestroy() {
-    super.ngOnDestroy();
-    this._elementRef.nativeElement.removeEventListener("click", this._haltDisabledEvents);
-  }
-  _getAriaDisabled() {
-    return this.ariaDisabled == null ? this.disabled : this.ariaDisabled;
-  }
-};
-_MatAnchorBase.\u0275fac = function MatAnchorBase_Factory(__ngFactoryType__) {
-  \u0275\u0275invalidFactory();
-};
-_MatAnchorBase.\u0275dir = /* @__PURE__ */ \u0275\u0275defineDirective({
-  type: _MatAnchorBase,
-  inputs: {
-    tabIndex: [2, "tabIndex", "tabIndex", (value) => {
-      return value == null ? void 0 : numberAttribute(value);
-    }]
-  },
-  features: [\u0275\u0275InputTransformsFeature, \u0275\u0275InheritDefinitionFeature]
-});
-var MatAnchorBase = _MatAnchorBase;
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatAnchorBase, [{
-    type: Directive
-  }], () => [{
-    type: ElementRef
-  }, {
-    type: Platform
-  }, {
-    type: NgZone
-  }, {
-    type: void 0
-  }], {
-    tabIndex: [{
-      type: Input,
-      args: [{
-        transform: (value) => {
-          return value == null ? void 0 : numberAttribute(value);
-        }
-      }]
-    }]
-  });
-})();
-var _MatButton = class _MatButton extends MatButtonBase {
-  constructor(elementRef, platform, ngZone, animationMode) {
-    super(elementRef, platform, ngZone, animationMode);
-  }
-};
-_MatButton.\u0275fac = function MatButton_Factory(__ngFactoryType__) {
-  return new (__ngFactoryType__ || _MatButton)(\u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(Platform), \u0275\u0275directiveInject(NgZone), \u0275\u0275directiveInject(ANIMATION_MODULE_TYPE, 8));
-};
-_MatButton.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
-  type: _MatButton,
-  selectors: [["button", "mat-button", ""], ["button", "mat-raised-button", ""], ["button", "mat-flat-button", ""], ["button", "mat-stroked-button", ""]],
-  hostVars: 14,
-  hostBindings: function MatButton_HostBindings(rf, ctx) {
-    if (rf & 2) {
-      \u0275\u0275attribute("disabled", ctx._getDisabledAttribute())("aria-disabled", ctx._getAriaDisabled());
-      \u0275\u0275classMap(ctx.color ? "mat-" + ctx.color : "");
-      \u0275\u0275classProp("mat-mdc-button-disabled", ctx.disabled)("mat-mdc-button-disabled-interactive", ctx.disabledInteractive)("_mat-animation-noopable", ctx._animationMode === "NoopAnimations")("mat-unthemed", !ctx.color)("mat-mdc-button-base", true);
-    }
-  },
-  exportAs: ["matButton"],
-  standalone: true,
-  features: [\u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
-  attrs: _c06,
-  ngContentSelectors: _c23,
-  decls: 7,
-  vars: 4,
-  consts: [[1, "mat-mdc-button-persistent-ripple"], [1, "mdc-button__label"], [1, "mat-mdc-focus-indicator"], [1, "mat-mdc-button-touch-target"]],
-  template: function MatButton_Template(rf, ctx) {
-    if (rf & 1) {
-      \u0275\u0275projectionDef(_c15);
-      \u0275\u0275element(0, "span", 0);
-      \u0275\u0275projection(1);
-      \u0275\u0275elementStart(2, "span", 1);
-      \u0275\u0275projection(3, 1);
-      \u0275\u0275elementEnd();
-      \u0275\u0275projection(4, 2);
-      \u0275\u0275element(5, "span", 2)(6, "span", 3);
-    }
-    if (rf & 2) {
-      \u0275\u0275classProp("mdc-button__ripple", !ctx._isFab)("mdc-fab__ripple", ctx._isFab);
-    }
-  },
-  styles: ['.mat-mdc-button-base{text-decoration:none}.mdc-button{-webkit-user-select:none;user-select:none;position:relative;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-width:64px;border:none;outline:none;line-height:inherit;-webkit-appearance:none;overflow:visible;vertical-align:middle;background:rgba(0,0,0,0);padding:0 8px}.mdc-button::-moz-focus-inner{padding:0;border:0}.mdc-button:active{outline:none}.mdc-button:hover{cursor:pointer}.mdc-button:disabled{cursor:default;pointer-events:none}.mdc-button[hidden]{display:none}.mdc-button .mdc-button__label{position:relative}.mat-mdc-button{padding:0 var(--mat-text-button-horizontal-padding, 8px);height:var(--mdc-text-button-container-height);font-family:var(--mdc-text-button-label-text-font);font-size:var(--mdc-text-button-label-text-size);letter-spacing:var(--mdc-text-button-label-text-tracking);text-transform:var(--mdc-text-button-label-text-transform);font-weight:var(--mdc-text-button-label-text-weight)}.mat-mdc-button:has(.material-icons,mat-icon,[matButtonIcon]){padding:0 var(--mat-text-button-with-icon-horizontal-padding, 8px)}.mat-mdc-button>.mat-icon{margin-right:var(--mat-text-button-icon-spacing, 8px);margin-left:var(--mat-text-button-icon-offset, 0)}[dir=rtl] .mat-mdc-button>.mat-icon{margin-right:var(--mat-text-button-icon-offset, 0);margin-left:var(--mat-text-button-icon-spacing, 8px)}.mat-mdc-button .mdc-button__label+.mat-icon{margin-right:var(--mat-text-button-icon-offset, 0);margin-left:var(--mat-text-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-button .mdc-button__label+.mat-icon{margin-right:var(--mat-text-button-icon-spacing, 8px);margin-left:var(--mat-text-button-icon-offset, 0)}.mat-mdc-button .mat-ripple-element{background-color:var(--mat-text-button-ripple-color)}.mat-mdc-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-text-button-state-layer-color)}.mat-mdc-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-text-button-disabled-state-layer-color)}.mat-mdc-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-text-button-hover-state-layer-opacity)}.mat-mdc-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-text-button-focus-state-layer-opacity)}.mat-mdc-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-text-button-pressed-state-layer-opacity)}.mat-mdc-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-text-button-touch-target-display)}.mat-mdc-button,.mat-mdc-button .mdc-button__ripple{border-radius:var(--mdc-text-button-container-shape)}.mat-mdc-button:not(:disabled){color:var(--mdc-text-button-label-text-color)}.mat-mdc-button[disabled],.mat-mdc-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-text-button-disabled-label-text-color)}.mat-mdc-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-unelevated-button{transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);padding:0 var(--mat-filled-button-horizontal-padding, 16px);height:var(--mdc-filled-button-container-height);font-family:var(--mdc-filled-button-label-text-font);font-size:var(--mdc-filled-button-label-text-size);letter-spacing:var(--mdc-filled-button-label-text-tracking);text-transform:var(--mdc-filled-button-label-text-transform);font-weight:var(--mdc-filled-button-label-text-weight)}.mat-mdc-unelevated-button>.mat-icon{margin-right:var(--mat-filled-button-icon-spacing, 8px);margin-left:var(--mat-filled-button-icon-offset, -4px)}[dir=rtl] .mat-mdc-unelevated-button>.mat-icon{margin-right:var(--mat-filled-button-icon-offset, -4px);margin-left:var(--mat-filled-button-icon-spacing, 8px)}.mat-mdc-unelevated-button .mdc-button__label+.mat-icon{margin-right:var(--mat-filled-button-icon-offset, -4px);margin-left:var(--mat-filled-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-unelevated-button .mdc-button__label+.mat-icon{margin-right:var(--mat-filled-button-icon-spacing, 8px);margin-left:var(--mat-filled-button-icon-offset, -4px)}.mat-mdc-unelevated-button .mat-ripple-element{background-color:var(--mat-filled-button-ripple-color)}.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-filled-button-state-layer-color)}.mat-mdc-unelevated-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-filled-button-disabled-state-layer-color)}.mat-mdc-unelevated-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-filled-button-hover-state-layer-opacity)}.mat-mdc-unelevated-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-filled-button-focus-state-layer-opacity)}.mat-mdc-unelevated-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-filled-button-pressed-state-layer-opacity)}.mat-mdc-unelevated-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-filled-button-touch-target-display)}.mat-mdc-unelevated-button:not(:disabled){color:var(--mdc-filled-button-label-text-color);background-color:var(--mdc-filled-button-container-color)}.mat-mdc-unelevated-button,.mat-mdc-unelevated-button .mdc-button__ripple{border-radius:var(--mdc-filled-button-container-shape)}.mat-mdc-unelevated-button[disabled],.mat-mdc-unelevated-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-filled-button-disabled-label-text-color);background-color:var(--mdc-filled-button-disabled-container-color)}.mat-mdc-unelevated-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-raised-button{transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);padding:0 var(--mat-protected-button-horizontal-padding, 16px);box-shadow:var(--mdc-protected-button-container-elevation-shadow);height:var(--mdc-protected-button-container-height);font-family:var(--mdc-protected-button-label-text-font);font-size:var(--mdc-protected-button-label-text-size);letter-spacing:var(--mdc-protected-button-label-text-tracking);text-transform:var(--mdc-protected-button-label-text-transform);font-weight:var(--mdc-protected-button-label-text-weight)}.mat-mdc-raised-button>.mat-icon{margin-right:var(--mat-protected-button-icon-spacing, 8px);margin-left:var(--mat-protected-button-icon-offset, -4px)}[dir=rtl] .mat-mdc-raised-button>.mat-icon{margin-right:var(--mat-protected-button-icon-offset, -4px);margin-left:var(--mat-protected-button-icon-spacing, 8px)}.mat-mdc-raised-button .mdc-button__label+.mat-icon{margin-right:var(--mat-protected-button-icon-offset, -4px);margin-left:var(--mat-protected-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-raised-button .mdc-button__label+.mat-icon{margin-right:var(--mat-protected-button-icon-spacing, 8px);margin-left:var(--mat-protected-button-icon-offset, -4px)}.mat-mdc-raised-button .mat-ripple-element{background-color:var(--mat-protected-button-ripple-color)}.mat-mdc-raised-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-protected-button-state-layer-color)}.mat-mdc-raised-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-protected-button-disabled-state-layer-color)}.mat-mdc-raised-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-protected-button-hover-state-layer-opacity)}.mat-mdc-raised-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-protected-button-focus-state-layer-opacity)}.mat-mdc-raised-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-protected-button-pressed-state-layer-opacity)}.mat-mdc-raised-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-protected-button-touch-target-display)}.mat-mdc-raised-button:not(:disabled){color:var(--mdc-protected-button-label-text-color);background-color:var(--mdc-protected-button-container-color)}.mat-mdc-raised-button,.mat-mdc-raised-button .mdc-button__ripple{border-radius:var(--mdc-protected-button-container-shape)}.mat-mdc-raised-button:hover{box-shadow:var(--mdc-protected-button-hover-container-elevation-shadow)}.mat-mdc-raised-button:focus{box-shadow:var(--mdc-protected-button-focus-container-elevation-shadow)}.mat-mdc-raised-button:active,.mat-mdc-raised-button:focus:active{box-shadow:var(--mdc-protected-button-pressed-container-elevation-shadow)}.mat-mdc-raised-button[disabled],.mat-mdc-raised-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-protected-button-disabled-label-text-color);background-color:var(--mdc-protected-button-disabled-container-color)}.mat-mdc-raised-button[disabled].mat-mdc-button-disabled,.mat-mdc-raised-button.mat-mdc-button-disabled.mat-mdc-button-disabled{box-shadow:var(--mdc-protected-button-disabled-container-elevation-shadow)}.mat-mdc-raised-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-outlined-button{border-style:solid;transition:border 280ms cubic-bezier(0.4, 0, 0.2, 1);padding:0 var(--mat-outlined-button-horizontal-padding, 15px);height:var(--mdc-outlined-button-container-height);font-family:var(--mdc-outlined-button-label-text-font);font-size:var(--mdc-outlined-button-label-text-size);letter-spacing:var(--mdc-outlined-button-label-text-tracking);text-transform:var(--mdc-outlined-button-label-text-transform);font-weight:var(--mdc-outlined-button-label-text-weight);border-radius:var(--mdc-outlined-button-container-shape);border-width:var(--mdc-outlined-button-outline-width)}.mat-mdc-outlined-button>.mat-icon{margin-right:var(--mat-outlined-button-icon-spacing, 8px);margin-left:var(--mat-outlined-button-icon-offset, -4px)}[dir=rtl] .mat-mdc-outlined-button>.mat-icon{margin-right:var(--mat-outlined-button-icon-offset, -4px);margin-left:var(--mat-outlined-button-icon-spacing, 8px)}.mat-mdc-outlined-button .mdc-button__label+.mat-icon{margin-right:var(--mat-outlined-button-icon-offset, -4px);margin-left:var(--mat-outlined-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-outlined-button .mdc-button__label+.mat-icon{margin-right:var(--mat-outlined-button-icon-spacing, 8px);margin-left:var(--mat-outlined-button-icon-offset, -4px)}.mat-mdc-outlined-button .mat-ripple-element{background-color:var(--mat-outlined-button-ripple-color)}.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-outlined-button-state-layer-color)}.mat-mdc-outlined-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-outlined-button-disabled-state-layer-color)}.mat-mdc-outlined-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-outlined-button-hover-state-layer-opacity)}.mat-mdc-outlined-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-outlined-button-focus-state-layer-opacity)}.mat-mdc-outlined-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-outlined-button-pressed-state-layer-opacity)}.mat-mdc-outlined-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-outlined-button-touch-target-display)}.mat-mdc-outlined-button:not(:disabled){color:var(--mdc-outlined-button-label-text-color);border-color:var(--mdc-outlined-button-outline-color)}.mat-mdc-outlined-button[disabled],.mat-mdc-outlined-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-outlined-button-disabled-label-text-color);border-color:var(--mdc-outlined-button-disabled-outline-color)}.mat-mdc-outlined-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-outlined-button .mdc-button__ripple{border-width:var(--mdc-outlined-button-outline-width);border-style:solid;border-color:rgba(0,0,0,0)}.mat-mdc-button,.mat-mdc-unelevated-button,.mat-mdc-raised-button,.mat-mdc-outlined-button{-webkit-tap-highlight-color:rgba(0,0,0,0)}.mat-mdc-button .mat-mdc-button-ripple,.mat-mdc-button .mat-mdc-button-persistent-ripple,.mat-mdc-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button .mat-mdc-button-ripple,.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple,.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button .mat-mdc-button-ripple,.mat-mdc-raised-button .mat-mdc-button-persistent-ripple,.mat-mdc-raised-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button .mat-mdc-button-ripple,.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple,.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-button .mat-mdc-button-ripple,.mat-mdc-unelevated-button .mat-mdc-button-ripple,.mat-mdc-raised-button .mat-mdc-button-ripple,.mat-mdc-outlined-button .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-button .mdc-button__label,.mat-mdc-button .mat-icon,.mat-mdc-unelevated-button .mdc-button__label,.mat-mdc-unelevated-button .mat-icon,.mat-mdc-raised-button .mdc-button__label,.mat-mdc-raised-button .mat-icon,.mat-mdc-outlined-button .mdc-button__label,.mat-mdc-outlined-button .mat-icon{z-index:1;position:relative}.mat-mdc-button .mat-mdc-focus-indicator,.mat-mdc-unelevated-button .mat-mdc-focus-indicator,.mat-mdc-raised-button .mat-mdc-focus-indicator,.mat-mdc-outlined-button .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-button:focus .mat-mdc-focus-indicator::before,.mat-mdc-unelevated-button:focus .mat-mdc-focus-indicator::before,.mat-mdc-raised-button:focus .mat-mdc-focus-indicator::before,.mat-mdc-outlined-button:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-button._mat-animation-noopable,.mat-mdc-unelevated-button._mat-animation-noopable,.mat-mdc-raised-button._mat-animation-noopable,.mat-mdc-outlined-button._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-button>.mat-icon,.mat-mdc-unelevated-button>.mat-icon,.mat-mdc-raised-button>.mat-icon,.mat-mdc-outlined-button>.mat-icon{display:inline-block;position:relative;vertical-align:top;font-size:1.125rem;height:1.125rem;width:1.125rem}.mat-mdc-outlined-button .mat-mdc-button-ripple,.mat-mdc-outlined-button .mdc-button__ripple{top:-1px;left:-1px;bottom:-1px;right:-1px}.mat-mdc-unelevated-button .mat-mdc-focus-indicator::before,.mat-mdc-raised-button .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 2px)*-1)}.mat-mdc-outlined-button .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 3px)*-1)}', ".cdk-high-contrast-active .mat-mdc-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-unelevated-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-raised-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-outlined-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-icon-button{outline:solid 1px}"],
-  encapsulation: 2,
-  changeDetection: 0
-});
-var MatButton = _MatButton;
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatButton, [{
-    type: Component,
-    args: [{
-      selector: `
-    button[mat-button], button[mat-raised-button], button[mat-flat-button],
-    button[mat-stroked-button]
-  `,
-      host: MAT_BUTTON_HOST,
-      exportAs: "matButton",
-      encapsulation: ViewEncapsulation$1.None,
-      changeDetection: ChangeDetectionStrategy.OnPush,
-      standalone: true,
-      template: `<span
-    class="mat-mdc-button-persistent-ripple"
-    [class.mdc-button__ripple]="!_isFab"
-    [class.mdc-fab__ripple]="_isFab"></span>
-
-<ng-content select=".material-icons:not([iconPositionEnd]), mat-icon:not([iconPositionEnd]), [matButtonIcon]:not([iconPositionEnd])">
-</ng-content>
-
-<span class="mdc-button__label"><ng-content></ng-content></span>
-
-<ng-content select=".material-icons[iconPositionEnd], mat-icon[iconPositionEnd], [matButtonIcon][iconPositionEnd]">
-</ng-content>
-
-<!--
-  The indicator can't be directly on the button, because MDC uses ::before for high contrast
-  indication and it can't be on the ripple, because it has a border radius and overflow: hidden.
--->
-<span class="mat-mdc-focus-indicator"></span>
-
-<span class="mat-mdc-button-touch-target"></span>
-`,
-      styles: ['.mat-mdc-button-base{text-decoration:none}.mdc-button{-webkit-user-select:none;user-select:none;position:relative;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-width:64px;border:none;outline:none;line-height:inherit;-webkit-appearance:none;overflow:visible;vertical-align:middle;background:rgba(0,0,0,0);padding:0 8px}.mdc-button::-moz-focus-inner{padding:0;border:0}.mdc-button:active{outline:none}.mdc-button:hover{cursor:pointer}.mdc-button:disabled{cursor:default;pointer-events:none}.mdc-button[hidden]{display:none}.mdc-button .mdc-button__label{position:relative}.mat-mdc-button{padding:0 var(--mat-text-button-horizontal-padding, 8px);height:var(--mdc-text-button-container-height);font-family:var(--mdc-text-button-label-text-font);font-size:var(--mdc-text-button-label-text-size);letter-spacing:var(--mdc-text-button-label-text-tracking);text-transform:var(--mdc-text-button-label-text-transform);font-weight:var(--mdc-text-button-label-text-weight)}.mat-mdc-button:has(.material-icons,mat-icon,[matButtonIcon]){padding:0 var(--mat-text-button-with-icon-horizontal-padding, 8px)}.mat-mdc-button>.mat-icon{margin-right:var(--mat-text-button-icon-spacing, 8px);margin-left:var(--mat-text-button-icon-offset, 0)}[dir=rtl] .mat-mdc-button>.mat-icon{margin-right:var(--mat-text-button-icon-offset, 0);margin-left:var(--mat-text-button-icon-spacing, 8px)}.mat-mdc-button .mdc-button__label+.mat-icon{margin-right:var(--mat-text-button-icon-offset, 0);margin-left:var(--mat-text-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-button .mdc-button__label+.mat-icon{margin-right:var(--mat-text-button-icon-spacing, 8px);margin-left:var(--mat-text-button-icon-offset, 0)}.mat-mdc-button .mat-ripple-element{background-color:var(--mat-text-button-ripple-color)}.mat-mdc-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-text-button-state-layer-color)}.mat-mdc-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-text-button-disabled-state-layer-color)}.mat-mdc-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-text-button-hover-state-layer-opacity)}.mat-mdc-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-text-button-focus-state-layer-opacity)}.mat-mdc-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-text-button-pressed-state-layer-opacity)}.mat-mdc-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-text-button-touch-target-display)}.mat-mdc-button,.mat-mdc-button .mdc-button__ripple{border-radius:var(--mdc-text-button-container-shape)}.mat-mdc-button:not(:disabled){color:var(--mdc-text-button-label-text-color)}.mat-mdc-button[disabled],.mat-mdc-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-text-button-disabled-label-text-color)}.mat-mdc-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-unelevated-button{transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);padding:0 var(--mat-filled-button-horizontal-padding, 16px);height:var(--mdc-filled-button-container-height);font-family:var(--mdc-filled-button-label-text-font);font-size:var(--mdc-filled-button-label-text-size);letter-spacing:var(--mdc-filled-button-label-text-tracking);text-transform:var(--mdc-filled-button-label-text-transform);font-weight:var(--mdc-filled-button-label-text-weight)}.mat-mdc-unelevated-button>.mat-icon{margin-right:var(--mat-filled-button-icon-spacing, 8px);margin-left:var(--mat-filled-button-icon-offset, -4px)}[dir=rtl] .mat-mdc-unelevated-button>.mat-icon{margin-right:var(--mat-filled-button-icon-offset, -4px);margin-left:var(--mat-filled-button-icon-spacing, 8px)}.mat-mdc-unelevated-button .mdc-button__label+.mat-icon{margin-right:var(--mat-filled-button-icon-offset, -4px);margin-left:var(--mat-filled-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-unelevated-button .mdc-button__label+.mat-icon{margin-right:var(--mat-filled-button-icon-spacing, 8px);margin-left:var(--mat-filled-button-icon-offset, -4px)}.mat-mdc-unelevated-button .mat-ripple-element{background-color:var(--mat-filled-button-ripple-color)}.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-filled-button-state-layer-color)}.mat-mdc-unelevated-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-filled-button-disabled-state-layer-color)}.mat-mdc-unelevated-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-filled-button-hover-state-layer-opacity)}.mat-mdc-unelevated-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-filled-button-focus-state-layer-opacity)}.mat-mdc-unelevated-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-filled-button-pressed-state-layer-opacity)}.mat-mdc-unelevated-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-filled-button-touch-target-display)}.mat-mdc-unelevated-button:not(:disabled){color:var(--mdc-filled-button-label-text-color);background-color:var(--mdc-filled-button-container-color)}.mat-mdc-unelevated-button,.mat-mdc-unelevated-button .mdc-button__ripple{border-radius:var(--mdc-filled-button-container-shape)}.mat-mdc-unelevated-button[disabled],.mat-mdc-unelevated-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-filled-button-disabled-label-text-color);background-color:var(--mdc-filled-button-disabled-container-color)}.mat-mdc-unelevated-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-raised-button{transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);padding:0 var(--mat-protected-button-horizontal-padding, 16px);box-shadow:var(--mdc-protected-button-container-elevation-shadow);height:var(--mdc-protected-button-container-height);font-family:var(--mdc-protected-button-label-text-font);font-size:var(--mdc-protected-button-label-text-size);letter-spacing:var(--mdc-protected-button-label-text-tracking);text-transform:var(--mdc-protected-button-label-text-transform);font-weight:var(--mdc-protected-button-label-text-weight)}.mat-mdc-raised-button>.mat-icon{margin-right:var(--mat-protected-button-icon-spacing, 8px);margin-left:var(--mat-protected-button-icon-offset, -4px)}[dir=rtl] .mat-mdc-raised-button>.mat-icon{margin-right:var(--mat-protected-button-icon-offset, -4px);margin-left:var(--mat-protected-button-icon-spacing, 8px)}.mat-mdc-raised-button .mdc-button__label+.mat-icon{margin-right:var(--mat-protected-button-icon-offset, -4px);margin-left:var(--mat-protected-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-raised-button .mdc-button__label+.mat-icon{margin-right:var(--mat-protected-button-icon-spacing, 8px);margin-left:var(--mat-protected-button-icon-offset, -4px)}.mat-mdc-raised-button .mat-ripple-element{background-color:var(--mat-protected-button-ripple-color)}.mat-mdc-raised-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-protected-button-state-layer-color)}.mat-mdc-raised-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-protected-button-disabled-state-layer-color)}.mat-mdc-raised-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-protected-button-hover-state-layer-opacity)}.mat-mdc-raised-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-protected-button-focus-state-layer-opacity)}.mat-mdc-raised-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-protected-button-pressed-state-layer-opacity)}.mat-mdc-raised-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-protected-button-touch-target-display)}.mat-mdc-raised-button:not(:disabled){color:var(--mdc-protected-button-label-text-color);background-color:var(--mdc-protected-button-container-color)}.mat-mdc-raised-button,.mat-mdc-raised-button .mdc-button__ripple{border-radius:var(--mdc-protected-button-container-shape)}.mat-mdc-raised-button:hover{box-shadow:var(--mdc-protected-button-hover-container-elevation-shadow)}.mat-mdc-raised-button:focus{box-shadow:var(--mdc-protected-button-focus-container-elevation-shadow)}.mat-mdc-raised-button:active,.mat-mdc-raised-button:focus:active{box-shadow:var(--mdc-protected-button-pressed-container-elevation-shadow)}.mat-mdc-raised-button[disabled],.mat-mdc-raised-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-protected-button-disabled-label-text-color);background-color:var(--mdc-protected-button-disabled-container-color)}.mat-mdc-raised-button[disabled].mat-mdc-button-disabled,.mat-mdc-raised-button.mat-mdc-button-disabled.mat-mdc-button-disabled{box-shadow:var(--mdc-protected-button-disabled-container-elevation-shadow)}.mat-mdc-raised-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-outlined-button{border-style:solid;transition:border 280ms cubic-bezier(0.4, 0, 0.2, 1);padding:0 var(--mat-outlined-button-horizontal-padding, 15px);height:var(--mdc-outlined-button-container-height);font-family:var(--mdc-outlined-button-label-text-font);font-size:var(--mdc-outlined-button-label-text-size);letter-spacing:var(--mdc-outlined-button-label-text-tracking);text-transform:var(--mdc-outlined-button-label-text-transform);font-weight:var(--mdc-outlined-button-label-text-weight);border-radius:var(--mdc-outlined-button-container-shape);border-width:var(--mdc-outlined-button-outline-width)}.mat-mdc-outlined-button>.mat-icon{margin-right:var(--mat-outlined-button-icon-spacing, 8px);margin-left:var(--mat-outlined-button-icon-offset, -4px)}[dir=rtl] .mat-mdc-outlined-button>.mat-icon{margin-right:var(--mat-outlined-button-icon-offset, -4px);margin-left:var(--mat-outlined-button-icon-spacing, 8px)}.mat-mdc-outlined-button .mdc-button__label+.mat-icon{margin-right:var(--mat-outlined-button-icon-offset, -4px);margin-left:var(--mat-outlined-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-outlined-button .mdc-button__label+.mat-icon{margin-right:var(--mat-outlined-button-icon-spacing, 8px);margin-left:var(--mat-outlined-button-icon-offset, -4px)}.mat-mdc-outlined-button .mat-ripple-element{background-color:var(--mat-outlined-button-ripple-color)}.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-outlined-button-state-layer-color)}.mat-mdc-outlined-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-outlined-button-disabled-state-layer-color)}.mat-mdc-outlined-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-outlined-button-hover-state-layer-opacity)}.mat-mdc-outlined-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-outlined-button-focus-state-layer-opacity)}.mat-mdc-outlined-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-outlined-button-pressed-state-layer-opacity)}.mat-mdc-outlined-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-outlined-button-touch-target-display)}.mat-mdc-outlined-button:not(:disabled){color:var(--mdc-outlined-button-label-text-color);border-color:var(--mdc-outlined-button-outline-color)}.mat-mdc-outlined-button[disabled],.mat-mdc-outlined-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-outlined-button-disabled-label-text-color);border-color:var(--mdc-outlined-button-disabled-outline-color)}.mat-mdc-outlined-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-outlined-button .mdc-button__ripple{border-width:var(--mdc-outlined-button-outline-width);border-style:solid;border-color:rgba(0,0,0,0)}.mat-mdc-button,.mat-mdc-unelevated-button,.mat-mdc-raised-button,.mat-mdc-outlined-button{-webkit-tap-highlight-color:rgba(0,0,0,0)}.mat-mdc-button .mat-mdc-button-ripple,.mat-mdc-button .mat-mdc-button-persistent-ripple,.mat-mdc-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button .mat-mdc-button-ripple,.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple,.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button .mat-mdc-button-ripple,.mat-mdc-raised-button .mat-mdc-button-persistent-ripple,.mat-mdc-raised-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button .mat-mdc-button-ripple,.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple,.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-button .mat-mdc-button-ripple,.mat-mdc-unelevated-button .mat-mdc-button-ripple,.mat-mdc-raised-button .mat-mdc-button-ripple,.mat-mdc-outlined-button .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-button .mdc-button__label,.mat-mdc-button .mat-icon,.mat-mdc-unelevated-button .mdc-button__label,.mat-mdc-unelevated-button .mat-icon,.mat-mdc-raised-button .mdc-button__label,.mat-mdc-raised-button .mat-icon,.mat-mdc-outlined-button .mdc-button__label,.mat-mdc-outlined-button .mat-icon{z-index:1;position:relative}.mat-mdc-button .mat-mdc-focus-indicator,.mat-mdc-unelevated-button .mat-mdc-focus-indicator,.mat-mdc-raised-button .mat-mdc-focus-indicator,.mat-mdc-outlined-button .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-button:focus .mat-mdc-focus-indicator::before,.mat-mdc-unelevated-button:focus .mat-mdc-focus-indicator::before,.mat-mdc-raised-button:focus .mat-mdc-focus-indicator::before,.mat-mdc-outlined-button:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-button._mat-animation-noopable,.mat-mdc-unelevated-button._mat-animation-noopable,.mat-mdc-raised-button._mat-animation-noopable,.mat-mdc-outlined-button._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-button>.mat-icon,.mat-mdc-unelevated-button>.mat-icon,.mat-mdc-raised-button>.mat-icon,.mat-mdc-outlined-button>.mat-icon{display:inline-block;position:relative;vertical-align:top;font-size:1.125rem;height:1.125rem;width:1.125rem}.mat-mdc-outlined-button .mat-mdc-button-ripple,.mat-mdc-outlined-button .mdc-button__ripple{top:-1px;left:-1px;bottom:-1px;right:-1px}.mat-mdc-unelevated-button .mat-mdc-focus-indicator::before,.mat-mdc-raised-button .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 2px)*-1)}.mat-mdc-outlined-button .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 3px)*-1)}', ".cdk-high-contrast-active .mat-mdc-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-unelevated-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-raised-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-outlined-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-icon-button{outline:solid 1px}"]
-    }]
-  }], () => [{
-    type: ElementRef
-  }, {
-    type: Platform
-  }, {
-    type: NgZone
-  }, {
-    type: void 0,
-    decorators: [{
-      type: Optional
-    }, {
-      type: Inject,
-      args: [ANIMATION_MODULE_TYPE]
-    }]
-  }], null);
-})();
-var _MatAnchor = class _MatAnchor extends MatAnchorBase {
-  constructor(elementRef, platform, ngZone, animationMode) {
-    super(elementRef, platform, ngZone, animationMode);
-  }
-};
-_MatAnchor.\u0275fac = function MatAnchor_Factory(__ngFactoryType__) {
-  return new (__ngFactoryType__ || _MatAnchor)(\u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(Platform), \u0275\u0275directiveInject(NgZone), \u0275\u0275directiveInject(ANIMATION_MODULE_TYPE, 8));
-};
-_MatAnchor.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
-  type: _MatAnchor,
-  selectors: [["a", "mat-button", ""], ["a", "mat-raised-button", ""], ["a", "mat-flat-button", ""], ["a", "mat-stroked-button", ""]],
-  hostVars: 15,
-  hostBindings: function MatAnchor_HostBindings(rf, ctx) {
-    if (rf & 2) {
-      \u0275\u0275attribute("disabled", ctx._getDisabledAttribute())("tabindex", ctx.disabled && !ctx.disabledInteractive ? -1 : ctx.tabIndex)("aria-disabled", ctx._getDisabledAttribute());
-      \u0275\u0275classMap(ctx.color ? "mat-" + ctx.color : "");
-      \u0275\u0275classProp("mat-mdc-button-disabled", ctx.disabled)("mat-mdc-button-disabled-interactive", ctx.disabledInteractive)("_mat-animation-noopable", ctx._animationMode === "NoopAnimations")("mat-unthemed", !ctx.color)("mat-mdc-button-base", true);
-    }
-  },
-  exportAs: ["matButton", "matAnchor"],
-  standalone: true,
-  features: [\u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
-  attrs: _c06,
-  ngContentSelectors: _c23,
-  decls: 7,
-  vars: 4,
-  consts: [[1, "mat-mdc-button-persistent-ripple"], [1, "mdc-button__label"], [1, "mat-mdc-focus-indicator"], [1, "mat-mdc-button-touch-target"]],
-  template: function MatAnchor_Template(rf, ctx) {
-    if (rf & 1) {
-      \u0275\u0275projectionDef(_c15);
-      \u0275\u0275element(0, "span", 0);
-      \u0275\u0275projection(1);
-      \u0275\u0275elementStart(2, "span", 1);
-      \u0275\u0275projection(3, 1);
-      \u0275\u0275elementEnd();
-      \u0275\u0275projection(4, 2);
-      \u0275\u0275element(5, "span", 2)(6, "span", 3);
-    }
-    if (rf & 2) {
-      \u0275\u0275classProp("mdc-button__ripple", !ctx._isFab)("mdc-fab__ripple", ctx._isFab);
-    }
-  },
-  styles: [_c33, _c43],
-  encapsulation: 2,
-  changeDetection: 0
-});
-var MatAnchor = _MatAnchor;
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatAnchor, [{
-    type: Component,
-    args: [{
-      selector: `a[mat-button], a[mat-raised-button], a[mat-flat-button], a[mat-stroked-button]`,
-      exportAs: "matButton, matAnchor",
-      host: MAT_ANCHOR_HOST,
-      encapsulation: ViewEncapsulation$1.None,
-      changeDetection: ChangeDetectionStrategy.OnPush,
-      standalone: true,
-      template: `<span
-    class="mat-mdc-button-persistent-ripple"
-    [class.mdc-button__ripple]="!_isFab"
-    [class.mdc-fab__ripple]="_isFab"></span>
-
-<ng-content select=".material-icons:not([iconPositionEnd]), mat-icon:not([iconPositionEnd]), [matButtonIcon]:not([iconPositionEnd])">
-</ng-content>
-
-<span class="mdc-button__label"><ng-content></ng-content></span>
-
-<ng-content select=".material-icons[iconPositionEnd], mat-icon[iconPositionEnd], [matButtonIcon][iconPositionEnd]">
-</ng-content>
-
-<!--
-  The indicator can't be directly on the button, because MDC uses ::before for high contrast
-  indication and it can't be on the ripple, because it has a border radius and overflow: hidden.
--->
-<span class="mat-mdc-focus-indicator"></span>
-
-<span class="mat-mdc-button-touch-target"></span>
-`,
-      styles: ['.mat-mdc-button-base{text-decoration:none}.mdc-button{-webkit-user-select:none;user-select:none;position:relative;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-width:64px;border:none;outline:none;line-height:inherit;-webkit-appearance:none;overflow:visible;vertical-align:middle;background:rgba(0,0,0,0);padding:0 8px}.mdc-button::-moz-focus-inner{padding:0;border:0}.mdc-button:active{outline:none}.mdc-button:hover{cursor:pointer}.mdc-button:disabled{cursor:default;pointer-events:none}.mdc-button[hidden]{display:none}.mdc-button .mdc-button__label{position:relative}.mat-mdc-button{padding:0 var(--mat-text-button-horizontal-padding, 8px);height:var(--mdc-text-button-container-height);font-family:var(--mdc-text-button-label-text-font);font-size:var(--mdc-text-button-label-text-size);letter-spacing:var(--mdc-text-button-label-text-tracking);text-transform:var(--mdc-text-button-label-text-transform);font-weight:var(--mdc-text-button-label-text-weight)}.mat-mdc-button:has(.material-icons,mat-icon,[matButtonIcon]){padding:0 var(--mat-text-button-with-icon-horizontal-padding, 8px)}.mat-mdc-button>.mat-icon{margin-right:var(--mat-text-button-icon-spacing, 8px);margin-left:var(--mat-text-button-icon-offset, 0)}[dir=rtl] .mat-mdc-button>.mat-icon{margin-right:var(--mat-text-button-icon-offset, 0);margin-left:var(--mat-text-button-icon-spacing, 8px)}.mat-mdc-button .mdc-button__label+.mat-icon{margin-right:var(--mat-text-button-icon-offset, 0);margin-left:var(--mat-text-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-button .mdc-button__label+.mat-icon{margin-right:var(--mat-text-button-icon-spacing, 8px);margin-left:var(--mat-text-button-icon-offset, 0)}.mat-mdc-button .mat-ripple-element{background-color:var(--mat-text-button-ripple-color)}.mat-mdc-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-text-button-state-layer-color)}.mat-mdc-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-text-button-disabled-state-layer-color)}.mat-mdc-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-text-button-hover-state-layer-opacity)}.mat-mdc-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-text-button-focus-state-layer-opacity)}.mat-mdc-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-text-button-pressed-state-layer-opacity)}.mat-mdc-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-text-button-touch-target-display)}.mat-mdc-button,.mat-mdc-button .mdc-button__ripple{border-radius:var(--mdc-text-button-container-shape)}.mat-mdc-button:not(:disabled){color:var(--mdc-text-button-label-text-color)}.mat-mdc-button[disabled],.mat-mdc-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-text-button-disabled-label-text-color)}.mat-mdc-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-unelevated-button{transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);padding:0 var(--mat-filled-button-horizontal-padding, 16px);height:var(--mdc-filled-button-container-height);font-family:var(--mdc-filled-button-label-text-font);font-size:var(--mdc-filled-button-label-text-size);letter-spacing:var(--mdc-filled-button-label-text-tracking);text-transform:var(--mdc-filled-button-label-text-transform);font-weight:var(--mdc-filled-button-label-text-weight)}.mat-mdc-unelevated-button>.mat-icon{margin-right:var(--mat-filled-button-icon-spacing, 8px);margin-left:var(--mat-filled-button-icon-offset, -4px)}[dir=rtl] .mat-mdc-unelevated-button>.mat-icon{margin-right:var(--mat-filled-button-icon-offset, -4px);margin-left:var(--mat-filled-button-icon-spacing, 8px)}.mat-mdc-unelevated-button .mdc-button__label+.mat-icon{margin-right:var(--mat-filled-button-icon-offset, -4px);margin-left:var(--mat-filled-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-unelevated-button .mdc-button__label+.mat-icon{margin-right:var(--mat-filled-button-icon-spacing, 8px);margin-left:var(--mat-filled-button-icon-offset, -4px)}.mat-mdc-unelevated-button .mat-ripple-element{background-color:var(--mat-filled-button-ripple-color)}.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-filled-button-state-layer-color)}.mat-mdc-unelevated-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-filled-button-disabled-state-layer-color)}.mat-mdc-unelevated-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-filled-button-hover-state-layer-opacity)}.mat-mdc-unelevated-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-filled-button-focus-state-layer-opacity)}.mat-mdc-unelevated-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-filled-button-pressed-state-layer-opacity)}.mat-mdc-unelevated-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-filled-button-touch-target-display)}.mat-mdc-unelevated-button:not(:disabled){color:var(--mdc-filled-button-label-text-color);background-color:var(--mdc-filled-button-container-color)}.mat-mdc-unelevated-button,.mat-mdc-unelevated-button .mdc-button__ripple{border-radius:var(--mdc-filled-button-container-shape)}.mat-mdc-unelevated-button[disabled],.mat-mdc-unelevated-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-filled-button-disabled-label-text-color);background-color:var(--mdc-filled-button-disabled-container-color)}.mat-mdc-unelevated-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-raised-button{transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);padding:0 var(--mat-protected-button-horizontal-padding, 16px);box-shadow:var(--mdc-protected-button-container-elevation-shadow);height:var(--mdc-protected-button-container-height);font-family:var(--mdc-protected-button-label-text-font);font-size:var(--mdc-protected-button-label-text-size);letter-spacing:var(--mdc-protected-button-label-text-tracking);text-transform:var(--mdc-protected-button-label-text-transform);font-weight:var(--mdc-protected-button-label-text-weight)}.mat-mdc-raised-button>.mat-icon{margin-right:var(--mat-protected-button-icon-spacing, 8px);margin-left:var(--mat-protected-button-icon-offset, -4px)}[dir=rtl] .mat-mdc-raised-button>.mat-icon{margin-right:var(--mat-protected-button-icon-offset, -4px);margin-left:var(--mat-protected-button-icon-spacing, 8px)}.mat-mdc-raised-button .mdc-button__label+.mat-icon{margin-right:var(--mat-protected-button-icon-offset, -4px);margin-left:var(--mat-protected-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-raised-button .mdc-button__label+.mat-icon{margin-right:var(--mat-protected-button-icon-spacing, 8px);margin-left:var(--mat-protected-button-icon-offset, -4px)}.mat-mdc-raised-button .mat-ripple-element{background-color:var(--mat-protected-button-ripple-color)}.mat-mdc-raised-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-protected-button-state-layer-color)}.mat-mdc-raised-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-protected-button-disabled-state-layer-color)}.mat-mdc-raised-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-protected-button-hover-state-layer-opacity)}.mat-mdc-raised-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-protected-button-focus-state-layer-opacity)}.mat-mdc-raised-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-protected-button-pressed-state-layer-opacity)}.mat-mdc-raised-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-protected-button-touch-target-display)}.mat-mdc-raised-button:not(:disabled){color:var(--mdc-protected-button-label-text-color);background-color:var(--mdc-protected-button-container-color)}.mat-mdc-raised-button,.mat-mdc-raised-button .mdc-button__ripple{border-radius:var(--mdc-protected-button-container-shape)}.mat-mdc-raised-button:hover{box-shadow:var(--mdc-protected-button-hover-container-elevation-shadow)}.mat-mdc-raised-button:focus{box-shadow:var(--mdc-protected-button-focus-container-elevation-shadow)}.mat-mdc-raised-button:active,.mat-mdc-raised-button:focus:active{box-shadow:var(--mdc-protected-button-pressed-container-elevation-shadow)}.mat-mdc-raised-button[disabled],.mat-mdc-raised-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-protected-button-disabled-label-text-color);background-color:var(--mdc-protected-button-disabled-container-color)}.mat-mdc-raised-button[disabled].mat-mdc-button-disabled,.mat-mdc-raised-button.mat-mdc-button-disabled.mat-mdc-button-disabled{box-shadow:var(--mdc-protected-button-disabled-container-elevation-shadow)}.mat-mdc-raised-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-outlined-button{border-style:solid;transition:border 280ms cubic-bezier(0.4, 0, 0.2, 1);padding:0 var(--mat-outlined-button-horizontal-padding, 15px);height:var(--mdc-outlined-button-container-height);font-family:var(--mdc-outlined-button-label-text-font);font-size:var(--mdc-outlined-button-label-text-size);letter-spacing:var(--mdc-outlined-button-label-text-tracking);text-transform:var(--mdc-outlined-button-label-text-transform);font-weight:var(--mdc-outlined-button-label-text-weight);border-radius:var(--mdc-outlined-button-container-shape);border-width:var(--mdc-outlined-button-outline-width)}.mat-mdc-outlined-button>.mat-icon{margin-right:var(--mat-outlined-button-icon-spacing, 8px);margin-left:var(--mat-outlined-button-icon-offset, -4px)}[dir=rtl] .mat-mdc-outlined-button>.mat-icon{margin-right:var(--mat-outlined-button-icon-offset, -4px);margin-left:var(--mat-outlined-button-icon-spacing, 8px)}.mat-mdc-outlined-button .mdc-button__label+.mat-icon{margin-right:var(--mat-outlined-button-icon-offset, -4px);margin-left:var(--mat-outlined-button-icon-spacing, 8px)}[dir=rtl] .mat-mdc-outlined-button .mdc-button__label+.mat-icon{margin-right:var(--mat-outlined-button-icon-spacing, 8px);margin-left:var(--mat-outlined-button-icon-offset, -4px)}.mat-mdc-outlined-button .mat-ripple-element{background-color:var(--mat-outlined-button-ripple-color)}.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-outlined-button-state-layer-color)}.mat-mdc-outlined-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-outlined-button-disabled-state-layer-color)}.mat-mdc-outlined-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-outlined-button-hover-state-layer-opacity)}.mat-mdc-outlined-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-outlined-button-focus-state-layer-opacity)}.mat-mdc-outlined-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-outlined-button-pressed-state-layer-opacity)}.mat-mdc-outlined-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%);display:var(--mat-outlined-button-touch-target-display)}.mat-mdc-outlined-button:not(:disabled){color:var(--mdc-outlined-button-label-text-color);border-color:var(--mdc-outlined-button-outline-color)}.mat-mdc-outlined-button[disabled],.mat-mdc-outlined-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-outlined-button-disabled-label-text-color);border-color:var(--mdc-outlined-button-disabled-outline-color)}.mat-mdc-outlined-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-outlined-button .mdc-button__ripple{border-width:var(--mdc-outlined-button-outline-width);border-style:solid;border-color:rgba(0,0,0,0)}.mat-mdc-button,.mat-mdc-unelevated-button,.mat-mdc-raised-button,.mat-mdc-outlined-button{-webkit-tap-highlight-color:rgba(0,0,0,0)}.mat-mdc-button .mat-mdc-button-ripple,.mat-mdc-button .mat-mdc-button-persistent-ripple,.mat-mdc-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button .mat-mdc-button-ripple,.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple,.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button .mat-mdc-button-ripple,.mat-mdc-raised-button .mat-mdc-button-persistent-ripple,.mat-mdc-raised-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button .mat-mdc-button-ripple,.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple,.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-button .mat-mdc-button-ripple,.mat-mdc-unelevated-button .mat-mdc-button-ripple,.mat-mdc-raised-button .mat-mdc-button-ripple,.mat-mdc-outlined-button .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-unelevated-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-raised-button .mat-mdc-button-persistent-ripple::before,.mat-mdc-outlined-button .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-button .mdc-button__label,.mat-mdc-button .mat-icon,.mat-mdc-unelevated-button .mdc-button__label,.mat-mdc-unelevated-button .mat-icon,.mat-mdc-raised-button .mdc-button__label,.mat-mdc-raised-button .mat-icon,.mat-mdc-outlined-button .mdc-button__label,.mat-mdc-outlined-button .mat-icon{z-index:1;position:relative}.mat-mdc-button .mat-mdc-focus-indicator,.mat-mdc-unelevated-button .mat-mdc-focus-indicator,.mat-mdc-raised-button .mat-mdc-focus-indicator,.mat-mdc-outlined-button .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-button:focus .mat-mdc-focus-indicator::before,.mat-mdc-unelevated-button:focus .mat-mdc-focus-indicator::before,.mat-mdc-raised-button:focus .mat-mdc-focus-indicator::before,.mat-mdc-outlined-button:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-button._mat-animation-noopable,.mat-mdc-unelevated-button._mat-animation-noopable,.mat-mdc-raised-button._mat-animation-noopable,.mat-mdc-outlined-button._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-button>.mat-icon,.mat-mdc-unelevated-button>.mat-icon,.mat-mdc-raised-button>.mat-icon,.mat-mdc-outlined-button>.mat-icon{display:inline-block;position:relative;vertical-align:top;font-size:1.125rem;height:1.125rem;width:1.125rem}.mat-mdc-outlined-button .mat-mdc-button-ripple,.mat-mdc-outlined-button .mdc-button__ripple{top:-1px;left:-1px;bottom:-1px;right:-1px}.mat-mdc-unelevated-button .mat-mdc-focus-indicator::before,.mat-mdc-raised-button .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 2px)*-1)}.mat-mdc-outlined-button .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 3px)*-1)}', ".cdk-high-contrast-active .mat-mdc-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-unelevated-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-raised-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-outlined-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-icon-button{outline:solid 1px}"]
-    }]
-  }], () => [{
-    type: ElementRef
-  }, {
-    type: Platform
-  }, {
-    type: NgZone
-  }, {
-    type: void 0,
-    decorators: [{
-      type: Optional
-    }, {
-      type: Inject,
-      args: [ANIMATION_MODULE_TYPE]
-    }]
-  }], null);
-})();
-var MAT_FAB_DEFAULT_OPTIONS = new InjectionToken("mat-mdc-fab-default-options", {
-  providedIn: "root",
-  factory: MAT_FAB_DEFAULT_OPTIONS_FACTORY
-});
-function MAT_FAB_DEFAULT_OPTIONS_FACTORY() {
-  return {
-    // The FAB by default has its color set to accent.
-    color: "accent"
-  };
-}
-var defaults = MAT_FAB_DEFAULT_OPTIONS_FACTORY();
-var _MatFabButton = class _MatFabButton extends MatButtonBase {
-  constructor(elementRef, platform, ngZone, animationMode, _options) {
-    super(elementRef, platform, ngZone, animationMode);
-    this._options = _options;
-    this._isFab = true;
-    this._options = this._options || defaults;
-    this.color = this._options.color || defaults.color;
-  }
-};
-_MatFabButton.\u0275fac = function MatFabButton_Factory(__ngFactoryType__) {
-  return new (__ngFactoryType__ || _MatFabButton)(\u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(Platform), \u0275\u0275directiveInject(NgZone), \u0275\u0275directiveInject(ANIMATION_MODULE_TYPE, 8), \u0275\u0275directiveInject(MAT_FAB_DEFAULT_OPTIONS, 8));
-};
-_MatFabButton.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
-  type: _MatFabButton,
-  selectors: [["button", "mat-fab", ""]],
-  hostVars: 18,
-  hostBindings: function MatFabButton_HostBindings(rf, ctx) {
-    if (rf & 2) {
-      \u0275\u0275attribute("disabled", ctx._getDisabledAttribute())("aria-disabled", ctx._getAriaDisabled());
-      \u0275\u0275classMap(ctx.color ? "mat-" + ctx.color : "");
-      \u0275\u0275classProp("mat-mdc-button-disabled", ctx.disabled)("mat-mdc-button-disabled-interactive", ctx.disabledInteractive)("_mat-animation-noopable", ctx._animationMode === "NoopAnimations")("mat-unthemed", !ctx.color)("mat-mdc-button-base", true)("mdc-fab--extended", ctx.extended)("mat-mdc-extended-fab", ctx.extended);
-    }
-  },
-  inputs: {
-    extended: [2, "extended", "extended", booleanAttribute]
-  },
-  exportAs: ["matButton"],
-  standalone: true,
-  features: [\u0275\u0275InputTransformsFeature, \u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
-  attrs: _c53,
-  ngContentSelectors: _c23,
-  decls: 7,
-  vars: 4,
-  consts: [[1, "mat-mdc-button-persistent-ripple"], [1, "mdc-button__label"], [1, "mat-mdc-focus-indicator"], [1, "mat-mdc-button-touch-target"]],
-  template: function MatFabButton_Template(rf, ctx) {
-    if (rf & 1) {
-      \u0275\u0275projectionDef(_c15);
-      \u0275\u0275element(0, "span", 0);
-      \u0275\u0275projection(1);
-      \u0275\u0275elementStart(2, "span", 1);
-      \u0275\u0275projection(3, 1);
-      \u0275\u0275elementEnd();
-      \u0275\u0275projection(4, 2);
-      \u0275\u0275element(5, "span", 2)(6, "span", 3);
-    }
-    if (rf & 2) {
-      \u0275\u0275classProp("mdc-button__ripple", !ctx._isFab)("mdc-fab__ripple", ctx._isFab);
-    }
-  },
-  styles: ['.mat-mdc-fab-base{-webkit-tap-highlight-color:rgba(0,0,0,0);-webkit-user-select:none;user-select:none;position:relative;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:56px;height:56px;padding:0;border:none;fill:currentColor;text-decoration:none;cursor:pointer;-moz-appearance:none;-webkit-appearance:none;overflow:visible;transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1),opacity 15ms linear 30ms,transform 270ms 0ms cubic-bezier(0, 0, 0.2, 1);flex-shrink:0}.mat-mdc-fab-base .mat-mdc-button-ripple,.mat-mdc-fab-base .mat-mdc-button-persistent-ripple,.mat-mdc-fab-base .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-fab-base .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-fab-base .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-fab-base .mdc-button__label,.mat-mdc-fab-base .mat-icon{z-index:1;position:relative}.mat-mdc-fab-base .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-fab-base:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-fab-base._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-fab-base::before{position:absolute;box-sizing:border-box;width:100%;height:100%;top:0;left:0;border:1px solid rgba(0,0,0,0);border-radius:inherit;content:"";pointer-events:none}.mat-mdc-fab-base[hidden]{display:none}.mat-mdc-fab-base::-moz-focus-inner{padding:0;border:0}.mat-mdc-fab-base:active,.mat-mdc-fab-base:focus{outline:none}.mat-mdc-fab-base:hover{cursor:pointer}.mat-mdc-fab-base>svg{width:100%}.mat-mdc-fab-base .mat-icon,.mat-mdc-fab-base .material-icons{transition:transform 180ms 90ms cubic-bezier(0, 0, 0.2, 1);fill:currentColor;will-change:transform}.mat-mdc-fab-base .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 2px)*-1)}.mat-mdc-fab-base[disabled],.mat-mdc-fab-base.mat-mdc-button-disabled{cursor:default;pointer-events:none}.mat-mdc-fab-base[disabled],.mat-mdc-fab-base[disabled]:focus,.mat-mdc-fab-base.mat-mdc-button-disabled,.mat-mdc-fab-base.mat-mdc-button-disabled:focus{box-shadow:none}.mat-mdc-fab-base.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-fab{background-color:var(--mdc-fab-container-color);border-radius:var(--mdc-fab-container-shape);color:var(--mat-fab-foreground-color, inherit);box-shadow:var(--mdc-fab-container-elevation-shadow)}.mat-mdc-fab .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-fab-touch-target-display)}.mat-mdc-fab .mat-ripple-element{background-color:var(--mat-fab-ripple-color)}.mat-mdc-fab .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-state-layer-color)}.mat-mdc-fab.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-disabled-state-layer-color)}.mat-mdc-fab:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-hover-state-layer-opacity)}.mat-mdc-fab.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-fab.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-fab.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-focus-state-layer-opacity)}.mat-mdc-fab:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-pressed-state-layer-opacity)}.mat-mdc-fab:hover{box-shadow:var(--mdc-fab-hover-container-elevation-shadow)}.mat-mdc-fab:focus{box-shadow:var(--mdc-fab-focus-container-elevation-shadow)}.mat-mdc-fab:active,.mat-mdc-fab:focus:active{box-shadow:var(--mdc-fab-pressed-container-elevation-shadow)}.mat-mdc-fab[disabled],.mat-mdc-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mat-fab-disabled-state-foreground-color);background-color:var(--mat-fab-disabled-state-container-color)}.mat-mdc-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-mini-fab{width:40px;height:40px;background-color:var(--mdc-fab-small-container-color);border-radius:var(--mdc-fab-small-container-shape);color:var(--mat-fab-small-foreground-color, inherit);box-shadow:var(--mdc-fab-small-container-elevation-shadow)}.mat-mdc-mini-fab .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-fab-small-touch-target-display)}.mat-mdc-mini-fab .mat-ripple-element{background-color:var(--mat-fab-small-ripple-color)}.mat-mdc-mini-fab .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-small-state-layer-color)}.mat-mdc-mini-fab.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-small-disabled-state-layer-color)}.mat-mdc-mini-fab:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-hover-state-layer-opacity)}.mat-mdc-mini-fab.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-mini-fab.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-mini-fab.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-focus-state-layer-opacity)}.mat-mdc-mini-fab:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-pressed-state-layer-opacity)}.mat-mdc-mini-fab:hover{box-shadow:var(--mdc-fab-small-hover-container-elevation-shadow)}.mat-mdc-mini-fab:focus{box-shadow:var(--mdc-fab-small-focus-container-elevation-shadow)}.mat-mdc-mini-fab:active,.mat-mdc-mini-fab:focus:active{box-shadow:var(--mdc-fab-small-pressed-container-elevation-shadow)}.mat-mdc-mini-fab[disabled],.mat-mdc-mini-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mat-fab-small-disabled-state-foreground-color);background-color:var(--mat-fab-small-disabled-state-container-color)}.mat-mdc-mini-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-extended-fab{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;border-radius:24px;padding-left:20px;padding-right:20px;width:auto;max-width:100%;line-height:normal;box-shadow:var(--mdc-extended-fab-container-elevation-shadow);height:var(--mdc-extended-fab-container-height);border-radius:var(--mdc-extended-fab-container-shape);font-family:var(--mdc-extended-fab-label-text-font);font-size:var(--mdc-extended-fab-label-text-size);font-weight:var(--mdc-extended-fab-label-text-weight);letter-spacing:var(--mdc-extended-fab-label-text-tracking)}.mat-mdc-extended-fab:hover{box-shadow:var(--mdc-extended-fab-hover-container-elevation-shadow)}.mat-mdc-extended-fab:focus{box-shadow:var(--mdc-extended-fab-focus-container-elevation-shadow)}.mat-mdc-extended-fab:active,.mat-mdc-extended-fab:focus:active{box-shadow:var(--mdc-extended-fab-pressed-container-elevation-shadow)}.mat-mdc-extended-fab[disabled],.mat-mdc-extended-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none}.mat-mdc-extended-fab[disabled],.mat-mdc-extended-fab[disabled]:focus,.mat-mdc-extended-fab.mat-mdc-button-disabled,.mat-mdc-extended-fab.mat-mdc-button-disabled:focus{box-shadow:none}.mat-mdc-extended-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}[dir=rtl] .mat-mdc-extended-fab .mdc-button__label+.mat-icon,[dir=rtl] .mat-mdc-extended-fab .mdc-button__label+.material-icons,.mat-mdc-extended-fab>.mat-icon,.mat-mdc-extended-fab>.material-icons{margin-left:-8px;margin-right:12px}.mat-mdc-extended-fab .mdc-button__label+.mat-icon,.mat-mdc-extended-fab .mdc-button__label+.material-icons,[dir=rtl] .mat-mdc-extended-fab>.mat-icon,[dir=rtl] .mat-mdc-extended-fab>.material-icons{margin-left:12px;margin-right:-8px}.mat-mdc-extended-fab .mat-mdc-button-touch-target{width:100%}'],
-  encapsulation: 2,
-  changeDetection: 0
-});
-var MatFabButton = _MatFabButton;
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatFabButton, [{
-    type: Component,
-    args: [{
-      selector: `button[mat-fab]`,
-      host: __spreadProps(__spreadValues({}, MAT_BUTTON_HOST), {
-        "[class.mdc-fab--extended]": "extended",
-        "[class.mat-mdc-extended-fab]": "extended"
-      }),
-      exportAs: "matButton",
-      encapsulation: ViewEncapsulation$1.None,
-      changeDetection: ChangeDetectionStrategy.OnPush,
-      standalone: true,
-      template: `<span
-    class="mat-mdc-button-persistent-ripple"
-    [class.mdc-button__ripple]="!_isFab"
-    [class.mdc-fab__ripple]="_isFab"></span>
-
-<ng-content select=".material-icons:not([iconPositionEnd]), mat-icon:not([iconPositionEnd]), [matButtonIcon]:not([iconPositionEnd])">
-</ng-content>
-
-<span class="mdc-button__label"><ng-content></ng-content></span>
-
-<ng-content select=".material-icons[iconPositionEnd], mat-icon[iconPositionEnd], [matButtonIcon][iconPositionEnd]">
-</ng-content>
-
-<!--
-  The indicator can't be directly on the button, because MDC uses ::before for high contrast
-  indication and it can't be on the ripple, because it has a border radius and overflow: hidden.
--->
-<span class="mat-mdc-focus-indicator"></span>
-
-<span class="mat-mdc-button-touch-target"></span>
-`,
-      styles: ['.mat-mdc-fab-base{-webkit-tap-highlight-color:rgba(0,0,0,0);-webkit-user-select:none;user-select:none;position:relative;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:56px;height:56px;padding:0;border:none;fill:currentColor;text-decoration:none;cursor:pointer;-moz-appearance:none;-webkit-appearance:none;overflow:visible;transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1),opacity 15ms linear 30ms,transform 270ms 0ms cubic-bezier(0, 0, 0.2, 1);flex-shrink:0}.mat-mdc-fab-base .mat-mdc-button-ripple,.mat-mdc-fab-base .mat-mdc-button-persistent-ripple,.mat-mdc-fab-base .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-fab-base .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-fab-base .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-fab-base .mdc-button__label,.mat-mdc-fab-base .mat-icon{z-index:1;position:relative}.mat-mdc-fab-base .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-fab-base:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-fab-base._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-fab-base::before{position:absolute;box-sizing:border-box;width:100%;height:100%;top:0;left:0;border:1px solid rgba(0,0,0,0);border-radius:inherit;content:"";pointer-events:none}.mat-mdc-fab-base[hidden]{display:none}.mat-mdc-fab-base::-moz-focus-inner{padding:0;border:0}.mat-mdc-fab-base:active,.mat-mdc-fab-base:focus{outline:none}.mat-mdc-fab-base:hover{cursor:pointer}.mat-mdc-fab-base>svg{width:100%}.mat-mdc-fab-base .mat-icon,.mat-mdc-fab-base .material-icons{transition:transform 180ms 90ms cubic-bezier(0, 0, 0.2, 1);fill:currentColor;will-change:transform}.mat-mdc-fab-base .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 2px)*-1)}.mat-mdc-fab-base[disabled],.mat-mdc-fab-base.mat-mdc-button-disabled{cursor:default;pointer-events:none}.mat-mdc-fab-base[disabled],.mat-mdc-fab-base[disabled]:focus,.mat-mdc-fab-base.mat-mdc-button-disabled,.mat-mdc-fab-base.mat-mdc-button-disabled:focus{box-shadow:none}.mat-mdc-fab-base.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-fab{background-color:var(--mdc-fab-container-color);border-radius:var(--mdc-fab-container-shape);color:var(--mat-fab-foreground-color, inherit);box-shadow:var(--mdc-fab-container-elevation-shadow)}.mat-mdc-fab .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-fab-touch-target-display)}.mat-mdc-fab .mat-ripple-element{background-color:var(--mat-fab-ripple-color)}.mat-mdc-fab .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-state-layer-color)}.mat-mdc-fab.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-disabled-state-layer-color)}.mat-mdc-fab:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-hover-state-layer-opacity)}.mat-mdc-fab.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-fab.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-fab.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-focus-state-layer-opacity)}.mat-mdc-fab:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-pressed-state-layer-opacity)}.mat-mdc-fab:hover{box-shadow:var(--mdc-fab-hover-container-elevation-shadow)}.mat-mdc-fab:focus{box-shadow:var(--mdc-fab-focus-container-elevation-shadow)}.mat-mdc-fab:active,.mat-mdc-fab:focus:active{box-shadow:var(--mdc-fab-pressed-container-elevation-shadow)}.mat-mdc-fab[disabled],.mat-mdc-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mat-fab-disabled-state-foreground-color);background-color:var(--mat-fab-disabled-state-container-color)}.mat-mdc-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-mini-fab{width:40px;height:40px;background-color:var(--mdc-fab-small-container-color);border-radius:var(--mdc-fab-small-container-shape);color:var(--mat-fab-small-foreground-color, inherit);box-shadow:var(--mdc-fab-small-container-elevation-shadow)}.mat-mdc-mini-fab .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-fab-small-touch-target-display)}.mat-mdc-mini-fab .mat-ripple-element{background-color:var(--mat-fab-small-ripple-color)}.mat-mdc-mini-fab .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-small-state-layer-color)}.mat-mdc-mini-fab.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-small-disabled-state-layer-color)}.mat-mdc-mini-fab:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-hover-state-layer-opacity)}.mat-mdc-mini-fab.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-mini-fab.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-mini-fab.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-focus-state-layer-opacity)}.mat-mdc-mini-fab:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-pressed-state-layer-opacity)}.mat-mdc-mini-fab:hover{box-shadow:var(--mdc-fab-small-hover-container-elevation-shadow)}.mat-mdc-mini-fab:focus{box-shadow:var(--mdc-fab-small-focus-container-elevation-shadow)}.mat-mdc-mini-fab:active,.mat-mdc-mini-fab:focus:active{box-shadow:var(--mdc-fab-small-pressed-container-elevation-shadow)}.mat-mdc-mini-fab[disabled],.mat-mdc-mini-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mat-fab-small-disabled-state-foreground-color);background-color:var(--mat-fab-small-disabled-state-container-color)}.mat-mdc-mini-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-extended-fab{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;border-radius:24px;padding-left:20px;padding-right:20px;width:auto;max-width:100%;line-height:normal;box-shadow:var(--mdc-extended-fab-container-elevation-shadow);height:var(--mdc-extended-fab-container-height);border-radius:var(--mdc-extended-fab-container-shape);font-family:var(--mdc-extended-fab-label-text-font);font-size:var(--mdc-extended-fab-label-text-size);font-weight:var(--mdc-extended-fab-label-text-weight);letter-spacing:var(--mdc-extended-fab-label-text-tracking)}.mat-mdc-extended-fab:hover{box-shadow:var(--mdc-extended-fab-hover-container-elevation-shadow)}.mat-mdc-extended-fab:focus{box-shadow:var(--mdc-extended-fab-focus-container-elevation-shadow)}.mat-mdc-extended-fab:active,.mat-mdc-extended-fab:focus:active{box-shadow:var(--mdc-extended-fab-pressed-container-elevation-shadow)}.mat-mdc-extended-fab[disabled],.mat-mdc-extended-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none}.mat-mdc-extended-fab[disabled],.mat-mdc-extended-fab[disabled]:focus,.mat-mdc-extended-fab.mat-mdc-button-disabled,.mat-mdc-extended-fab.mat-mdc-button-disabled:focus{box-shadow:none}.mat-mdc-extended-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}[dir=rtl] .mat-mdc-extended-fab .mdc-button__label+.mat-icon,[dir=rtl] .mat-mdc-extended-fab .mdc-button__label+.material-icons,.mat-mdc-extended-fab>.mat-icon,.mat-mdc-extended-fab>.material-icons{margin-left:-8px;margin-right:12px}.mat-mdc-extended-fab .mdc-button__label+.mat-icon,.mat-mdc-extended-fab .mdc-button__label+.material-icons,[dir=rtl] .mat-mdc-extended-fab>.mat-icon,[dir=rtl] .mat-mdc-extended-fab>.material-icons{margin-left:12px;margin-right:-8px}.mat-mdc-extended-fab .mat-mdc-button-touch-target{width:100%}']
-    }]
-  }], () => [{
-    type: ElementRef
-  }, {
-    type: Platform
-  }, {
-    type: NgZone
-  }, {
-    type: void 0,
-    decorators: [{
-      type: Optional
-    }, {
-      type: Inject,
-      args: [ANIMATION_MODULE_TYPE]
-    }]
-  }, {
-    type: void 0,
-    decorators: [{
-      type: Optional
-    }, {
-      type: Inject,
-      args: [MAT_FAB_DEFAULT_OPTIONS]
-    }]
-  }], {
-    extended: [{
-      type: Input,
-      args: [{
-        transform: booleanAttribute
-      }]
-    }]
-  });
-})();
-var _MatMiniFabButton = class _MatMiniFabButton extends MatButtonBase {
-  constructor(elementRef, platform, ngZone, animationMode, _options) {
-    super(elementRef, platform, ngZone, animationMode);
-    this._options = _options;
-    this._isFab = true;
-    this._options = this._options || defaults;
-    this.color = this._options.color || defaults.color;
-  }
-};
-_MatMiniFabButton.\u0275fac = function MatMiniFabButton_Factory(__ngFactoryType__) {
-  return new (__ngFactoryType__ || _MatMiniFabButton)(\u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(Platform), \u0275\u0275directiveInject(NgZone), \u0275\u0275directiveInject(ANIMATION_MODULE_TYPE, 8), \u0275\u0275directiveInject(MAT_FAB_DEFAULT_OPTIONS, 8));
-};
-_MatMiniFabButton.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
-  type: _MatMiniFabButton,
-  selectors: [["button", "mat-mini-fab", ""]],
-  hostVars: 14,
-  hostBindings: function MatMiniFabButton_HostBindings(rf, ctx) {
-    if (rf & 2) {
-      \u0275\u0275attribute("disabled", ctx._getDisabledAttribute())("aria-disabled", ctx._getAriaDisabled());
-      \u0275\u0275classMap(ctx.color ? "mat-" + ctx.color : "");
-      \u0275\u0275classProp("mat-mdc-button-disabled", ctx.disabled)("mat-mdc-button-disabled-interactive", ctx.disabledInteractive)("_mat-animation-noopable", ctx._animationMode === "NoopAnimations")("mat-unthemed", !ctx.color)("mat-mdc-button-base", true);
-    }
-  },
-  exportAs: ["matButton"],
-  standalone: true,
-  features: [\u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
-  attrs: _c63,
-  ngContentSelectors: _c23,
-  decls: 7,
-  vars: 4,
-  consts: [[1, "mat-mdc-button-persistent-ripple"], [1, "mdc-button__label"], [1, "mat-mdc-focus-indicator"], [1, "mat-mdc-button-touch-target"]],
-  template: function MatMiniFabButton_Template(rf, ctx) {
-    if (rf & 1) {
-      \u0275\u0275projectionDef(_c15);
-      \u0275\u0275element(0, "span", 0);
-      \u0275\u0275projection(1);
-      \u0275\u0275elementStart(2, "span", 1);
-      \u0275\u0275projection(3, 1);
-      \u0275\u0275elementEnd();
-      \u0275\u0275projection(4, 2);
-      \u0275\u0275element(5, "span", 2)(6, "span", 3);
-    }
-    if (rf & 2) {
-      \u0275\u0275classProp("mdc-button__ripple", !ctx._isFab)("mdc-fab__ripple", ctx._isFab);
-    }
-  },
-  styles: [_c72],
-  encapsulation: 2,
-  changeDetection: 0
-});
-var MatMiniFabButton = _MatMiniFabButton;
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatMiniFabButton, [{
-    type: Component,
-    args: [{
-      selector: `button[mat-mini-fab]`,
-      host: MAT_BUTTON_HOST,
-      exportAs: "matButton",
-      encapsulation: ViewEncapsulation$1.None,
-      changeDetection: ChangeDetectionStrategy.OnPush,
-      standalone: true,
-      template: `<span
-    class="mat-mdc-button-persistent-ripple"
-    [class.mdc-button__ripple]="!_isFab"
-    [class.mdc-fab__ripple]="_isFab"></span>
-
-<ng-content select=".material-icons:not([iconPositionEnd]), mat-icon:not([iconPositionEnd]), [matButtonIcon]:not([iconPositionEnd])">
-</ng-content>
-
-<span class="mdc-button__label"><ng-content></ng-content></span>
-
-<ng-content select=".material-icons[iconPositionEnd], mat-icon[iconPositionEnd], [matButtonIcon][iconPositionEnd]">
-</ng-content>
-
-<!--
-  The indicator can't be directly on the button, because MDC uses ::before for high contrast
-  indication and it can't be on the ripple, because it has a border radius and overflow: hidden.
--->
-<span class="mat-mdc-focus-indicator"></span>
-
-<span class="mat-mdc-button-touch-target"></span>
-`,
-      styles: ['.mat-mdc-fab-base{-webkit-tap-highlight-color:rgba(0,0,0,0);-webkit-user-select:none;user-select:none;position:relative;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:56px;height:56px;padding:0;border:none;fill:currentColor;text-decoration:none;cursor:pointer;-moz-appearance:none;-webkit-appearance:none;overflow:visible;transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1),opacity 15ms linear 30ms,transform 270ms 0ms cubic-bezier(0, 0, 0.2, 1);flex-shrink:0}.mat-mdc-fab-base .mat-mdc-button-ripple,.mat-mdc-fab-base .mat-mdc-button-persistent-ripple,.mat-mdc-fab-base .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-fab-base .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-fab-base .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-fab-base .mdc-button__label,.mat-mdc-fab-base .mat-icon{z-index:1;position:relative}.mat-mdc-fab-base .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-fab-base:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-fab-base._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-fab-base::before{position:absolute;box-sizing:border-box;width:100%;height:100%;top:0;left:0;border:1px solid rgba(0,0,0,0);border-radius:inherit;content:"";pointer-events:none}.mat-mdc-fab-base[hidden]{display:none}.mat-mdc-fab-base::-moz-focus-inner{padding:0;border:0}.mat-mdc-fab-base:active,.mat-mdc-fab-base:focus{outline:none}.mat-mdc-fab-base:hover{cursor:pointer}.mat-mdc-fab-base>svg{width:100%}.mat-mdc-fab-base .mat-icon,.mat-mdc-fab-base .material-icons{transition:transform 180ms 90ms cubic-bezier(0, 0, 0.2, 1);fill:currentColor;will-change:transform}.mat-mdc-fab-base .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 2px)*-1)}.mat-mdc-fab-base[disabled],.mat-mdc-fab-base.mat-mdc-button-disabled{cursor:default;pointer-events:none}.mat-mdc-fab-base[disabled],.mat-mdc-fab-base[disabled]:focus,.mat-mdc-fab-base.mat-mdc-button-disabled,.mat-mdc-fab-base.mat-mdc-button-disabled:focus{box-shadow:none}.mat-mdc-fab-base.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-fab{background-color:var(--mdc-fab-container-color);border-radius:var(--mdc-fab-container-shape);color:var(--mat-fab-foreground-color, inherit);box-shadow:var(--mdc-fab-container-elevation-shadow)}.mat-mdc-fab .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-fab-touch-target-display)}.mat-mdc-fab .mat-ripple-element{background-color:var(--mat-fab-ripple-color)}.mat-mdc-fab .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-state-layer-color)}.mat-mdc-fab.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-disabled-state-layer-color)}.mat-mdc-fab:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-hover-state-layer-opacity)}.mat-mdc-fab.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-fab.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-fab.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-focus-state-layer-opacity)}.mat-mdc-fab:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-pressed-state-layer-opacity)}.mat-mdc-fab:hover{box-shadow:var(--mdc-fab-hover-container-elevation-shadow)}.mat-mdc-fab:focus{box-shadow:var(--mdc-fab-focus-container-elevation-shadow)}.mat-mdc-fab:active,.mat-mdc-fab:focus:active{box-shadow:var(--mdc-fab-pressed-container-elevation-shadow)}.mat-mdc-fab[disabled],.mat-mdc-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mat-fab-disabled-state-foreground-color);background-color:var(--mat-fab-disabled-state-container-color)}.mat-mdc-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-mini-fab{width:40px;height:40px;background-color:var(--mdc-fab-small-container-color);border-radius:var(--mdc-fab-small-container-shape);color:var(--mat-fab-small-foreground-color, inherit);box-shadow:var(--mdc-fab-small-container-elevation-shadow)}.mat-mdc-mini-fab .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-fab-small-touch-target-display)}.mat-mdc-mini-fab .mat-ripple-element{background-color:var(--mat-fab-small-ripple-color)}.mat-mdc-mini-fab .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-small-state-layer-color)}.mat-mdc-mini-fab.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-small-disabled-state-layer-color)}.mat-mdc-mini-fab:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-hover-state-layer-opacity)}.mat-mdc-mini-fab.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-mini-fab.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-mini-fab.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-focus-state-layer-opacity)}.mat-mdc-mini-fab:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-pressed-state-layer-opacity)}.mat-mdc-mini-fab:hover{box-shadow:var(--mdc-fab-small-hover-container-elevation-shadow)}.mat-mdc-mini-fab:focus{box-shadow:var(--mdc-fab-small-focus-container-elevation-shadow)}.mat-mdc-mini-fab:active,.mat-mdc-mini-fab:focus:active{box-shadow:var(--mdc-fab-small-pressed-container-elevation-shadow)}.mat-mdc-mini-fab[disabled],.mat-mdc-mini-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mat-fab-small-disabled-state-foreground-color);background-color:var(--mat-fab-small-disabled-state-container-color)}.mat-mdc-mini-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-extended-fab{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;border-radius:24px;padding-left:20px;padding-right:20px;width:auto;max-width:100%;line-height:normal;box-shadow:var(--mdc-extended-fab-container-elevation-shadow);height:var(--mdc-extended-fab-container-height);border-radius:var(--mdc-extended-fab-container-shape);font-family:var(--mdc-extended-fab-label-text-font);font-size:var(--mdc-extended-fab-label-text-size);font-weight:var(--mdc-extended-fab-label-text-weight);letter-spacing:var(--mdc-extended-fab-label-text-tracking)}.mat-mdc-extended-fab:hover{box-shadow:var(--mdc-extended-fab-hover-container-elevation-shadow)}.mat-mdc-extended-fab:focus{box-shadow:var(--mdc-extended-fab-focus-container-elevation-shadow)}.mat-mdc-extended-fab:active,.mat-mdc-extended-fab:focus:active{box-shadow:var(--mdc-extended-fab-pressed-container-elevation-shadow)}.mat-mdc-extended-fab[disabled],.mat-mdc-extended-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none}.mat-mdc-extended-fab[disabled],.mat-mdc-extended-fab[disabled]:focus,.mat-mdc-extended-fab.mat-mdc-button-disabled,.mat-mdc-extended-fab.mat-mdc-button-disabled:focus{box-shadow:none}.mat-mdc-extended-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}[dir=rtl] .mat-mdc-extended-fab .mdc-button__label+.mat-icon,[dir=rtl] .mat-mdc-extended-fab .mdc-button__label+.material-icons,.mat-mdc-extended-fab>.mat-icon,.mat-mdc-extended-fab>.material-icons{margin-left:-8px;margin-right:12px}.mat-mdc-extended-fab .mdc-button__label+.mat-icon,.mat-mdc-extended-fab .mdc-button__label+.material-icons,[dir=rtl] .mat-mdc-extended-fab>.mat-icon,[dir=rtl] .mat-mdc-extended-fab>.material-icons{margin-left:12px;margin-right:-8px}.mat-mdc-extended-fab .mat-mdc-button-touch-target{width:100%}']
-    }]
-  }], () => [{
-    type: ElementRef
-  }, {
-    type: Platform
-  }, {
-    type: NgZone
-  }, {
-    type: void 0,
-    decorators: [{
-      type: Optional
-    }, {
-      type: Inject,
-      args: [ANIMATION_MODULE_TYPE]
-    }]
-  }, {
-    type: void 0,
-    decorators: [{
-      type: Optional
-    }, {
-      type: Inject,
-      args: [MAT_FAB_DEFAULT_OPTIONS]
-    }]
-  }], null);
-})();
-var _MatFabAnchor = class _MatFabAnchor extends MatAnchor {
-  constructor(elementRef, platform, ngZone, animationMode, _options) {
-    super(elementRef, platform, ngZone, animationMode);
-    this._options = _options;
-    this._isFab = true;
-    this._options = this._options || defaults;
-    this.color = this._options.color || defaults.color;
-  }
-};
-_MatFabAnchor.\u0275fac = function MatFabAnchor_Factory(__ngFactoryType__) {
-  return new (__ngFactoryType__ || _MatFabAnchor)(\u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(Platform), \u0275\u0275directiveInject(NgZone), \u0275\u0275directiveInject(ANIMATION_MODULE_TYPE, 8), \u0275\u0275directiveInject(MAT_FAB_DEFAULT_OPTIONS, 8));
-};
-_MatFabAnchor.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
-  type: _MatFabAnchor,
-  selectors: [["a", "mat-fab", ""]],
-  hostVars: 19,
-  hostBindings: function MatFabAnchor_HostBindings(rf, ctx) {
-    if (rf & 2) {
-      \u0275\u0275attribute("disabled", ctx._getDisabledAttribute())("tabindex", ctx.disabled && !ctx.disabledInteractive ? -1 : ctx.tabIndex)("aria-disabled", ctx._getDisabledAttribute());
-      \u0275\u0275classMap(ctx.color ? "mat-" + ctx.color : "");
-      \u0275\u0275classProp("mat-mdc-button-disabled", ctx.disabled)("mat-mdc-button-disabled-interactive", ctx.disabledInteractive)("_mat-animation-noopable", ctx._animationMode === "NoopAnimations")("mat-unthemed", !ctx.color)("mat-mdc-button-base", true)("mdc-fab--extended", ctx.extended)("mat-mdc-extended-fab", ctx.extended);
-    }
-  },
-  inputs: {
-    extended: [2, "extended", "extended", booleanAttribute]
-  },
-  exportAs: ["matButton", "matAnchor"],
-  standalone: true,
-  features: [\u0275\u0275InputTransformsFeature, \u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
-  attrs: _c53,
-  ngContentSelectors: _c23,
-  decls: 7,
-  vars: 4,
-  consts: [[1, "mat-mdc-button-persistent-ripple"], [1, "mdc-button__label"], [1, "mat-mdc-focus-indicator"], [1, "mat-mdc-button-touch-target"]],
-  template: function MatFabAnchor_Template(rf, ctx) {
-    if (rf & 1) {
-      \u0275\u0275projectionDef(_c15);
-      \u0275\u0275element(0, "span", 0);
-      \u0275\u0275projection(1);
-      \u0275\u0275elementStart(2, "span", 1);
-      \u0275\u0275projection(3, 1);
-      \u0275\u0275elementEnd();
-      \u0275\u0275projection(4, 2);
-      \u0275\u0275element(5, "span", 2)(6, "span", 3);
-    }
-    if (rf & 2) {
-      \u0275\u0275classProp("mdc-button__ripple", !ctx._isFab)("mdc-fab__ripple", ctx._isFab);
-    }
-  },
-  styles: [_c72],
-  encapsulation: 2,
-  changeDetection: 0
-});
-var MatFabAnchor = _MatFabAnchor;
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatFabAnchor, [{
-    type: Component,
-    args: [{
-      selector: `a[mat-fab]`,
-      host: __spreadProps(__spreadValues({}, MAT_ANCHOR_HOST), {
-        "[class.mdc-fab--extended]": "extended",
-        "[class.mat-mdc-extended-fab]": "extended"
-      }),
-      exportAs: "matButton, matAnchor",
-      encapsulation: ViewEncapsulation$1.None,
-      changeDetection: ChangeDetectionStrategy.OnPush,
-      standalone: true,
-      template: `<span
-    class="mat-mdc-button-persistent-ripple"
-    [class.mdc-button__ripple]="!_isFab"
-    [class.mdc-fab__ripple]="_isFab"></span>
-
-<ng-content select=".material-icons:not([iconPositionEnd]), mat-icon:not([iconPositionEnd]), [matButtonIcon]:not([iconPositionEnd])">
-</ng-content>
-
-<span class="mdc-button__label"><ng-content></ng-content></span>
-
-<ng-content select=".material-icons[iconPositionEnd], mat-icon[iconPositionEnd], [matButtonIcon][iconPositionEnd]">
-</ng-content>
-
-<!--
-  The indicator can't be directly on the button, because MDC uses ::before for high contrast
-  indication and it can't be on the ripple, because it has a border radius and overflow: hidden.
--->
-<span class="mat-mdc-focus-indicator"></span>
-
-<span class="mat-mdc-button-touch-target"></span>
-`,
-      styles: ['.mat-mdc-fab-base{-webkit-tap-highlight-color:rgba(0,0,0,0);-webkit-user-select:none;user-select:none;position:relative;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:56px;height:56px;padding:0;border:none;fill:currentColor;text-decoration:none;cursor:pointer;-moz-appearance:none;-webkit-appearance:none;overflow:visible;transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1),opacity 15ms linear 30ms,transform 270ms 0ms cubic-bezier(0, 0, 0.2, 1);flex-shrink:0}.mat-mdc-fab-base .mat-mdc-button-ripple,.mat-mdc-fab-base .mat-mdc-button-persistent-ripple,.mat-mdc-fab-base .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-fab-base .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-fab-base .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-fab-base .mdc-button__label,.mat-mdc-fab-base .mat-icon{z-index:1;position:relative}.mat-mdc-fab-base .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-fab-base:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-fab-base._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-fab-base::before{position:absolute;box-sizing:border-box;width:100%;height:100%;top:0;left:0;border:1px solid rgba(0,0,0,0);border-radius:inherit;content:"";pointer-events:none}.mat-mdc-fab-base[hidden]{display:none}.mat-mdc-fab-base::-moz-focus-inner{padding:0;border:0}.mat-mdc-fab-base:active,.mat-mdc-fab-base:focus{outline:none}.mat-mdc-fab-base:hover{cursor:pointer}.mat-mdc-fab-base>svg{width:100%}.mat-mdc-fab-base .mat-icon,.mat-mdc-fab-base .material-icons{transition:transform 180ms 90ms cubic-bezier(0, 0, 0.2, 1);fill:currentColor;will-change:transform}.mat-mdc-fab-base .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 2px)*-1)}.mat-mdc-fab-base[disabled],.mat-mdc-fab-base.mat-mdc-button-disabled{cursor:default;pointer-events:none}.mat-mdc-fab-base[disabled],.mat-mdc-fab-base[disabled]:focus,.mat-mdc-fab-base.mat-mdc-button-disabled,.mat-mdc-fab-base.mat-mdc-button-disabled:focus{box-shadow:none}.mat-mdc-fab-base.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-fab{background-color:var(--mdc-fab-container-color);border-radius:var(--mdc-fab-container-shape);color:var(--mat-fab-foreground-color, inherit);box-shadow:var(--mdc-fab-container-elevation-shadow)}.mat-mdc-fab .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-fab-touch-target-display)}.mat-mdc-fab .mat-ripple-element{background-color:var(--mat-fab-ripple-color)}.mat-mdc-fab .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-state-layer-color)}.mat-mdc-fab.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-disabled-state-layer-color)}.mat-mdc-fab:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-hover-state-layer-opacity)}.mat-mdc-fab.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-fab.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-fab.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-focus-state-layer-opacity)}.mat-mdc-fab:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-pressed-state-layer-opacity)}.mat-mdc-fab:hover{box-shadow:var(--mdc-fab-hover-container-elevation-shadow)}.mat-mdc-fab:focus{box-shadow:var(--mdc-fab-focus-container-elevation-shadow)}.mat-mdc-fab:active,.mat-mdc-fab:focus:active{box-shadow:var(--mdc-fab-pressed-container-elevation-shadow)}.mat-mdc-fab[disabled],.mat-mdc-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mat-fab-disabled-state-foreground-color);background-color:var(--mat-fab-disabled-state-container-color)}.mat-mdc-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-mini-fab{width:40px;height:40px;background-color:var(--mdc-fab-small-container-color);border-radius:var(--mdc-fab-small-container-shape);color:var(--mat-fab-small-foreground-color, inherit);box-shadow:var(--mdc-fab-small-container-elevation-shadow)}.mat-mdc-mini-fab .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-fab-small-touch-target-display)}.mat-mdc-mini-fab .mat-ripple-element{background-color:var(--mat-fab-small-ripple-color)}.mat-mdc-mini-fab .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-small-state-layer-color)}.mat-mdc-mini-fab.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-small-disabled-state-layer-color)}.mat-mdc-mini-fab:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-hover-state-layer-opacity)}.mat-mdc-mini-fab.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-mini-fab.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-mini-fab.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-focus-state-layer-opacity)}.mat-mdc-mini-fab:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-pressed-state-layer-opacity)}.mat-mdc-mini-fab:hover{box-shadow:var(--mdc-fab-small-hover-container-elevation-shadow)}.mat-mdc-mini-fab:focus{box-shadow:var(--mdc-fab-small-focus-container-elevation-shadow)}.mat-mdc-mini-fab:active,.mat-mdc-mini-fab:focus:active{box-shadow:var(--mdc-fab-small-pressed-container-elevation-shadow)}.mat-mdc-mini-fab[disabled],.mat-mdc-mini-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mat-fab-small-disabled-state-foreground-color);background-color:var(--mat-fab-small-disabled-state-container-color)}.mat-mdc-mini-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-extended-fab{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;border-radius:24px;padding-left:20px;padding-right:20px;width:auto;max-width:100%;line-height:normal;box-shadow:var(--mdc-extended-fab-container-elevation-shadow);height:var(--mdc-extended-fab-container-height);border-radius:var(--mdc-extended-fab-container-shape);font-family:var(--mdc-extended-fab-label-text-font);font-size:var(--mdc-extended-fab-label-text-size);font-weight:var(--mdc-extended-fab-label-text-weight);letter-spacing:var(--mdc-extended-fab-label-text-tracking)}.mat-mdc-extended-fab:hover{box-shadow:var(--mdc-extended-fab-hover-container-elevation-shadow)}.mat-mdc-extended-fab:focus{box-shadow:var(--mdc-extended-fab-focus-container-elevation-shadow)}.mat-mdc-extended-fab:active,.mat-mdc-extended-fab:focus:active{box-shadow:var(--mdc-extended-fab-pressed-container-elevation-shadow)}.mat-mdc-extended-fab[disabled],.mat-mdc-extended-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none}.mat-mdc-extended-fab[disabled],.mat-mdc-extended-fab[disabled]:focus,.mat-mdc-extended-fab.mat-mdc-button-disabled,.mat-mdc-extended-fab.mat-mdc-button-disabled:focus{box-shadow:none}.mat-mdc-extended-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}[dir=rtl] .mat-mdc-extended-fab .mdc-button__label+.mat-icon,[dir=rtl] .mat-mdc-extended-fab .mdc-button__label+.material-icons,.mat-mdc-extended-fab>.mat-icon,.mat-mdc-extended-fab>.material-icons{margin-left:-8px;margin-right:12px}.mat-mdc-extended-fab .mdc-button__label+.mat-icon,.mat-mdc-extended-fab .mdc-button__label+.material-icons,[dir=rtl] .mat-mdc-extended-fab>.mat-icon,[dir=rtl] .mat-mdc-extended-fab>.material-icons{margin-left:12px;margin-right:-8px}.mat-mdc-extended-fab .mat-mdc-button-touch-target{width:100%}']
-    }]
-  }], () => [{
-    type: ElementRef
-  }, {
-    type: Platform
-  }, {
-    type: NgZone
-  }, {
-    type: void 0,
-    decorators: [{
-      type: Optional
-    }, {
-      type: Inject,
-      args: [ANIMATION_MODULE_TYPE]
-    }]
-  }, {
-    type: void 0,
-    decorators: [{
-      type: Optional
-    }, {
-      type: Inject,
-      args: [MAT_FAB_DEFAULT_OPTIONS]
-    }]
-  }], {
-    extended: [{
-      type: Input,
-      args: [{
-        transform: booleanAttribute
-      }]
-    }]
-  });
-})();
-var _MatMiniFabAnchor = class _MatMiniFabAnchor extends MatAnchor {
-  constructor(elementRef, platform, ngZone, animationMode, _options) {
-    super(elementRef, platform, ngZone, animationMode);
-    this._options = _options;
-    this._isFab = true;
-    this._options = this._options || defaults;
-    this.color = this._options.color || defaults.color;
-  }
-};
-_MatMiniFabAnchor.\u0275fac = function MatMiniFabAnchor_Factory(__ngFactoryType__) {
-  return new (__ngFactoryType__ || _MatMiniFabAnchor)(\u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(Platform), \u0275\u0275directiveInject(NgZone), \u0275\u0275directiveInject(ANIMATION_MODULE_TYPE, 8), \u0275\u0275directiveInject(MAT_FAB_DEFAULT_OPTIONS, 8));
-};
-_MatMiniFabAnchor.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
-  type: _MatMiniFabAnchor,
-  selectors: [["a", "mat-mini-fab", ""]],
-  hostVars: 15,
-  hostBindings: function MatMiniFabAnchor_HostBindings(rf, ctx) {
-    if (rf & 2) {
-      \u0275\u0275attribute("disabled", ctx._getDisabledAttribute())("tabindex", ctx.disabled && !ctx.disabledInteractive ? -1 : ctx.tabIndex)("aria-disabled", ctx._getDisabledAttribute());
-      \u0275\u0275classMap(ctx.color ? "mat-" + ctx.color : "");
-      \u0275\u0275classProp("mat-mdc-button-disabled", ctx.disabled)("mat-mdc-button-disabled-interactive", ctx.disabledInteractive)("_mat-animation-noopable", ctx._animationMode === "NoopAnimations")("mat-unthemed", !ctx.color)("mat-mdc-button-base", true);
-    }
-  },
-  exportAs: ["matButton", "matAnchor"],
-  standalone: true,
-  features: [\u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
-  attrs: _c63,
-  ngContentSelectors: _c23,
-  decls: 7,
-  vars: 4,
-  consts: [[1, "mat-mdc-button-persistent-ripple"], [1, "mdc-button__label"], [1, "mat-mdc-focus-indicator"], [1, "mat-mdc-button-touch-target"]],
-  template: function MatMiniFabAnchor_Template(rf, ctx) {
-    if (rf & 1) {
-      \u0275\u0275projectionDef(_c15);
-      \u0275\u0275element(0, "span", 0);
-      \u0275\u0275projection(1);
-      \u0275\u0275elementStart(2, "span", 1);
-      \u0275\u0275projection(3, 1);
-      \u0275\u0275elementEnd();
-      \u0275\u0275projection(4, 2);
-      \u0275\u0275element(5, "span", 2)(6, "span", 3);
-    }
-    if (rf & 2) {
-      \u0275\u0275classProp("mdc-button__ripple", !ctx._isFab)("mdc-fab__ripple", ctx._isFab);
-    }
-  },
-  styles: [_c72],
-  encapsulation: 2,
-  changeDetection: 0
-});
-var MatMiniFabAnchor = _MatMiniFabAnchor;
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatMiniFabAnchor, [{
-    type: Component,
-    args: [{
-      selector: `a[mat-mini-fab]`,
-      host: MAT_ANCHOR_HOST,
-      exportAs: "matButton, matAnchor",
-      encapsulation: ViewEncapsulation$1.None,
-      changeDetection: ChangeDetectionStrategy.OnPush,
-      standalone: true,
-      template: `<span
-    class="mat-mdc-button-persistent-ripple"
-    [class.mdc-button__ripple]="!_isFab"
-    [class.mdc-fab__ripple]="_isFab"></span>
-
-<ng-content select=".material-icons:not([iconPositionEnd]), mat-icon:not([iconPositionEnd]), [matButtonIcon]:not([iconPositionEnd])">
-</ng-content>
-
-<span class="mdc-button__label"><ng-content></ng-content></span>
-
-<ng-content select=".material-icons[iconPositionEnd], mat-icon[iconPositionEnd], [matButtonIcon][iconPositionEnd]">
-</ng-content>
-
-<!--
-  The indicator can't be directly on the button, because MDC uses ::before for high contrast
-  indication and it can't be on the ripple, because it has a border radius and overflow: hidden.
--->
-<span class="mat-mdc-focus-indicator"></span>
-
-<span class="mat-mdc-button-touch-target"></span>
-`,
-      styles: ['.mat-mdc-fab-base{-webkit-tap-highlight-color:rgba(0,0,0,0);-webkit-user-select:none;user-select:none;position:relative;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:56px;height:56px;padding:0;border:none;fill:currentColor;text-decoration:none;cursor:pointer;-moz-appearance:none;-webkit-appearance:none;overflow:visible;transition:box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1),opacity 15ms linear 30ms,transform 270ms 0ms cubic-bezier(0, 0, 0.2, 1);flex-shrink:0}.mat-mdc-fab-base .mat-mdc-button-ripple,.mat-mdc-fab-base .mat-mdc-button-persistent-ripple,.mat-mdc-fab-base .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-fab-base .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-fab-base .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-fab-base .mdc-button__label,.mat-mdc-fab-base .mat-icon{z-index:1;position:relative}.mat-mdc-fab-base .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-fab-base:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-fab-base._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-fab-base::before{position:absolute;box-sizing:border-box;width:100%;height:100%;top:0;left:0;border:1px solid rgba(0,0,0,0);border-radius:inherit;content:"";pointer-events:none}.mat-mdc-fab-base[hidden]{display:none}.mat-mdc-fab-base::-moz-focus-inner{padding:0;border:0}.mat-mdc-fab-base:active,.mat-mdc-fab-base:focus{outline:none}.mat-mdc-fab-base:hover{cursor:pointer}.mat-mdc-fab-base>svg{width:100%}.mat-mdc-fab-base .mat-icon,.mat-mdc-fab-base .material-icons{transition:transform 180ms 90ms cubic-bezier(0, 0, 0.2, 1);fill:currentColor;will-change:transform}.mat-mdc-fab-base .mat-mdc-focus-indicator::before{margin:calc(calc(var(--mat-mdc-focus-indicator-border-width, 3px) + 2px)*-1)}.mat-mdc-fab-base[disabled],.mat-mdc-fab-base.mat-mdc-button-disabled{cursor:default;pointer-events:none}.mat-mdc-fab-base[disabled],.mat-mdc-fab-base[disabled]:focus,.mat-mdc-fab-base.mat-mdc-button-disabled,.mat-mdc-fab-base.mat-mdc-button-disabled:focus{box-shadow:none}.mat-mdc-fab-base.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-fab{background-color:var(--mdc-fab-container-color);border-radius:var(--mdc-fab-container-shape);color:var(--mat-fab-foreground-color, inherit);box-shadow:var(--mdc-fab-container-elevation-shadow)}.mat-mdc-fab .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-fab-touch-target-display)}.mat-mdc-fab .mat-ripple-element{background-color:var(--mat-fab-ripple-color)}.mat-mdc-fab .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-state-layer-color)}.mat-mdc-fab.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-disabled-state-layer-color)}.mat-mdc-fab:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-hover-state-layer-opacity)}.mat-mdc-fab.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-fab.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-fab.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-focus-state-layer-opacity)}.mat-mdc-fab:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-pressed-state-layer-opacity)}.mat-mdc-fab:hover{box-shadow:var(--mdc-fab-hover-container-elevation-shadow)}.mat-mdc-fab:focus{box-shadow:var(--mdc-fab-focus-container-elevation-shadow)}.mat-mdc-fab:active,.mat-mdc-fab:focus:active{box-shadow:var(--mdc-fab-pressed-container-elevation-shadow)}.mat-mdc-fab[disabled],.mat-mdc-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mat-fab-disabled-state-foreground-color);background-color:var(--mat-fab-disabled-state-container-color)}.mat-mdc-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-mini-fab{width:40px;height:40px;background-color:var(--mdc-fab-small-container-color);border-radius:var(--mdc-fab-small-container-shape);color:var(--mat-fab-small-foreground-color, inherit);box-shadow:var(--mdc-fab-small-container-elevation-shadow)}.mat-mdc-mini-fab .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-fab-small-touch-target-display)}.mat-mdc-mini-fab .mat-ripple-element{background-color:var(--mat-fab-small-ripple-color)}.mat-mdc-mini-fab .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-small-state-layer-color)}.mat-mdc-mini-fab.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-fab-small-disabled-state-layer-color)}.mat-mdc-mini-fab:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-hover-state-layer-opacity)}.mat-mdc-mini-fab.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-mini-fab.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-mini-fab.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-focus-state-layer-opacity)}.mat-mdc-mini-fab:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-fab-small-pressed-state-layer-opacity)}.mat-mdc-mini-fab:hover{box-shadow:var(--mdc-fab-small-hover-container-elevation-shadow)}.mat-mdc-mini-fab:focus{box-shadow:var(--mdc-fab-small-focus-container-elevation-shadow)}.mat-mdc-mini-fab:active,.mat-mdc-mini-fab:focus:active{box-shadow:var(--mdc-fab-small-pressed-container-elevation-shadow)}.mat-mdc-mini-fab[disabled],.mat-mdc-mini-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mat-fab-small-disabled-state-foreground-color);background-color:var(--mat-fab-small-disabled-state-container-color)}.mat-mdc-mini-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-extended-fab{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;border-radius:24px;padding-left:20px;padding-right:20px;width:auto;max-width:100%;line-height:normal;box-shadow:var(--mdc-extended-fab-container-elevation-shadow);height:var(--mdc-extended-fab-container-height);border-radius:var(--mdc-extended-fab-container-shape);font-family:var(--mdc-extended-fab-label-text-font);font-size:var(--mdc-extended-fab-label-text-size);font-weight:var(--mdc-extended-fab-label-text-weight);letter-spacing:var(--mdc-extended-fab-label-text-tracking)}.mat-mdc-extended-fab:hover{box-shadow:var(--mdc-extended-fab-hover-container-elevation-shadow)}.mat-mdc-extended-fab:focus{box-shadow:var(--mdc-extended-fab-focus-container-elevation-shadow)}.mat-mdc-extended-fab:active,.mat-mdc-extended-fab:focus:active{box-shadow:var(--mdc-extended-fab-pressed-container-elevation-shadow)}.mat-mdc-extended-fab[disabled],.mat-mdc-extended-fab.mat-mdc-button-disabled{cursor:default;pointer-events:none}.mat-mdc-extended-fab[disabled],.mat-mdc-extended-fab[disabled]:focus,.mat-mdc-extended-fab.mat-mdc-button-disabled,.mat-mdc-extended-fab.mat-mdc-button-disabled:focus{box-shadow:none}.mat-mdc-extended-fab.mat-mdc-button-disabled-interactive{pointer-events:auto}[dir=rtl] .mat-mdc-extended-fab .mdc-button__label+.mat-icon,[dir=rtl] .mat-mdc-extended-fab .mdc-button__label+.material-icons,.mat-mdc-extended-fab>.mat-icon,.mat-mdc-extended-fab>.material-icons{margin-left:-8px;margin-right:12px}.mat-mdc-extended-fab .mdc-button__label+.mat-icon,.mat-mdc-extended-fab .mdc-button__label+.material-icons,[dir=rtl] .mat-mdc-extended-fab>.mat-icon,[dir=rtl] .mat-mdc-extended-fab>.material-icons{margin-left:12px;margin-right:-8px}.mat-mdc-extended-fab .mat-mdc-button-touch-target{width:100%}']
-    }]
-  }], () => [{
-    type: ElementRef
-  }, {
-    type: Platform
-  }, {
-    type: NgZone
-  }, {
-    type: void 0,
-    decorators: [{
-      type: Optional
-    }, {
-      type: Inject,
-      args: [ANIMATION_MODULE_TYPE]
-    }]
-  }, {
-    type: void 0,
-    decorators: [{
-      type: Optional
-    }, {
-      type: Inject,
-      args: [MAT_FAB_DEFAULT_OPTIONS]
-    }]
-  }], null);
-})();
-var _MatIconButton = class _MatIconButton extends MatButtonBase {
-  constructor(elementRef, platform, ngZone, animationMode) {
-    super(elementRef, platform, ngZone, animationMode);
-    this._rippleLoader.configureRipple(this._elementRef.nativeElement, {
-      centered: true
-    });
-  }
-};
-_MatIconButton.\u0275fac = function MatIconButton_Factory(__ngFactoryType__) {
-  return new (__ngFactoryType__ || _MatIconButton)(\u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(Platform), \u0275\u0275directiveInject(NgZone), \u0275\u0275directiveInject(ANIMATION_MODULE_TYPE, 8));
-};
-_MatIconButton.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
-  type: _MatIconButton,
-  selectors: [["button", "mat-icon-button", ""]],
-  hostVars: 14,
-  hostBindings: function MatIconButton_HostBindings(rf, ctx) {
-    if (rf & 2) {
-      \u0275\u0275attribute("disabled", ctx._getDisabledAttribute())("aria-disabled", ctx._getAriaDisabled());
-      \u0275\u0275classMap(ctx.color ? "mat-" + ctx.color : "");
-      \u0275\u0275classProp("mat-mdc-button-disabled", ctx.disabled)("mat-mdc-button-disabled-interactive", ctx.disabledInteractive)("_mat-animation-noopable", ctx._animationMode === "NoopAnimations")("mat-unthemed", !ctx.color)("mat-mdc-button-base", true);
-    }
-  },
-  exportAs: ["matButton"],
-  standalone: true,
-  features: [\u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
-  attrs: _c8,
-  ngContentSelectors: _c9,
-  decls: 4,
-  vars: 0,
-  consts: [[1, "mat-mdc-button-persistent-ripple", "mdc-icon-button__ripple"], [1, "mat-mdc-focus-indicator"], [1, "mat-mdc-button-touch-target"]],
-  template: function MatIconButton_Template(rf, ctx) {
-    if (rf & 1) {
-      \u0275\u0275projectionDef();
-      \u0275\u0275element(0, "span", 0);
-      \u0275\u0275projection(1);
-      \u0275\u0275element(2, "span", 1)(3, "span", 2);
-    }
-  },
-  styles: ['.mat-mdc-icon-button{-webkit-user-select:none;user-select:none;display:inline-block;position:relative;box-sizing:border-box;border:none;outline:none;background-color:rgba(0,0,0,0);fill:currentColor;color:inherit;text-decoration:none;cursor:pointer;z-index:0;overflow:visible;border-radius:50%;flex-shrink:0;text-align:center;width:var(--mdc-icon-button-state-layer-size, 48px);height:var(--mdc-icon-button-state-layer-size, 48px);padding:calc(calc(var(--mdc-icon-button-state-layer-size, 48px) - var(--mdc-icon-button-icon-size, 24px)) / 2);font-size:var(--mdc-icon-button-icon-size);color:var(--mdc-icon-button-icon-color);-webkit-tap-highlight-color:rgba(0,0,0,0)}.mat-mdc-icon-button[disabled],.mat-mdc-icon-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-icon-button-disabled-icon-color)}.mat-mdc-icon-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-icon-button img,.mat-mdc-icon-button svg{width:var(--mdc-icon-button-icon-size);height:var(--mdc-icon-button-icon-size);vertical-align:baseline}.mat-mdc-icon-button .mat-mdc-button-ripple,.mat-mdc-icon-button .mat-mdc-button-persistent-ripple,.mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-icon-button .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-icon-button .mdc-button__label,.mat-mdc-icon-button .mat-icon{z-index:1;position:relative}.mat-mdc-icon-button .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-icon-button:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-icon-button .mat-ripple-element{background-color:var(--mat-icon-button-ripple-color)}.mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-icon-button-state-layer-color)}.mat-mdc-icon-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-icon-button-disabled-state-layer-color)}.mat-mdc-icon-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-hover-state-layer-opacity)}.mat-mdc-icon-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-icon-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-icon-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-focus-state-layer-opacity)}.mat-mdc-icon-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-pressed-state-layer-opacity)}.mat-mdc-icon-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-icon-button-touch-target-display)}.mat-mdc-icon-button._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-icon-button .mat-mdc-button-persistent-ripple{border-radius:50%}.mat-mdc-icon-button[hidden]{display:none}.mat-mdc-icon-button.mat-unthemed:not(.mdc-ripple-upgraded):focus::before,.mat-mdc-icon-button.mat-primary:not(.mdc-ripple-upgraded):focus::before,.mat-mdc-icon-button.mat-accent:not(.mdc-ripple-upgraded):focus::before,.mat-mdc-icon-button.mat-warn:not(.mdc-ripple-upgraded):focus::before{background:rgba(0,0,0,0);opacity:1}', _c43],
-  encapsulation: 2,
-  changeDetection: 0
-});
-var MatIconButton = _MatIconButton;
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatIconButton, [{
-    type: Component,
-    args: [{
-      selector: `button[mat-icon-button]`,
-      host: MAT_BUTTON_HOST,
-      exportAs: "matButton",
-      encapsulation: ViewEncapsulation$1.None,
-      changeDetection: ChangeDetectionStrategy.OnPush,
-      standalone: true,
-      template: `<span class="mat-mdc-button-persistent-ripple mdc-icon-button__ripple"></span>
-
-<ng-content></ng-content>
-
-<!--
-  The indicator can't be directly on the button, because MDC uses ::before for high contrast
-  indication and it can't be on the ripple, because it has a border radius and overflow: hidden.
--->
-<span class="mat-mdc-focus-indicator"></span>
-
-<span class="mat-mdc-button-touch-target"></span>
-`,
-      styles: ['.mat-mdc-icon-button{-webkit-user-select:none;user-select:none;display:inline-block;position:relative;box-sizing:border-box;border:none;outline:none;background-color:rgba(0,0,0,0);fill:currentColor;color:inherit;text-decoration:none;cursor:pointer;z-index:0;overflow:visible;border-radius:50%;flex-shrink:0;text-align:center;width:var(--mdc-icon-button-state-layer-size, 48px);height:var(--mdc-icon-button-state-layer-size, 48px);padding:calc(calc(var(--mdc-icon-button-state-layer-size, 48px) - var(--mdc-icon-button-icon-size, 24px)) / 2);font-size:var(--mdc-icon-button-icon-size);color:var(--mdc-icon-button-icon-color);-webkit-tap-highlight-color:rgba(0,0,0,0)}.mat-mdc-icon-button[disabled],.mat-mdc-icon-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-icon-button-disabled-icon-color)}.mat-mdc-icon-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-icon-button img,.mat-mdc-icon-button svg{width:var(--mdc-icon-button-icon-size);height:var(--mdc-icon-button-icon-size);vertical-align:baseline}.mat-mdc-icon-button .mat-mdc-button-ripple,.mat-mdc-icon-button .mat-mdc-button-persistent-ripple,.mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-icon-button .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-icon-button .mdc-button__label,.mat-mdc-icon-button .mat-icon{z-index:1;position:relative}.mat-mdc-icon-button .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-icon-button:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-icon-button .mat-ripple-element{background-color:var(--mat-icon-button-ripple-color)}.mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-icon-button-state-layer-color)}.mat-mdc-icon-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-icon-button-disabled-state-layer-color)}.mat-mdc-icon-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-hover-state-layer-opacity)}.mat-mdc-icon-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-icon-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-icon-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-focus-state-layer-opacity)}.mat-mdc-icon-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-pressed-state-layer-opacity)}.mat-mdc-icon-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-icon-button-touch-target-display)}.mat-mdc-icon-button._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-icon-button .mat-mdc-button-persistent-ripple{border-radius:50%}.mat-mdc-icon-button[hidden]{display:none}.mat-mdc-icon-button.mat-unthemed:not(.mdc-ripple-upgraded):focus::before,.mat-mdc-icon-button.mat-primary:not(.mdc-ripple-upgraded):focus::before,.mat-mdc-icon-button.mat-accent:not(.mdc-ripple-upgraded):focus::before,.mat-mdc-icon-button.mat-warn:not(.mdc-ripple-upgraded):focus::before{background:rgba(0,0,0,0);opacity:1}', ".cdk-high-contrast-active .mat-mdc-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-unelevated-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-raised-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-outlined-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-icon-button{outline:solid 1px}"]
-    }]
-  }], () => [{
-    type: ElementRef
-  }, {
-    type: Platform
-  }, {
-    type: NgZone
-  }, {
-    type: void 0,
-    decorators: [{
-      type: Optional
-    }, {
-      type: Inject,
-      args: [ANIMATION_MODULE_TYPE]
-    }]
-  }], null);
-})();
-var _MatIconAnchor = class _MatIconAnchor extends MatAnchorBase {
-  constructor(elementRef, platform, ngZone, animationMode) {
-    super(elementRef, platform, ngZone, animationMode);
-  }
-};
-_MatIconAnchor.\u0275fac = function MatIconAnchor_Factory(__ngFactoryType__) {
-  return new (__ngFactoryType__ || _MatIconAnchor)(\u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(Platform), \u0275\u0275directiveInject(NgZone), \u0275\u0275directiveInject(ANIMATION_MODULE_TYPE, 8));
-};
-_MatIconAnchor.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
-  type: _MatIconAnchor,
-  selectors: [["a", "mat-icon-button", ""]],
-  hostVars: 15,
-  hostBindings: function MatIconAnchor_HostBindings(rf, ctx) {
-    if (rf & 2) {
-      \u0275\u0275attribute("disabled", ctx._getDisabledAttribute())("tabindex", ctx.disabled && !ctx.disabledInteractive ? -1 : ctx.tabIndex)("aria-disabled", ctx._getDisabledAttribute());
-      \u0275\u0275classMap(ctx.color ? "mat-" + ctx.color : "");
-      \u0275\u0275classProp("mat-mdc-button-disabled", ctx.disabled)("mat-mdc-button-disabled-interactive", ctx.disabledInteractive)("_mat-animation-noopable", ctx._animationMode === "NoopAnimations")("mat-unthemed", !ctx.color)("mat-mdc-button-base", true);
-    }
-  },
-  exportAs: ["matButton", "matAnchor"],
-  standalone: true,
-  features: [\u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
-  attrs: _c8,
-  ngContentSelectors: _c9,
-  decls: 4,
-  vars: 0,
-  consts: [[1, "mat-mdc-button-persistent-ripple", "mdc-icon-button__ripple"], [1, "mat-mdc-focus-indicator"], [1, "mat-mdc-button-touch-target"]],
-  template: function MatIconAnchor_Template(rf, ctx) {
-    if (rf & 1) {
-      \u0275\u0275projectionDef();
-      \u0275\u0275element(0, "span", 0);
-      \u0275\u0275projection(1);
-      \u0275\u0275element(2, "span", 1)(3, "span", 2);
-    }
-  },
-  styles: [_c10, _c43],
-  encapsulation: 2,
-  changeDetection: 0
-});
-var MatIconAnchor = _MatIconAnchor;
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatIconAnchor, [{
-    type: Component,
-    args: [{
-      selector: `a[mat-icon-button]`,
-      host: MAT_ANCHOR_HOST,
-      exportAs: "matButton, matAnchor",
-      encapsulation: ViewEncapsulation$1.None,
-      changeDetection: ChangeDetectionStrategy.OnPush,
-      standalone: true,
-      template: `<span class="mat-mdc-button-persistent-ripple mdc-icon-button__ripple"></span>
-
-<ng-content></ng-content>
-
-<!--
-  The indicator can't be directly on the button, because MDC uses ::before for high contrast
-  indication and it can't be on the ripple, because it has a border radius and overflow: hidden.
--->
-<span class="mat-mdc-focus-indicator"></span>
-
-<span class="mat-mdc-button-touch-target"></span>
-`,
-      styles: ['.mat-mdc-icon-button{-webkit-user-select:none;user-select:none;display:inline-block;position:relative;box-sizing:border-box;border:none;outline:none;background-color:rgba(0,0,0,0);fill:currentColor;color:inherit;text-decoration:none;cursor:pointer;z-index:0;overflow:visible;border-radius:50%;flex-shrink:0;text-align:center;width:var(--mdc-icon-button-state-layer-size, 48px);height:var(--mdc-icon-button-state-layer-size, 48px);padding:calc(calc(var(--mdc-icon-button-state-layer-size, 48px) - var(--mdc-icon-button-icon-size, 24px)) / 2);font-size:var(--mdc-icon-button-icon-size);color:var(--mdc-icon-button-icon-color);-webkit-tap-highlight-color:rgba(0,0,0,0)}.mat-mdc-icon-button[disabled],.mat-mdc-icon-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mdc-icon-button-disabled-icon-color)}.mat-mdc-icon-button.mat-mdc-button-disabled-interactive{pointer-events:auto}.mat-mdc-icon-button img,.mat-mdc-icon-button svg{width:var(--mdc-icon-button-icon-size);height:var(--mdc-icon-button-icon-size);vertical-align:baseline}.mat-mdc-icon-button .mat-mdc-button-ripple,.mat-mdc-icon-button .mat-mdc-button-persistent-ripple,.mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-mdc-icon-button .mat-mdc-button-ripple{overflow:hidden}.mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}.mat-mdc-icon-button .mdc-button__label,.mat-mdc-icon-button .mat-icon{z-index:1;position:relative}.mat-mdc-icon-button .mat-mdc-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute}.mat-mdc-icon-button:focus .mat-mdc-focus-indicator::before{content:""}.mat-mdc-icon-button .mat-ripple-element{background-color:var(--mat-icon-button-ripple-color)}.mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-icon-button-state-layer-color)}.mat-mdc-icon-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-icon-button-disabled-state-layer-color)}.mat-mdc-icon-button:hover .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-hover-state-layer-opacity)}.mat-mdc-icon-button.cdk-program-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-icon-button.cdk-keyboard-focused .mat-mdc-button-persistent-ripple::before,.mat-mdc-icon-button.mat-mdc-button-disabled-interactive:focus .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-focus-state-layer-opacity)}.mat-mdc-icon-button:active .mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-pressed-state-layer-opacity)}.mat-mdc-icon-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:48px;left:50%;width:48px;transform:translate(-50%, -50%);display:var(--mat-icon-button-touch-target-display)}.mat-mdc-icon-button._mat-animation-noopable{transition:none !important;animation:none !important}.mat-mdc-icon-button .mat-mdc-button-persistent-ripple{border-radius:50%}.mat-mdc-icon-button[hidden]{display:none}.mat-mdc-icon-button.mat-unthemed:not(.mdc-ripple-upgraded):focus::before,.mat-mdc-icon-button.mat-primary:not(.mdc-ripple-upgraded):focus::before,.mat-mdc-icon-button.mat-accent:not(.mdc-ripple-upgraded):focus::before,.mat-mdc-icon-button.mat-warn:not(.mdc-ripple-upgraded):focus::before{background:rgba(0,0,0,0);opacity:1}', ".cdk-high-contrast-active .mat-mdc-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-unelevated-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-raised-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-outlined-button:not(.mdc-button--outlined),.cdk-high-contrast-active .mat-mdc-icon-button{outline:solid 1px}"]
-    }]
-  }], () => [{
-    type: ElementRef
-  }, {
-    type: Platform
-  }, {
-    type: NgZone
-  }, {
-    type: void 0,
-    decorators: [{
-      type: Optional
-    }, {
-      type: Inject,
-      args: [ANIMATION_MODULE_TYPE]
-    }]
-  }], null);
-})();
-var _MatButtonModule = class _MatButtonModule {
-};
-_MatButtonModule.\u0275fac = function MatButtonModule_Factory(__ngFactoryType__) {
-  return new (__ngFactoryType__ || _MatButtonModule)();
-};
-_MatButtonModule.\u0275mod = /* @__PURE__ */ \u0275\u0275defineNgModule({
-  type: _MatButtonModule
-});
-_MatButtonModule.\u0275inj = /* @__PURE__ */ \u0275\u0275defineInjector({
-  imports: [MatCommonModule, MatRippleModule, MatCommonModule]
-});
-var MatButtonModule = _MatButtonModule;
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatButtonModule, [{
-    type: NgModule,
-    args: [{
-      imports: [MatCommonModule, MatRippleModule, MatAnchor, MatButton, MatIconAnchor, MatMiniFabAnchor, MatMiniFabButton, MatIconButton, MatFabAnchor, MatFabButton],
-      exports: [MatAnchor, MatButton, MatIconAnchor, MatIconButton, MatMiniFabAnchor, MatMiniFabButton, MatFabAnchor, MatFabButton, MatCommonModule]
-    }]
-  }], null, null);
-})();
-
 // src/app/util/DurationConverter.ts
 var DurationConverter = class _DurationConverter {
   static convertToISO8601Duration(humanDuration) {
@@ -39498,86 +37784,1793 @@ var DurationConverter = class _DurationConverter {
   }
 };
 
-// node_modules/@angular/core/fesm2022/rxjs-interop.mjs
-function toSignal(source, options) {
-  ngDevMode && assertNotInReactiveContext(toSignal, "Invoking `toSignal` causes new subscriptions every time. Consider moving `toSignal` outside of the reactive context and read the signal value where needed.");
-  const requiresCleanup = !options?.manualCleanup;
-  requiresCleanup && !options?.injector && assertInInjectionContext(toSignal);
-  const cleanupRef = requiresCleanup ? options?.injector?.get(DestroyRef) ?? inject(DestroyRef) : null;
-  const equal = makeToSignalEqual(options?.equal);
-  let state2;
-  if (options?.requireSync) {
-    state2 = signal({
-      kind: 0
-      /* StateKind.NoValue */
-    }, {
-      equal
-    });
-  } else {
-    state2 = signal({
-      kind: 1,
-      value: options?.initialValue
-    }, {
-      equal
+// src/app/generated/encoder.ts
+var CustomHttpParameterCodec = class {
+  encodeKey(k) {
+    return encodeURIComponent(k);
+  }
+  encodeValue(v) {
+    return encodeURIComponent(v);
+  }
+  decodeKey(k) {
+    return decodeURIComponent(k);
+  }
+  decodeValue(v) {
+    return decodeURIComponent(v);
+  }
+};
+
+// src/app/generated/variables.ts
+var BASE_PATH = new InjectionToken("basePath");
+
+// src/app/generated/configuration.ts
+var Configuration = class {
+  constructor(configurationParameters = {}) {
+    this.apiKeys = configurationParameters.apiKeys;
+    this.username = configurationParameters.username;
+    this.password = configurationParameters.password;
+    this.accessToken = configurationParameters.accessToken;
+    this.basePath = configurationParameters.basePath;
+    this.withCredentials = configurationParameters.withCredentials;
+    this.encoder = configurationParameters.encoder;
+    if (configurationParameters.encodeParam) {
+      this.encodeParam = configurationParameters.encodeParam;
+    } else {
+      this.encodeParam = (param) => this.defaultEncodeParam(param);
+    }
+    if (configurationParameters.credentials) {
+      this.credentials = configurationParameters.credentials;
+    } else {
+      this.credentials = {};
+    }
+    if (!this.credentials["openId"]) {
+    }
+    if (!this.credentials["basicAuth"]) {
+      this.credentials["basicAuth"] = () => {
+        return this.username || this.password ? btoa(this.username + ":" + this.password) : void 0;
+      };
+    }
+  }
+  /**
+   * Select the correct content-type to use for a request.
+   * Uses {@link Configuration#isJsonMime} to determine the correct content-type.
+   * If no content type is found return the first found type if the contentTypes is not empty
+   * @param contentTypes - the array of content types that are available for selection
+   * @returns the selected content-type or <code>undefined</code> if no selection could be made.
+   */
+  selectHeaderContentType(contentTypes) {
+    if (contentTypes.length === 0) {
+      return void 0;
+    }
+    const type = contentTypes.find((x) => this.isJsonMime(x));
+    if (type === void 0) {
+      return contentTypes[0];
+    }
+    return type;
+  }
+  /**
+   * Select the correct accept content-type to use for a request.
+   * Uses {@link Configuration#isJsonMime} to determine the correct accept content-type.
+   * If no content type is found return the first found type if the contentTypes is not empty
+   * @param accepts - the array of content types that are available for selection.
+   * @returns the selected content-type or <code>undefined</code> if no selection could be made.
+   */
+  selectHeaderAccept(accepts) {
+    if (accepts.length === 0) {
+      return void 0;
+    }
+    const type = accepts.find((x) => this.isJsonMime(x));
+    if (type === void 0) {
+      return accepts[0];
+    }
+    return type;
+  }
+  /**
+   * Check if the given MIME is a JSON MIME.
+   * JSON MIME examples:
+   *   application/json
+   *   application/json; charset=UTF8
+   *   APPLICATION/JSON
+   *   application/vnd.company+json
+   * @param mime - MIME (Multipurpose Internet Mail Extensions)
+   * @return True if the given MIME is JSON, false otherwise.
+   */
+  isJsonMime(mime) {
+    const jsonMime = new RegExp("^(application/json|[^;/ 	]+/[^;/ 	]+[+]json)[ 	]*(;.*)?$", "i");
+    return mime !== null && (jsonMime.test(mime) || mime.toLowerCase() === "application/json-patch+json");
+  }
+  lookupCredential(key) {
+    const value = this.credentials[key];
+    return typeof value === "function" ? value() : value;
+  }
+  defaultEncodeParam(param) {
+    const value = param.dataFormat === "date-time" && param.value instanceof Date ? param.value.toISOString() : param.value;
+    return encodeURIComponent(String(value));
+  }
+};
+
+// src/app/generated/api/export.service.ts
+var _ExportService = class _ExportService {
+  constructor(httpClient, basePath, configuration) {
+    this.httpClient = httpClient;
+    this.basePath = "https://trireg2.tcs.trifork.dev";
+    this.defaultHeaders = new HttpHeaders();
+    this.configuration = new Configuration();
+    if (configuration) {
+      this.configuration = configuration;
+    }
+    if (typeof this.configuration.basePath !== "string") {
+      if (Array.isArray(basePath) && basePath.length > 0) {
+        basePath = basePath[0];
+      }
+      if (typeof basePath !== "string") {
+        basePath = this.basePath;
+      }
+      this.configuration.basePath = basePath;
+    }
+    this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
+  }
+  // @ts-ignore
+  addToHttpParams(httpParams, value, key) {
+    if (typeof value === "object" && value instanceof Date === false) {
+      httpParams = this.addToHttpParamsRecursive(httpParams, value);
+    } else {
+      httpParams = this.addToHttpParamsRecursive(httpParams, value, key);
+    }
+    return httpParams;
+  }
+  addToHttpParamsRecursive(httpParams, value, key) {
+    if (value == null) {
+      return httpParams;
+    }
+    if (typeof value === "object") {
+      if (Array.isArray(value)) {
+        value.forEach((elem) => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
+      } else if (value instanceof Date) {
+        if (key != null) {
+          httpParams = httpParams.append(key, value.toISOString().substring(0, 10));
+        } else {
+          throw Error("key may not be null if value is Date");
+        }
+      } else {
+        Object.keys(value).forEach((k) => httpParams = this.addToHttpParamsRecursive(httpParams, value[k], key != null ? `${key}.${k}` : k));
+      }
+    } else if (key != null) {
+      httpParams = httpParams.append(key, value);
+    } else {
+      throw Error("key may not be null if value is not object or array");
+    }
+    return httpParams;
+  }
+  exportTimeRegistrationsForUser(start, end, observe = "body", reportProgress = false, options) {
+    if (start === null || start === void 0) {
+      throw new Error("Required parameter start was null or undefined when calling exportTimeRegistrationsForUser.");
+    }
+    if (end === null || end === void 0) {
+      throw new Error("Required parameter end was null or undefined when calling exportTimeRegistrationsForUser.");
+    }
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    if (start !== void 0 && start !== null) {
+      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, start, "start");
+    }
+    if (end !== void 0 && end !== null) {
+      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, end, "end");
+    }
+    let localVarHeaders = this.defaultHeaders;
+    let localVarCredential;
+    localVarCredential = this.configuration.lookupCredential("openId");
+    if (localVarCredential) {
+    }
+    localVarCredential = this.configuration.lookupCredential("basicAuth");
+    if (localVarCredential) {
+      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
+    }
+    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
+    if (localVarHttpHeaderAcceptSelected === void 0) {
+      const httpHeaderAccepts = [
+        "text/plain"
+      ];
+      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (localVarHttpHeaderAcceptSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
+    }
+    let localVarHttpContext = options && options.context;
+    if (localVarHttpContext === void 0) {
+      localVarHttpContext = new HttpContext();
+    }
+    let localVarTransferCache = options && options.transferCache;
+    if (localVarTransferCache === void 0) {
+      localVarTransferCache = true;
+    }
+    let responseType_ = "json";
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
+        responseType_ = "text";
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = "json";
+      } else {
+        responseType_ = "blob";
+      }
+    }
+    let localVarPath = `/export`;
+    return this.httpClient.request("post", `${this.configuration.basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: responseType_,
+      withCredentials: this.configuration.withCredentials,
+      headers: localVarHeaders,
+      observe,
+      transferCache: localVarTransferCache,
+      reportProgress
     });
   }
-  const sub = source.subscribe({
-    next: (value) => state2.set({
-      kind: 1,
-      value
-    }),
-    error: (error) => {
-      if (options?.rejectErrors) {
-        throw error;
+};
+_ExportService.\u0275fac = function ExportService_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _ExportService)(\u0275\u0275inject(HttpClient), \u0275\u0275inject(BASE_PATH, 8), \u0275\u0275inject(Configuration, 8));
+};
+_ExportService.\u0275prov = /* @__PURE__ */ \u0275\u0275defineInjectable({ token: _ExportService, factory: _ExportService.\u0275fac, providedIn: "root" });
+var ExportService = _ExportService;
+
+// src/app/generated/api/import.service.ts
+var _ImportService = class _ImportService {
+  constructor(httpClient, basePath, configuration) {
+    this.httpClient = httpClient;
+    this.basePath = "https://trireg2.tcs.trifork.dev";
+    this.defaultHeaders = new HttpHeaders();
+    this.configuration = new Configuration();
+    if (configuration) {
+      this.configuration = configuration;
+    }
+    if (typeof this.configuration.basePath !== "string") {
+      if (Array.isArray(basePath) && basePath.length > 0) {
+        basePath = basePath[0];
       }
-      state2.set({
-        kind: 2,
-        error
+      if (typeof basePath !== "string") {
+        basePath = this.basePath;
+      }
+      this.configuration.basePath = basePath;
+    }
+    this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
+  }
+  // @ts-ignore
+  addToHttpParams(httpParams, value, key) {
+    if (typeof value === "object" && value instanceof Date === false) {
+      httpParams = this.addToHttpParamsRecursive(httpParams, value);
+    } else {
+      httpParams = this.addToHttpParamsRecursive(httpParams, value, key);
+    }
+    return httpParams;
+  }
+  addToHttpParamsRecursive(httpParams, value, key) {
+    if (value == null) {
+      return httpParams;
+    }
+    if (typeof value === "object") {
+      if (Array.isArray(value)) {
+        value.forEach((elem) => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
+      } else if (value instanceof Date) {
+        if (key != null) {
+          httpParams = httpParams.append(key, value.toISOString().substring(0, 10));
+        } else {
+          throw Error("key may not be null if value is Date");
+        }
+      } else {
+        Object.keys(value).forEach((k) => httpParams = this.addToHttpParamsRecursive(httpParams, value[k], key != null ? `${key}.${k}` : k));
+      }
+    } else if (key != null) {
+      httpParams = httpParams.append(key, value);
+    } else {
+      throw Error("key may not be null if value is not object or array");
+    }
+    return httpParams;
+  }
+  importTimeRegistrations(importTimeRegistrationRequestInner, observe = "body", reportProgress = false, options) {
+    if (importTimeRegistrationRequestInner === null || importTimeRegistrationRequestInner === void 0) {
+      throw new Error("Required parameter importTimeRegistrationRequestInner was null or undefined when calling importTimeRegistrations.");
+    }
+    let localVarHeaders = this.defaultHeaders;
+    let localVarCredential;
+    localVarCredential = this.configuration.lookupCredential("openId");
+    if (localVarCredential) {
+    }
+    localVarCredential = this.configuration.lookupCredential("basicAuth");
+    if (localVarCredential) {
+      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
+    }
+    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
+    if (localVarHttpHeaderAcceptSelected === void 0) {
+      const httpHeaderAccepts = [
+        "application/json"
+      ];
+      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (localVarHttpHeaderAcceptSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
+    }
+    let localVarHttpContext = options && options.context;
+    if (localVarHttpContext === void 0) {
+      localVarHttpContext = new HttpContext();
+    }
+    let localVarTransferCache = options && options.transferCache;
+    if (localVarTransferCache === void 0) {
+      localVarTransferCache = true;
+    }
+    const consumes = [
+      "application/json"
+    ];
+    const httpContentTypeSelected = this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Content-Type", httpContentTypeSelected);
+    }
+    let responseType_ = "json";
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
+        responseType_ = "text";
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = "json";
+      } else {
+        responseType_ = "blob";
+      }
+    }
+    let localVarPath = `/import`;
+    return this.httpClient.request("post", `${this.configuration.basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: importTimeRegistrationRequestInner,
+      responseType: responseType_,
+      withCredentials: this.configuration.withCredentials,
+      headers: localVarHeaders,
+      observe,
+      transferCache: localVarTransferCache,
+      reportProgress
+    });
+  }
+};
+_ImportService.\u0275fac = function ImportService_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _ImportService)(\u0275\u0275inject(HttpClient), \u0275\u0275inject(BASE_PATH, 8), \u0275\u0275inject(Configuration, 8));
+};
+_ImportService.\u0275prov = /* @__PURE__ */ \u0275\u0275defineInjectable({ token: _ImportService, factory: _ImportService.\u0275fac, providedIn: "root" });
+var ImportService = _ImportService;
+
+// src/app/generated/api/kmRegistration.service.ts
+var _KmRegistrationService = class _KmRegistrationService {
+  constructor(httpClient, basePath, configuration) {
+    this.httpClient = httpClient;
+    this.basePath = "https://trireg2.tcs.trifork.dev";
+    this.defaultHeaders = new HttpHeaders();
+    this.configuration = new Configuration();
+    if (configuration) {
+      this.configuration = configuration;
+    }
+    if (typeof this.configuration.basePath !== "string") {
+      if (Array.isArray(basePath) && basePath.length > 0) {
+        basePath = basePath[0];
+      }
+      if (typeof basePath !== "string") {
+        basePath = this.basePath;
+      }
+      this.configuration.basePath = basePath;
+    }
+    this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
+  }
+  // @ts-ignore
+  addToHttpParams(httpParams, value, key) {
+    if (typeof value === "object" && value instanceof Date === false) {
+      httpParams = this.addToHttpParamsRecursive(httpParams, value);
+    } else {
+      httpParams = this.addToHttpParamsRecursive(httpParams, value, key);
+    }
+    return httpParams;
+  }
+  addToHttpParamsRecursive(httpParams, value, key) {
+    if (value == null) {
+      return httpParams;
+    }
+    if (typeof value === "object") {
+      if (Array.isArray(value)) {
+        value.forEach((elem) => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
+      } else if (value instanceof Date) {
+        if (key != null) {
+          httpParams = httpParams.append(key, value.toISOString().substring(0, 10));
+        } else {
+          throw Error("key may not be null if value is Date");
+        }
+      } else {
+        Object.keys(value).forEach((k) => httpParams = this.addToHttpParamsRecursive(httpParams, value[k], key != null ? `${key}.${k}` : k));
+      }
+    } else if (key != null) {
+      httpParams = httpParams.append(key, value);
+    } else {
+      throw Error("key may not be null if value is not object or array");
+    }
+    return httpParams;
+  }
+  createKmRegistration(kmRegistrationRequest, observe = "body", reportProgress = false, options) {
+    if (kmRegistrationRequest === null || kmRegistrationRequest === void 0) {
+      throw new Error("Required parameter kmRegistrationRequest was null or undefined when calling createKmRegistration.");
+    }
+    let localVarHeaders = this.defaultHeaders;
+    let localVarCredential;
+    localVarCredential = this.configuration.lookupCredential("openId");
+    if (localVarCredential) {
+    }
+    localVarCredential = this.configuration.lookupCredential("basicAuth");
+    if (localVarCredential) {
+      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
+    }
+    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
+    if (localVarHttpHeaderAcceptSelected === void 0) {
+      const httpHeaderAccepts = [
+        "application/json",
+        "text/plain"
+      ];
+      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (localVarHttpHeaderAcceptSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
+    }
+    let localVarHttpContext = options && options.context;
+    if (localVarHttpContext === void 0) {
+      localVarHttpContext = new HttpContext();
+    }
+    let localVarTransferCache = options && options.transferCache;
+    if (localVarTransferCache === void 0) {
+      localVarTransferCache = true;
+    }
+    const consumes = [
+      "application/json"
+    ];
+    const httpContentTypeSelected = this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Content-Type", httpContentTypeSelected);
+    }
+    let responseType_ = "json";
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
+        responseType_ = "text";
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = "json";
+      } else {
+        responseType_ = "blob";
+      }
+    }
+    let localVarPath = `/km-registration`;
+    return this.httpClient.request("post", `${this.configuration.basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: kmRegistrationRequest,
+      responseType: responseType_,
+      withCredentials: this.configuration.withCredentials,
+      headers: localVarHeaders,
+      observe,
+      transferCache: localVarTransferCache,
+      reportProgress
+    });
+  }
+  deleteKmRegistration(kmRegistrationId, observe = "body", reportProgress = false, options) {
+    if (kmRegistrationId === null || kmRegistrationId === void 0) {
+      throw new Error("Required parameter kmRegistrationId was null or undefined when calling deleteKmRegistration.");
+    }
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    if (kmRegistrationId !== void 0 && kmRegistrationId !== null) {
+      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, kmRegistrationId, "kmRegistrationId");
+    }
+    let localVarHeaders = this.defaultHeaders;
+    let localVarCredential;
+    localVarCredential = this.configuration.lookupCredential("openId");
+    if (localVarCredential) {
+    }
+    localVarCredential = this.configuration.lookupCredential("basicAuth");
+    if (localVarCredential) {
+      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
+    }
+    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
+    if (localVarHttpHeaderAcceptSelected === void 0) {
+      const httpHeaderAccepts = [
+        "application/json",
+        "text/plain"
+      ];
+      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (localVarHttpHeaderAcceptSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
+    }
+    let localVarHttpContext = options && options.context;
+    if (localVarHttpContext === void 0) {
+      localVarHttpContext = new HttpContext();
+    }
+    let localVarTransferCache = options && options.transferCache;
+    if (localVarTransferCache === void 0) {
+      localVarTransferCache = true;
+    }
+    let responseType_ = "json";
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
+        responseType_ = "text";
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = "json";
+      } else {
+        responseType_ = "blob";
+      }
+    }
+    let localVarPath = `/km-registration`;
+    return this.httpClient.request("delete", `${this.configuration.basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: responseType_,
+      withCredentials: this.configuration.withCredentials,
+      headers: localVarHeaders,
+      observe,
+      transferCache: localVarTransferCache,
+      reportProgress
+    });
+  }
+  getKmRegistrationsForUser(userId, observe = "body", reportProgress = false, options) {
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    if (userId !== void 0 && userId !== null) {
+      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, userId, "userId");
+    }
+    let localVarHeaders = this.defaultHeaders;
+    let localVarCredential;
+    localVarCredential = this.configuration.lookupCredential("openId");
+    if (localVarCredential) {
+    }
+    localVarCredential = this.configuration.lookupCredential("basicAuth");
+    if (localVarCredential) {
+      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
+    }
+    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
+    if (localVarHttpHeaderAcceptSelected === void 0) {
+      const httpHeaderAccepts = [
+        "application/json",
+        "text/plain"
+      ];
+      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (localVarHttpHeaderAcceptSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
+    }
+    let localVarHttpContext = options && options.context;
+    if (localVarHttpContext === void 0) {
+      localVarHttpContext = new HttpContext();
+    }
+    let localVarTransferCache = options && options.transferCache;
+    if (localVarTransferCache === void 0) {
+      localVarTransferCache = true;
+    }
+    let responseType_ = "json";
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
+        responseType_ = "text";
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = "json";
+      } else {
+        responseType_ = "blob";
+      }
+    }
+    let localVarPath = `/km-registration`;
+    return this.httpClient.request("get", `${this.configuration.basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: responseType_,
+      withCredentials: this.configuration.withCredentials,
+      headers: localVarHeaders,
+      observe,
+      transferCache: localVarTransferCache,
+      reportProgress
+    });
+  }
+  updateKmRegistration(kmRegistrationId, kmRegistrationUpdateRequest, observe = "body", reportProgress = false, options) {
+    if (kmRegistrationId === null || kmRegistrationId === void 0) {
+      throw new Error("Required parameter kmRegistrationId was null or undefined when calling updateKmRegistration.");
+    }
+    if (kmRegistrationUpdateRequest === null || kmRegistrationUpdateRequest === void 0) {
+      throw new Error("Required parameter kmRegistrationUpdateRequest was null or undefined when calling updateKmRegistration.");
+    }
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    if (kmRegistrationId !== void 0 && kmRegistrationId !== null) {
+      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, kmRegistrationId, "kmRegistrationId");
+    }
+    let localVarHeaders = this.defaultHeaders;
+    let localVarCredential;
+    localVarCredential = this.configuration.lookupCredential("openId");
+    if (localVarCredential) {
+    }
+    localVarCredential = this.configuration.lookupCredential("basicAuth");
+    if (localVarCredential) {
+      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
+    }
+    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
+    if (localVarHttpHeaderAcceptSelected === void 0) {
+      const httpHeaderAccepts = [
+        "application/json",
+        "text/plain"
+      ];
+      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (localVarHttpHeaderAcceptSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
+    }
+    let localVarHttpContext = options && options.context;
+    if (localVarHttpContext === void 0) {
+      localVarHttpContext = new HttpContext();
+    }
+    let localVarTransferCache = options && options.transferCache;
+    if (localVarTransferCache === void 0) {
+      localVarTransferCache = true;
+    }
+    const consumes = [
+      "application/json"
+    ];
+    const httpContentTypeSelected = this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Content-Type", httpContentTypeSelected);
+    }
+    let responseType_ = "json";
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
+        responseType_ = "text";
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = "json";
+      } else {
+        responseType_ = "blob";
+      }
+    }
+    let localVarPath = `/km-registration`;
+    return this.httpClient.request("put", `${this.configuration.basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: kmRegistrationUpdateRequest,
+      params: localVarQueryParameters,
+      responseType: responseType_,
+      withCredentials: this.configuration.withCredentials,
+      headers: localVarHeaders,
+      observe,
+      transferCache: localVarTransferCache,
+      reportProgress
+    });
+  }
+};
+_KmRegistrationService.\u0275fac = function KmRegistrationService_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _KmRegistrationService)(\u0275\u0275inject(HttpClient), \u0275\u0275inject(BASE_PATH, 8), \u0275\u0275inject(Configuration, 8));
+};
+_KmRegistrationService.\u0275prov = /* @__PURE__ */ \u0275\u0275defineInjectable({ token: _KmRegistrationService, factory: _KmRegistrationService.\u0275fac, providedIn: "root" });
+var KmRegistrationService = _KmRegistrationService;
+
+// src/app/generated/api/login.service.ts
+var _LoginService = class _LoginService {
+  constructor(httpClient, basePath, configuration) {
+    this.httpClient = httpClient;
+    this.basePath = "https://trireg2.tcs.trifork.dev";
+    this.defaultHeaders = new HttpHeaders();
+    this.configuration = new Configuration();
+    if (configuration) {
+      this.configuration = configuration;
+    }
+    if (typeof this.configuration.basePath !== "string") {
+      if (Array.isArray(basePath) && basePath.length > 0) {
+        basePath = basePath[0];
+      }
+      if (typeof basePath !== "string") {
+        basePath = this.basePath;
+      }
+      this.configuration.basePath = basePath;
+    }
+    this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
+  }
+  // @ts-ignore
+  addToHttpParams(httpParams, value, key) {
+    if (typeof value === "object" && value instanceof Date === false) {
+      httpParams = this.addToHttpParamsRecursive(httpParams, value);
+    } else {
+      httpParams = this.addToHttpParamsRecursive(httpParams, value, key);
+    }
+    return httpParams;
+  }
+  addToHttpParamsRecursive(httpParams, value, key) {
+    if (value == null) {
+      return httpParams;
+    }
+    if (typeof value === "object") {
+      if (Array.isArray(value)) {
+        value.forEach((elem) => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
+      } else if (value instanceof Date) {
+        if (key != null) {
+          httpParams = httpParams.append(key, value.toISOString().substring(0, 10));
+        } else {
+          throw Error("key may not be null if value is Date");
+        }
+      } else {
+        Object.keys(value).forEach((k) => httpParams = this.addToHttpParamsRecursive(httpParams, value[k], key != null ? `${key}.${k}` : k));
+      }
+    } else if (key != null) {
+      httpParams = httpParams.append(key, value);
+    } else {
+      throw Error("key may not be null if value is not object or array");
+    }
+    return httpParams;
+  }
+  login(observe = "body", reportProgress = false, options) {
+    let localVarHeaders = this.defaultHeaders;
+    let localVarCredential;
+    localVarCredential = this.configuration.lookupCredential("openId");
+    if (localVarCredential) {
+    }
+    localVarCredential = this.configuration.lookupCredential("basicAuth");
+    if (localVarCredential) {
+      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
+    }
+    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
+    if (localVarHttpHeaderAcceptSelected === void 0) {
+      const httpHeaderAccepts = [];
+      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (localVarHttpHeaderAcceptSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
+    }
+    let localVarHttpContext = options && options.context;
+    if (localVarHttpContext === void 0) {
+      localVarHttpContext = new HttpContext();
+    }
+    let localVarTransferCache = options && options.transferCache;
+    if (localVarTransferCache === void 0) {
+      localVarTransferCache = true;
+    }
+    let responseType_ = "json";
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
+        responseType_ = "text";
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = "json";
+      } else {
+        responseType_ = "blob";
+      }
+    }
+    let localVarPath = `/login`;
+    return this.httpClient.request("get", `${this.configuration.basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: responseType_,
+      withCredentials: this.configuration.withCredentials,
+      headers: localVarHeaders,
+      observe,
+      transferCache: localVarTransferCache,
+      reportProgress
+    });
+  }
+};
+_LoginService.\u0275fac = function LoginService_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _LoginService)(\u0275\u0275inject(HttpClient), \u0275\u0275inject(BASE_PATH, 8), \u0275\u0275inject(Configuration, 8));
+};
+_LoginService.\u0275prov = /* @__PURE__ */ \u0275\u0275defineInjectable({ token: _LoginService, factory: _LoginService.\u0275fac, providedIn: "root" });
+var LoginService = _LoginService;
+
+// src/app/generated/api/tag.service.ts
+var _TagService = class _TagService {
+  constructor(httpClient, basePath, configuration) {
+    this.httpClient = httpClient;
+    this.basePath = "https://trireg2.tcs.trifork.dev";
+    this.defaultHeaders = new HttpHeaders();
+    this.configuration = new Configuration();
+    if (configuration) {
+      this.configuration = configuration;
+    }
+    if (typeof this.configuration.basePath !== "string") {
+      if (Array.isArray(basePath) && basePath.length > 0) {
+        basePath = basePath[0];
+      }
+      if (typeof basePath !== "string") {
+        basePath = this.basePath;
+      }
+      this.configuration.basePath = basePath;
+    }
+    this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
+  }
+  // @ts-ignore
+  addToHttpParams(httpParams, value, key) {
+    if (typeof value === "object" && value instanceof Date === false) {
+      httpParams = this.addToHttpParamsRecursive(httpParams, value);
+    } else {
+      httpParams = this.addToHttpParamsRecursive(httpParams, value, key);
+    }
+    return httpParams;
+  }
+  addToHttpParamsRecursive(httpParams, value, key) {
+    if (value == null) {
+      return httpParams;
+    }
+    if (typeof value === "object") {
+      if (Array.isArray(value)) {
+        value.forEach((elem) => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
+      } else if (value instanceof Date) {
+        if (key != null) {
+          httpParams = httpParams.append(key, value.toISOString().substring(0, 10));
+        } else {
+          throw Error("key may not be null if value is Date");
+        }
+      } else {
+        Object.keys(value).forEach((k) => httpParams = this.addToHttpParamsRecursive(httpParams, value[k], key != null ? `${key}.${k}` : k));
+      }
+    } else if (key != null) {
+      httpParams = httpParams.append(key, value);
+    } else {
+      throw Error("key may not be null if value is not object or array");
+    }
+    return httpParams;
+  }
+  deleteTagRegistration(tagId, observe = "body", reportProgress = false, options) {
+    if (tagId === null || tagId === void 0) {
+      throw new Error("Required parameter tagId was null or undefined when calling deleteTagRegistration.");
+    }
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    if (tagId !== void 0 && tagId !== null) {
+      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, tagId, "tagId");
+    }
+    let localVarHeaders = this.defaultHeaders;
+    let localVarCredential;
+    localVarCredential = this.configuration.lookupCredential("openId");
+    if (localVarCredential) {
+    }
+    localVarCredential = this.configuration.lookupCredential("basicAuth");
+    if (localVarCredential) {
+      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
+    }
+    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
+    if (localVarHttpHeaderAcceptSelected === void 0) {
+      const httpHeaderAccepts = [
+        "application/json"
+      ];
+      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (localVarHttpHeaderAcceptSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
+    }
+    let localVarHttpContext = options && options.context;
+    if (localVarHttpContext === void 0) {
+      localVarHttpContext = new HttpContext();
+    }
+    let localVarTransferCache = options && options.transferCache;
+    if (localVarTransferCache === void 0) {
+      localVarTransferCache = true;
+    }
+    let responseType_ = "json";
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
+        responseType_ = "text";
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = "json";
+      } else {
+        responseType_ = "blob";
+      }
+    }
+    let localVarPath = `/tag`;
+    return this.httpClient.request("delete", `${this.configuration.basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: responseType_,
+      withCredentials: this.configuration.withCredentials,
+      headers: localVarHeaders,
+      observe,
+      transferCache: localVarTransferCache,
+      reportProgress
+    });
+  }
+  getTimeRegistrationTags(timeRegistrationId, observe = "body", reportProgress = false, options) {
+    if (timeRegistrationId === null || timeRegistrationId === void 0) {
+      throw new Error("Required parameter timeRegistrationId was null or undefined when calling getTimeRegistrationTags.");
+    }
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    if (timeRegistrationId !== void 0 && timeRegistrationId !== null) {
+      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, timeRegistrationId, "timeRegistrationId");
+    }
+    let localVarHeaders = this.defaultHeaders;
+    let localVarCredential;
+    localVarCredential = this.configuration.lookupCredential("openId");
+    if (localVarCredential) {
+    }
+    localVarCredential = this.configuration.lookupCredential("basicAuth");
+    if (localVarCredential) {
+      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
+    }
+    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
+    if (localVarHttpHeaderAcceptSelected === void 0) {
+      const httpHeaderAccepts = [
+        "application/json"
+      ];
+      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (localVarHttpHeaderAcceptSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
+    }
+    let localVarHttpContext = options && options.context;
+    if (localVarHttpContext === void 0) {
+      localVarHttpContext = new HttpContext();
+    }
+    let localVarTransferCache = options && options.transferCache;
+    if (localVarTransferCache === void 0) {
+      localVarTransferCache = true;
+    }
+    let responseType_ = "json";
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
+        responseType_ = "text";
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = "json";
+      } else {
+        responseType_ = "blob";
+      }
+    }
+    let localVarPath = `/tag`;
+    return this.httpClient.request("get", `${this.configuration.basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: responseType_,
+      withCredentials: this.configuration.withCredentials,
+      headers: localVarHeaders,
+      observe,
+      transferCache: localVarTransferCache,
+      reportProgress
+    });
+  }
+  tagTimeRegistration(timeRegistrationId, tagTimeRegistrationRequest, observe = "body", reportProgress = false, options) {
+    if (timeRegistrationId === null || timeRegistrationId === void 0) {
+      throw new Error("Required parameter timeRegistrationId was null or undefined when calling tagTimeRegistration.");
+    }
+    if (tagTimeRegistrationRequest === null || tagTimeRegistrationRequest === void 0) {
+      throw new Error("Required parameter tagTimeRegistrationRequest was null or undefined when calling tagTimeRegistration.");
+    }
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    if (timeRegistrationId !== void 0 && timeRegistrationId !== null) {
+      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, timeRegistrationId, "timeRegistrationId");
+    }
+    let localVarHeaders = this.defaultHeaders;
+    let localVarCredential;
+    localVarCredential = this.configuration.lookupCredential("openId");
+    if (localVarCredential) {
+    }
+    localVarCredential = this.configuration.lookupCredential("basicAuth");
+    if (localVarCredential) {
+      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
+    }
+    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
+    if (localVarHttpHeaderAcceptSelected === void 0) {
+      const httpHeaderAccepts = [
+        "application/json"
+      ];
+      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (localVarHttpHeaderAcceptSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
+    }
+    let localVarHttpContext = options && options.context;
+    if (localVarHttpContext === void 0) {
+      localVarHttpContext = new HttpContext();
+    }
+    let localVarTransferCache = options && options.transferCache;
+    if (localVarTransferCache === void 0) {
+      localVarTransferCache = true;
+    }
+    const consumes = [
+      "application/json"
+    ];
+    const httpContentTypeSelected = this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Content-Type", httpContentTypeSelected);
+    }
+    let responseType_ = "json";
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
+        responseType_ = "text";
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = "json";
+      } else {
+        responseType_ = "blob";
+      }
+    }
+    let localVarPath = `/tag`;
+    return this.httpClient.request("post", `${this.configuration.basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: tagTimeRegistrationRequest,
+      params: localVarQueryParameters,
+      responseType: responseType_,
+      withCredentials: this.configuration.withCredentials,
+      headers: localVarHeaders,
+      observe,
+      transferCache: localVarTransferCache,
+      reportProgress
+    });
+  }
+  updateTagRegistration(tagRegistration, observe = "body", reportProgress = false, options) {
+    if (tagRegistration === null || tagRegistration === void 0) {
+      throw new Error("Required parameter tagRegistration was null or undefined when calling updateTagRegistration.");
+    }
+    let localVarHeaders = this.defaultHeaders;
+    let localVarCredential;
+    localVarCredential = this.configuration.lookupCredential("openId");
+    if (localVarCredential) {
+    }
+    localVarCredential = this.configuration.lookupCredential("basicAuth");
+    if (localVarCredential) {
+      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
+    }
+    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
+    if (localVarHttpHeaderAcceptSelected === void 0) {
+      const httpHeaderAccepts = [
+        "application/json"
+      ];
+      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (localVarHttpHeaderAcceptSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
+    }
+    let localVarHttpContext = options && options.context;
+    if (localVarHttpContext === void 0) {
+      localVarHttpContext = new HttpContext();
+    }
+    let localVarTransferCache = options && options.transferCache;
+    if (localVarTransferCache === void 0) {
+      localVarTransferCache = true;
+    }
+    const consumes = [
+      "application/json"
+    ];
+    const httpContentTypeSelected = this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Content-Type", httpContentTypeSelected);
+    }
+    let responseType_ = "json";
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
+        responseType_ = "text";
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = "json";
+      } else {
+        responseType_ = "blob";
+      }
+    }
+    let localVarPath = `/tag`;
+    return this.httpClient.request("put", `${this.configuration.basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: tagRegistration,
+      responseType: responseType_,
+      withCredentials: this.configuration.withCredentials,
+      headers: localVarHeaders,
+      observe,
+      transferCache: localVarTransferCache,
+      reportProgress
+    });
+  }
+};
+_TagService.\u0275fac = function TagService_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _TagService)(\u0275\u0275inject(HttpClient), \u0275\u0275inject(BASE_PATH, 8), \u0275\u0275inject(Configuration, 8));
+};
+_TagService.\u0275prov = /* @__PURE__ */ \u0275\u0275defineInjectable({ token: _TagService, factory: _TagService.\u0275fac, providedIn: "root" });
+var TagService = _TagService;
+
+// src/app/generated/api/task.service.ts
+var _TaskService = class _TaskService {
+  constructor(httpClient, basePath, configuration) {
+    this.httpClient = httpClient;
+    this.basePath = "https://trireg2.tcs.trifork.dev";
+    this.defaultHeaders = new HttpHeaders();
+    this.configuration = new Configuration();
+    if (configuration) {
+      this.configuration = configuration;
+    }
+    if (typeof this.configuration.basePath !== "string") {
+      if (Array.isArray(basePath) && basePath.length > 0) {
+        basePath = basePath[0];
+      }
+      if (typeof basePath !== "string") {
+        basePath = this.basePath;
+      }
+      this.configuration.basePath = basePath;
+    }
+    this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
+  }
+  // @ts-ignore
+  addToHttpParams(httpParams, value, key) {
+    if (typeof value === "object" && value instanceof Date === false) {
+      httpParams = this.addToHttpParamsRecursive(httpParams, value);
+    } else {
+      httpParams = this.addToHttpParamsRecursive(httpParams, value, key);
+    }
+    return httpParams;
+  }
+  addToHttpParamsRecursive(httpParams, value, key) {
+    if (value == null) {
+      return httpParams;
+    }
+    if (typeof value === "object") {
+      if (Array.isArray(value)) {
+        value.forEach((elem) => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
+      } else if (value instanceof Date) {
+        if (key != null) {
+          httpParams = httpParams.append(key, value.toISOString().substring(0, 10));
+        } else {
+          throw Error("key may not be null if value is Date");
+        }
+      } else {
+        Object.keys(value).forEach((k) => httpParams = this.addToHttpParamsRecursive(httpParams, value[k], key != null ? `${key}.${k}` : k));
+      }
+    } else if (key != null) {
+      httpParams = httpParams.append(key, value);
+    } else {
+      throw Error("key may not be null if value is not object or array");
+    }
+    return httpParams;
+  }
+  getTasksForUser(userId, observe = "body", reportProgress = false, options) {
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    if (userId !== void 0 && userId !== null) {
+      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, userId, "userId");
+    }
+    let localVarHeaders = this.defaultHeaders;
+    let localVarCredential;
+    localVarCredential = this.configuration.lookupCredential("openId");
+    if (localVarCredential) {
+    }
+    localVarCredential = this.configuration.lookupCredential("basicAuth");
+    if (localVarCredential) {
+      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
+    }
+    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
+    if (localVarHttpHeaderAcceptSelected === void 0) {
+      const httpHeaderAccepts = [
+        "application/json"
+      ];
+      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (localVarHttpHeaderAcceptSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
+    }
+    let localVarHttpContext = options && options.context;
+    if (localVarHttpContext === void 0) {
+      localVarHttpContext = new HttpContext();
+    }
+    let localVarTransferCache = options && options.transferCache;
+    if (localVarTransferCache === void 0) {
+      localVarTransferCache = true;
+    }
+    let responseType_ = "json";
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
+        responseType_ = "text";
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = "json";
+      } else {
+        responseType_ = "blob";
+      }
+    }
+    let localVarPath = `/task`;
+    return this.httpClient.request("get", `${this.configuration.basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: responseType_,
+      withCredentials: this.configuration.withCredentials,
+      headers: localVarHeaders,
+      observe,
+      transferCache: localVarTransferCache,
+      reportProgress
+    });
+  }
+};
+_TaskService.\u0275fac = function TaskService_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _TaskService)(\u0275\u0275inject(HttpClient), \u0275\u0275inject(BASE_PATH, 8), \u0275\u0275inject(Configuration, 8));
+};
+_TaskService.\u0275prov = /* @__PURE__ */ \u0275\u0275defineInjectable({ token: _TaskService, factory: _TaskService.\u0275fac, providedIn: "root" });
+var TaskService = _TaskService;
+
+// src/app/generated/api/timeRegistration.service.ts
+var _TimeRegistrationService = class _TimeRegistrationService {
+  constructor(httpClient, basePath, configuration) {
+    this.httpClient = httpClient;
+    this.basePath = "https://trireg2.tcs.trifork.dev";
+    this.defaultHeaders = new HttpHeaders();
+    this.configuration = new Configuration();
+    if (configuration) {
+      this.configuration = configuration;
+    }
+    if (typeof this.configuration.basePath !== "string") {
+      if (Array.isArray(basePath) && basePath.length > 0) {
+        basePath = basePath[0];
+      }
+      if (typeof basePath !== "string") {
+        basePath = this.basePath;
+      }
+      this.configuration.basePath = basePath;
+    }
+    this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
+  }
+  // @ts-ignore
+  addToHttpParams(httpParams, value, key) {
+    if (typeof value === "object" && value instanceof Date === false) {
+      httpParams = this.addToHttpParamsRecursive(httpParams, value);
+    } else {
+      httpParams = this.addToHttpParamsRecursive(httpParams, value, key);
+    }
+    return httpParams;
+  }
+  addToHttpParamsRecursive(httpParams, value, key) {
+    if (value == null) {
+      return httpParams;
+    }
+    if (typeof value === "object") {
+      if (Array.isArray(value)) {
+        value.forEach((elem) => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
+      } else if (value instanceof Date) {
+        if (key != null) {
+          httpParams = httpParams.append(key, value.toISOString().substring(0, 10));
+        } else {
+          throw Error("key may not be null if value is Date");
+        }
+      } else {
+        Object.keys(value).forEach((k) => httpParams = this.addToHttpParamsRecursive(httpParams, value[k], key != null ? `${key}.${k}` : k));
+      }
+    } else if (key != null) {
+      httpParams = httpParams.append(key, value);
+    } else {
+      throw Error("key may not be null if value is not object or array");
+    }
+    return httpParams;
+  }
+  addBulkTimeRegistrationForUser(timeRegistrationRequest, observe = "body", reportProgress = false, options) {
+    if (timeRegistrationRequest === null || timeRegistrationRequest === void 0) {
+      throw new Error("Required parameter timeRegistrationRequest was null or undefined when calling addBulkTimeRegistrationForUser.");
+    }
+    let localVarHeaders = this.defaultHeaders;
+    let localVarCredential;
+    localVarCredential = this.configuration.lookupCredential("openId");
+    if (localVarCredential) {
+    }
+    localVarCredential = this.configuration.lookupCredential("basicAuth");
+    if (localVarCredential) {
+      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
+    }
+    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
+    if (localVarHttpHeaderAcceptSelected === void 0) {
+      const httpHeaderAccepts = [
+        "application/json",
+        "text/plain"
+      ];
+      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (localVarHttpHeaderAcceptSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
+    }
+    let localVarHttpContext = options && options.context;
+    if (localVarHttpContext === void 0) {
+      localVarHttpContext = new HttpContext();
+    }
+    let localVarTransferCache = options && options.transferCache;
+    if (localVarTransferCache === void 0) {
+      localVarTransferCache = true;
+    }
+    const consumes = [
+      "application/json"
+    ];
+    const httpContentTypeSelected = this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Content-Type", httpContentTypeSelected);
+    }
+    let responseType_ = "json";
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
+        responseType_ = "text";
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = "json";
+      } else {
+        responseType_ = "blob";
+      }
+    }
+    let localVarPath = `/time-registration/bulk`;
+    return this.httpClient.request("post", `${this.configuration.basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: timeRegistrationRequest,
+      responseType: responseType_,
+      withCredentials: this.configuration.withCredentials,
+      headers: localVarHeaders,
+      observe,
+      transferCache: localVarTransferCache,
+      reportProgress
+    });
+  }
+  addTimeRegistrationForUser(timeRegistrationRequest, observe = "body", reportProgress = false, options) {
+    if (timeRegistrationRequest === null || timeRegistrationRequest === void 0) {
+      throw new Error("Required parameter timeRegistrationRequest was null or undefined when calling addTimeRegistrationForUser.");
+    }
+    let localVarHeaders = this.defaultHeaders;
+    let localVarCredential;
+    localVarCredential = this.configuration.lookupCredential("openId");
+    if (localVarCredential) {
+    }
+    localVarCredential = this.configuration.lookupCredential("basicAuth");
+    if (localVarCredential) {
+      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
+    }
+    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
+    if (localVarHttpHeaderAcceptSelected === void 0) {
+      const httpHeaderAccepts = [
+        "application/json"
+      ];
+      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (localVarHttpHeaderAcceptSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
+    }
+    let localVarHttpContext = options && options.context;
+    if (localVarHttpContext === void 0) {
+      localVarHttpContext = new HttpContext();
+    }
+    let localVarTransferCache = options && options.transferCache;
+    if (localVarTransferCache === void 0) {
+      localVarTransferCache = true;
+    }
+    const consumes = [
+      "application/json"
+    ];
+    const httpContentTypeSelected = this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Content-Type", httpContentTypeSelected);
+    }
+    let responseType_ = "json";
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
+        responseType_ = "text";
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = "json";
+      } else {
+        responseType_ = "blob";
+      }
+    }
+    let localVarPath = `/time-registration`;
+    return this.httpClient.request("post", `${this.configuration.basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: timeRegistrationRequest,
+      responseType: responseType_,
+      withCredentials: this.configuration.withCredentials,
+      headers: localVarHeaders,
+      observe,
+      transferCache: localVarTransferCache,
+      reportProgress
+    });
+  }
+  associateTimeRegistrationWithTask(timeRegistrationAssociateTaskRequest, observe = "body", reportProgress = false, options) {
+    if (timeRegistrationAssociateTaskRequest === null || timeRegistrationAssociateTaskRequest === void 0) {
+      throw new Error("Required parameter timeRegistrationAssociateTaskRequest was null or undefined when calling associateTimeRegistrationWithTask.");
+    }
+    let localVarHeaders = this.defaultHeaders;
+    let localVarCredential;
+    localVarCredential = this.configuration.lookupCredential("openId");
+    if (localVarCredential) {
+    }
+    localVarCredential = this.configuration.lookupCredential("basicAuth");
+    if (localVarCredential) {
+      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
+    }
+    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
+    if (localVarHttpHeaderAcceptSelected === void 0) {
+      const httpHeaderAccepts = [
+        "application/json",
+        "text/plain"
+      ];
+      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (localVarHttpHeaderAcceptSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
+    }
+    let localVarHttpContext = options && options.context;
+    if (localVarHttpContext === void 0) {
+      localVarHttpContext = new HttpContext();
+    }
+    let localVarTransferCache = options && options.transferCache;
+    if (localVarTransferCache === void 0) {
+      localVarTransferCache = true;
+    }
+    const consumes = [
+      "application/json"
+    ];
+    const httpContentTypeSelected = this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Content-Type", httpContentTypeSelected);
+    }
+    let responseType_ = "json";
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
+        responseType_ = "text";
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = "json";
+      } else {
+        responseType_ = "blob";
+      }
+    }
+    let localVarPath = `/time-registration/associate-task`;
+    return this.httpClient.request("post", `${this.configuration.basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: timeRegistrationAssociateTaskRequest,
+      responseType: responseType_,
+      withCredentials: this.configuration.withCredentials,
+      headers: localVarHeaders,
+      observe,
+      transferCache: localVarTransferCache,
+      reportProgress
+    });
+  }
+  deleteTimeRegistration(timeRegistrationId, observe = "body", reportProgress = false, options) {
+    if (timeRegistrationId === null || timeRegistrationId === void 0) {
+      throw new Error("Required parameter timeRegistrationId was null or undefined when calling deleteTimeRegistration.");
+    }
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    if (timeRegistrationId !== void 0 && timeRegistrationId !== null) {
+      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, timeRegistrationId, "timeRegistrationId");
+    }
+    let localVarHeaders = this.defaultHeaders;
+    let localVarCredential;
+    localVarCredential = this.configuration.lookupCredential("openId");
+    if (localVarCredential) {
+    }
+    localVarCredential = this.configuration.lookupCredential("basicAuth");
+    if (localVarCredential) {
+      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
+    }
+    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
+    if (localVarHttpHeaderAcceptSelected === void 0) {
+      const httpHeaderAccepts = [
+        "application/json",
+        "text/plain"
+      ];
+      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (localVarHttpHeaderAcceptSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
+    }
+    let localVarHttpContext = options && options.context;
+    if (localVarHttpContext === void 0) {
+      localVarHttpContext = new HttpContext();
+    }
+    let localVarTransferCache = options && options.transferCache;
+    if (localVarTransferCache === void 0) {
+      localVarTransferCache = true;
+    }
+    let responseType_ = "json";
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
+        responseType_ = "text";
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = "json";
+      } else {
+        responseType_ = "blob";
+      }
+    }
+    let localVarPath = `/time-registration`;
+    return this.httpClient.request("delete", `${this.configuration.basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: responseType_,
+      withCredentials: this.configuration.withCredentials,
+      headers: localVarHeaders,
+      observe,
+      transferCache: localVarTransferCache,
+      reportProgress
+    });
+  }
+  getTaskTimeRegistrationsOverview(date, period, extraTasks, observe = "body", reportProgress = false, options) {
+    if (date === null || date === void 0) {
+      throw new Error("Required parameter date was null or undefined when calling getTaskTimeRegistrationsOverview.");
+    }
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    if (date !== void 0 && date !== null) {
+      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, date, "date");
+    }
+    if (period !== void 0 && period !== null) {
+      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, period, "period");
+    }
+    if (extraTasks) {
+      extraTasks.forEach((element) => {
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, element, "extraTasks");
       });
     }
-    // Completion of the Observable is meaningless to the signal. Signals don't have a concept of
-    // "complete".
-  });
-  if (options?.requireSync && state2().kind === 0) {
-    throw new RuntimeError(601, (typeof ngDevMode === "undefined" || ngDevMode) && "`toSignal()` called with `requireSync` but `Observable` did not emit synchronously.");
-  }
-  cleanupRef?.onDestroy(sub.unsubscribe.bind(sub));
-  return computed(() => {
-    const current = state2();
-    switch (current.kind) {
-      case 1:
-        return current.value;
-      case 2:
-        throw current.error;
-      case 0:
-        throw new RuntimeError(601, (typeof ngDevMode === "undefined" || ngDevMode) && "`toSignal()` called with `requireSync` but `Observable` did not emit synchronously.");
+    let localVarHeaders = this.defaultHeaders;
+    let localVarCredential;
+    localVarCredential = this.configuration.lookupCredential("openId");
+    if (localVarCredential) {
     }
-  }, {
-    equal: options?.equal
-  });
-}
-function makeToSignalEqual(userEquality = Object.is) {
-  return (a, b) => a.kind === 1 && b.kind === 1 && userEquality(a.value, b.value);
-}
+    localVarCredential = this.configuration.lookupCredential("basicAuth");
+    if (localVarCredential) {
+      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
+    }
+    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
+    if (localVarHttpHeaderAcceptSelected === void 0) {
+      const httpHeaderAccepts = [
+        "application/json",
+        "text/plain"
+      ];
+      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (localVarHttpHeaderAcceptSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
+    }
+    let localVarHttpContext = options && options.context;
+    if (localVarHttpContext === void 0) {
+      localVarHttpContext = new HttpContext();
+    }
+    let localVarTransferCache = options && options.transferCache;
+    if (localVarTransferCache === void 0) {
+      localVarTransferCache = true;
+    }
+    let responseType_ = "json";
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
+        responseType_ = "text";
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = "json";
+      } else {
+        responseType_ = "blob";
+      }
+    }
+    let localVarPath = `/time-registration/active-task`;
+    return this.httpClient.request("get", `${this.configuration.basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: responseType_,
+      withCredentials: this.configuration.withCredentials,
+      headers: localVarHeaders,
+      observe,
+      transferCache: localVarTransferCache,
+      reportProgress
+    });
+  }
+  getTimeRegistrationsForUser(observe = "body", reportProgress = false, options) {
+    let localVarHeaders = this.defaultHeaders;
+    let localVarCredential;
+    localVarCredential = this.configuration.lookupCredential("openId");
+    if (localVarCredential) {
+    }
+    localVarCredential = this.configuration.lookupCredential("basicAuth");
+    if (localVarCredential) {
+      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
+    }
+    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
+    if (localVarHttpHeaderAcceptSelected === void 0) {
+      const httpHeaderAccepts = [
+        "application/json"
+      ];
+      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (localVarHttpHeaderAcceptSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
+    }
+    let localVarHttpContext = options && options.context;
+    if (localVarHttpContext === void 0) {
+      localVarHttpContext = new HttpContext();
+    }
+    let localVarTransferCache = options && options.transferCache;
+    if (localVarTransferCache === void 0) {
+      localVarTransferCache = true;
+    }
+    let responseType_ = "json";
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
+        responseType_ = "text";
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = "json";
+      } else {
+        responseType_ = "blob";
+      }
+    }
+    let localVarPath = `/time-registration`;
+    return this.httpClient.request("get", `${this.configuration.basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: responseType_,
+      withCredentials: this.configuration.withCredentials,
+      headers: localVarHeaders,
+      observe,
+      transferCache: localVarTransferCache,
+      reportProgress
+    });
+  }
+  updateTimeRegistrationForUser(timeRegistrationId, timeRegistrationUpdateRequest, observe = "body", reportProgress = false, options) {
+    if (timeRegistrationId === null || timeRegistrationId === void 0) {
+      throw new Error("Required parameter timeRegistrationId was null or undefined when calling updateTimeRegistrationForUser.");
+    }
+    if (timeRegistrationUpdateRequest === null || timeRegistrationUpdateRequest === void 0) {
+      throw new Error("Required parameter timeRegistrationUpdateRequest was null or undefined when calling updateTimeRegistrationForUser.");
+    }
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    if (timeRegistrationId !== void 0 && timeRegistrationId !== null) {
+      localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, timeRegistrationId, "timeRegistrationId");
+    }
+    let localVarHeaders = this.defaultHeaders;
+    let localVarCredential;
+    localVarCredential = this.configuration.lookupCredential("openId");
+    if (localVarCredential) {
+    }
+    localVarCredential = this.configuration.lookupCredential("basicAuth");
+    if (localVarCredential) {
+      localVarHeaders = localVarHeaders.set("Authorization", "Basic " + localVarCredential);
+    }
+    let localVarHttpHeaderAcceptSelected = options && options.httpHeaderAccept;
+    if (localVarHttpHeaderAcceptSelected === void 0) {
+      const httpHeaderAccepts = [
+        "application/json",
+        "text/plain"
+      ];
+      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (localVarHttpHeaderAcceptSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Accept", localVarHttpHeaderAcceptSelected);
+    }
+    let localVarHttpContext = options && options.context;
+    if (localVarHttpContext === void 0) {
+      localVarHttpContext = new HttpContext();
+    }
+    let localVarTransferCache = options && options.transferCache;
+    if (localVarTransferCache === void 0) {
+      localVarTransferCache = true;
+    }
+    const consumes = [
+      "application/json"
+    ];
+    const httpContentTypeSelected = this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== void 0) {
+      localVarHeaders = localVarHeaders.set("Content-Type", httpContentTypeSelected);
+    }
+    let responseType_ = "json";
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith("text")) {
+        responseType_ = "text";
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = "json";
+      } else {
+        responseType_ = "blob";
+      }
+    }
+    let localVarPath = `/time-registration`;
+    return this.httpClient.request("put", `${this.configuration.basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: timeRegistrationUpdateRequest,
+      params: localVarQueryParameters,
+      responseType: responseType_,
+      withCredentials: this.configuration.withCredentials,
+      headers: localVarHeaders,
+      observe,
+      transferCache: localVarTransferCache,
+      reportProgress
+    });
+  }
+};
+_TimeRegistrationService.\u0275fac = function TimeRegistrationService_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _TimeRegistrationService)(\u0275\u0275inject(HttpClient), \u0275\u0275inject(BASE_PATH, 8), \u0275\u0275inject(Configuration, 8));
+};
+_TimeRegistrationService.\u0275prov = /* @__PURE__ */ \u0275\u0275defineInjectable({ token: _TimeRegistrationService, factory: _TimeRegistrationService.\u0275fac, providedIn: "root" });
+var TimeRegistrationService = _TimeRegistrationService;
+
+// src/app/generated/model/importTimeRegistrationStatus.ts
+var ImportTimeRegistrationStatus;
+(function(ImportTimeRegistrationStatus2) {
+  ImportTimeRegistrationStatus2["Valid"] = "VALID";
+  ImportTimeRegistrationStatus2["Pending"] = "PENDING";
+  ImportTimeRegistrationStatus2["Failed"] = "FAILED";
+})(ImportTimeRegistrationStatus || (ImportTimeRegistrationStatus = {}));
+
+// src/app/generated/model/kmRegistrationStatus.ts
+var KmRegistrationStatus;
+(function(KmRegistrationStatus2) {
+  KmRegistrationStatus2["Pending"] = "PENDING";
+  KmRegistrationStatus2["Accepted"] = "ACCEPTED";
+  KmRegistrationStatus2["Rejected"] = "REJECTED";
+  KmRegistrationStatus2["Deleted"] = "DELETED";
+})(KmRegistrationStatus || (KmRegistrationStatus = {}));
+
+// src/app/generated/model/kmRegistrationUpdateRequest.ts
+var KmRegistrationUpdateRequestStatusEnum;
+(function(KmRegistrationUpdateRequestStatusEnum2) {
+  KmRegistrationUpdateRequestStatusEnum2["Approve"] = "APPROVE";
+  KmRegistrationUpdateRequestStatusEnum2["Reject"] = "REJECT";
+  KmRegistrationUpdateRequestStatusEnum2["Pending"] = "PENDING";
+})(KmRegistrationUpdateRequestStatusEnum || (KmRegistrationUpdateRequestStatusEnum = {}));
+
+// src/app/generated/model/overviewPeriod.ts
+var OverviewPeriod;
+(function(OverviewPeriod2) {
+  OverviewPeriod2["Day"] = "DAY";
+  OverviewPeriod2["Week"] = "WEEK";
+  OverviewPeriod2["Month"] = "MONTH";
+})(OverviewPeriod || (OverviewPeriod = {}));
+
+// src/app/generated/model/tagConfigurationMetadata.ts
+var TagConfigurationMetadataCardinalityEnum;
+(function(TagConfigurationMetadataCardinalityEnum2) {
+  TagConfigurationMetadataCardinalityEnum2["Optional"] = "OPTIONAL";
+  TagConfigurationMetadataCardinalityEnum2["Mandatory"] = "MANDATORY";
+  TagConfigurationMetadataCardinalityEnum2["Managed"] = "MANAGED";
+})(TagConfigurationMetadataCardinalityEnum || (TagConfigurationMetadataCardinalityEnum = {}));
+var TagConfigurationMetadataValueTypeEnum;
+(function(TagConfigurationMetadataValueTypeEnum2) {
+  TagConfigurationMetadataValueTypeEnum2["String"] = "STRING";
+  TagConfigurationMetadataValueTypeEnum2["Bool"] = "BOOL";
+  TagConfigurationMetadataValueTypeEnum2["Int"] = "INT";
+})(TagConfigurationMetadataValueTypeEnum || (TagConfigurationMetadataValueTypeEnum = {}));
+
+// src/app/generated/model/timeRegistrationStatus.ts
+var TimeRegistrationStatus;
+(function(TimeRegistrationStatus2) {
+  TimeRegistrationStatus2["Valid"] = "VALID";
+  TimeRegistrationStatus2["Pending"] = "PENDING";
+  TimeRegistrationStatus2["Invalid"] = "INVALID";
+  TimeRegistrationStatus2["Deleted"] = "DELETED";
+  TimeRegistrationStatus2["Rejected"] = "REJECTED";
+})(TimeRegistrationStatus || (TimeRegistrationStatus = {}));
+
+// src/app/generated/api.module.ts
+var _ApiModule = class _ApiModule {
+  static forRoot(configurationFactory) {
+    return {
+      ngModule: _ApiModule,
+      providers: [{ provide: Configuration, useFactory: configurationFactory }]
+    };
+  }
+  constructor(parentModule, http) {
+    if (parentModule) {
+      throw new Error("ApiModule is already loaded. Import in your base AppModule only.");
+    }
+    if (!http) {
+      throw new Error("You need to import the HttpClientModule in your AppModule! \nSee also https://github.com/angular/angular/issues/20575");
+    }
+  }
+};
+_ApiModule.\u0275fac = function ApiModule_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _ApiModule)(\u0275\u0275inject(_ApiModule, 12), \u0275\u0275inject(HttpClient, 8));
+};
+_ApiModule.\u0275mod = /* @__PURE__ */ \u0275\u0275defineNgModule({ type: _ApiModule });
+_ApiModule.\u0275inj = /* @__PURE__ */ \u0275\u0275defineInjector({});
+var ApiModule = _ApiModule;
 
 // src/app/service/total-time.service.ts
 var _TotalTimeService = class _TotalTimeService {
   constructor() {
-    this.subject = new BehaviorSubject({
-      taskTimeRegistrations: [],
-      tasklessTimeRegistrations: []
+    this.timeRegistrationService = inject(TimeRegistrationService);
+    this.dateSignal = signal(DateTime.now());
+    this.overviewPeriodSignal = signal(OverviewPeriod.Week);
+    this.extraTasksSignal = signal([]);
+    this.computedDateString = computed(() => {
+      const date = this.dateSignal();
+      const startOfWeek = date.startOf("week");
+      const endOfWeek = date.endOf("week");
+      return `Total for week ${startOfWeek.weekNumber} - ${startOfWeek.toFormat("dd-MM-yyyy")} to ${endOfWeek.toFormat("dd-MM-yyyy")}`;
     });
+    this.timeRegistrationSignal = signal({
+      tasklessTimeRegistrations: [],
+      taskTimeRegistrations: []
+    });
+    this.timeRegistrationEffect = effect(() => __async(this, null, function* () {
+      const date = this.dateSignal();
+      const overviewPeriod = this.overviewPeriodSignal();
+      const extraTasks = this.extraTasksSignal();
+      const value = yield firstValueFrom(this.timeRegistrationService.getTaskTimeRegistrationsOverview(date.toISODate(), overviewPeriod, extraTasks));
+      this.timeRegistrationSignal.set(value);
+    }), { allowSignalWrites: true });
   }
-  getObservable() {
-    return this.subject.asObservable();
+  getTimeRegistrationSignalAsReadonly() {
+    return this.timeRegistrationSignal.asReadonly();
   }
-  next(value) {
-    this.subject.next(value);
+  getWeekDateString() {
+    return this.computedDateString;
+  }
+  gotoNextWeek() {
+    this.dateSignal.update((value) => value.plus({
+      days: 7
+    }));
+  }
+  gotoPreviousWeek() {
+    this.dateSignal.update((value) => value.minus({
+      days: 7
+    }));
+  }
+  setExtraTasks(extraTasks) {
+    this.extraTasksSignal.set(extraTasks);
   }
   patch() {
-    this.subject.next({
-      taskTimeRegistrations: this.subject.value.taskTimeRegistrations,
-      tasklessTimeRegistrations: this.subject.value.tasklessTimeRegistrations
+    this.timeRegistrationSignal.set({
+      taskTimeRegistrations: this.timeRegistrationSignal().taskTimeRegistrations,
+      tasklessTimeRegistrations: this.timeRegistrationSignal().tasklessTimeRegistrations
     });
   }
 };
@@ -39587,139 +39580,8 @@ _TotalTimeService.\u0275fac = function TotalTimeService_Factory(__ngFactoryType_
 _TotalTimeService.\u0275prov = /* @__PURE__ */ \u0275\u0275defineInjectable({ token: _TotalTimeService, factory: _TotalTimeService.\u0275fac, providedIn: "root" });
 var TotalTimeService = _TotalTimeService;
 
-// src/app/component/time-registration-day/time-registration-day.component.ts
-function TimeRegistrationDayComponent_Conditional_6_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "mat-error");
-    \u0275\u0275text(1);
-    \u0275\u0275elementEnd();
-  }
-  if (rf & 2) {
-    const ctx_r0 = \u0275\u0275nextContext();
-    \u0275\u0275advance();
-    \u0275\u0275textInterpolate(ctx_r0.dayRegistrationFormControl.getError("invalidInput"));
-  }
-}
-var _TimeRegistrationDayComponent = class _TimeRegistrationDayComponent {
-  constructor() {
-    this.timeRegistrationService = inject(TimeRegistrationService);
-    this.totalTimeService = inject(TotalTimeService);
-    this.dayRegistrationFormControl = new FormControl("", {
-      updateOn: "blur",
-      validators: [
-        (control) => {
-          const value = control.value;
-          if (!DurationConverter.isValidHumanDuration(value)) {
-            return {
-              invalidInput: "Field is not a valid input"
-            };
-          }
-          return null;
-        }
-      ]
-    });
-    this.timeRegistrationChange = toSignal(this.dayRegistrationFormControl.valueChanges);
-    this.effectRef = effect(() => __async(this, null, function* () {
-      const timeChange = this.timeRegistrationChange();
-      if (this.dayRegistrationFormControl.dirty && this.dayRegistrationFormControl.valid) {
-        const [firstRegistration] = this.dayTimeRegistrations.timeRegistrations;
-        const formattedTimeChange = timeChange ? DurationConverter.convertToISO8601Duration(timeChange) : void 0;
-        if (!firstRegistration && formattedTimeChange) {
-          const newRegistration = {
-            date: this.dayTimeRegistrations.date,
-            duration: formattedTimeChange,
-            taskId: this.taskId,
-            description: this.taskDescription
-          };
-          const response = yield firstValueFrom(this.timeRegistrationService.addTimeRegistrationForUser(newRegistration));
-          const newTimeRegistration = __spreadValues(__spreadValues({}, newRegistration), {
-            timeRegistrationId: response.id,
-            status: TimeRegistrationStatus.Valid,
-            tags: []
-          });
-          this.dayTimeRegistrations.timeRegistrations.push(newTimeRegistration);
-        } else {
-          if (formattedTimeChange) {
-            const response = yield firstValueFrom(this.timeRegistrationService.updateTimeRegistrationForUser(firstRegistration.timeRegistrationId, {
-              duration: formattedTimeChange
-            }));
-            this.dayTimeRegistrations.timeRegistrations.splice(0, 1, {
-              timeRegistrationId: response.id,
-              status: TimeRegistrationStatus.Valid,
-              tags: [],
-              duration: formattedTimeChange
-            });
-          } else {
-            yield firstValueFrom(this.timeRegistrationService.deleteTimeRegistration(firstRegistration.timeRegistrationId));
-            this.dayTimeRegistrations.timeRegistrations.splice(0, 1);
-          }
-        }
-        this.totalTimeService.patch();
-      }
-    }));
-  }
-  get dayTimeRegistrations() {
-    return this._dayTimeRegistrations;
-  }
-  set dayTimeRegistrations(value) {
-    this._dayTimeRegistrations = value;
-    const firstTimeRegistration = value.timeRegistrations.find((timeRegistration) => !!timeRegistration);
-    if (firstTimeRegistration) {
-      const humanDuration = DurationConverter.convertToHumanDuration(firstTimeRegistration.duration);
-      this.dayRegistrationFormControl.setValue(humanDuration);
-    }
-  }
-  formatShortDay(isoDate) {
-    return DateTime.fromISO(isoDate).toFormat("EEE");
-  }
-  formatDanishDate(isoDate) {
-    return DateTime.fromISO(isoDate).toFormat("dd-MM");
-  }
-};
-_TimeRegistrationDayComponent.\u0275fac = function TimeRegistrationDayComponent_Factory(__ngFactoryType__) {
-  return new (__ngFactoryType__ || _TimeRegistrationDayComponent)();
-};
-_TimeRegistrationDayComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _TimeRegistrationDayComponent, selectors: [["app-time-registration-day"]], inputs: { taskId: "taskId", taskDescription: "taskDescription", dayTimeRegistrations: "dayTimeRegistrations" }, standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 7, vars: 4, consts: [["matInput", "", "placeholder", "hh,mm", 3, "formControl"]], template: function TimeRegistrationDayComponent_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "mat-form-field")(1, "mat-label");
-    \u0275\u0275text(2);
-    \u0275\u0275elementEnd();
-    \u0275\u0275element(3, "input", 0);
-    \u0275\u0275elementStart(4, "mat-hint");
-    \u0275\u0275text(5);
-    \u0275\u0275elementEnd();
-    \u0275\u0275template(6, TimeRegistrationDayComponent_Conditional_6_Template, 2, 1, "mat-error");
-    \u0275\u0275elementEnd();
-  }
-  if (rf & 2) {
-    \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(ctx.formatShortDay(ctx.dayTimeRegistrations.date));
-    \u0275\u0275advance();
-    \u0275\u0275property("formControl", ctx.dayRegistrationFormControl);
-    \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(ctx.formatDanishDate(ctx.dayTimeRegistrations.date));
-    \u0275\u0275advance();
-    \u0275\u0275conditional(ctx.dayRegistrationFormControl.hasError("invalidInput") ? 6 : -1);
-  }
-}, dependencies: [
-  MatFormField,
-  ReactiveFormsModule,
-  DefaultValueAccessor,
-  NgControlStatus,
-  FormControlDirective,
-  MatInputModule,
-  MatInput,
-  MatLabel,
-  MatHint,
-  MatError
-], styles: ["\n\nmat-form-field[_ngcontent-%COMP%] {\n  width: 5rem;\n}\n/*# sourceMappingURL=time-registration-day.component.css.map */"] });
-var TimeRegistrationDayComponent = _TimeRegistrationDayComponent;
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TimeRegistrationDayComponent, { className: "TimeRegistrationDayComponent", filePath: "src\\app\\component\\time-registration-day\\time-registration-day.component.ts", lineNumber: 23 });
-})();
-
 // src/app/component/total-line/total-line.component.ts
-function TotalLineComponent_For_5_Template(rf, ctx) {
+function TotalLineComponent_For_3_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275elementStart(0, "div", 2)(1, "span");
     \u0275\u0275text(2);
@@ -39734,35 +39596,39 @@ function TotalLineComponent_For_5_Template(rf, ctx) {
     \u0275\u0275advance(2);
     \u0275\u0275textInterpolate(ctx_r1.formatDanishDate(dateAndMinutes_r1.date));
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(ctx_r1.DurationConverter.toHumanFromMinutes(dateAndMinutes_r1.minutes));
+    \u0275\u0275textInterpolate(ctx_r1.getHours(dateAndMinutes_r1));
   }
 }
 var _TotalLineComponent = class _TotalLineComponent {
   constructor() {
     this.totalTimeService = inject(TotalTimeService);
-    this.subscription = toSignal(this.totalTimeService.getObservable());
     this.dateToMinuteSignal = computed(() => {
-      const subs = this.subscription();
+      const subs = this.totalTimeService.getTimeRegistrationSignalAsReadonly()();
       if (!subs) {
         return [];
       }
-      const dateToMinutes = subs.taskTimeRegistrations.reduce((sum, currentValue) => {
+      const dateToMinutes = [...subs.taskTimeRegistrations, ...subs.tasklessTimeRegistrations].reduce((sum, currentValue) => {
         for (const dayTimeRegistrations of currentValue.dailyRegistrations) {
           const date = dayTimeRegistrations.date;
           if (!sum[date]) {
-            sum[date] = 0;
+            sum[date] = { taskMinutes: 0, tasklessMinutes: 0 };
           }
           for (const timeRegistrations of dayTimeRegistrations.timeRegistrations) {
             const minutes = DurationConverter.getMinutes(timeRegistrations.duration);
-            sum[date] = sum[date] + minutes;
+            if (this.isTasklessTimeRegistrationsInterval(currentValue)) {
+              sum[date].tasklessMinutes = sum[date].tasklessMinutes + minutes;
+            } else {
+              sum[date].taskMinutes = sum[date].taskMinutes + minutes;
+            }
           }
         }
         return sum;
       }, {});
-      return Object.entries(dateToMinutes).map(([key, value]) => {
+      return Object.entries(dateToMinutes).map(([key, { taskMinutes, tasklessMinutes }]) => {
         return {
           date: key,
-          minutes: value
+          taskMinutes,
+          tasklessMinutes
         };
       });
     });
@@ -39772,21 +39638,29 @@ var _TotalLineComponent = class _TotalLineComponent {
   formatDanishDate(isoDate) {
     return DateTime.fromISO(isoDate).toFormat("dd-MM");
   }
+  getHours({ taskMinutes, tasklessMinutes }) {
+    const totalMinutes = DurationConverter.toHumanFromMinutes(taskMinutes + tasklessMinutes);
+    const draftMinutes = DurationConverter.toHumanFromMinutes(tasklessMinutes);
+    if (tasklessMinutes) {
+      return `${totalMinutes}h (${draftMinutes}h)`;
+    }
+    return `${totalMinutes}h`;
+  }
+  isTasklessTimeRegistrationsInterval(currentValue) {
+    return "taskDescription" in currentValue;
+  }
 };
 _TotalLineComponent.\u0275fac = function TotalLineComponent_Factory(__ngFactoryType__) {
   return new (__ngFactoryType__ || _TotalLineComponent)();
 };
-_TotalLineComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _TotalLineComponent, selectors: [["app-total-line"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 6, vars: 0, consts: [[1, "flex-row", "justify-space-between", "align-items-center"], [1, "flex-row", "flex-wrap-wrap"], [1, "flex-column", "half-gap", 2, "width", "5rem"]], template: function TotalLineComponent_Template(rf, ctx) {
+_TotalLineComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _TotalLineComponent, selectors: [["app-total-line"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 4, vars: 0, consts: [[1, "flex-row", "justify-space-between", "align-items-center"], [1, "flex-row", "flex-wrap-wrap", 2, "margin-left", "1.5rem"], [1, "flex-column", "half-gap", 2, "width", "5rem"]], template: function TotalLineComponent_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 0)(1, "div");
-    \u0275\u0275text(2, " Total time ");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(3, "div", 1);
-    \u0275\u0275repeaterCreate(4, TotalLineComponent_For_5_Template, 5, 2, "div", 2, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275elementStart(0, "div", 0)(1, "div", 1);
+    \u0275\u0275repeaterCreate(2, TotalLineComponent_For_3_Template, 5, 2, "div", 2, \u0275\u0275repeaterTrackByIdentity);
     \u0275\u0275elementEnd()();
   }
   if (rf & 2) {
-    \u0275\u0275advance(4);
+    \u0275\u0275advance(2);
     \u0275\u0275repeater(ctx.dateToMinuteSignal());
   }
 }, dependencies: [
@@ -39796,7 +39670,7 @@ _TotalLineComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ ty
 ], styles: ["\n\n.days[_ngcontent-%COMP%] {\n  display: flex;\n  gap: 1rem;\n  flex-wrap: wrap;\n  margin-right: 1rem;\n}\n.days[_ngcontent-%COMP%]    > mat-form-field[_ngcontent-%COMP%] {\n  width: 5rem;\n}\n/*# sourceMappingURL=total-line.component.css.map */"] });
 var TotalLineComponent = _TotalLineComponent;
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TotalLineComponent, { className: "TotalLineComponent", filePath: "src\\app\\component\\total-line\\total-line.component.ts", lineNumber: 30 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TotalLineComponent, { className: "TotalLineComponent", filePath: "src\\app\\component\\total-line\\total-line.component.ts", lineNumber: 29 });
 })();
 
 // node_modules/@angular/material/fesm2022/card.mjs
@@ -40268,105 +40142,1160 @@ var MatCardModule = _MatCardModule;
   }], null, null);
 })();
 
-// src/app/component/task-registration/task-registration.component.ts
-function TaskRegistrationComponent_For_5_Template(rf, ctx) {
+// node_modules/@angular/core/fesm2022/rxjs-interop.mjs
+function toSignal(source, options) {
+  ngDevMode && assertNotInReactiveContext(toSignal, "Invoking `toSignal` causes new subscriptions every time. Consider moving `toSignal` outside of the reactive context and read the signal value where needed.");
+  const requiresCleanup = !options?.manualCleanup;
+  requiresCleanup && !options?.injector && assertInInjectionContext(toSignal);
+  const cleanupRef = requiresCleanup ? options?.injector?.get(DestroyRef) ?? inject(DestroyRef) : null;
+  const equal = makeToSignalEqual(options?.equal);
+  let state2;
+  if (options?.requireSync) {
+    state2 = signal({
+      kind: 0
+      /* StateKind.NoValue */
+    }, {
+      equal
+    });
+  } else {
+    state2 = signal({
+      kind: 1,
+      value: options?.initialValue
+    }, {
+      equal
+    });
+  }
+  const sub = source.subscribe({
+    next: (value) => state2.set({
+      kind: 1,
+      value
+    }),
+    error: (error) => {
+      if (options?.rejectErrors) {
+        throw error;
+      }
+      state2.set({
+        kind: 2,
+        error
+      });
+    }
+    // Completion of the Observable is meaningless to the signal. Signals don't have a concept of
+    // "complete".
+  });
+  if (options?.requireSync && state2().kind === 0) {
+    throw new RuntimeError(601, (typeof ngDevMode === "undefined" || ngDevMode) && "`toSignal()` called with `requireSync` but `Observable` did not emit synchronously.");
+  }
+  cleanupRef?.onDestroy(sub.unsubscribe.bind(sub));
+  return computed(() => {
+    const current = state2();
+    switch (current.kind) {
+      case 1:
+        return current.value;
+      case 2:
+        throw current.error;
+      case 0:
+        throw new RuntimeError(601, (typeof ngDevMode === "undefined" || ngDevMode) && "`toSignal()` called with `requireSync` but `Observable` did not emit synchronously.");
+    }
+  }, {
+    equal: options?.equal
+  });
+}
+function makeToSignalEqual(userEquality = Object.is) {
+  return (a, b) => a.kind === 1 && b.kind === 1 && userEquality(a.value, b.value);
+}
+
+// src/app/component/time-registration-day/time-registration-day.component.ts
+function TimeRegistrationDayComponent_Conditional_6_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 2);
+    \u0275\u0275elementStart(0, "mat-error");
     \u0275\u0275text(1);
     \u0275\u0275elementEnd();
   }
   if (rf & 2) {
-    const task_r1 = ctx.$implicit;
-    const \u0275$index_9_r2 = ctx.$index;
-    const ctx_r2 = \u0275\u0275nextContext();
-    \u0275\u0275property("classList", ctx_r2.getMarginLeft(\u0275$index_9_r2));
+    const ctx_r0 = \u0275\u0275nextContext();
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate(task_r1);
+    \u0275\u0275textInterpolate(ctx_r0.dayRegistrationFormControl.getError("invalidInput"));
   }
 }
-function TaskRegistrationComponent_For_8_Template(rf, ctx) {
+function TimeRegistrationDayComponent_Conditional_7_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275element(0, "app-time-registration-day", 4);
-  }
-  if (rf & 2) {
-    const dailyRegistration_r4 = ctx.$implicit;
-    const ctx_r2 = \u0275\u0275nextContext();
-    \u0275\u0275property("taskId", ctx_r2.task.task.taskId)("dayTimeRegistrations", dailyRegistration_r4);
-  }
-}
-var _TaskRegistrationComponent = class _TaskRegistrationComponent {
-  getTaskName(taskName) {
-    return taskName.split(" / ");
-  }
-  getMarginLeft(index) {
-    return [`ml-${index}`];
-  }
-};
-_TaskRegistrationComponent.\u0275fac = function TaskRegistrationComponent_Factory(__ngFactoryType__) {
-  return new (__ngFactoryType__ || _TaskRegistrationComponent)();
-};
-_TaskRegistrationComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _TaskRegistrationComponent, selectors: [["app-task-registration"]], inputs: { task: "task" }, standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 9, vars: 0, consts: [["appearance", "outlined"], [1, "flex-row", "justify-space-between", "align-items-center"], [3, "classList"], [1, "flex-row", "flex-wrap-wrap"], [3, "taskId", "dayTimeRegistrations"]], template: function TaskRegistrationComponent_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "mat-card", 0)(1, "mat-card-content")(2, "div", 1)(3, "div");
-    \u0275\u0275repeaterCreate(4, TaskRegistrationComponent_For_5_Template, 2, 2, "div", 2, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275elementStart(0, "mat-error");
+    \u0275\u0275text(1);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(6, "div", 3);
-    \u0275\u0275repeaterCreate(7, TaskRegistrationComponent_For_8_Template, 1, 2, "app-time-registration-day", 4, \u0275\u0275repeaterTrackByIdentity);
-    \u0275\u0275elementEnd()()()();
   }
   if (rf & 2) {
-    \u0275\u0275advance(4);
-    \u0275\u0275repeater(ctx.getTaskName(ctx.task.task.taskName));
+    const ctx_r0 = \u0275\u0275nextContext();
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate(ctx_r0.dayRegistrationFormControl.getError("registrationFailed"));
+  }
+}
+var _TimeRegistrationDayComponent = class _TimeRegistrationDayComponent {
+  constructor() {
+    this.timeRegistrationService = inject(TimeRegistrationService);
+    this.totalTimeService = inject(TotalTimeService);
+    this.dayRegistrationFormControl = new FormControl("", {
+      updateOn: "blur",
+      validators: [
+        (control) => {
+          const value = control.value;
+          if (!DurationConverter.isValidHumanDuration(value)) {
+            return {
+              invalidInput: "Field is not a valid input"
+            };
+          }
+          return null;
+        }
+      ]
+    });
+    this.timeRegistrationChange = toSignal(this.dayRegistrationFormControl.valueChanges);
+    this.effectRef = effect(() => __async(this, null, function* () {
+      const timeChange = this.timeRegistrationChange();
+      if (this.dayRegistrationFormControl.dirty && this.dayRegistrationFormControl.valid) {
+        try {
+          const [firstRegistration] = this.dayTimeRegistrations.timeRegistrations;
+          const formattedTimeChange = timeChange ? DurationConverter.convertToISO8601Duration(timeChange) : void 0;
+          if (!firstRegistration && formattedTimeChange) {
+            const newRegistration = {
+              date: this.dayTimeRegistrations.date,
+              duration: formattedTimeChange,
+              taskId: this.task.task?.taskId,
+              description: this.task.taskDescription
+            };
+            const response = yield firstValueFrom(this.timeRegistrationService.addTimeRegistrationForUser(newRegistration));
+            const newTimeRegistration = __spreadValues(__spreadValues({}, newRegistration), {
+              timeRegistrationId: response.id,
+              status: TimeRegistrationStatus.Valid,
+              tags: []
+            });
+            this.dayTimeRegistrations.timeRegistrations.push(newTimeRegistration);
+          } else {
+            if (formattedTimeChange) {
+              const response = yield firstValueFrom(this.timeRegistrationService.updateTimeRegistrationForUser(firstRegistration.timeRegistrationId, {
+                duration: formattedTimeChange
+              }));
+              this.dayTimeRegistrations.timeRegistrations.splice(0, 1, {
+                timeRegistrationId: response.id,
+                status: TimeRegistrationStatus.Valid,
+                tags: [],
+                duration: formattedTimeChange
+              });
+            } else {
+              yield firstValueFrom(this.timeRegistrationService.deleteTimeRegistration(firstRegistration.timeRegistrationId));
+              this.dayTimeRegistrations.timeRegistrations.splice(0, 1);
+            }
+          }
+          this.totalTimeService.patch();
+        } catch (error) {
+          if (error instanceof HttpErrorResponse) {
+            this.dayRegistrationFormControl.setErrors({
+              registrationFailed: error.error.message
+            });
+          }
+        }
+      }
+    }));
+  }
+  get dayTimeRegistrations() {
+    return this._dayTimeRegistrations;
+  }
+  set dayTimeRegistrations(value) {
+    this._dayTimeRegistrations = value;
+    const firstTimeRegistration = value.timeRegistrations.find((timeRegistration) => !!timeRegistration);
+    if (firstTimeRegistration) {
+      const humanDuration = DurationConverter.convertToHumanDuration(firstTimeRegistration.duration);
+      this.dayRegistrationFormControl.setValue(humanDuration);
+    }
+  }
+  formatShortDay(isoDate) {
+    return DateTime.fromISO(isoDate).toFormat("EEE");
+  }
+  formatDanishDate(isoDate) {
+    return DateTime.fromISO(isoDate).toFormat("dd/MM");
+  }
+};
+_TimeRegistrationDayComponent.\u0275fac = function TimeRegistrationDayComponent_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _TimeRegistrationDayComponent)();
+};
+_TimeRegistrationDayComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _TimeRegistrationDayComponent, selectors: [["app-time-registration-day"]], inputs: { task: "task", dayTimeRegistrations: "dayTimeRegistrations" }, standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 8, vars: 4, consts: [["subscriptSizing", "dynamic"], ["matInput", "", "placeholder", "hh,mm", 3, "formControl"]], template: function TimeRegistrationDayComponent_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "mat-form-field", 0)(1, "mat-label");
+    \u0275\u0275text(2, "hours");
+    \u0275\u0275elementEnd();
+    \u0275\u0275element(3, "input", 1);
+    \u0275\u0275elementStart(4, "mat-hint");
+    \u0275\u0275text(5);
+    \u0275\u0275elementEnd();
+    \u0275\u0275template(6, TimeRegistrationDayComponent_Conditional_6_Template, 2, 1, "mat-error")(7, TimeRegistrationDayComponent_Conditional_7_Template, 2, 1, "mat-error");
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
     \u0275\u0275advance(3);
-    \u0275\u0275repeater(ctx.task.dailyRegistrations);
+    \u0275\u0275property("formControl", ctx.dayRegistrationFormControl);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(ctx.formatDanishDate(ctx.dayTimeRegistrations.date));
+    \u0275\u0275advance();
+    \u0275\u0275conditional(ctx.dayRegistrationFormControl.hasError("invalidInput") ? 6 : -1);
+    \u0275\u0275advance();
+    \u0275\u0275conditional(ctx.dayRegistrationFormControl.hasError("registrationFailed") ? 7 : -1);
   }
 }, dependencies: [
+  MatFormField,
   ReactiveFormsModule,
-  TimeRegistrationDayComponent,
-  MatCardModule,
-  MatCard,
-  MatCardContent
-], styles: ["\n\n.ml-1[_ngcontent-%COMP%] {\n  margin-left: 1rem;\n}\n.ml-2[_ngcontent-%COMP%] {\n  margin-left: 2rem;\n}\n.ml-3[_ngcontent-%COMP%] {\n  margin-left: 3rem;\n}\n.ml-4[_ngcontent-%COMP%] {\n  margin-left: 4rem;\n}\n.ml-5[_ngcontent-%COMP%] {\n  margin-left: 5rem;\n}\n/*# sourceMappingURL=task-registration.component.css.map */"] });
-var TaskRegistrationComponent = _TaskRegistrationComponent;
+  DefaultValueAccessor,
+  NgControlStatus,
+  FormControlDirective,
+  MatInputModule,
+  MatInput,
+  MatLabel,
+  MatHint,
+  MatError
+], styles: ["\n\nmat-form-field[_ngcontent-%COMP%] {\n  width: 5rem;\n}\n/*# sourceMappingURL=time-registration-day.component.css.map */"] });
+var TimeRegistrationDayComponent = _TimeRegistrationDayComponent;
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TaskRegistrationComponent, { className: "TaskRegistrationComponent", filePath: "src\\app\\component\\task-registration\\task-registration.component.ts", lineNumber: 24 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TimeRegistrationDayComponent, { className: "TimeRegistrationDayComponent", filePath: "src\\app\\component\\time-registration-day\\time-registration-day.component.ts", lineNumber: 25 });
 })();
 
-// src/app/component/unregistered-task-registration/unregistered-task-registration.component.ts
-function UnregisteredTaskRegistrationComponent_For_5_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275element(0, "app-time-registration-day", 2);
-  }
-  if (rf & 2) {
-    const dailyRegistration_r1 = ctx.$implicit;
-    const ctx_r1 = \u0275\u0275nextContext();
-    \u0275\u0275property("dayTimeRegistrations", dailyRegistration_r1)("taskDescription", ctx_r1.task.taskDescription);
-  }
+// node_modules/@angular/material/fesm2022/tooltip.mjs
+var _c08 = ["tooltip"];
+var SCROLL_THROTTLE_MS = 20;
+function getMatTooltipInvalidPositionError(position) {
+  return Error(`Tooltip position "${position}" is invalid.`);
 }
-var _UnregisteredTaskRegistrationComponent = class _UnregisteredTaskRegistrationComponent {
-};
-_UnregisteredTaskRegistrationComponent.\u0275fac = function UnregisteredTaskRegistrationComponent_Factory(__ngFactoryType__) {
-  return new (__ngFactoryType__ || _UnregisteredTaskRegistrationComponent)();
-};
-_UnregisteredTaskRegistrationComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _UnregisteredTaskRegistrationComponent, selectors: [["app-unregistered-task-registration"]], inputs: { task: "task" }, standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 6, vars: 1, consts: [[1, "flex-row", "justify-space-between", "align-items-center"], [1, "flex-row", "flex-wrap-wrap"], [3, "dayTimeRegistrations", "taskDescription"]], template: function UnregisteredTaskRegistrationComponent_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 0)(1, "div");
-    \u0275\u0275text(2);
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(3, "div", 1);
-    \u0275\u0275repeaterCreate(4, UnregisteredTaskRegistrationComponent_For_5_Template, 1, 2, "app-time-registration-day", 2, \u0275\u0275repeaterTrackByIdentity);
-    \u0275\u0275elementEnd()();
+var MAT_TOOLTIP_SCROLL_STRATEGY = new InjectionToken("mat-tooltip-scroll-strategy", {
+  providedIn: "root",
+  factory: () => {
+    const overlay = inject(Overlay);
+    return () => overlay.scrollStrategies.reposition({
+      scrollThrottle: SCROLL_THROTTLE_MS
+    });
   }
-  if (rf & 2) {
-    \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate1(" ", ctx.task.taskDescription, " ");
-    \u0275\u0275advance(2);
-    \u0275\u0275repeater(ctx.task.dailyRegistrations);
+});
+function MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY(overlay) {
+  return () => overlay.scrollStrategies.reposition({
+    scrollThrottle: SCROLL_THROTTLE_MS
+  });
+}
+var MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER = {
+  provide: MAT_TOOLTIP_SCROLL_STRATEGY,
+  deps: [Overlay],
+  useFactory: MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY
+};
+function MAT_TOOLTIP_DEFAULT_OPTIONS_FACTORY() {
+  return {
+    showDelay: 0,
+    hideDelay: 0,
+    touchendHideDelay: 1500
+  };
+}
+var MAT_TOOLTIP_DEFAULT_OPTIONS = new InjectionToken("mat-tooltip-default-options", {
+  providedIn: "root",
+  factory: MAT_TOOLTIP_DEFAULT_OPTIONS_FACTORY
+});
+var PANEL_CLASS = "tooltip-panel";
+var passiveListenerOptions = normalizePassiveListenerOptions({
+  passive: true
+});
+var MIN_VIEWPORT_TOOLTIP_THRESHOLD = 8;
+var UNBOUNDED_ANCHOR_GAP = 8;
+var MIN_HEIGHT = 24;
+var MAX_WIDTH = 200;
+var _MatTooltip = class _MatTooltip {
+  /** Allows the user to define the position of the tooltip relative to the parent element */
+  get position() {
+    return this._position;
   }
-}, dependencies: [TimeRegistrationDayComponent] });
-var UnregisteredTaskRegistrationComponent = _UnregisteredTaskRegistrationComponent;
+  set position(value) {
+    if (value !== this._position) {
+      this._position = value;
+      if (this._overlayRef) {
+        this._updatePosition(this._overlayRef);
+        this._tooltipInstance?.show(0);
+        this._overlayRef.updatePosition();
+      }
+    }
+  }
+  /**
+   * Whether tooltip should be relative to the click or touch origin
+   * instead of outside the element bounding box.
+   */
+  get positionAtOrigin() {
+    return this._positionAtOrigin;
+  }
+  set positionAtOrigin(value) {
+    this._positionAtOrigin = coerceBooleanProperty(value);
+    this._detach();
+    this._overlayRef = null;
+  }
+  /** Disables the display of the tooltip. */
+  get disabled() {
+    return this._disabled;
+  }
+  set disabled(value) {
+    this._disabled = coerceBooleanProperty(value);
+    if (this._disabled) {
+      this.hide(0);
+    } else {
+      this._setupPointerEnterEventsIfNeeded();
+    }
+  }
+  /** The default delay in ms before showing the tooltip after show is called */
+  get showDelay() {
+    return this._showDelay;
+  }
+  set showDelay(value) {
+    this._showDelay = coerceNumberProperty(value);
+  }
+  /** The default delay in ms before hiding the tooltip after hide is called */
+  get hideDelay() {
+    return this._hideDelay;
+  }
+  set hideDelay(value) {
+    this._hideDelay = coerceNumberProperty(value);
+    if (this._tooltipInstance) {
+      this._tooltipInstance._mouseLeaveHideDelay = this._hideDelay;
+    }
+  }
+  /** The message to be displayed in the tooltip */
+  get message() {
+    return this._message;
+  }
+  set message(value) {
+    this._ariaDescriber.removeDescription(this._elementRef.nativeElement, this._message, "tooltip");
+    this._message = value != null ? String(value).trim() : "";
+    if (!this._message && this._isTooltipVisible()) {
+      this.hide(0);
+    } else {
+      this._setupPointerEnterEventsIfNeeded();
+      this._updateTooltipMessage();
+      this._ngZone.runOutsideAngular(() => {
+        Promise.resolve().then(() => {
+          this._ariaDescriber.describe(this._elementRef.nativeElement, this.message, "tooltip");
+        });
+      });
+    }
+  }
+  /** Classes to be passed to the tooltip. Supports the same syntax as `ngClass`. */
+  get tooltipClass() {
+    return this._tooltipClass;
+  }
+  set tooltipClass(value) {
+    this._tooltipClass = value;
+    if (this._tooltipInstance) {
+      this._setTooltipClass(this._tooltipClass);
+    }
+  }
+  constructor(_overlay, _elementRef, _scrollDispatcher, _viewContainerRef, _ngZone, _platform, _ariaDescriber, _focusMonitor, scrollStrategy, _dir, _defaultOptions, _document2) {
+    this._overlay = _overlay;
+    this._elementRef = _elementRef;
+    this._scrollDispatcher = _scrollDispatcher;
+    this._viewContainerRef = _viewContainerRef;
+    this._ngZone = _ngZone;
+    this._platform = _platform;
+    this._ariaDescriber = _ariaDescriber;
+    this._focusMonitor = _focusMonitor;
+    this._dir = _dir;
+    this._defaultOptions = _defaultOptions;
+    this._position = "below";
+    this._positionAtOrigin = false;
+    this._disabled = false;
+    this._viewInitialized = false;
+    this._pointerExitEventsInitialized = false;
+    this._tooltipComponent = TooltipComponent;
+    this._viewportMargin = 8;
+    this._cssClassPrefix = "mat-mdc";
+    this.touchGestures = "auto";
+    this._message = "";
+    this._passiveListeners = [];
+    this._destroyed = new Subject();
+    this._injector = inject(Injector);
+    this._scrollStrategy = scrollStrategy;
+    this._document = _document2;
+    if (_defaultOptions) {
+      this._showDelay = _defaultOptions.showDelay;
+      this._hideDelay = _defaultOptions.hideDelay;
+      if (_defaultOptions.position) {
+        this.position = _defaultOptions.position;
+      }
+      if (_defaultOptions.positionAtOrigin) {
+        this.positionAtOrigin = _defaultOptions.positionAtOrigin;
+      }
+      if (_defaultOptions.touchGestures) {
+        this.touchGestures = _defaultOptions.touchGestures;
+      }
+    }
+    _dir.change.pipe(takeUntil(this._destroyed)).subscribe(() => {
+      if (this._overlayRef) {
+        this._updatePosition(this._overlayRef);
+      }
+    });
+    this._viewportMargin = MIN_VIEWPORT_TOOLTIP_THRESHOLD;
+  }
+  ngAfterViewInit() {
+    this._viewInitialized = true;
+    this._setupPointerEnterEventsIfNeeded();
+    this._focusMonitor.monitor(this._elementRef).pipe(takeUntil(this._destroyed)).subscribe((origin) => {
+      if (!origin) {
+        this._ngZone.run(() => this.hide(0));
+      } else if (origin === "keyboard") {
+        this._ngZone.run(() => this.show());
+      }
+    });
+  }
+  /**
+   * Dispose the tooltip when destroyed.
+   */
+  ngOnDestroy() {
+    const nativeElement = this._elementRef.nativeElement;
+    clearTimeout(this._touchstartTimeout);
+    if (this._overlayRef) {
+      this._overlayRef.dispose();
+      this._tooltipInstance = null;
+    }
+    this._passiveListeners.forEach(([event, listener]) => {
+      nativeElement.removeEventListener(event, listener, passiveListenerOptions);
+    });
+    this._passiveListeners.length = 0;
+    this._destroyed.next();
+    this._destroyed.complete();
+    this._ariaDescriber.removeDescription(nativeElement, this.message, "tooltip");
+    this._focusMonitor.stopMonitoring(nativeElement);
+  }
+  /** Shows the tooltip after the delay in ms, defaults to tooltip-delay-show or 0ms if no input */
+  show(delay2 = this.showDelay, origin) {
+    if (this.disabled || !this.message || this._isTooltipVisible()) {
+      this._tooltipInstance?._cancelPendingAnimations();
+      return;
+    }
+    const overlayRef = this._createOverlay(origin);
+    this._detach();
+    this._portal = this._portal || new ComponentPortal(this._tooltipComponent, this._viewContainerRef);
+    const instance = this._tooltipInstance = overlayRef.attach(this._portal).instance;
+    instance._triggerElement = this._elementRef.nativeElement;
+    instance._mouseLeaveHideDelay = this._hideDelay;
+    instance.afterHidden().pipe(takeUntil(this._destroyed)).subscribe(() => this._detach());
+    this._setTooltipClass(this._tooltipClass);
+    this._updateTooltipMessage();
+    instance.show(delay2);
+  }
+  /** Hides the tooltip after the delay in ms, defaults to tooltip-delay-hide or 0ms if no input */
+  hide(delay2 = this.hideDelay) {
+    const instance = this._tooltipInstance;
+    if (instance) {
+      if (instance.isVisible()) {
+        instance.hide(delay2);
+      } else {
+        instance._cancelPendingAnimations();
+        this._detach();
+      }
+    }
+  }
+  /** Shows/hides the tooltip */
+  toggle(origin) {
+    this._isTooltipVisible() ? this.hide() : this.show(void 0, origin);
+  }
+  /** Returns true if the tooltip is currently visible to the user */
+  _isTooltipVisible() {
+    return !!this._tooltipInstance && this._tooltipInstance.isVisible();
+  }
+  /** Create the overlay config and position strategy */
+  _createOverlay(origin) {
+    if (this._overlayRef) {
+      const existingStrategy = this._overlayRef.getConfig().positionStrategy;
+      if ((!this.positionAtOrigin || !origin) && existingStrategy._origin instanceof ElementRef) {
+        return this._overlayRef;
+      }
+      this._detach();
+    }
+    const scrollableAncestors = this._scrollDispatcher.getAncestorScrollContainers(this._elementRef);
+    const strategy = this._overlay.position().flexibleConnectedTo(this.positionAtOrigin ? origin || this._elementRef : this._elementRef).withTransformOriginOn(`.${this._cssClassPrefix}-tooltip`).withFlexibleDimensions(false).withViewportMargin(this._viewportMargin).withScrollableContainers(scrollableAncestors);
+    strategy.positionChanges.pipe(takeUntil(this._destroyed)).subscribe((change) => {
+      this._updateCurrentPositionClass(change.connectionPair);
+      if (this._tooltipInstance) {
+        if (change.scrollableViewProperties.isOverlayClipped && this._tooltipInstance.isVisible()) {
+          this._ngZone.run(() => this.hide(0));
+        }
+      }
+    });
+    this._overlayRef = this._overlay.create({
+      direction: this._dir,
+      positionStrategy: strategy,
+      panelClass: `${this._cssClassPrefix}-${PANEL_CLASS}`,
+      scrollStrategy: this._scrollStrategy()
+    });
+    this._updatePosition(this._overlayRef);
+    this._overlayRef.detachments().pipe(takeUntil(this._destroyed)).subscribe(() => this._detach());
+    this._overlayRef.outsidePointerEvents().pipe(takeUntil(this._destroyed)).subscribe(() => this._tooltipInstance?._handleBodyInteraction());
+    this._overlayRef.keydownEvents().pipe(takeUntil(this._destroyed)).subscribe((event) => {
+      if (this._isTooltipVisible() && event.keyCode === ESCAPE && !hasModifierKey(event)) {
+        event.preventDefault();
+        event.stopPropagation();
+        this._ngZone.run(() => this.hide(0));
+      }
+    });
+    if (this._defaultOptions?.disableTooltipInteractivity) {
+      this._overlayRef.addPanelClass(`${this._cssClassPrefix}-tooltip-panel-non-interactive`);
+    }
+    return this._overlayRef;
+  }
+  /** Detaches the currently-attached tooltip. */
+  _detach() {
+    if (this._overlayRef && this._overlayRef.hasAttached()) {
+      this._overlayRef.detach();
+    }
+    this._tooltipInstance = null;
+  }
+  /** Updates the position of the current tooltip. */
+  _updatePosition(overlayRef) {
+    const position = overlayRef.getConfig().positionStrategy;
+    const origin = this._getOrigin();
+    const overlay = this._getOverlayPosition();
+    position.withPositions([this._addOffset(__spreadValues(__spreadValues({}, origin.main), overlay.main)), this._addOffset(__spreadValues(__spreadValues({}, origin.fallback), overlay.fallback))]);
+  }
+  /** Adds the configured offset to a position. Used as a hook for child classes. */
+  _addOffset(position) {
+    const offset2 = UNBOUNDED_ANCHOR_GAP;
+    const isLtr = !this._dir || this._dir.value == "ltr";
+    if (position.originY === "top") {
+      position.offsetY = -offset2;
+    } else if (position.originY === "bottom") {
+      position.offsetY = offset2;
+    } else if (position.originX === "start") {
+      position.offsetX = isLtr ? -offset2 : offset2;
+    } else if (position.originX === "end") {
+      position.offsetX = isLtr ? offset2 : -offset2;
+    }
+    return position;
+  }
+  /**
+   * Returns the origin position and a fallback position based on the user's position preference.
+   * The fallback position is the inverse of the origin (e.g. `'below' -> 'above'`).
+   */
+  _getOrigin() {
+    const isLtr = !this._dir || this._dir.value == "ltr";
+    const position = this.position;
+    let originPosition;
+    if (position == "above" || position == "below") {
+      originPosition = {
+        originX: "center",
+        originY: position == "above" ? "top" : "bottom"
+      };
+    } else if (position == "before" || position == "left" && isLtr || position == "right" && !isLtr) {
+      originPosition = {
+        originX: "start",
+        originY: "center"
+      };
+    } else if (position == "after" || position == "right" && isLtr || position == "left" && !isLtr) {
+      originPosition = {
+        originX: "end",
+        originY: "center"
+      };
+    } else if (typeof ngDevMode === "undefined" || ngDevMode) {
+      throw getMatTooltipInvalidPositionError(position);
+    }
+    const {
+      x,
+      y
+    } = this._invertPosition(originPosition.originX, originPosition.originY);
+    return {
+      main: originPosition,
+      fallback: {
+        originX: x,
+        originY: y
+      }
+    };
+  }
+  /** Returns the overlay position and a fallback position based on the user's preference */
+  _getOverlayPosition() {
+    const isLtr = !this._dir || this._dir.value == "ltr";
+    const position = this.position;
+    let overlayPosition;
+    if (position == "above") {
+      overlayPosition = {
+        overlayX: "center",
+        overlayY: "bottom"
+      };
+    } else if (position == "below") {
+      overlayPosition = {
+        overlayX: "center",
+        overlayY: "top"
+      };
+    } else if (position == "before" || position == "left" && isLtr || position == "right" && !isLtr) {
+      overlayPosition = {
+        overlayX: "end",
+        overlayY: "center"
+      };
+    } else if (position == "after" || position == "right" && isLtr || position == "left" && !isLtr) {
+      overlayPosition = {
+        overlayX: "start",
+        overlayY: "center"
+      };
+    } else if (typeof ngDevMode === "undefined" || ngDevMode) {
+      throw getMatTooltipInvalidPositionError(position);
+    }
+    const {
+      x,
+      y
+    } = this._invertPosition(overlayPosition.overlayX, overlayPosition.overlayY);
+    return {
+      main: overlayPosition,
+      fallback: {
+        overlayX: x,
+        overlayY: y
+      }
+    };
+  }
+  /** Updates the tooltip message and repositions the overlay according to the new message length */
+  _updateTooltipMessage() {
+    if (this._tooltipInstance) {
+      this._tooltipInstance.message = this.message;
+      this._tooltipInstance._markForCheck();
+      afterNextRender(() => {
+        if (this._tooltipInstance) {
+          this._overlayRef.updatePosition();
+        }
+      }, {
+        injector: this._injector
+      });
+    }
+  }
+  /** Updates the tooltip class */
+  _setTooltipClass(tooltipClass) {
+    if (this._tooltipInstance) {
+      this._tooltipInstance.tooltipClass = tooltipClass;
+      this._tooltipInstance._markForCheck();
+    }
+  }
+  /** Inverts an overlay position. */
+  _invertPosition(x, y) {
+    if (this.position === "above" || this.position === "below") {
+      if (y === "top") {
+        y = "bottom";
+      } else if (y === "bottom") {
+        y = "top";
+      }
+    } else {
+      if (x === "end") {
+        x = "start";
+      } else if (x === "start") {
+        x = "end";
+      }
+    }
+    return {
+      x,
+      y
+    };
+  }
+  /** Updates the class on the overlay panel based on the current position of the tooltip. */
+  _updateCurrentPositionClass(connectionPair) {
+    const {
+      overlayY,
+      originX,
+      originY
+    } = connectionPair;
+    let newPosition;
+    if (overlayY === "center") {
+      if (this._dir && this._dir.value === "rtl") {
+        newPosition = originX === "end" ? "left" : "right";
+      } else {
+        newPosition = originX === "start" ? "left" : "right";
+      }
+    } else {
+      newPosition = overlayY === "bottom" && originY === "top" ? "above" : "below";
+    }
+    if (newPosition !== this._currentPosition) {
+      const overlayRef = this._overlayRef;
+      if (overlayRef) {
+        const classPrefix = `${this._cssClassPrefix}-${PANEL_CLASS}-`;
+        overlayRef.removePanelClass(classPrefix + this._currentPosition);
+        overlayRef.addPanelClass(classPrefix + newPosition);
+      }
+      this._currentPosition = newPosition;
+    }
+  }
+  /** Binds the pointer events to the tooltip trigger. */
+  _setupPointerEnterEventsIfNeeded() {
+    if (this._disabled || !this.message || !this._viewInitialized || this._passiveListeners.length) {
+      return;
+    }
+    if (this._platformSupportsMouseEvents()) {
+      this._passiveListeners.push(["mouseenter", (event) => {
+        this._setupPointerExitEventsIfNeeded();
+        let point = void 0;
+        if (event.x !== void 0 && event.y !== void 0) {
+          point = event;
+        }
+        this.show(void 0, point);
+      }]);
+    } else if (this.touchGestures !== "off") {
+      this._disableNativeGesturesIfNecessary();
+      this._passiveListeners.push(["touchstart", (event) => {
+        const touch = event.targetTouches?.[0];
+        const origin = touch ? {
+          x: touch.clientX,
+          y: touch.clientY
+        } : void 0;
+        this._setupPointerExitEventsIfNeeded();
+        clearTimeout(this._touchstartTimeout);
+        const DEFAULT_LONGPRESS_DELAY = 500;
+        this._touchstartTimeout = setTimeout(() => this.show(void 0, origin), this._defaultOptions.touchLongPressShowDelay ?? DEFAULT_LONGPRESS_DELAY);
+      }]);
+    }
+    this._addListeners(this._passiveListeners);
+  }
+  _setupPointerExitEventsIfNeeded() {
+    if (this._pointerExitEventsInitialized) {
+      return;
+    }
+    this._pointerExitEventsInitialized = true;
+    const exitListeners = [];
+    if (this._platformSupportsMouseEvents()) {
+      exitListeners.push(["mouseleave", (event) => {
+        const newTarget = event.relatedTarget;
+        if (!newTarget || !this._overlayRef?.overlayElement.contains(newTarget)) {
+          this.hide();
+        }
+      }], ["wheel", (event) => this._wheelListener(event)]);
+    } else if (this.touchGestures !== "off") {
+      this._disableNativeGesturesIfNecessary();
+      const touchendListener = () => {
+        clearTimeout(this._touchstartTimeout);
+        this.hide(this._defaultOptions.touchendHideDelay);
+      };
+      exitListeners.push(["touchend", touchendListener], ["touchcancel", touchendListener]);
+    }
+    this._addListeners(exitListeners);
+    this._passiveListeners.push(...exitListeners);
+  }
+  _addListeners(listeners) {
+    listeners.forEach(([event, listener]) => {
+      this._elementRef.nativeElement.addEventListener(event, listener, passiveListenerOptions);
+    });
+  }
+  _platformSupportsMouseEvents() {
+    return !this._platform.IOS && !this._platform.ANDROID;
+  }
+  /** Listener for the `wheel` event on the element. */
+  _wheelListener(event) {
+    if (this._isTooltipVisible()) {
+      const elementUnderPointer = this._document.elementFromPoint(event.clientX, event.clientY);
+      const element = this._elementRef.nativeElement;
+      if (elementUnderPointer !== element && !element.contains(elementUnderPointer)) {
+        this.hide();
+      }
+    }
+  }
+  /** Disables the native browser gestures, based on how the tooltip has been configured. */
+  _disableNativeGesturesIfNecessary() {
+    const gestures = this.touchGestures;
+    if (gestures !== "off") {
+      const element = this._elementRef.nativeElement;
+      const style2 = element.style;
+      if (gestures === "on" || element.nodeName !== "INPUT" && element.nodeName !== "TEXTAREA") {
+        style2.userSelect = style2.msUserSelect = style2.webkitUserSelect = style2.MozUserSelect = "none";
+      }
+      if (gestures === "on" || !element.draggable) {
+        style2.webkitUserDrag = "none";
+      }
+      style2.touchAction = "none";
+      style2.webkitTapHighlightColor = "transparent";
+    }
+  }
+};
+_MatTooltip.\u0275fac = function MatTooltip_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatTooltip)(\u0275\u0275directiveInject(Overlay), \u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(ScrollDispatcher), \u0275\u0275directiveInject(ViewContainerRef), \u0275\u0275directiveInject(NgZone), \u0275\u0275directiveInject(Platform), \u0275\u0275directiveInject(AriaDescriber), \u0275\u0275directiveInject(FocusMonitor), \u0275\u0275directiveInject(MAT_TOOLTIP_SCROLL_STRATEGY), \u0275\u0275directiveInject(Directionality), \u0275\u0275directiveInject(MAT_TOOLTIP_DEFAULT_OPTIONS, 8), \u0275\u0275directiveInject(DOCUMENT));
+};
+_MatTooltip.\u0275dir = /* @__PURE__ */ \u0275\u0275defineDirective({
+  type: _MatTooltip,
+  selectors: [["", "matTooltip", ""]],
+  hostAttrs: [1, "mat-mdc-tooltip-trigger"],
+  hostVars: 2,
+  hostBindings: function MatTooltip_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      \u0275\u0275classProp("mat-mdc-tooltip-disabled", ctx.disabled);
+    }
+  },
+  inputs: {
+    position: [0, "matTooltipPosition", "position"],
+    positionAtOrigin: [0, "matTooltipPositionAtOrigin", "positionAtOrigin"],
+    disabled: [0, "matTooltipDisabled", "disabled"],
+    showDelay: [0, "matTooltipShowDelay", "showDelay"],
+    hideDelay: [0, "matTooltipHideDelay", "hideDelay"],
+    touchGestures: [0, "matTooltipTouchGestures", "touchGestures"],
+    message: [0, "matTooltip", "message"],
+    tooltipClass: [0, "matTooltipClass", "tooltipClass"]
+  },
+  exportAs: ["matTooltip"],
+  standalone: true
+});
+var MatTooltip = _MatTooltip;
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(UnregisteredTaskRegistrationComponent, { className: "UnregisteredTaskRegistrationComponent", filePath: "src\\app\\component\\unregistered-task-registration\\unregistered-task-registration.component.ts", lineNumber: 14 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatTooltip, [{
+    type: Directive,
+    args: [{
+      selector: "[matTooltip]",
+      exportAs: "matTooltip",
+      host: {
+        "class": "mat-mdc-tooltip-trigger",
+        "[class.mat-mdc-tooltip-disabled]": "disabled"
+      },
+      standalone: true
+    }]
+  }], () => [{
+    type: Overlay
+  }, {
+    type: ElementRef
+  }, {
+    type: ScrollDispatcher
+  }, {
+    type: ViewContainerRef
+  }, {
+    type: NgZone
+  }, {
+    type: Platform
+  }, {
+    type: AriaDescriber
+  }, {
+    type: FocusMonitor
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Inject,
+      args: [MAT_TOOLTIP_SCROLL_STRATEGY]
+    }]
+  }, {
+    type: Directionality
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [MAT_TOOLTIP_DEFAULT_OPTIONS]
+    }]
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Inject,
+      args: [DOCUMENT]
+    }]
+  }], {
+    position: [{
+      type: Input,
+      args: ["matTooltipPosition"]
+    }],
+    positionAtOrigin: [{
+      type: Input,
+      args: ["matTooltipPositionAtOrigin"]
+    }],
+    disabled: [{
+      type: Input,
+      args: ["matTooltipDisabled"]
+    }],
+    showDelay: [{
+      type: Input,
+      args: ["matTooltipShowDelay"]
+    }],
+    hideDelay: [{
+      type: Input,
+      args: ["matTooltipHideDelay"]
+    }],
+    touchGestures: [{
+      type: Input,
+      args: ["matTooltipTouchGestures"]
+    }],
+    message: [{
+      type: Input,
+      args: ["matTooltip"]
+    }],
+    tooltipClass: [{
+      type: Input,
+      args: ["matTooltipClass"]
+    }]
+  });
+})();
+var _TooltipComponent = class _TooltipComponent {
+  constructor(_changeDetectorRef, _elementRef, animationMode) {
+    this._changeDetectorRef = _changeDetectorRef;
+    this._elementRef = _elementRef;
+    this._isMultiline = false;
+    this._closeOnInteraction = false;
+    this._isVisible = false;
+    this._onHide = new Subject();
+    this._showAnimation = "mat-mdc-tooltip-show";
+    this._hideAnimation = "mat-mdc-tooltip-hide";
+    this._animationsDisabled = animationMode === "NoopAnimations";
+  }
+  /**
+   * Shows the tooltip with an animation originating from the provided origin
+   * @param delay Amount of milliseconds to the delay showing the tooltip.
+   */
+  show(delay2) {
+    if (this._hideTimeoutId != null) {
+      clearTimeout(this._hideTimeoutId);
+    }
+    this._showTimeoutId = setTimeout(() => {
+      this._toggleVisibility(true);
+      this._showTimeoutId = void 0;
+    }, delay2);
+  }
+  /**
+   * Begins the animation to hide the tooltip after the provided delay in ms.
+   * @param delay Amount of milliseconds to delay showing the tooltip.
+   */
+  hide(delay2) {
+    if (this._showTimeoutId != null) {
+      clearTimeout(this._showTimeoutId);
+    }
+    this._hideTimeoutId = setTimeout(() => {
+      this._toggleVisibility(false);
+      this._hideTimeoutId = void 0;
+    }, delay2);
+  }
+  /** Returns an observable that notifies when the tooltip has been hidden from view. */
+  afterHidden() {
+    return this._onHide;
+  }
+  /** Whether the tooltip is being displayed. */
+  isVisible() {
+    return this._isVisible;
+  }
+  ngOnDestroy() {
+    this._cancelPendingAnimations();
+    this._onHide.complete();
+    this._triggerElement = null;
+  }
+  /**
+   * Interactions on the HTML body should close the tooltip immediately as defined in the
+   * material design spec.
+   * https://material.io/design/components/tooltips.html#behavior
+   */
+  _handleBodyInteraction() {
+    if (this._closeOnInteraction) {
+      this.hide(0);
+    }
+  }
+  /**
+   * Marks that the tooltip needs to be checked in the next change detection run.
+   * Mainly used for rendering the initial text before positioning a tooltip, which
+   * can be problematic in components with OnPush change detection.
+   */
+  _markForCheck() {
+    this._changeDetectorRef.markForCheck();
+  }
+  _handleMouseLeave({
+    relatedTarget
+  }) {
+    if (!relatedTarget || !this._triggerElement.contains(relatedTarget)) {
+      if (this.isVisible()) {
+        this.hide(this._mouseLeaveHideDelay);
+      } else {
+        this._finalizeAnimation(false);
+      }
+    }
+  }
+  /**
+   * Callback for when the timeout in this.show() gets completed.
+   * This method is only needed by the mdc-tooltip, and so it is only implemented
+   * in the mdc-tooltip, not here.
+   */
+  _onShow() {
+    this._isMultiline = this._isTooltipMultiline();
+    this._markForCheck();
+  }
+  /** Whether the tooltip text has overflown to the next line */
+  _isTooltipMultiline() {
+    const rect = this._elementRef.nativeElement.getBoundingClientRect();
+    return rect.height > MIN_HEIGHT && rect.width >= MAX_WIDTH;
+  }
+  /** Event listener dispatched when an animation on the tooltip finishes. */
+  _handleAnimationEnd({
+    animationName
+  }) {
+    if (animationName === this._showAnimation || animationName === this._hideAnimation) {
+      this._finalizeAnimation(animationName === this._showAnimation);
+    }
+  }
+  /** Cancels any pending animation sequences. */
+  _cancelPendingAnimations() {
+    if (this._showTimeoutId != null) {
+      clearTimeout(this._showTimeoutId);
+    }
+    if (this._hideTimeoutId != null) {
+      clearTimeout(this._hideTimeoutId);
+    }
+    this._showTimeoutId = this._hideTimeoutId = void 0;
+  }
+  /** Handles the cleanup after an animation has finished. */
+  _finalizeAnimation(toVisible) {
+    if (toVisible) {
+      this._closeOnInteraction = true;
+    } else if (!this.isVisible()) {
+      this._onHide.next();
+    }
+  }
+  /** Toggles the visibility of the tooltip element. */
+  _toggleVisibility(isVisible) {
+    const tooltip = this._tooltip.nativeElement;
+    const showClass = this._showAnimation;
+    const hideClass = this._hideAnimation;
+    tooltip.classList.remove(isVisible ? hideClass : showClass);
+    tooltip.classList.add(isVisible ? showClass : hideClass);
+    if (this._isVisible !== isVisible) {
+      this._isVisible = isVisible;
+      this._changeDetectorRef.markForCheck();
+    }
+    if (isVisible && !this._animationsDisabled && typeof getComputedStyle === "function") {
+      const styles = getComputedStyle(tooltip);
+      if (styles.getPropertyValue("animation-duration") === "0s" || styles.getPropertyValue("animation-name") === "none") {
+        this._animationsDisabled = true;
+      }
+    }
+    if (isVisible) {
+      this._onShow();
+    }
+    if (this._animationsDisabled) {
+      tooltip.classList.add("_mat-animation-noopable");
+      this._finalizeAnimation(isVisible);
+    }
+  }
+};
+_TooltipComponent.\u0275fac = function TooltipComponent_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _TooltipComponent)(\u0275\u0275directiveInject(ChangeDetectorRef), \u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(ANIMATION_MODULE_TYPE, 8));
+};
+_TooltipComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
+  type: _TooltipComponent,
+  selectors: [["mat-tooltip-component"]],
+  viewQuery: function TooltipComponent_Query(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275viewQuery(_c08, 7);
+    }
+    if (rf & 2) {
+      let _t;
+      \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx._tooltip = _t.first);
+    }
+  },
+  hostAttrs: ["aria-hidden", "true"],
+  hostVars: 2,
+  hostBindings: function TooltipComponent_HostBindings(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275listener("mouseleave", function TooltipComponent_mouseleave_HostBindingHandler($event) {
+        return ctx._handleMouseLeave($event);
+      });
+    }
+    if (rf & 2) {
+      \u0275\u0275styleProp("zoom", ctx.isVisible() ? 1 : null);
+    }
+  },
+  standalone: true,
+  features: [\u0275\u0275StandaloneFeature],
+  decls: 4,
+  vars: 4,
+  consts: [["tooltip", ""], [1, "mdc-tooltip", "mat-mdc-tooltip", 3, "animationend", "ngClass"], [1, "mat-mdc-tooltip-surface", "mdc-tooltip__surface"]],
+  template: function TooltipComponent_Template(rf, ctx) {
+    if (rf & 1) {
+      const _r1 = \u0275\u0275getCurrentView();
+      \u0275\u0275elementStart(0, "div", 1, 0);
+      \u0275\u0275listener("animationend", function TooltipComponent_Template_div_animationend_0_listener($event) {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx._handleAnimationEnd($event));
+      });
+      \u0275\u0275elementStart(2, "div", 2);
+      \u0275\u0275text(3);
+      \u0275\u0275elementEnd()();
+    }
+    if (rf & 2) {
+      \u0275\u0275classProp("mdc-tooltip--multiline", ctx._isMultiline);
+      \u0275\u0275property("ngClass", ctx.tooltipClass);
+      \u0275\u0275advance(3);
+      \u0275\u0275textInterpolate(ctx.message);
+    }
+  },
+  dependencies: [NgClass],
+  styles: ['.mat-mdc-tooltip{position:relative;transform:scale(0);display:inline-flex}.mat-mdc-tooltip::before{content:"";top:0;right:0;bottom:0;left:0;z-index:-1;position:absolute}.mat-mdc-tooltip-panel-below .mat-mdc-tooltip::before{top:-8px}.mat-mdc-tooltip-panel-above .mat-mdc-tooltip::before{bottom:-8px}.mat-mdc-tooltip-panel-right .mat-mdc-tooltip::before{left:-8px}.mat-mdc-tooltip-panel-left .mat-mdc-tooltip::before{right:-8px}.mat-mdc-tooltip._mat-animation-noopable{animation:none;transform:scale(1)}.mat-mdc-tooltip-surface{word-break:normal;overflow-wrap:anywhere;padding:4px 8px;min-width:40px;max-width:200px;min-height:24px;max-height:40vh;box-sizing:border-box;overflow:hidden;text-align:center;will-change:transform,opacity;background-color:var(--mdc-plain-tooltip-container-color);color:var(--mdc-plain-tooltip-supporting-text-color);border-radius:var(--mdc-plain-tooltip-container-shape);font-family:var(--mdc-plain-tooltip-supporting-text-font);font-size:var(--mdc-plain-tooltip-supporting-text-size);font-weight:var(--mdc-plain-tooltip-supporting-text-weight);line-height:var(--mdc-plain-tooltip-supporting-text-line-height);letter-spacing:var(--mdc-plain-tooltip-supporting-text-tracking)}.mat-mdc-tooltip-surface::before{position:absolute;box-sizing:border-box;width:100%;height:100%;top:0;left:0;border:1px solid rgba(0,0,0,0);border-radius:inherit;content:"";pointer-events:none}.mdc-tooltip--multiline .mat-mdc-tooltip-surface{text-align:left}[dir=rtl] .mdc-tooltip--multiline .mat-mdc-tooltip-surface{text-align:right}.mat-mdc-tooltip-panel.mat-mdc-tooltip-panel-non-interactive{pointer-events:none}@keyframes mat-mdc-tooltip-show{0%{opacity:0;transform:scale(0.8)}100%{opacity:1;transform:scale(1)}}@keyframes mat-mdc-tooltip-hide{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(0.8)}}.mat-mdc-tooltip-show{animation:mat-mdc-tooltip-show 150ms cubic-bezier(0, 0, 0.2, 1) forwards}.mat-mdc-tooltip-hide{animation:mat-mdc-tooltip-hide 75ms cubic-bezier(0.4, 0, 1, 1) forwards}'],
+  encapsulation: 2,
+  changeDetection: 0
+});
+var TooltipComponent = _TooltipComponent;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(TooltipComponent, [{
+    type: Component,
+    args: [{
+      selector: "mat-tooltip-component",
+      encapsulation: ViewEncapsulation$1.None,
+      changeDetection: ChangeDetectionStrategy.OnPush,
+      host: {
+        // Forces the element to have a layout in IE and Edge. This fixes issues where the element
+        // won't be rendered if the animations are disabled or there is no web animations polyfill.
+        "[style.zoom]": "isVisible() ? 1 : null",
+        "(mouseleave)": "_handleMouseLeave($event)",
+        "aria-hidden": "true"
+      },
+      standalone: true,
+      imports: [NgClass],
+      template: '<div\n  #tooltip\n  class="mdc-tooltip mat-mdc-tooltip"\n  [ngClass]="tooltipClass"\n  (animationend)="_handleAnimationEnd($event)"\n  [class.mdc-tooltip--multiline]="_isMultiline">\n  <div class="mat-mdc-tooltip-surface mdc-tooltip__surface">{{message}}</div>\n</div>\n',
+      styles: ['.mat-mdc-tooltip{position:relative;transform:scale(0);display:inline-flex}.mat-mdc-tooltip::before{content:"";top:0;right:0;bottom:0;left:0;z-index:-1;position:absolute}.mat-mdc-tooltip-panel-below .mat-mdc-tooltip::before{top:-8px}.mat-mdc-tooltip-panel-above .mat-mdc-tooltip::before{bottom:-8px}.mat-mdc-tooltip-panel-right .mat-mdc-tooltip::before{left:-8px}.mat-mdc-tooltip-panel-left .mat-mdc-tooltip::before{right:-8px}.mat-mdc-tooltip._mat-animation-noopable{animation:none;transform:scale(1)}.mat-mdc-tooltip-surface{word-break:normal;overflow-wrap:anywhere;padding:4px 8px;min-width:40px;max-width:200px;min-height:24px;max-height:40vh;box-sizing:border-box;overflow:hidden;text-align:center;will-change:transform,opacity;background-color:var(--mdc-plain-tooltip-container-color);color:var(--mdc-plain-tooltip-supporting-text-color);border-radius:var(--mdc-plain-tooltip-container-shape);font-family:var(--mdc-plain-tooltip-supporting-text-font);font-size:var(--mdc-plain-tooltip-supporting-text-size);font-weight:var(--mdc-plain-tooltip-supporting-text-weight);line-height:var(--mdc-plain-tooltip-supporting-text-line-height);letter-spacing:var(--mdc-plain-tooltip-supporting-text-tracking)}.mat-mdc-tooltip-surface::before{position:absolute;box-sizing:border-box;width:100%;height:100%;top:0;left:0;border:1px solid rgba(0,0,0,0);border-radius:inherit;content:"";pointer-events:none}.mdc-tooltip--multiline .mat-mdc-tooltip-surface{text-align:left}[dir=rtl] .mdc-tooltip--multiline .mat-mdc-tooltip-surface{text-align:right}.mat-mdc-tooltip-panel.mat-mdc-tooltip-panel-non-interactive{pointer-events:none}@keyframes mat-mdc-tooltip-show{0%{opacity:0;transform:scale(0.8)}100%{opacity:1;transform:scale(1)}}@keyframes mat-mdc-tooltip-hide{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(0.8)}}.mat-mdc-tooltip-show{animation:mat-mdc-tooltip-show 150ms cubic-bezier(0, 0, 0.2, 1) forwards}.mat-mdc-tooltip-hide{animation:mat-mdc-tooltip-hide 75ms cubic-bezier(0.4, 0, 1, 1) forwards}']
+    }]
+  }], () => [{
+    type: ChangeDetectorRef
+  }, {
+    type: ElementRef
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [ANIMATION_MODULE_TYPE]
+    }]
+  }], {
+    _tooltip: [{
+      type: ViewChild,
+      args: ["tooltip", {
+        // Use a static query here since we interact directly with
+        // the DOM which can happen before `ngAfterViewInit`.
+        static: true
+      }]
+    }]
+  });
+})();
+var matTooltipAnimations = {
+  /** Animation that transitions a tooltip in and out. */
+  tooltipState: trigger("state", [
+    // TODO(crisbeto): these values are based on MDC's CSS.
+    // We should be able to use their styles directly once we land #19432.
+    state("initial, void, hidden", style({
+      opacity: 0,
+      transform: "scale(0.8)"
+    })),
+    state("visible", style({
+      transform: "scale(1)"
+    })),
+    transition("* => visible", animate("150ms cubic-bezier(0, 0, 0.2, 1)")),
+    transition("* => hidden", animate("75ms cubic-bezier(0.4, 0, 1, 1)"))
+  ])
+};
+var _MatTooltipModule = class _MatTooltipModule {
+};
+_MatTooltipModule.\u0275fac = function MatTooltipModule_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatTooltipModule)();
+};
+_MatTooltipModule.\u0275mod = /* @__PURE__ */ \u0275\u0275defineNgModule({
+  type: _MatTooltipModule
+});
+_MatTooltipModule.\u0275inj = /* @__PURE__ */ \u0275\u0275defineInjector({
+  providers: [MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER],
+  imports: [A11yModule, CommonModule, OverlayModule, MatCommonModule, MatCommonModule, CdkScrollableModule]
+});
+var MatTooltipModule = _MatTooltipModule;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatTooltipModule, [{
+    type: NgModule,
+    args: [{
+      imports: [A11yModule, CommonModule, OverlayModule, MatCommonModule, MatTooltip, TooltipComponent],
+      exports: [MatTooltip, TooltipComponent, MatCommonModule, CdkScrollableModule],
+      providers: [MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER]
+    }]
+  }], null, null);
 })();
 
 // node_modules/@angular/cdk/fesm2022/dialog.mjs
@@ -42023,8 +42952,150 @@ var matDialogAnimations = {
   ])
 };
 
+// src/app/component/form/create-registered-task-form/create-registered-task-form.component.ts
+function CreateRegisteredTaskFormComponent_For_7_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "mat-option", 4);
+    \u0275\u0275text(1);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const option_r1 = ctx.$implicit;
+    \u0275\u0275property("disabled", option_r1.name === "...")("value", option_r1);
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", option_r1.name, " ");
+  }
+}
+var _CreateRegisteredTaskFormComponent = class _CreateRegisteredTaskFormComponent {
+  constructor() {
+    this.taskService = inject(TaskService);
+    this.onRegisteredTaskRegistered = new EventEmitter();
+    this.taskSearchControl = new FormControl("");
+    this.taskSearchSignal = toSignal(this.taskSearchControl.valueChanges);
+    this.filteredOptionsSignal = computed(() => {
+      const searchedValue = this.taskSearchSignal();
+      const tasks = this.tasksSignal();
+      if (tasks) {
+        const searchedTaskName = typeof searchedValue === "string" ? searchedValue : searchedValue?.name;
+        if (!searchedTaskName) {
+          return this.narrowSearch(tasks);
+        }
+        const searchedTaskNameLowerCase = searchedTaskName.toLowerCase();
+        const searchedTasksBySpace = searchedTaskNameLowerCase.split(" ");
+        const resultsFound = tasks.filter((task) => {
+          const taskLowerCased = task.name.toLowerCase();
+          return searchedTasksBySpace.every((currString) => taskLowerCased.includes(currString));
+        });
+        return this.narrowSearch(resultsFound);
+      }
+      return [];
+    });
+    this.tasksSignal = signal(void 0);
+    this.effectRef = effect(() => {
+      this.taskService.getTasksForUser().subscribe({
+        next: (value) => {
+          this.tasksSignal.set(value);
+        }
+      });
+    }, { allowSignalWrites: true });
+  }
+  ngOnInit() {
+    this.onRegisteredTaskRegistered.emit(this.taskSearchControl);
+  }
+  narrowSearch(tasks) {
+    if (tasks.length <= 5) {
+      return tasks;
+    } else {
+      const fakeTask = { taskId: -1, name: "...", kmEligible: false };
+      return tasks.slice(0, 4).concat(fakeTask);
+    }
+  }
+  displayFn(task) {
+    return task?.name || "";
+  }
+};
+_CreateRegisteredTaskFormComponent.\u0275fac = function CreateRegisteredTaskFormComponent_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _CreateRegisteredTaskFormComponent)();
+};
+_CreateRegisteredTaskFormComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _CreateRegisteredTaskFormComponent, selectors: [["app-create-registered-task-form"]], outputs: { onRegisteredTaskRegistered: "onRegisteredTaskRegistered" }, standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 8, vars: 3, consts: [["auto", "matAutocomplete"], [2, "width", "100%"], ["type", "text", "placeholder", "Search for task..", "aria-label", "Task", "matInput", "", 3, "formControl", "matAutocomplete"], [3, "displayWith"], [3, "disabled", "value"]], template: function CreateRegisteredTaskFormComponent_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "mat-form-field", 1)(1, "mat-label");
+    \u0275\u0275text(2, "Task");
+    \u0275\u0275elementEnd();
+    \u0275\u0275element(3, "input", 2);
+    \u0275\u0275elementStart(4, "mat-autocomplete", 3, 0);
+    \u0275\u0275repeaterCreate(6, CreateRegisteredTaskFormComponent_For_7_Template, 2, 3, "mat-option", 4, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const auto_r2 = \u0275\u0275reference(5);
+    \u0275\u0275advance(3);
+    \u0275\u0275property("formControl", ctx.taskSearchControl)("matAutocomplete", auto_r2);
+    \u0275\u0275advance();
+    \u0275\u0275property("displayWith", ctx.displayFn);
+    \u0275\u0275advance(2);
+    \u0275\u0275repeater(ctx.filteredOptionsSignal());
+  }
+}, dependencies: [
+  MatAutocomplete,
+  MatAutocompleteTrigger,
+  MatFormField,
+  MatInput,
+  MatLabel,
+  MatOption,
+  ReactiveFormsModule,
+  DefaultValueAccessor,
+  NgControlStatus,
+  FormControlDirective
+] });
+var CreateRegisteredTaskFormComponent = _CreateRegisteredTaskFormComponent;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(CreateRegisteredTaskFormComponent, { className: "CreateRegisteredTaskFormComponent", filePath: "src\\app\\component\\form\\create-registered-task-form\\create-registered-task-form.component.ts", lineNumber: 35 });
+})();
+
+// src/app/component/form/create-unregistered-task-form/create-unregistered-task-form.component.ts
+var _CreateUnregisteredTaskFormComponent = class _CreateUnregisteredTaskFormComponent {
+  constructor() {
+    this.onUnRegisteredTaskRegistered = new EventEmitter();
+    this.descriptionFormControl = new FormControl("");
+  }
+  ngOnInit() {
+    this.onUnRegisteredTaskRegistered.emit(this.descriptionFormControl);
+  }
+};
+_CreateUnregisteredTaskFormComponent.\u0275fac = function CreateUnregisteredTaskFormComponent_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _CreateUnregisteredTaskFormComponent)();
+};
+_CreateUnregisteredTaskFormComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _CreateUnregisteredTaskFormComponent, selectors: [["app-create-unregistered-task-form"]], outputs: { onUnRegisteredTaskRegistered: "onUnRegisteredTaskRegistered" }, standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 4, vars: 1, consts: [[2, "width", "100%"], ["required", "", "matInput", "", 3, "formControl"]], template: function CreateUnregisteredTaskFormComponent_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "mat-form-field", 0)(1, "mat-label");
+    \u0275\u0275text(2, "Description");
+    \u0275\u0275elementEnd();
+    \u0275\u0275element(3, "input", 1);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    \u0275\u0275advance(3);
+    \u0275\u0275property("formControl", ctx.descriptionFormControl);
+  }
+}, dependencies: [
+  FormsModule,
+  DefaultValueAccessor,
+  NgControlStatus,
+  RequiredValidator,
+  MatFormField,
+  MatInput,
+  MatLabel,
+  ReactiveFormsModule,
+  FormControlDirective
+] });
+var CreateUnregisteredTaskFormComponent = _CreateUnregisteredTaskFormComponent;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(CreateUnregisteredTaskFormComponent, { className: "CreateUnregisteredTaskFormComponent", filePath: "src\\app\\component\\form\\create-unregistered-task-form\\create-unregistered-task-form.component.ts", lineNumber: 21 });
+})();
+
 // node_modules/@angular/material/fesm2022/button-toggle.mjs
-var _c08 = ["button"];
+var _c09 = ["button"];
 var _c17 = ["*"];
 function MatButtonToggle_Conditional_3_Template(rf, ctx) {
   if (rf & 1) {
@@ -42608,7 +43679,7 @@ _MatButtonToggle.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
   selectors: [["mat-button-toggle"]],
   viewQuery: function MatButtonToggle_Query(rf, ctx) {
     if (rf & 1) {
-      \u0275\u0275viewQuery(_c08, 5);
+      \u0275\u0275viewQuery(_c09, 5);
     }
     if (rf & 2) {
       let _t;
@@ -42850,146 +43921,193 @@ var MatButtonToggleModule = _MatButtonToggleModule;
   }], null, null);
 })();
 
-// src/app/component/form/create-registered-task-form/create-registered-task-form.component.ts
-function CreateRegisteredTaskFormComponent_For_7_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "mat-option", 4);
-    \u0275\u0275text(1);
-    \u0275\u0275elementEnd();
-  }
-  if (rf & 2) {
-    const option_r1 = ctx.$implicit;
-    \u0275\u0275property("disabled", option_r1.name === "...")("value", option_r1);
-    \u0275\u0275advance();
-    \u0275\u0275textInterpolate1(" ", option_r1.name, " ");
-  }
-}
-var _CreateRegisteredTaskFormComponent = class _CreateRegisteredTaskFormComponent {
+// src/app/component/dialog/associate-task-dialog/associate-task-dialog.component.ts
+var _AssociateTaskDialogComponent = class _AssociateTaskDialogComponent {
   constructor() {
-    this.taskService = inject(TaskService);
-    this.onRegisteredTaskRegistered = new EventEmitter();
-    this.taskSearchControl = new FormControl("");
-    this.taskSearchSignal = toSignal(this.taskSearchControl.valueChanges);
-    this.filteredOptionsSignal = computed(() => {
-      const searchedValue = this.taskSearchSignal();
-      const tasks = this.tasksSignal();
-      if (tasks) {
-        const searchedTaskName = typeof searchedValue === "string" ? searchedValue : searchedValue?.name;
-        if (!searchedTaskName) {
-          return this.narrowSearch(tasks);
-        }
-        const searchedTaskNameLowerCase = searchedTaskName.toLowerCase();
-        const searchedTasksBySpace = searchedTaskNameLowerCase.split(" ");
-        const resultsFound = tasks.filter((task) => {
-          const taskLowerCased = task.name.toLowerCase();
-          return searchedTasksBySpace.every((currString) => taskLowerCased.includes(currString));
-        });
-        return this.narrowSearch(resultsFound);
-      }
-      return [];
-    });
-    this.tasksSignal = signal(void 0);
-    this.effectRef = effect(() => {
-      this.taskService.getTasksForUser().subscribe({
-        next: (value) => {
-          this.tasksSignal.set(value);
-        }
-      });
-    }, { allowSignalWrites: true });
+    this.dialogRef = inject(MatDialogRef);
+    this.formGroup = new FormGroup({});
+    this.frameElement = frameElement;
   }
-  ngOnInit() {
-    this.onRegisteredTaskRegistered.emit(this.taskSearchControl);
+  registeredTaskRegistered(formControl) {
+    this.formGroup.addControl("registeredTask", formControl);
   }
-  narrowSearch(tasks) {
-    if (tasks.length <= 5) {
-      return tasks;
-    } else {
-      const fakeTask = { taskId: -1, name: "...", kmEligible: false };
-      return tasks.slice(0, 4).concat(fakeTask);
+  associateTask() {
+    if (this.formGroup.valid) {
+      this.dialogRef.close(this.getTaskId());
     }
   }
-  displayFn(task) {
-    return task?.name || "";
+  getTaskId() {
+    const { registeredTask } = this.formGroup.value;
+    if (typeof registeredTask !== "string") {
+      return registeredTask?.taskId;
+    }
+    return void 0;
   }
 };
-_CreateRegisteredTaskFormComponent.\u0275fac = function CreateRegisteredTaskFormComponent_Factory(__ngFactoryType__) {
-  return new (__ngFactoryType__ || _CreateRegisteredTaskFormComponent)();
+_AssociateTaskDialogComponent.\u0275fac = function AssociateTaskDialogComponent_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _AssociateTaskDialogComponent)();
 };
-_CreateRegisteredTaskFormComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _CreateRegisteredTaskFormComponent, selectors: [["app-create-registered-task-form"]], outputs: { onRegisteredTaskRegistered: "onRegisteredTaskRegistered" }, standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 8, vars: 3, consts: [["auto", "matAutocomplete"], [2, "width", "100%"], ["type", "text", "placeholder", "Search for task..", "aria-label", "Task", "matInput", "", 3, "formControl", "matAutocomplete"], [3, "displayWith"], [3, "disabled", "value"]], template: function CreateRegisteredTaskFormComponent_Template(rf, ctx) {
+_AssociateTaskDialogComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _AssociateTaskDialogComponent, selectors: [["app-associate-task-dialog"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 10, vars: 2, consts: [[1, "flex-column", "half-gap", 3, "ngSubmit", "formGroup"], ["mat-dialog-title", ""], [3, "onRegisteredTaskRegistered"], ["align", "end"], ["type", "button", "mat-button", "", "mat-dialog-close", ""], ["type", "submit", "mat-button", "", "cdkFocusInitial", "", 3, "disabled"]], template: function AssociateTaskDialogComponent_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "mat-form-field", 1)(1, "mat-label");
-    \u0275\u0275text(2, "Task");
+    \u0275\u0275elementStart(0, "form", 0);
+    \u0275\u0275listener("ngSubmit", function AssociateTaskDialogComponent_Template_form_ngSubmit_0_listener() {
+      return ctx.associateTask();
+    });
+    \u0275\u0275elementStart(1, "h2", 1);
+    \u0275\u0275text(2, "Associate draft with a task");
     \u0275\u0275elementEnd();
-    \u0275\u0275element(3, "input", 2);
-    \u0275\u0275elementStart(4, "mat-autocomplete", 3, 0);
-    \u0275\u0275repeaterCreate(6, CreateRegisteredTaskFormComponent_For_7_Template, 2, 3, "mat-option", 4, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275elementStart(3, "mat-dialog-content")(4, "app-create-registered-task-form", 2);
+    \u0275\u0275listener("onRegisteredTaskRegistered", function AssociateTaskDialogComponent_Template_app_create_registered_task_form_onRegisteredTaskRegistered_4_listener($event) {
+      return ctx.registeredTaskRegistered($event);
+    });
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(5, "mat-dialog-actions", 3)(6, "button", 4);
+    \u0275\u0275text(7, "Cancel");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(8, "button", 5);
+    \u0275\u0275text(9, "Associate");
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    \u0275\u0275property("formGroup", ctx.formGroup);
+    \u0275\u0275advance(8);
+    \u0275\u0275property("disabled", ctx.formGroup.invalid);
+  }
+}, dependencies: [
+  CreateRegisteredTaskFormComponent,
+  FormsModule,
+  \u0275NgNoValidate,
+  NgControlStatusGroup,
+  MatButton,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogTitle,
+  ReactiveFormsModule,
+  FormGroupDirective
+] });
+var AssociateTaskDialogComponent = _AssociateTaskDialogComponent;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AssociateTaskDialogComponent, { className: "AssociateTaskDialogComponent", filePath: "src\\app\\component\\dialog\\associate-task-dialog\\associate-task-dialog.component.ts", lineNumber: 39 });
+})();
+
+// src/app/component/task-registration/task-registration.component.ts
+function TaskRegistrationComponent_Conditional_3_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275text(0);
+  }
+  if (rf & 2) {
+    const ctx_r0 = \u0275\u0275nextContext();
+    \u0275\u0275textInterpolate1(" ", ctx_r0.task.task.taskName, " ");
+  }
+}
+function TaskRegistrationComponent_Conditional_4_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275text(0);
+  }
+  if (rf & 2) {
+    const ctx_r0 = \u0275\u0275nextContext();
+    \u0275\u0275textInterpolate1(" ", ctx_r0.task.taskDescription || "-", " ");
+  }
+}
+function TaskRegistrationComponent_Conditional_6_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r2 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "button", 6);
+    \u0275\u0275listener("click", function TaskRegistrationComponent_Conditional_6_Template_button_click_0_listener() {
+      \u0275\u0275restoreView(_r2);
+      const ctx_r0 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r0.openAssociateTaskDialog());
+    });
+    \u0275\u0275elementStart(1, "mat-icon");
+    \u0275\u0275text(2, "add_task");
+    \u0275\u0275elementEnd()();
+  }
+}
+function TaskRegistrationComponent_For_12_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275element(0, "app-time-registration-day", 5);
+  }
+  if (rf & 2) {
+    const dailyRegistration_r3 = ctx.$implicit;
+    const ctx_r0 = \u0275\u0275nextContext();
+    \u0275\u0275property("task", ctx_r0.task)("dayTimeRegistrations", dailyRegistration_r3);
+  }
+}
+var _TaskRegistrationComponent = class _TaskRegistrationComponent {
+  constructor() {
+    this.dialog = inject(MatDialog);
+    this.timeRegistrationService = inject(TimeRegistrationService);
+  }
+  hasDescription() {
+    return typeof this.task.taskDescription === "string";
+  }
+  openAssociateTaskDialog() {
+    const dialogRef = this.dialog.open(AssociateTaskDialogComponent, { width: "800px" });
+    dialogRef.afterClosed().subscribe({
+      next: (taskId) => __async(this, null, function* () {
+        if (taskId) {
+          for (const dayTimeRegistrations of this.task.dailyRegistrations || []) {
+            for (const { timeRegistrationId, tags } of dayTimeRegistrations.timeRegistrations) {
+              const timeRegistrationTags = tags.reduce((sum, tag) => {
+                if (tag.tagRegistration) {
+                  sum.push({
+                    tagConfigurationId: tag.tagConfigurationMetadata.tagConfigurationId,
+                    value: tag.tagRegistration.tagValue
+                  });
+                }
+                return sum;
+              }, []);
+              yield firstValueFrom(this.timeRegistrationService.associateTimeRegistrationWithTask({
+                taskId,
+                timeRegistrationId,
+                tags: timeRegistrationTags
+              }));
+            }
+          }
+        }
+      })
+    });
+  }
+};
+_TaskRegistrationComponent.\u0275fac = function TaskRegistrationComponent_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _TaskRegistrationComponent)();
+};
+_TaskRegistrationComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _TaskRegistrationComponent, selectors: [["app-task-registration"]], inputs: { task: "task" }, standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 13, vars: 2, consts: [[1, "flex-column", 2, "margin-top", "1rem"], [1, "flex-row", "justify-space-between", "align-items-center"], ["mat-icon-button", "", "aria-label", "Associate task", "matTooltip", "Associate task"], ["mat-icon-button", "", "aria-label", "Advanced edit", "matTooltip", "Advanced edit"], [1, "flex-row", "flex-wrap-wrap", "align-items-center"], [3, "task", "dayTimeRegistrations"], ["mat-icon-button", "", "aria-label", "Associate task", "matTooltip", "Associate task", 3, "click"]], template: function TaskRegistrationComponent_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 0)(1, "div", 1)(2, "strong");
+    \u0275\u0275template(3, TaskRegistrationComponent_Conditional_3_Template, 1, 1)(4, TaskRegistrationComponent_Conditional_4_Template, 1, 1);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(5, "div");
+    \u0275\u0275template(6, TaskRegistrationComponent_Conditional_6_Template, 3, 0, "button", 2);
+    \u0275\u0275elementStart(7, "button", 3)(8, "mat-icon");
+    \u0275\u0275text(9, "edit");
+    \u0275\u0275elementEnd()()()();
+    \u0275\u0275elementStart(10, "div", 4);
+    \u0275\u0275repeaterCreate(11, TaskRegistrationComponent_For_12_Template, 1, 2, "app-time-registration-day", 5, \u0275\u0275repeaterTrackByIdentity);
     \u0275\u0275elementEnd()();
   }
   if (rf & 2) {
-    const auto_r2 = \u0275\u0275reference(5);
     \u0275\u0275advance(3);
-    \u0275\u0275property("formControl", ctx.taskSearchControl)("matAutocomplete", auto_r2);
-    \u0275\u0275advance();
-    \u0275\u0275property("displayWith", ctx.displayFn);
-    \u0275\u0275advance(2);
-    \u0275\u0275repeater(ctx.filteredOptionsSignal());
+    \u0275\u0275conditional(ctx.task.task ? 3 : 4);
+    \u0275\u0275advance(3);
+    \u0275\u0275conditional(ctx.hasDescription() ? 6 : -1);
+    \u0275\u0275advance(5);
+    \u0275\u0275repeater(ctx.task.dailyRegistrations);
   }
 }, dependencies: [
-  MatAutocomplete,
-  MatAutocompleteTrigger,
-  MatFormField,
-  MatInput,
-  MatLabel,
-  MatOption,
   ReactiveFormsModule,
-  DefaultValueAccessor,
-  NgControlStatus,
-  FormControlDirective
-] });
-var CreateRegisteredTaskFormComponent = _CreateRegisteredTaskFormComponent;
+  TimeRegistrationDayComponent,
+  MatCardModule,
+  MatButtonModule,
+  MatIconButton,
+  MatIconModule,
+  MatIcon,
+  MatTooltip
+], styles: ["\n\n.ml-1[_ngcontent-%COMP%] {\n  margin-left: 1rem;\n}\n.ml-2[_ngcontent-%COMP%] {\n  margin-left: 2rem;\n}\n.ml-3[_ngcontent-%COMP%] {\n  margin-left: 3rem;\n}\n.ml-4[_ngcontent-%COMP%] {\n  margin-left: 4rem;\n}\n.ml-5[_ngcontent-%COMP%] {\n  margin-left: 5rem;\n}\n/*# sourceMappingURL=task-registration.component.css.map */"] });
+var TaskRegistrationComponent = _TaskRegistrationComponent;
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(CreateRegisteredTaskFormComponent, { className: "CreateRegisteredTaskFormComponent", filePath: "src\\app\\component\\form\\create-registered-task-form\\create-registered-task-form.component.ts", lineNumber: 41 });
-})();
-
-// src/app/component/form/create-unregistered-task-form/create-unregistered-task-form.component.ts
-var _CreateUnregisteredTaskFormComponent = class _CreateUnregisteredTaskFormComponent {
-  constructor() {
-    this.onUnRegisteredTaskRegistered = new EventEmitter();
-    this.descriptionFormControl = new FormControl("");
-  }
-  ngOnInit() {
-    this.onUnRegisteredTaskRegistered.emit(this.descriptionFormControl);
-  }
-};
-_CreateUnregisteredTaskFormComponent.\u0275fac = function CreateUnregisteredTaskFormComponent_Factory(__ngFactoryType__) {
-  return new (__ngFactoryType__ || _CreateUnregisteredTaskFormComponent)();
-};
-_CreateUnregisteredTaskFormComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _CreateUnregisteredTaskFormComponent, selectors: [["app-create-unregistered-task-form"]], outputs: { onUnRegisteredTaskRegistered: "onUnRegisteredTaskRegistered" }, standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 4, vars: 1, consts: [[2, "width", "100%"], ["required", "", "matInput", "", 3, "formControl"]], template: function CreateUnregisteredTaskFormComponent_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "mat-form-field", 0)(1, "mat-label");
-    \u0275\u0275text(2, "Description");
-    \u0275\u0275elementEnd();
-    \u0275\u0275element(3, "input", 1);
-    \u0275\u0275elementEnd();
-  }
-  if (rf & 2) {
-    \u0275\u0275advance(3);
-    \u0275\u0275property("formControl", ctx.descriptionFormControl);
-  }
-}, dependencies: [
-  FormsModule,
-  DefaultValueAccessor,
-  NgControlStatus,
-  RequiredValidator,
-  MatFormField,
-  MatInput,
-  MatLabel,
-  ReactiveFormsModule,
-  FormControlDirective
-] });
-var CreateUnregisteredTaskFormComponent = _CreateUnregisteredTaskFormComponent;
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(CreateUnregisteredTaskFormComponent, { className: "CreateUnregisteredTaskFormComponent", filePath: "src\\app\\component\\form\\create-unregistered-task-form\\create-unregistered-task-form.component.ts", lineNumber: 21 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TaskRegistrationComponent, { className: "TaskRegistrationComponent", filePath: "src\\app\\component\\task-registration\\task-registration.component.ts", lineNumber: 34 });
 })();
 
 // src/app/component/dialog/create-task-dialog/create-task-dialog.component.ts
@@ -43068,13 +44186,13 @@ _CreateTaskDialogComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineCompone
       return ctx.createTask();
     });
     \u0275\u0275elementStart(1, "h2", 1);
-    \u0275\u0275text(2, "Create new task");
+    \u0275\u0275text(2, "Create a task or draft");
     \u0275\u0275elementEnd();
     \u0275\u0275elementStart(3, "mat-dialog-content")(4, "div", 2)(5, "div")(6, "mat-button-toggle-group", 3)(7, "mat-button-toggle", 4);
-    \u0275\u0275text(8, "Registered Task");
+    \u0275\u0275text(8, "Task");
     \u0275\u0275elementEnd();
     \u0275\u0275elementStart(9, "mat-button-toggle", 5);
-    \u0275\u0275text(10, "Unregistered task");
+    \u0275\u0275text(10, "Draft");
     \u0275\u0275elementEnd()()();
     \u0275\u0275template(11, CreateTaskDialogComponent_Conditional_11_Template, 1, 0, "app-create-registered-task-form")(12, CreateTaskDialogComponent_Conditional_12_Template, 1, 0, "app-create-unregistered-task-form");
     \u0275\u0275elementEnd()();
@@ -43117,138 +44235,3242 @@ var CreateTaskDialogComponent = _CreateTaskDialogComponent;
   (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(CreateTaskDialogComponent, { className: "CreateTaskDialogComponent", filePath: "src\\app\\component\\dialog\\create-task-dialog\\create-task-dialog.component.ts", lineNumber: 37 });
 })();
 
-// src/app/component/home/home.component.ts
-function HomeComponent_Conditional_12_For_1_Template(rf, ctx) {
+// node_modules/@angular/material/fesm2022/tabs.mjs
+var _c010 = ["*"];
+function MatTab_ng_template_0_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275element(0, "app-unregistered-task-registration", 6);
+    \u0275\u0275projection(0);
+  }
+}
+var _c18 = ["tabListContainer"];
+var _c25 = ["tabList"];
+var _c35 = ["tabListInner"];
+var _c45 = ["nextPaginator"];
+var _c54 = ["previousPaginator"];
+var _c64 = (a0) => ({
+  animationDuration: a0
+});
+var _c73 = (a0, a1) => ({
+  value: a0,
+  params: a1
+});
+function MatTabBody_ng_template_2_Template(rf, ctx) {
+}
+var _c82 = ["tabBodyWrapper"];
+var _c92 = ["tabHeader"];
+function MatTabGroup_For_3_Conditional_6_ng_template_0_Template(rf, ctx) {
+}
+function MatTabGroup_For_3_Conditional_6_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275template(0, MatTabGroup_For_3_Conditional_6_ng_template_0_Template, 0, 0, "ng-template", 12);
+  }
+  if (rf & 2) {
+    const tab_r4 = \u0275\u0275nextContext().$implicit;
+    \u0275\u0275property("cdkPortalOutlet", tab_r4.templateLabel);
+  }
+}
+function MatTabGroup_For_3_Conditional_7_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275text(0);
+  }
+  if (rf & 2) {
+    const tab_r4 = \u0275\u0275nextContext().$implicit;
+    \u0275\u0275textInterpolate(tab_r4.textLabel);
+  }
+}
+function MatTabGroup_For_3_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r2 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 7, 2);
+    \u0275\u0275listener("click", function MatTabGroup_For_3_Template_div_click_0_listener() {
+      const ctx_r2 = \u0275\u0275restoreView(_r2);
+      const tab_r4 = ctx_r2.$implicit;
+      const \u0275$index_3_r5 = ctx_r2.$index;
+      const ctx_r5 = \u0275\u0275nextContext();
+      const tabHeader_r7 = \u0275\u0275reference(1);
+      return \u0275\u0275resetView(ctx_r5._handleClick(tab_r4, tabHeader_r7, \u0275$index_3_r5));
+    })("cdkFocusChange", function MatTabGroup_For_3_Template_div_cdkFocusChange_0_listener($event) {
+      const \u0275$index_3_r5 = \u0275\u0275restoreView(_r2).$index;
+      const ctx_r5 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r5._tabFocusChanged($event, \u0275$index_3_r5));
+    });
+    \u0275\u0275element(2, "span", 8)(3, "div", 9);
+    \u0275\u0275elementStart(4, "span", 10)(5, "span", 11);
+    \u0275\u0275template(6, MatTabGroup_For_3_Conditional_6_Template, 1, 1, null, 12)(7, MatTabGroup_For_3_Conditional_7_Template, 1, 1);
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    const tab_r4 = ctx.$implicit;
+    const \u0275$index_3_r5 = ctx.$index;
+    const tabNode_r8 = \u0275\u0275reference(1);
+    const ctx_r5 = \u0275\u0275nextContext();
+    \u0275\u0275classMap(tab_r4.labelClass);
+    \u0275\u0275classProp("mdc-tab--active", ctx_r5.selectedIndex === \u0275$index_3_r5);
+    \u0275\u0275property("id", ctx_r5._getTabLabelId(\u0275$index_3_r5))("disabled", tab_r4.disabled)("fitInkBarToContent", ctx_r5.fitInkBarToContent);
+    \u0275\u0275attribute("tabIndex", ctx_r5._getTabIndex(\u0275$index_3_r5))("aria-posinset", \u0275$index_3_r5 + 1)("aria-setsize", ctx_r5._tabs.length)("aria-controls", ctx_r5._getTabContentId(\u0275$index_3_r5))("aria-selected", ctx_r5.selectedIndex === \u0275$index_3_r5)("aria-label", tab_r4.ariaLabel || null)("aria-labelledby", !tab_r4.ariaLabel && tab_r4.ariaLabelledby ? tab_r4.ariaLabelledby : null);
+    \u0275\u0275advance(3);
+    \u0275\u0275property("matRippleTrigger", tabNode_r8)("matRippleDisabled", tab_r4.disabled || ctx_r5.disableRipple);
+    \u0275\u0275advance(3);
+    \u0275\u0275conditional(tab_r4.templateLabel ? 6 : 7);
+  }
+}
+function MatTabGroup_Conditional_4_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275projection(0);
+  }
+}
+function MatTabGroup_For_8_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r9 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "mat-tab-body", 13);
+    \u0275\u0275listener("_onCentered", function MatTabGroup_For_8_Template_mat_tab_body__onCentered_0_listener() {
+      \u0275\u0275restoreView(_r9);
+      const ctx_r5 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r5._removeTabBodyWrapperHeight());
+    })("_onCentering", function MatTabGroup_For_8_Template_mat_tab_body__onCentering_0_listener($event) {
+      \u0275\u0275restoreView(_r9);
+      const ctx_r5 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r5._setTabBodyWrapperHeight($event));
+    });
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const tab_r10 = ctx.$implicit;
+    const \u0275$index_23_r11 = ctx.$index;
+    const ctx_r5 = \u0275\u0275nextContext();
+    \u0275\u0275classMap(tab_r10.bodyClass);
+    \u0275\u0275classProp("mat-mdc-tab-body-active", ctx_r5.selectedIndex === \u0275$index_23_r11);
+    \u0275\u0275property("id", ctx_r5._getTabContentId(\u0275$index_23_r11))("content", tab_r10.content)("position", tab_r10.position)("origin", tab_r10.origin)("animationDuration", ctx_r5.animationDuration)("preserveContent", ctx_r5.preserveContent);
+    \u0275\u0275attribute("tabindex", ctx_r5.contentTabIndex != null && ctx_r5.selectedIndex === \u0275$index_23_r11 ? ctx_r5.contentTabIndex : null)("aria-labelledby", ctx_r5._getTabLabelId(\u0275$index_23_r11))("aria-hidden", ctx_r5.selectedIndex !== \u0275$index_23_r11);
+  }
+}
+var _c102 = ["mat-tab-nav-bar", ""];
+var _c11 = ["mat-tab-link", ""];
+var MAT_TAB_CONTENT = new InjectionToken("MatTabContent");
+var _MatTabContent = class _MatTabContent {
+  constructor(template) {
+    this.template = template;
+  }
+};
+_MatTabContent.\u0275fac = function MatTabContent_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatTabContent)(\u0275\u0275directiveInject(TemplateRef));
+};
+_MatTabContent.\u0275dir = /* @__PURE__ */ \u0275\u0275defineDirective({
+  type: _MatTabContent,
+  selectors: [["", "matTabContent", ""]],
+  standalone: true,
+  features: [\u0275\u0275ProvidersFeature([{
+    provide: MAT_TAB_CONTENT,
+    useExisting: _MatTabContent
+  }])]
+});
+var MatTabContent = _MatTabContent;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatTabContent, [{
+    type: Directive,
+    args: [{
+      selector: "[matTabContent]",
+      providers: [{
+        provide: MAT_TAB_CONTENT,
+        useExisting: MatTabContent
+      }],
+      standalone: true
+    }]
+  }], () => [{
+    type: TemplateRef
+  }], null);
+})();
+var MAT_TAB_LABEL = new InjectionToken("MatTabLabel");
+var MAT_TAB = new InjectionToken("MAT_TAB");
+var _MatTabLabel = class _MatTabLabel extends CdkPortal {
+  constructor(templateRef, viewContainerRef, _closestTab) {
+    super(templateRef, viewContainerRef);
+    this._closestTab = _closestTab;
+  }
+};
+_MatTabLabel.\u0275fac = function MatTabLabel_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatTabLabel)(\u0275\u0275directiveInject(TemplateRef), \u0275\u0275directiveInject(ViewContainerRef), \u0275\u0275directiveInject(MAT_TAB, 8));
+};
+_MatTabLabel.\u0275dir = /* @__PURE__ */ \u0275\u0275defineDirective({
+  type: _MatTabLabel,
+  selectors: [["", "mat-tab-label", ""], ["", "matTabLabel", ""]],
+  standalone: true,
+  features: [\u0275\u0275ProvidersFeature([{
+    provide: MAT_TAB_LABEL,
+    useExisting: _MatTabLabel
+  }]), \u0275\u0275InheritDefinitionFeature]
+});
+var MatTabLabel = _MatTabLabel;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatTabLabel, [{
+    type: Directive,
+    args: [{
+      selector: "[mat-tab-label], [matTabLabel]",
+      providers: [{
+        provide: MAT_TAB_LABEL,
+        useExisting: MatTabLabel
+      }],
+      standalone: true
+    }]
+  }], () => [{
+    type: TemplateRef
+  }, {
+    type: ViewContainerRef
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Inject,
+      args: [MAT_TAB]
+    }, {
+      type: Optional
+    }]
+  }], null);
+})();
+var MAT_TAB_GROUP = new InjectionToken("MAT_TAB_GROUP");
+var _MatTab = class _MatTab {
+  /** Content for the tab label given by `<ng-template mat-tab-label>`. */
+  get templateLabel() {
+    return this._templateLabel;
+  }
+  set templateLabel(value) {
+    this._setTemplateLabelInput(value);
+  }
+  /** @docs-private */
+  get content() {
+    return this._contentPortal;
+  }
+  constructor(_viewContainerRef, _closestTabGroup) {
+    this._viewContainerRef = _viewContainerRef;
+    this._closestTabGroup = _closestTabGroup;
+    this.disabled = false;
+    this._explicitContent = void 0;
+    this.textLabel = "";
+    this._contentPortal = null;
+    this._stateChanges = new Subject();
+    this.position = null;
+    this.origin = null;
+    this.isActive = false;
+  }
+  ngOnChanges(changes) {
+    if (changes.hasOwnProperty("textLabel") || changes.hasOwnProperty("disabled")) {
+      this._stateChanges.next();
+    }
+  }
+  ngOnDestroy() {
+    this._stateChanges.complete();
+  }
+  ngOnInit() {
+    this._contentPortal = new TemplatePortal(this._explicitContent || this._implicitContent, this._viewContainerRef);
+  }
+  /**
+   * This has been extracted to a util because of TS 4 and VE.
+   * View Engine doesn't support property rename inheritance.
+   * TS 4.0 doesn't allow properties to override accessors or vice-versa.
+   * @docs-private
+   */
+  _setTemplateLabelInput(value) {
+    if (value && value._closestTab === this) {
+      this._templateLabel = value;
+    }
+  }
+};
+_MatTab.\u0275fac = function MatTab_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatTab)(\u0275\u0275directiveInject(ViewContainerRef), \u0275\u0275directiveInject(MAT_TAB_GROUP, 8));
+};
+_MatTab.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
+  type: _MatTab,
+  selectors: [["mat-tab"]],
+  contentQueries: function MatTab_ContentQueries(rf, ctx, dirIndex) {
+    if (rf & 1) {
+      \u0275\u0275contentQuery(dirIndex, MatTabLabel, 5);
+      \u0275\u0275contentQuery(dirIndex, MatTabContent, 7, TemplateRef);
+    }
+    if (rf & 2) {
+      let _t;
+      \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx.templateLabel = _t.first);
+      \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx._explicitContent = _t.first);
+    }
+  },
+  viewQuery: function MatTab_Query(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275viewQuery(TemplateRef, 7);
+    }
+    if (rf & 2) {
+      let _t;
+      \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx._implicitContent = _t.first);
+    }
+  },
+  hostAttrs: ["hidden", ""],
+  inputs: {
+    disabled: [2, "disabled", "disabled", booleanAttribute],
+    textLabel: [0, "label", "textLabel"],
+    ariaLabel: [0, "aria-label", "ariaLabel"],
+    ariaLabelledby: [0, "aria-labelledby", "ariaLabelledby"],
+    labelClass: "labelClass",
+    bodyClass: "bodyClass"
+  },
+  exportAs: ["matTab"],
+  standalone: true,
+  features: [\u0275\u0275ProvidersFeature([{
+    provide: MAT_TAB,
+    useExisting: _MatTab
+  }]), \u0275\u0275InputTransformsFeature, \u0275\u0275NgOnChangesFeature, \u0275\u0275StandaloneFeature],
+  ngContentSelectors: _c010,
+  decls: 1,
+  vars: 0,
+  template: function MatTab_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275projectionDef();
+      \u0275\u0275template(0, MatTab_ng_template_0_Template, 1, 0, "ng-template");
+    }
+  },
+  encapsulation: 2
+});
+var MatTab = _MatTab;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatTab, [{
+    type: Component,
+    args: [{
+      selector: "mat-tab",
+      changeDetection: ChangeDetectionStrategy.Default,
+      encapsulation: ViewEncapsulation$1.None,
+      exportAs: "matTab",
+      providers: [{
+        provide: MAT_TAB,
+        useExisting: MatTab
+      }],
+      standalone: true,
+      host: {
+        // This element will be rendered on the server in order to support hydration.
+        // Hide it so it doesn't cause a layout shift when it's removed on the client.
+        "hidden": ""
+      },
+      template: "<!-- Create a template for the content of the <mat-tab> so that we can grab a reference to this\n    TemplateRef and use it in a Portal to render the tab content in the appropriate place in the\n    tab-group. -->\n<ng-template><ng-content></ng-content></ng-template>\n"
+    }]
+  }], () => [{
+    type: ViewContainerRef
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Inject,
+      args: [MAT_TAB_GROUP]
+    }, {
+      type: Optional
+    }]
+  }], {
+    disabled: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }],
+    templateLabel: [{
+      type: ContentChild,
+      args: [MatTabLabel]
+    }],
+    _explicitContent: [{
+      type: ContentChild,
+      args: [MatTabContent, {
+        read: TemplateRef,
+        static: true
+      }]
+    }],
+    _implicitContent: [{
+      type: ViewChild,
+      args: [TemplateRef, {
+        static: true
+      }]
+    }],
+    textLabel: [{
+      type: Input,
+      args: ["label"]
+    }],
+    ariaLabel: [{
+      type: Input,
+      args: ["aria-label"]
+    }],
+    ariaLabelledby: [{
+      type: Input,
+      args: ["aria-labelledby"]
+    }],
+    labelClass: [{
+      type: Input
+    }],
+    bodyClass: [{
+      type: Input
+    }]
+  });
+})();
+var ACTIVE_CLASS = "mdc-tab-indicator--active";
+var NO_TRANSITION_CLASS = "mdc-tab-indicator--no-transition";
+var MatInkBar = class {
+  constructor(_items) {
+    this._items = _items;
+  }
+  /** Hides the ink bar. */
+  hide() {
+    this._items.forEach((item) => item.deactivateInkBar());
+  }
+  /** Aligns the ink bar to a DOM node. */
+  alignToElement(element) {
+    const correspondingItem = this._items.find((item) => item.elementRef.nativeElement === element);
+    const currentItem = this._currentItem;
+    if (correspondingItem === currentItem) {
+      return;
+    }
+    currentItem?.deactivateInkBar();
+    if (correspondingItem) {
+      const domRect = currentItem?.elementRef.nativeElement.getBoundingClientRect?.();
+      correspondingItem.activateInkBar(domRect);
+      this._currentItem = correspondingItem;
+    }
+  }
+};
+var _InkBarItem = class _InkBarItem {
+  constructor() {
+    this._elementRef = inject(ElementRef);
+    this._fitToContent = false;
+  }
+  /** Whether the ink bar should fit to the entire tab or just its content. */
+  get fitInkBarToContent() {
+    return this._fitToContent;
+  }
+  set fitInkBarToContent(newValue) {
+    if (this._fitToContent !== newValue) {
+      this._fitToContent = newValue;
+      if (this._inkBarElement) {
+        this._appendInkBarElement();
+      }
+    }
+  }
+  /** Aligns the ink bar to the current item. */
+  activateInkBar(previousIndicatorClientRect) {
+    const element = this._elementRef.nativeElement;
+    if (!previousIndicatorClientRect || !element.getBoundingClientRect || !this._inkBarContentElement) {
+      element.classList.add(ACTIVE_CLASS);
+      return;
+    }
+    const currentClientRect = element.getBoundingClientRect();
+    const widthDelta = previousIndicatorClientRect.width / currentClientRect.width;
+    const xPosition = previousIndicatorClientRect.left - currentClientRect.left;
+    element.classList.add(NO_TRANSITION_CLASS);
+    this._inkBarContentElement.style.setProperty("transform", `translateX(${xPosition}px) scaleX(${widthDelta})`);
+    element.getBoundingClientRect();
+    element.classList.remove(NO_TRANSITION_CLASS);
+    element.classList.add(ACTIVE_CLASS);
+    this._inkBarContentElement.style.setProperty("transform", "");
+  }
+  /** Removes the ink bar from the current item. */
+  deactivateInkBar() {
+    this._elementRef.nativeElement.classList.remove(ACTIVE_CLASS);
+  }
+  /** Initializes the foundation. */
+  ngOnInit() {
+    this._createInkBarElement();
+  }
+  /** Destroys the foundation. */
+  ngOnDestroy() {
+    this._inkBarElement?.remove();
+    this._inkBarElement = this._inkBarContentElement = null;
+  }
+  /** Creates and appends the ink bar element. */
+  _createInkBarElement() {
+    const documentNode = this._elementRef.nativeElement.ownerDocument || document;
+    const inkBarElement = this._inkBarElement = documentNode.createElement("span");
+    const inkBarContentElement = this._inkBarContentElement = documentNode.createElement("span");
+    inkBarElement.className = "mdc-tab-indicator";
+    inkBarContentElement.className = "mdc-tab-indicator__content mdc-tab-indicator__content--underline";
+    inkBarElement.appendChild(this._inkBarContentElement);
+    this._appendInkBarElement();
+  }
+  /**
+   * Appends the ink bar to the tab host element or content, depending on whether
+   * the ink bar should fit to content.
+   */
+  _appendInkBarElement() {
+    if (!this._inkBarElement && (typeof ngDevMode === "undefined" || ngDevMode)) {
+      throw Error("Ink bar element has not been created and cannot be appended");
+    }
+    const parentElement = this._fitToContent ? this._elementRef.nativeElement.querySelector(".mdc-tab__content") : this._elementRef.nativeElement;
+    if (!parentElement && (typeof ngDevMode === "undefined" || ngDevMode)) {
+      throw Error("Missing element to host the ink bar");
+    }
+    parentElement.appendChild(this._inkBarElement);
+  }
+};
+_InkBarItem.\u0275fac = function InkBarItem_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _InkBarItem)();
+};
+_InkBarItem.\u0275dir = /* @__PURE__ */ \u0275\u0275defineDirective({
+  type: _InkBarItem,
+  inputs: {
+    fitInkBarToContent: [2, "fitInkBarToContent", "fitInkBarToContent", booleanAttribute]
+  },
+  features: [\u0275\u0275InputTransformsFeature]
+});
+var InkBarItem = _InkBarItem;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(InkBarItem, [{
+    type: Directive
+  }], null, {
+    fitInkBarToContent: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }]
+  });
+})();
+function _MAT_INK_BAR_POSITIONER_FACTORY() {
+  const method = (element) => ({
+    left: element ? (element.offsetLeft || 0) + "px" : "0",
+    width: element ? (element.offsetWidth || 0) + "px" : "0"
+  });
+  return method;
+}
+var _MAT_INK_BAR_POSITIONER = new InjectionToken("MatInkBarPositioner", {
+  providedIn: "root",
+  factory: _MAT_INK_BAR_POSITIONER_FACTORY
+});
+var _MatTabLabelWrapper = class _MatTabLabelWrapper extends InkBarItem {
+  constructor(elementRef) {
+    super();
+    this.elementRef = elementRef;
+    this.disabled = false;
+  }
+  /** Sets focus on the wrapper element */
+  focus() {
+    this.elementRef.nativeElement.focus();
+  }
+  getOffsetLeft() {
+    return this.elementRef.nativeElement.offsetLeft;
+  }
+  getOffsetWidth() {
+    return this.elementRef.nativeElement.offsetWidth;
+  }
+};
+_MatTabLabelWrapper.\u0275fac = function MatTabLabelWrapper_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatTabLabelWrapper)(\u0275\u0275directiveInject(ElementRef));
+};
+_MatTabLabelWrapper.\u0275dir = /* @__PURE__ */ \u0275\u0275defineDirective({
+  type: _MatTabLabelWrapper,
+  selectors: [["", "matTabLabelWrapper", ""]],
+  hostVars: 3,
+  hostBindings: function MatTabLabelWrapper_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      \u0275\u0275attribute("aria-disabled", !!ctx.disabled);
+      \u0275\u0275classProp("mat-mdc-tab-disabled", ctx.disabled);
+    }
+  },
+  inputs: {
+    disabled: [2, "disabled", "disabled", booleanAttribute]
+  },
+  standalone: true,
+  features: [\u0275\u0275InputTransformsFeature, \u0275\u0275InheritDefinitionFeature]
+});
+var MatTabLabelWrapper = _MatTabLabelWrapper;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatTabLabelWrapper, [{
+    type: Directive,
+    args: [{
+      selector: "[matTabLabelWrapper]",
+      host: {
+        "[class.mat-mdc-tab-disabled]": "disabled",
+        "[attr.aria-disabled]": "!!disabled"
+      },
+      standalone: true
+    }]
+  }], () => [{
+    type: ElementRef
+  }], {
+    disabled: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }]
+  });
+})();
+var passiveEventListenerOptions = normalizePassiveListenerOptions({
+  passive: true
+});
+var HEADER_SCROLL_DELAY = 650;
+var HEADER_SCROLL_INTERVAL = 100;
+var _MatPaginatedTabHeader = class _MatPaginatedTabHeader {
+  /** The index of the active tab. */
+  get selectedIndex() {
+    return this._selectedIndex;
+  }
+  set selectedIndex(v) {
+    const value = isNaN(v) ? 0 : v;
+    if (this._selectedIndex != value) {
+      this._selectedIndexChanged = true;
+      this._selectedIndex = value;
+      if (this._keyManager) {
+        this._keyManager.updateActiveItem(value);
+      }
+    }
+  }
+  constructor(_elementRef, _changeDetectorRef, _viewportRuler, _dir, _ngZone, _platform, _animationMode) {
+    this._elementRef = _elementRef;
+    this._changeDetectorRef = _changeDetectorRef;
+    this._viewportRuler = _viewportRuler;
+    this._dir = _dir;
+    this._ngZone = _ngZone;
+    this._platform = _platform;
+    this._animationMode = _animationMode;
+    this._scrollDistance = 0;
+    this._selectedIndexChanged = false;
+    this._destroyed = new Subject();
+    this._showPaginationControls = false;
+    this._disableScrollAfter = true;
+    this._disableScrollBefore = true;
+    this._stopScrolling = new Subject();
+    this.disablePagination = false;
+    this._selectedIndex = 0;
+    this.selectFocusedIndex = new EventEmitter();
+    this.indexFocused = new EventEmitter();
+    this._sharedResizeObserver = inject(SharedResizeObserver);
+    this._injector = inject(Injector);
+    _ngZone.runOutsideAngular(() => {
+      fromEvent(_elementRef.nativeElement, "mouseleave").pipe(takeUntil(this._destroyed)).subscribe(() => {
+        this._stopInterval();
+      });
+    });
+  }
+  ngAfterViewInit() {
+    fromEvent(this._previousPaginator.nativeElement, "touchstart", passiveEventListenerOptions).pipe(takeUntil(this._destroyed)).subscribe(() => {
+      this._handlePaginatorPress("before");
+    });
+    fromEvent(this._nextPaginator.nativeElement, "touchstart", passiveEventListenerOptions).pipe(takeUntil(this._destroyed)).subscribe(() => {
+      this._handlePaginatorPress("after");
+    });
+  }
+  ngAfterContentInit() {
+    const dirChange = this._dir ? this._dir.change : of("ltr");
+    const resize = this._sharedResizeObserver.observe(this._elementRef.nativeElement).pipe(debounceTime(32), takeUntil(this._destroyed));
+    const viewportResize = this._viewportRuler.change(150).pipe(takeUntil(this._destroyed));
+    const realign = () => {
+      this.updatePagination();
+      this._alignInkBarToSelectedTab();
+    };
+    this._keyManager = new FocusKeyManager(this._items).withHorizontalOrientation(this._getLayoutDirection()).withHomeAndEnd().withWrap().skipPredicate(() => false);
+    this._keyManager.updateActiveItem(this._selectedIndex);
+    afterNextRender(realign, {
+      injector: this._injector
+    });
+    merge(dirChange, viewportResize, resize, this._items.changes, this._itemsResized()).pipe(takeUntil(this._destroyed)).subscribe(() => {
+      this._ngZone.run(() => {
+        Promise.resolve().then(() => {
+          this._scrollDistance = Math.max(0, Math.min(this._getMaxScrollDistance(), this._scrollDistance));
+          realign();
+        });
+      });
+      this._keyManager.withHorizontalOrientation(this._getLayoutDirection());
+    });
+    this._keyManager.change.subscribe((newFocusIndex) => {
+      this.indexFocused.emit(newFocusIndex);
+      this._setTabFocus(newFocusIndex);
+    });
+  }
+  /** Sends any changes that could affect the layout of the items. */
+  _itemsResized() {
+    if (typeof ResizeObserver !== "function") {
+      return EMPTY;
+    }
+    return this._items.changes.pipe(
+      startWith(this._items),
+      switchMap((tabItems) => new Observable((observer) => this._ngZone.runOutsideAngular(() => {
+        const resizeObserver = new ResizeObserver((entries) => observer.next(entries));
+        tabItems.forEach((item) => resizeObserver.observe(item.elementRef.nativeElement));
+        return () => {
+          resizeObserver.disconnect();
+        };
+      }))),
+      // Skip the first emit since the resize observer emits when an item
+      // is observed for new items when the tab is already inserted
+      skip(1),
+      // Skip emissions where all the elements are invisible since we don't want
+      // the header to try and re-render with invalid measurements. See #25574.
+      filter((entries) => entries.some((e) => e.contentRect.width > 0 && e.contentRect.height > 0))
+    );
+  }
+  ngAfterContentChecked() {
+    if (this._tabLabelCount != this._items.length) {
+      this.updatePagination();
+      this._tabLabelCount = this._items.length;
+      this._changeDetectorRef.markForCheck();
+    }
+    if (this._selectedIndexChanged) {
+      this._scrollToLabel(this._selectedIndex);
+      this._checkScrollingControls();
+      this._alignInkBarToSelectedTab();
+      this._selectedIndexChanged = false;
+      this._changeDetectorRef.markForCheck();
+    }
+    if (this._scrollDistanceChanged) {
+      this._updateTabScrollPosition();
+      this._scrollDistanceChanged = false;
+      this._changeDetectorRef.markForCheck();
+    }
+  }
+  ngOnDestroy() {
+    this._keyManager?.destroy();
+    this._destroyed.next();
+    this._destroyed.complete();
+    this._stopScrolling.complete();
+  }
+  /** Handles keyboard events on the header. */
+  _handleKeydown(event) {
+    if (hasModifierKey(event)) {
+      return;
+    }
+    switch (event.keyCode) {
+      case ENTER:
+      case SPACE:
+        if (this.focusIndex !== this.selectedIndex) {
+          const item = this._items.get(this.focusIndex);
+          if (item && !item.disabled) {
+            this.selectFocusedIndex.emit(this.focusIndex);
+            this._itemSelected(event);
+          }
+        }
+        break;
+      default:
+        this._keyManager.onKeydown(event);
+    }
+  }
+  /**
+   * Callback for when the MutationObserver detects that the content has changed.
+   */
+  _onContentChanges() {
+    const textContent = this._elementRef.nativeElement.textContent;
+    if (textContent !== this._currentTextContent) {
+      this._currentTextContent = textContent || "";
+      this._ngZone.run(() => {
+        this.updatePagination();
+        this._alignInkBarToSelectedTab();
+        this._changeDetectorRef.markForCheck();
+      });
+    }
+  }
+  /**
+   * Updates the view whether pagination should be enabled or not.
+   *
+   * WARNING: Calling this method can be very costly in terms of performance. It should be called
+   * as infrequently as possible from outside of the Tabs component as it causes a reflow of the
+   * page.
+   */
+  updatePagination() {
+    this._checkPaginationEnabled();
+    this._checkScrollingControls();
+    this._updateTabScrollPosition();
+  }
+  /** Tracks which element has focus; used for keyboard navigation */
+  get focusIndex() {
+    return this._keyManager ? this._keyManager.activeItemIndex : 0;
+  }
+  /** When the focus index is set, we must manually send focus to the correct label */
+  set focusIndex(value) {
+    if (!this._isValidIndex(value) || this.focusIndex === value || !this._keyManager) {
+      return;
+    }
+    this._keyManager.setActiveItem(value);
+  }
+  /**
+   * Determines if an index is valid.  If the tabs are not ready yet, we assume that the user is
+   * providing a valid index and return true.
+   */
+  _isValidIndex(index) {
+    return this._items ? !!this._items.toArray()[index] : true;
+  }
+  /**
+   * Sets focus on the HTML element for the label wrapper and scrolls it into the view if
+   * scrolling is enabled.
+   */
+  _setTabFocus(tabIndex) {
+    if (this._showPaginationControls) {
+      this._scrollToLabel(tabIndex);
+    }
+    if (this._items && this._items.length) {
+      this._items.toArray()[tabIndex].focus();
+      const containerEl = this._tabListContainer.nativeElement;
+      const dir = this._getLayoutDirection();
+      if (dir == "ltr") {
+        containerEl.scrollLeft = 0;
+      } else {
+        containerEl.scrollLeft = containerEl.scrollWidth - containerEl.offsetWidth;
+      }
+    }
+  }
+  /** The layout direction of the containing app. */
+  _getLayoutDirection() {
+    return this._dir && this._dir.value === "rtl" ? "rtl" : "ltr";
+  }
+  /** Performs the CSS transformation on the tab list that will cause the list to scroll. */
+  _updateTabScrollPosition() {
+    if (this.disablePagination) {
+      return;
+    }
+    const scrollDistance = this.scrollDistance;
+    const translateX = this._getLayoutDirection() === "ltr" ? -scrollDistance : scrollDistance;
+    this._tabList.nativeElement.style.transform = `translateX(${Math.round(translateX)}px)`;
+    if (this._platform.TRIDENT || this._platform.EDGE) {
+      this._tabListContainer.nativeElement.scrollLeft = 0;
+    }
+  }
+  /** Sets the distance in pixels that the tab header should be transformed in the X-axis. */
+  get scrollDistance() {
+    return this._scrollDistance;
+  }
+  set scrollDistance(value) {
+    this._scrollTo(value);
+  }
+  /**
+   * Moves the tab list in the 'before' or 'after' direction (towards the beginning of the list or
+   * the end of the list, respectively). The distance to scroll is computed to be a third of the
+   * length of the tab list view window.
+   *
+   * This is an expensive call that forces a layout reflow to compute box and scroll metrics and
+   * should be called sparingly.
+   */
+  _scrollHeader(direction) {
+    const viewLength = this._tabListContainer.nativeElement.offsetWidth;
+    const scrollAmount = (direction == "before" ? -1 : 1) * viewLength / 3;
+    return this._scrollTo(this._scrollDistance + scrollAmount);
+  }
+  /** Handles click events on the pagination arrows. */
+  _handlePaginatorClick(direction) {
+    this._stopInterval();
+    this._scrollHeader(direction);
+  }
+  /**
+   * Moves the tab list such that the desired tab label (marked by index) is moved into view.
+   *
+   * This is an expensive call that forces a layout reflow to compute box and scroll metrics and
+   * should be called sparingly.
+   */
+  _scrollToLabel(labelIndex) {
+    if (this.disablePagination) {
+      return;
+    }
+    const selectedLabel = this._items ? this._items.toArray()[labelIndex] : null;
+    if (!selectedLabel) {
+      return;
+    }
+    const viewLength = this._tabListContainer.nativeElement.offsetWidth;
+    const {
+      offsetLeft,
+      offsetWidth
+    } = selectedLabel.elementRef.nativeElement;
+    let labelBeforePos, labelAfterPos;
+    if (this._getLayoutDirection() == "ltr") {
+      labelBeforePos = offsetLeft;
+      labelAfterPos = labelBeforePos + offsetWidth;
+    } else {
+      labelAfterPos = this._tabListInner.nativeElement.offsetWidth - offsetLeft;
+      labelBeforePos = labelAfterPos - offsetWidth;
+    }
+    const beforeVisiblePos = this.scrollDistance;
+    const afterVisiblePos = this.scrollDistance + viewLength;
+    if (labelBeforePos < beforeVisiblePos) {
+      this.scrollDistance -= beforeVisiblePos - labelBeforePos;
+    } else if (labelAfterPos > afterVisiblePos) {
+      this.scrollDistance += Math.min(labelAfterPos - afterVisiblePos, labelBeforePos - beforeVisiblePos);
+    }
+  }
+  /**
+   * Evaluate whether the pagination controls should be displayed. If the scroll width of the
+   * tab list is wider than the size of the header container, then the pagination controls should
+   * be shown.
+   *
+   * This is an expensive call that forces a layout reflow to compute box and scroll metrics and
+   * should be called sparingly.
+   */
+  _checkPaginationEnabled() {
+    if (this.disablePagination) {
+      this._showPaginationControls = false;
+    } else {
+      const scrollWidth = this._tabListInner.nativeElement.scrollWidth;
+      const containerWidth = this._elementRef.nativeElement.offsetWidth;
+      const isEnabled = scrollWidth - containerWidth >= 5;
+      if (!isEnabled) {
+        this.scrollDistance = 0;
+      }
+      if (isEnabled !== this._showPaginationControls) {
+        this._showPaginationControls = isEnabled;
+        this._changeDetectorRef.markForCheck();
+      }
+    }
+  }
+  /**
+   * Evaluate whether the before and after controls should be enabled or disabled.
+   * If the header is at the beginning of the list (scroll distance is equal to 0) then disable the
+   * before button. If the header is at the end of the list (scroll distance is equal to the
+   * maximum distance we can scroll), then disable the after button.
+   *
+   * This is an expensive call that forces a layout reflow to compute box and scroll metrics and
+   * should be called sparingly.
+   */
+  _checkScrollingControls() {
+    if (this.disablePagination) {
+      this._disableScrollAfter = this._disableScrollBefore = true;
+    } else {
+      this._disableScrollBefore = this.scrollDistance == 0;
+      this._disableScrollAfter = this.scrollDistance == this._getMaxScrollDistance();
+      this._changeDetectorRef.markForCheck();
+    }
+  }
+  /**
+   * Determines what is the maximum length in pixels that can be set for the scroll distance. This
+   * is equal to the difference in width between the tab list container and tab header container.
+   *
+   * This is an expensive call that forces a layout reflow to compute box and scroll metrics and
+   * should be called sparingly.
+   */
+  _getMaxScrollDistance() {
+    const lengthOfTabList = this._tabListInner.nativeElement.scrollWidth;
+    const viewLength = this._tabListContainer.nativeElement.offsetWidth;
+    return lengthOfTabList - viewLength || 0;
+  }
+  /** Tells the ink-bar to align itself to the current label wrapper */
+  _alignInkBarToSelectedTab() {
+    const selectedItem = this._items && this._items.length ? this._items.toArray()[this.selectedIndex] : null;
+    const selectedLabelWrapper = selectedItem ? selectedItem.elementRef.nativeElement : null;
+    if (selectedLabelWrapper) {
+      this._inkBar.alignToElement(selectedLabelWrapper);
+    } else {
+      this._inkBar.hide();
+    }
+  }
+  /** Stops the currently-running paginator interval.  */
+  _stopInterval() {
+    this._stopScrolling.next();
+  }
+  /**
+   * Handles the user pressing down on one of the paginators.
+   * Starts scrolling the header after a certain amount of time.
+   * @param direction In which direction the paginator should be scrolled.
+   */
+  _handlePaginatorPress(direction, mouseEvent) {
+    if (mouseEvent && mouseEvent.button != null && mouseEvent.button !== 0) {
+      return;
+    }
+    this._stopInterval();
+    timer(HEADER_SCROLL_DELAY, HEADER_SCROLL_INTERVAL).pipe(takeUntil(merge(this._stopScrolling, this._destroyed))).subscribe(() => {
+      const {
+        maxScrollDistance,
+        distance
+      } = this._scrollHeader(direction);
+      if (distance === 0 || distance >= maxScrollDistance) {
+        this._stopInterval();
+      }
+    });
+  }
+  /**
+   * Scrolls the header to a given position.
+   * @param position Position to which to scroll.
+   * @returns Information on the current scroll distance and the maximum.
+   */
+  _scrollTo(position) {
+    if (this.disablePagination) {
+      return {
+        maxScrollDistance: 0,
+        distance: 0
+      };
+    }
+    const maxScrollDistance = this._getMaxScrollDistance();
+    this._scrollDistance = Math.max(0, Math.min(maxScrollDistance, position));
+    this._scrollDistanceChanged = true;
+    this._checkScrollingControls();
+    return {
+      maxScrollDistance,
+      distance: this._scrollDistance
+    };
+  }
+};
+_MatPaginatedTabHeader.\u0275fac = function MatPaginatedTabHeader_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatPaginatedTabHeader)(\u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(ChangeDetectorRef), \u0275\u0275directiveInject(ViewportRuler), \u0275\u0275directiveInject(Directionality, 8), \u0275\u0275directiveInject(NgZone), \u0275\u0275directiveInject(Platform), \u0275\u0275directiveInject(ANIMATION_MODULE_TYPE, 8));
+};
+_MatPaginatedTabHeader.\u0275dir = /* @__PURE__ */ \u0275\u0275defineDirective({
+  type: _MatPaginatedTabHeader,
+  inputs: {
+    disablePagination: [2, "disablePagination", "disablePagination", booleanAttribute],
+    selectedIndex: [2, "selectedIndex", "selectedIndex", numberAttribute]
+  },
+  outputs: {
+    selectFocusedIndex: "selectFocusedIndex",
+    indexFocused: "indexFocused"
+  },
+  features: [\u0275\u0275InputTransformsFeature]
+});
+var MatPaginatedTabHeader = _MatPaginatedTabHeader;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatPaginatedTabHeader, [{
+    type: Directive
+  }], () => [{
+    type: ElementRef
+  }, {
+    type: ChangeDetectorRef
+  }, {
+    type: ViewportRuler
+  }, {
+    type: Directionality,
+    decorators: [{
+      type: Optional
+    }]
+  }, {
+    type: NgZone
+  }, {
+    type: Platform
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [ANIMATION_MODULE_TYPE]
+    }]
+  }], {
+    disablePagination: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }],
+    selectedIndex: [{
+      type: Input,
+      args: [{
+        transform: numberAttribute
+      }]
+    }],
+    selectFocusedIndex: [{
+      type: Output
+    }],
+    indexFocused: [{
+      type: Output
+    }]
+  });
+})();
+var _MatTabHeader = class _MatTabHeader extends MatPaginatedTabHeader {
+  constructor(elementRef, changeDetectorRef, viewportRuler, dir, ngZone, platform, animationMode) {
+    super(elementRef, changeDetectorRef, viewportRuler, dir, ngZone, platform, animationMode);
+    this.disableRipple = false;
+  }
+  ngAfterContentInit() {
+    this._inkBar = new MatInkBar(this._items);
+    super.ngAfterContentInit();
+  }
+  _itemSelected(event) {
+    event.preventDefault();
+  }
+};
+_MatTabHeader.\u0275fac = function MatTabHeader_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatTabHeader)(\u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(ChangeDetectorRef), \u0275\u0275directiveInject(ViewportRuler), \u0275\u0275directiveInject(Directionality, 8), \u0275\u0275directiveInject(NgZone), \u0275\u0275directiveInject(Platform), \u0275\u0275directiveInject(ANIMATION_MODULE_TYPE, 8));
+};
+_MatTabHeader.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
+  type: _MatTabHeader,
+  selectors: [["mat-tab-header"]],
+  contentQueries: function MatTabHeader_ContentQueries(rf, ctx, dirIndex) {
+    if (rf & 1) {
+      \u0275\u0275contentQuery(dirIndex, MatTabLabelWrapper, 4);
+    }
+    if (rf & 2) {
+      let _t;
+      \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx._items = _t);
+    }
+  },
+  viewQuery: function MatTabHeader_Query(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275viewQuery(_c18, 7);
+      \u0275\u0275viewQuery(_c25, 7);
+      \u0275\u0275viewQuery(_c35, 7);
+      \u0275\u0275viewQuery(_c45, 5);
+      \u0275\u0275viewQuery(_c54, 5);
+    }
+    if (rf & 2) {
+      let _t;
+      \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx._tabListContainer = _t.first);
+      \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx._tabList = _t.first);
+      \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx._tabListInner = _t.first);
+      \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx._nextPaginator = _t.first);
+      \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx._previousPaginator = _t.first);
+    }
+  },
+  hostAttrs: [1, "mat-mdc-tab-header"],
+  hostVars: 4,
+  hostBindings: function MatTabHeader_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      \u0275\u0275classProp("mat-mdc-tab-header-pagination-controls-enabled", ctx._showPaginationControls)("mat-mdc-tab-header-rtl", ctx._getLayoutDirection() == "rtl");
+    }
+  },
+  inputs: {
+    disableRipple: [2, "disableRipple", "disableRipple", booleanAttribute]
+  },
+  standalone: true,
+  features: [\u0275\u0275InputTransformsFeature, \u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
+  ngContentSelectors: _c010,
+  decls: 13,
+  vars: 10,
+  consts: [["previousPaginator", ""], ["tabListContainer", ""], ["tabList", ""], ["tabListInner", ""], ["nextPaginator", ""], ["aria-hidden", "true", "type", "button", "mat-ripple", "", "tabindex", "-1", 1, "mat-mdc-tab-header-pagination", "mat-mdc-tab-header-pagination-before", 3, "click", "mousedown", "touchend", "matRippleDisabled", "disabled"], [1, "mat-mdc-tab-header-pagination-chevron"], [1, "mat-mdc-tab-label-container", 3, "keydown"], ["role", "tablist", 1, "mat-mdc-tab-list", 3, "cdkObserveContent"], [1, "mat-mdc-tab-labels"], ["aria-hidden", "true", "type", "button", "mat-ripple", "", "tabindex", "-1", 1, "mat-mdc-tab-header-pagination", "mat-mdc-tab-header-pagination-after", 3, "mousedown", "click", "touchend", "matRippleDisabled", "disabled"]],
+  template: function MatTabHeader_Template(rf, ctx) {
+    if (rf & 1) {
+      const _r1 = \u0275\u0275getCurrentView();
+      \u0275\u0275projectionDef();
+      \u0275\u0275elementStart(0, "button", 5, 0);
+      \u0275\u0275listener("click", function MatTabHeader_Template_button_click_0_listener() {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx._handlePaginatorClick("before"));
+      })("mousedown", function MatTabHeader_Template_button_mousedown_0_listener($event) {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx._handlePaginatorPress("before", $event));
+      })("touchend", function MatTabHeader_Template_button_touchend_0_listener() {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx._stopInterval());
+      });
+      \u0275\u0275element(2, "div", 6);
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(3, "div", 7, 1);
+      \u0275\u0275listener("keydown", function MatTabHeader_Template_div_keydown_3_listener($event) {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx._handleKeydown($event));
+      });
+      \u0275\u0275elementStart(5, "div", 8, 2);
+      \u0275\u0275listener("cdkObserveContent", function MatTabHeader_Template_div_cdkObserveContent_5_listener() {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx._onContentChanges());
+      });
+      \u0275\u0275elementStart(7, "div", 9, 3);
+      \u0275\u0275projection(9);
+      \u0275\u0275elementEnd()()();
+      \u0275\u0275elementStart(10, "button", 10, 4);
+      \u0275\u0275listener("mousedown", function MatTabHeader_Template_button_mousedown_10_listener($event) {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx._handlePaginatorPress("after", $event));
+      })("click", function MatTabHeader_Template_button_click_10_listener() {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx._handlePaginatorClick("after"));
+      })("touchend", function MatTabHeader_Template_button_touchend_10_listener() {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx._stopInterval());
+      });
+      \u0275\u0275element(12, "div", 6);
+      \u0275\u0275elementEnd();
+    }
+    if (rf & 2) {
+      \u0275\u0275classProp("mat-mdc-tab-header-pagination-disabled", ctx._disableScrollBefore);
+      \u0275\u0275property("matRippleDisabled", ctx._disableScrollBefore || ctx.disableRipple)("disabled", ctx._disableScrollBefore || null);
+      \u0275\u0275advance(3);
+      \u0275\u0275classProp("_mat-animation-noopable", ctx._animationMode === "NoopAnimations");
+      \u0275\u0275advance(7);
+      \u0275\u0275classProp("mat-mdc-tab-header-pagination-disabled", ctx._disableScrollAfter);
+      \u0275\u0275property("matRippleDisabled", ctx._disableScrollAfter || ctx.disableRipple)("disabled", ctx._disableScrollAfter || null);
+    }
+  },
+  dependencies: [MatRipple, CdkObserveContent],
+  styles: [".mat-mdc-tab-header{display:flex;overflow:hidden;position:relative;flex-shrink:0}.mdc-tab-indicator .mdc-tab-indicator__content{transition-duration:var(--mat-tab-animation-duration, 250ms)}.mat-mdc-tab-header-pagination{-webkit-user-select:none;user-select:none;position:relative;display:none;justify-content:center;align-items:center;min-width:32px;cursor:pointer;z-index:2;-webkit-tap-highlight-color:rgba(0,0,0,0);touch-action:none;box-sizing:content-box;background:none;border:none;outline:0;padding:0}.mat-mdc-tab-header-pagination::-moz-focus-inner{border:0}.mat-mdc-tab-header-pagination .mat-ripple-element{opacity:.12;background-color:var(--mat-tab-header-inactive-ripple-color)}.mat-mdc-tab-header-pagination-controls-enabled .mat-mdc-tab-header-pagination{display:flex}.mat-mdc-tab-header-pagination-before,.mat-mdc-tab-header-rtl .mat-mdc-tab-header-pagination-after{padding-left:4px}.mat-mdc-tab-header-pagination-before .mat-mdc-tab-header-pagination-chevron,.mat-mdc-tab-header-rtl .mat-mdc-tab-header-pagination-after .mat-mdc-tab-header-pagination-chevron{transform:rotate(-135deg)}.mat-mdc-tab-header-rtl .mat-mdc-tab-header-pagination-before,.mat-mdc-tab-header-pagination-after{padding-right:4px}.mat-mdc-tab-header-rtl .mat-mdc-tab-header-pagination-before .mat-mdc-tab-header-pagination-chevron,.mat-mdc-tab-header-pagination-after .mat-mdc-tab-header-pagination-chevron{transform:rotate(45deg)}.mat-mdc-tab-header-pagination-chevron{border-style:solid;border-width:2px 2px 0 0;height:8px;width:8px;border-color:var(--mat-tab-header-pagination-icon-color)}.mat-mdc-tab-header-pagination-disabled{box-shadow:none;cursor:default;pointer-events:none}.mat-mdc-tab-header-pagination-disabled .mat-mdc-tab-header-pagination-chevron{opacity:.4}.mat-mdc-tab-list{flex-grow:1;position:relative;transition:transform 500ms cubic-bezier(0.35, 0, 0.25, 1)}._mat-animation-noopable .mat-mdc-tab-list{transition:none}.mat-mdc-tab-label-container{display:flex;flex-grow:1;overflow:hidden;z-index:1;border-bottom-style:solid;border-bottom-width:var(--mat-tab-header-divider-height);border-bottom-color:var(--mat-tab-header-divider-color)}.mat-mdc-tab-group-inverted-header .mat-mdc-tab-label-container{border-bottom:none;border-top-style:solid;border-top-width:var(--mat-tab-header-divider-height);border-top-color:var(--mat-tab-header-divider-color)}.mat-mdc-tab-labels{display:flex;flex:1 0 auto}[mat-align-tabs=center]>.mat-mdc-tab-header .mat-mdc-tab-labels{justify-content:center}[mat-align-tabs=end]>.mat-mdc-tab-header .mat-mdc-tab-labels{justify-content:flex-end}.cdk-drop-list .mat-mdc-tab-labels,.mat-mdc-tab-labels.cdk-drop-list{min-height:var(--mdc-secondary-navigation-tab-container-height)}.mat-mdc-tab::before{margin:5px}.cdk-high-contrast-active .mat-mdc-tab[aria-disabled=true]{color:GrayText}"],
+  encapsulation: 2
+});
+var MatTabHeader = _MatTabHeader;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatTabHeader, [{
+    type: Component,
+    args: [{
+      selector: "mat-tab-header",
+      encapsulation: ViewEncapsulation$1.None,
+      changeDetection: ChangeDetectionStrategy.Default,
+      host: {
+        "class": "mat-mdc-tab-header",
+        "[class.mat-mdc-tab-header-pagination-controls-enabled]": "_showPaginationControls",
+        "[class.mat-mdc-tab-header-rtl]": "_getLayoutDirection() == 'rtl'"
+      },
+      standalone: true,
+      imports: [MatRipple, CdkObserveContent],
+      template: `<button class="mat-mdc-tab-header-pagination mat-mdc-tab-header-pagination-before"
+     #previousPaginator
+     aria-hidden="true"
+     type="button"
+     mat-ripple
+     tabindex="-1"
+     [matRippleDisabled]="_disableScrollBefore || disableRipple"
+     [class.mat-mdc-tab-header-pagination-disabled]="_disableScrollBefore"
+     [disabled]="_disableScrollBefore || null"
+     (click)="_handlePaginatorClick('before')"
+     (mousedown)="_handlePaginatorPress('before', $event)"
+     (touchend)="_stopInterval()">
+  <div class="mat-mdc-tab-header-pagination-chevron"></div>
+</button>
+
+<div
+  class="mat-mdc-tab-label-container"
+  #tabListContainer
+  (keydown)="_handleKeydown($event)"
+  [class._mat-animation-noopable]="_animationMode === 'NoopAnimations'">
+  <div
+    #tabList
+    class="mat-mdc-tab-list"
+    role="tablist"
+    (cdkObserveContent)="_onContentChanges()">
+    <div class="mat-mdc-tab-labels" #tabListInner>
+      <ng-content></ng-content>
+    </div>
+  </div>
+</div>
+
+<button class="mat-mdc-tab-header-pagination mat-mdc-tab-header-pagination-after"
+     #nextPaginator
+     aria-hidden="true"
+     type="button"
+     mat-ripple
+     [matRippleDisabled]="_disableScrollAfter || disableRipple"
+     [class.mat-mdc-tab-header-pagination-disabled]="_disableScrollAfter"
+     [disabled]="_disableScrollAfter || null"
+     tabindex="-1"
+     (mousedown)="_handlePaginatorPress('after', $event)"
+     (click)="_handlePaginatorClick('after')"
+     (touchend)="_stopInterval()">
+  <div class="mat-mdc-tab-header-pagination-chevron"></div>
+</button>
+`,
+      styles: [".mat-mdc-tab-header{display:flex;overflow:hidden;position:relative;flex-shrink:0}.mdc-tab-indicator .mdc-tab-indicator__content{transition-duration:var(--mat-tab-animation-duration, 250ms)}.mat-mdc-tab-header-pagination{-webkit-user-select:none;user-select:none;position:relative;display:none;justify-content:center;align-items:center;min-width:32px;cursor:pointer;z-index:2;-webkit-tap-highlight-color:rgba(0,0,0,0);touch-action:none;box-sizing:content-box;background:none;border:none;outline:0;padding:0}.mat-mdc-tab-header-pagination::-moz-focus-inner{border:0}.mat-mdc-tab-header-pagination .mat-ripple-element{opacity:.12;background-color:var(--mat-tab-header-inactive-ripple-color)}.mat-mdc-tab-header-pagination-controls-enabled .mat-mdc-tab-header-pagination{display:flex}.mat-mdc-tab-header-pagination-before,.mat-mdc-tab-header-rtl .mat-mdc-tab-header-pagination-after{padding-left:4px}.mat-mdc-tab-header-pagination-before .mat-mdc-tab-header-pagination-chevron,.mat-mdc-tab-header-rtl .mat-mdc-tab-header-pagination-after .mat-mdc-tab-header-pagination-chevron{transform:rotate(-135deg)}.mat-mdc-tab-header-rtl .mat-mdc-tab-header-pagination-before,.mat-mdc-tab-header-pagination-after{padding-right:4px}.mat-mdc-tab-header-rtl .mat-mdc-tab-header-pagination-before .mat-mdc-tab-header-pagination-chevron,.mat-mdc-tab-header-pagination-after .mat-mdc-tab-header-pagination-chevron{transform:rotate(45deg)}.mat-mdc-tab-header-pagination-chevron{border-style:solid;border-width:2px 2px 0 0;height:8px;width:8px;border-color:var(--mat-tab-header-pagination-icon-color)}.mat-mdc-tab-header-pagination-disabled{box-shadow:none;cursor:default;pointer-events:none}.mat-mdc-tab-header-pagination-disabled .mat-mdc-tab-header-pagination-chevron{opacity:.4}.mat-mdc-tab-list{flex-grow:1;position:relative;transition:transform 500ms cubic-bezier(0.35, 0, 0.25, 1)}._mat-animation-noopable .mat-mdc-tab-list{transition:none}.mat-mdc-tab-label-container{display:flex;flex-grow:1;overflow:hidden;z-index:1;border-bottom-style:solid;border-bottom-width:var(--mat-tab-header-divider-height);border-bottom-color:var(--mat-tab-header-divider-color)}.mat-mdc-tab-group-inverted-header .mat-mdc-tab-label-container{border-bottom:none;border-top-style:solid;border-top-width:var(--mat-tab-header-divider-height);border-top-color:var(--mat-tab-header-divider-color)}.mat-mdc-tab-labels{display:flex;flex:1 0 auto}[mat-align-tabs=center]>.mat-mdc-tab-header .mat-mdc-tab-labels{justify-content:center}[mat-align-tabs=end]>.mat-mdc-tab-header .mat-mdc-tab-labels{justify-content:flex-end}.cdk-drop-list .mat-mdc-tab-labels,.mat-mdc-tab-labels.cdk-drop-list{min-height:var(--mdc-secondary-navigation-tab-container-height)}.mat-mdc-tab::before{margin:5px}.cdk-high-contrast-active .mat-mdc-tab[aria-disabled=true]{color:GrayText}"]
+    }]
+  }], () => [{
+    type: ElementRef
+  }, {
+    type: ChangeDetectorRef
+  }, {
+    type: ViewportRuler
+  }, {
+    type: Directionality,
+    decorators: [{
+      type: Optional
+    }]
+  }, {
+    type: NgZone
+  }, {
+    type: Platform
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [ANIMATION_MODULE_TYPE]
+    }]
+  }], {
+    _items: [{
+      type: ContentChildren,
+      args: [MatTabLabelWrapper, {
+        descendants: false
+      }]
+    }],
+    _tabListContainer: [{
+      type: ViewChild,
+      args: ["tabListContainer", {
+        static: true
+      }]
+    }],
+    _tabList: [{
+      type: ViewChild,
+      args: ["tabList", {
+        static: true
+      }]
+    }],
+    _tabListInner: [{
+      type: ViewChild,
+      args: ["tabListInner", {
+        static: true
+      }]
+    }],
+    _nextPaginator: [{
+      type: ViewChild,
+      args: ["nextPaginator"]
+    }],
+    _previousPaginator: [{
+      type: ViewChild,
+      args: ["previousPaginator"]
+    }],
+    disableRipple: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }]
+  });
+})();
+var MAT_TABS_CONFIG = new InjectionToken("MAT_TABS_CONFIG");
+var matTabsAnimations = {
+  /** Animation translates a tab along the X axis. */
+  translateTab: trigger("translateTab", [
+    // Transitions to `none` instead of 0, because some browsers might blur the content.
+    state("center, void, left-origin-center, right-origin-center", style({
+      transform: "none",
+      visibility: "visible"
+    })),
+    // If the tab is either on the left or right, we additionally add a `min-height` of 1px
+    // in order to ensure that the element has a height before its state changes. This is
+    // necessary because Chrome does seem to skip the transition in RTL mode if the element does
+    // not have a static height and is not rendered. See related issue: #9465
+    state("left", style({
+      transform: "translate3d(-100%, 0, 0)",
+      minHeight: "1px",
+      // Normally this is redundant since we detach the content from the DOM, but if the user
+      // opted into keeping the content in the DOM, we have to hide it so it isn't focusable.
+      visibility: "hidden"
+    })),
+    state("right", style({
+      transform: "translate3d(100%, 0, 0)",
+      minHeight: "1px",
+      visibility: "hidden"
+    })),
+    transition("* => left, * => right, left => center, right => center", animate("{{animationDuration}} cubic-bezier(0.35, 0, 0.25, 1)")),
+    transition("void => left-origin-center", [style({
+      transform: "translate3d(-100%, 0, 0)",
+      visibility: "hidden"
+    }), animate("{{animationDuration}} cubic-bezier(0.35, 0, 0.25, 1)")]),
+    transition("void => right-origin-center", [style({
+      transform: "translate3d(100%, 0, 0)",
+      visibility: "hidden"
+    }), animate("{{animationDuration}} cubic-bezier(0.35, 0, 0.25, 1)")])
+  ])
+};
+var _MatTabBodyPortal = class _MatTabBodyPortal extends CdkPortalOutlet {
+  constructor(componentFactoryResolver, viewContainerRef, _host, _document2) {
+    super(componentFactoryResolver, viewContainerRef, _document2);
+    this._host = _host;
+    this._centeringSub = Subscription.EMPTY;
+    this._leavingSub = Subscription.EMPTY;
+  }
+  /** Set initial visibility or set up subscription for changing visibility. */
+  ngOnInit() {
+    super.ngOnInit();
+    this._centeringSub = this._host._beforeCentering.pipe(startWith(this._host._isCenterPosition(this._host._position))).subscribe((isCentering) => {
+      if (this._host._content && isCentering && !this.hasAttached()) {
+        this.attach(this._host._content);
+      }
+    });
+    this._leavingSub = this._host._afterLeavingCenter.subscribe(() => {
+      if (!this._host.preserveContent) {
+        this.detach();
+      }
+    });
+  }
+  /** Clean up centering subscription. */
+  ngOnDestroy() {
+    super.ngOnDestroy();
+    this._centeringSub.unsubscribe();
+    this._leavingSub.unsubscribe();
+  }
+};
+_MatTabBodyPortal.\u0275fac = function MatTabBodyPortal_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatTabBodyPortal)(\u0275\u0275directiveInject(ComponentFactoryResolver$1), \u0275\u0275directiveInject(ViewContainerRef), \u0275\u0275directiveInject(forwardRef(() => MatTabBody)), \u0275\u0275directiveInject(DOCUMENT));
+};
+_MatTabBodyPortal.\u0275dir = /* @__PURE__ */ \u0275\u0275defineDirective({
+  type: _MatTabBodyPortal,
+  selectors: [["", "matTabBodyHost", ""]],
+  standalone: true,
+  features: [\u0275\u0275InheritDefinitionFeature]
+});
+var MatTabBodyPortal = _MatTabBodyPortal;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatTabBodyPortal, [{
+    type: Directive,
+    args: [{
+      selector: "[matTabBodyHost]",
+      standalone: true
+    }]
+  }], () => [{
+    type: ComponentFactoryResolver$1
+  }, {
+    type: ViewContainerRef
+  }, {
+    type: MatTabBody,
+    decorators: [{
+      type: Inject,
+      args: [forwardRef(() => MatTabBody)]
+    }]
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Inject,
+      args: [DOCUMENT]
+    }]
+  }], null);
+})();
+var _MatTabBody = class _MatTabBody {
+  /** The shifted index position of the tab body, where zero represents the active center tab. */
+  set position(position) {
+    this._positionIndex = position;
+    this._computePositionAnimationState();
+  }
+  constructor(_elementRef, _dir, changeDetectorRef) {
+    this._elementRef = _elementRef;
+    this._dir = _dir;
+    this._dirChangeSubscription = Subscription.EMPTY;
+    this._translateTabComplete = new Subject();
+    this._onCentering = new EventEmitter();
+    this._beforeCentering = new EventEmitter();
+    this._afterLeavingCenter = new EventEmitter();
+    this._onCentered = new EventEmitter(true);
+    this.animationDuration = "500ms";
+    this.preserveContent = false;
+    if (_dir) {
+      this._dirChangeSubscription = _dir.change.subscribe((dir) => {
+        this._computePositionAnimationState(dir);
+        changeDetectorRef.markForCheck();
+      });
+    }
+    this._translateTabComplete.pipe(distinctUntilChanged((x, y) => {
+      return x.fromState === y.fromState && x.toState === y.toState;
+    })).subscribe((event) => {
+      if (this._isCenterPosition(event.toState) && this._isCenterPosition(this._position)) {
+        this._onCentered.emit();
+      }
+      if (this._isCenterPosition(event.fromState) && !this._isCenterPosition(this._position)) {
+        this._afterLeavingCenter.emit();
+      }
+    });
+  }
+  /**
+   * After initialized, check if the content is centered and has an origin. If so, set the
+   * special position states that transition the tab from the left or right before centering.
+   */
+  ngOnInit() {
+    if (this._position == "center" && this.origin != null) {
+      this._position = this._computePositionFromOrigin(this.origin);
+    }
+  }
+  ngOnDestroy() {
+    this._dirChangeSubscription.unsubscribe();
+    this._translateTabComplete.complete();
+  }
+  _onTranslateTabStarted(event) {
+    const isCentering = this._isCenterPosition(event.toState);
+    this._beforeCentering.emit(isCentering);
+    if (isCentering) {
+      this._onCentering.emit(this._elementRef.nativeElement.clientHeight);
+    }
+  }
+  /** The text direction of the containing app. */
+  _getLayoutDirection() {
+    return this._dir && this._dir.value === "rtl" ? "rtl" : "ltr";
+  }
+  /** Whether the provided position state is considered center, regardless of origin. */
+  _isCenterPosition(position) {
+    return position == "center" || position == "left-origin-center" || position == "right-origin-center";
+  }
+  /** Computes the position state that will be used for the tab-body animation trigger. */
+  _computePositionAnimationState(dir = this._getLayoutDirection()) {
+    if (this._positionIndex < 0) {
+      this._position = dir == "ltr" ? "left" : "right";
+    } else if (this._positionIndex > 0) {
+      this._position = dir == "ltr" ? "right" : "left";
+    } else {
+      this._position = "center";
+    }
+  }
+  /**
+   * Computes the position state based on the specified origin position. This is used if the
+   * tab is becoming visible immediately after creation.
+   */
+  _computePositionFromOrigin(origin) {
+    const dir = this._getLayoutDirection();
+    if (dir == "ltr" && origin <= 0 || dir == "rtl" && origin > 0) {
+      return "left-origin-center";
+    }
+    return "right-origin-center";
+  }
+};
+_MatTabBody.\u0275fac = function MatTabBody_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatTabBody)(\u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(Directionality, 8), \u0275\u0275directiveInject(ChangeDetectorRef));
+};
+_MatTabBody.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
+  type: _MatTabBody,
+  selectors: [["mat-tab-body"]],
+  viewQuery: function MatTabBody_Query(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275viewQuery(CdkPortalOutlet, 5);
+    }
+    if (rf & 2) {
+      let _t;
+      \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx._portalHost = _t.first);
+    }
+  },
+  hostAttrs: [1, "mat-mdc-tab-body"],
+  inputs: {
+    _content: [0, "content", "_content"],
+    origin: "origin",
+    animationDuration: "animationDuration",
+    preserveContent: "preserveContent",
+    position: "position"
+  },
+  outputs: {
+    _onCentering: "_onCentering",
+    _beforeCentering: "_beforeCentering",
+    _afterLeavingCenter: "_afterLeavingCenter",
+    _onCentered: "_onCentered"
+  },
+  standalone: true,
+  features: [\u0275\u0275StandaloneFeature],
+  decls: 3,
+  vars: 6,
+  consts: [["content", ""], ["cdkScrollable", "", 1, "mat-mdc-tab-body-content"], ["matTabBodyHost", ""]],
+  template: function MatTabBody_Template(rf, ctx) {
+    if (rf & 1) {
+      const _r1 = \u0275\u0275getCurrentView();
+      \u0275\u0275elementStart(0, "div", 1, 0);
+      \u0275\u0275listener("@translateTab.start", function MatTabBody_Template_div_animation_translateTab_start_0_listener($event) {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx._onTranslateTabStarted($event));
+      })("@translateTab.done", function MatTabBody_Template_div_animation_translateTab_done_0_listener($event) {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx._translateTabComplete.next($event));
+      });
+      \u0275\u0275template(2, MatTabBody_ng_template_2_Template, 0, 0, "ng-template", 2);
+      \u0275\u0275elementEnd();
+    }
+    if (rf & 2) {
+      \u0275\u0275property("@translateTab", \u0275\u0275pureFunction2(3, _c73, ctx._position, \u0275\u0275pureFunction1(1, _c64, ctx.animationDuration)));
+    }
+  },
+  dependencies: [MatTabBodyPortal, CdkScrollable],
+  styles: ['.mat-mdc-tab-body{top:0;left:0;right:0;bottom:0;position:absolute;display:block;overflow:hidden;outline:0;flex-basis:100%}.mat-mdc-tab-body.mat-mdc-tab-body-active{position:relative;overflow-x:hidden;overflow-y:auto;z-index:1;flex-grow:1}.mat-mdc-tab-group.mat-mdc-tab-group-dynamic-height .mat-mdc-tab-body.mat-mdc-tab-body-active{overflow-y:hidden}.mat-mdc-tab-body-content{height:100%;overflow:auto}.mat-mdc-tab-group-dynamic-height .mat-mdc-tab-body-content{overflow:hidden}.mat-mdc-tab-body-content[style*="visibility: hidden"]{display:none}'],
+  encapsulation: 2,
+  data: {
+    animation: [matTabsAnimations.translateTab]
+  }
+});
+var MatTabBody = _MatTabBody;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatTabBody, [{
+    type: Component,
+    args: [{
+      selector: "mat-tab-body",
+      encapsulation: ViewEncapsulation$1.None,
+      changeDetection: ChangeDetectionStrategy.Default,
+      animations: [matTabsAnimations.translateTab],
+      host: {
+        "class": "mat-mdc-tab-body"
+      },
+      standalone: true,
+      imports: [MatTabBodyPortal, CdkScrollable],
+      template: '<div class="mat-mdc-tab-body-content" #content\n     [@translateTab]="{\n        value: _position,\n        params: {animationDuration: animationDuration}\n     }"\n     (@translateTab.start)="_onTranslateTabStarted($event)"\n     (@translateTab.done)="_translateTabComplete.next($event)"\n     cdkScrollable>\n  <ng-template matTabBodyHost></ng-template>\n</div>\n',
+      styles: ['.mat-mdc-tab-body{top:0;left:0;right:0;bottom:0;position:absolute;display:block;overflow:hidden;outline:0;flex-basis:100%}.mat-mdc-tab-body.mat-mdc-tab-body-active{position:relative;overflow-x:hidden;overflow-y:auto;z-index:1;flex-grow:1}.mat-mdc-tab-group.mat-mdc-tab-group-dynamic-height .mat-mdc-tab-body.mat-mdc-tab-body-active{overflow-y:hidden}.mat-mdc-tab-body-content{height:100%;overflow:auto}.mat-mdc-tab-group-dynamic-height .mat-mdc-tab-body-content{overflow:hidden}.mat-mdc-tab-body-content[style*="visibility: hidden"]{display:none}']
+    }]
+  }], () => [{
+    type: ElementRef
+  }, {
+    type: Directionality,
+    decorators: [{
+      type: Optional
+    }]
+  }, {
+    type: ChangeDetectorRef
+  }], {
+    _onCentering: [{
+      type: Output
+    }],
+    _beforeCentering: [{
+      type: Output
+    }],
+    _afterLeavingCenter: [{
+      type: Output
+    }],
+    _onCentered: [{
+      type: Output
+    }],
+    _portalHost: [{
+      type: ViewChild,
+      args: [CdkPortalOutlet]
+    }],
+    _content: [{
+      type: Input,
+      args: ["content"]
+    }],
+    origin: [{
+      type: Input
+    }],
+    animationDuration: [{
+      type: Input
+    }],
+    preserveContent: [{
+      type: Input
+    }],
+    position: [{
+      type: Input
+    }]
+  });
+})();
+var nextId2 = 0;
+var ENABLE_BACKGROUND_INPUT = true;
+var _MatTabGroup = class _MatTabGroup {
+  /** Whether the ink bar should fit its width to the size of the tab label content. */
+  get fitInkBarToContent() {
+    return this._fitInkBarToContent;
+  }
+  set fitInkBarToContent(value) {
+    this._fitInkBarToContent = value;
+    this._changeDetectorRef.markForCheck();
+  }
+  /** The index of the active tab. */
+  get selectedIndex() {
+    return this._selectedIndex;
+  }
+  set selectedIndex(value) {
+    this._indexToSelect = isNaN(value) ? null : value;
+  }
+  /** Duration for the tab animation. Will be normalized to milliseconds if no units are set. */
+  get animationDuration() {
+    return this._animationDuration;
+  }
+  set animationDuration(value) {
+    const stringValue = value + "";
+    this._animationDuration = /^\d+$/.test(stringValue) ? value + "ms" : stringValue;
+  }
+  /**
+   * `tabindex` to be set on the inner element that wraps the tab content. Can be used for improved
+   * accessibility when the tab does not have focusable elements or if it has scrollable content.
+   * The `tabindex` will be removed automatically for inactive tabs.
+   * Read more at https://www.w3.org/TR/wai-aria-practices/examples/tabs/tabs-2/tabs.html
+   */
+  get contentTabIndex() {
+    return this._contentTabIndex;
+  }
+  set contentTabIndex(value) {
+    this._contentTabIndex = isNaN(value) ? null : value;
+  }
+  /**
+   * Theme color of the background of the tab group. This API is supported in M2 themes only, it
+   * has no effect in M3 themes.
+   *
+   * For information on applying color variants in M3, see
+   * https://material.angular.io/guide/theming#using-component-color-variants.
+   *
+   * @deprecated The background color should be customized through Sass theming APIs.
+   * @breaking-change 20.0.0 Remove this input
+   */
+  get backgroundColor() {
+    return this._backgroundColor;
+  }
+  set backgroundColor(value) {
+    if (!ENABLE_BACKGROUND_INPUT) {
+      throw new Error(`mat-tab-group background color must be set through the Sass theming API`);
+    }
+    const classList = this._elementRef.nativeElement.classList;
+    classList.remove("mat-tabs-with-background", `mat-background-${this.backgroundColor}`);
+    if (value) {
+      classList.add("mat-tabs-with-background", `mat-background-${value}`);
+    }
+    this._backgroundColor = value;
+  }
+  constructor(_elementRef, _changeDetectorRef, defaultConfig, _animationMode) {
+    this._elementRef = _elementRef;
+    this._changeDetectorRef = _changeDetectorRef;
+    this._animationMode = _animationMode;
+    this._tabs = new QueryList();
+    this._indexToSelect = 0;
+    this._lastFocusedTabIndex = null;
+    this._tabBodyWrapperHeight = 0;
+    this._tabsSubscription = Subscription.EMPTY;
+    this._tabLabelSubscription = Subscription.EMPTY;
+    this._fitInkBarToContent = false;
+    this.stretchTabs = true;
+    this.dynamicHeight = false;
+    this._selectedIndex = null;
+    this.headerPosition = "above";
+    this.disablePagination = false;
+    this.disableRipple = false;
+    this.preserveContent = false;
+    this.selectedIndexChange = new EventEmitter();
+    this.focusChange = new EventEmitter();
+    this.animationDone = new EventEmitter();
+    this.selectedTabChange = new EventEmitter(true);
+    this._isServer = !inject(Platform).isBrowser;
+    this._groupId = nextId2++;
+    this.animationDuration = defaultConfig && defaultConfig.animationDuration ? defaultConfig.animationDuration : "500ms";
+    this.disablePagination = defaultConfig && defaultConfig.disablePagination != null ? defaultConfig.disablePagination : false;
+    this.dynamicHeight = defaultConfig && defaultConfig.dynamicHeight != null ? defaultConfig.dynamicHeight : false;
+    if (defaultConfig?.contentTabIndex != null) {
+      this.contentTabIndex = defaultConfig.contentTabIndex;
+    }
+    this.preserveContent = !!defaultConfig?.preserveContent;
+    this.fitInkBarToContent = defaultConfig && defaultConfig.fitInkBarToContent != null ? defaultConfig.fitInkBarToContent : false;
+    this.stretchTabs = defaultConfig && defaultConfig.stretchTabs != null ? defaultConfig.stretchTabs : true;
+  }
+  /**
+   * After the content is checked, this component knows what tabs have been defined
+   * and what the selected index should be. This is where we can know exactly what position
+   * each tab should be in according to the new selected index, and additionally we know how
+   * a new selected tab should transition in (from the left or right).
+   */
+  ngAfterContentChecked() {
+    const indexToSelect = this._indexToSelect = this._clampTabIndex(this._indexToSelect);
+    if (this._selectedIndex != indexToSelect) {
+      const isFirstRun = this._selectedIndex == null;
+      if (!isFirstRun) {
+        this.selectedTabChange.emit(this._createChangeEvent(indexToSelect));
+        const wrapper = this._tabBodyWrapper.nativeElement;
+        wrapper.style.minHeight = wrapper.clientHeight + "px";
+      }
+      Promise.resolve().then(() => {
+        this._tabs.forEach((tab, index) => tab.isActive = index === indexToSelect);
+        if (!isFirstRun) {
+          this.selectedIndexChange.emit(indexToSelect);
+          this._tabBodyWrapper.nativeElement.style.minHeight = "";
+        }
+      });
+    }
+    this._tabs.forEach((tab, index) => {
+      tab.position = index - indexToSelect;
+      if (this._selectedIndex != null && tab.position == 0 && !tab.origin) {
+        tab.origin = indexToSelect - this._selectedIndex;
+      }
+    });
+    if (this._selectedIndex !== indexToSelect) {
+      this._selectedIndex = indexToSelect;
+      this._lastFocusedTabIndex = null;
+      this._changeDetectorRef.markForCheck();
+    }
+  }
+  ngAfterContentInit() {
+    this._subscribeToAllTabChanges();
+    this._subscribeToTabLabels();
+    this._tabsSubscription = this._tabs.changes.subscribe(() => {
+      const indexToSelect = this._clampTabIndex(this._indexToSelect);
+      if (indexToSelect === this._selectedIndex) {
+        const tabs = this._tabs.toArray();
+        let selectedTab;
+        for (let i = 0; i < tabs.length; i++) {
+          if (tabs[i].isActive) {
+            this._indexToSelect = this._selectedIndex = i;
+            this._lastFocusedTabIndex = null;
+            selectedTab = tabs[i];
+            break;
+          }
+        }
+        if (!selectedTab && tabs[indexToSelect]) {
+          Promise.resolve().then(() => {
+            tabs[indexToSelect].isActive = true;
+            this.selectedTabChange.emit(this._createChangeEvent(indexToSelect));
+          });
+        }
+      }
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  /** Listens to changes in all of the tabs. */
+  _subscribeToAllTabChanges() {
+    this._allTabs.changes.pipe(startWith(this._allTabs)).subscribe((tabs) => {
+      this._tabs.reset(tabs.filter((tab) => {
+        return tab._closestTabGroup === this || !tab._closestTabGroup;
+      }));
+      this._tabs.notifyOnChanges();
+    });
+  }
+  ngOnDestroy() {
+    this._tabs.destroy();
+    this._tabsSubscription.unsubscribe();
+    this._tabLabelSubscription.unsubscribe();
+  }
+  /** Re-aligns the ink bar to the selected tab element. */
+  realignInkBar() {
+    if (this._tabHeader) {
+      this._tabHeader._alignInkBarToSelectedTab();
+    }
+  }
+  /**
+   * Recalculates the tab group's pagination dimensions.
+   *
+   * WARNING: Calling this method can be very costly in terms of performance. It should be called
+   * as infrequently as possible from outside of the Tabs component as it causes a reflow of the
+   * page.
+   */
+  updatePagination() {
+    if (this._tabHeader) {
+      this._tabHeader.updatePagination();
+    }
+  }
+  /**
+   * Sets focus to a particular tab.
+   * @param index Index of the tab to be focused.
+   */
+  focusTab(index) {
+    const header = this._tabHeader;
+    if (header) {
+      header.focusIndex = index;
+    }
+  }
+  _focusChanged(index) {
+    this._lastFocusedTabIndex = index;
+    this.focusChange.emit(this._createChangeEvent(index));
+  }
+  _createChangeEvent(index) {
+    const event = new MatTabChangeEvent();
+    event.index = index;
+    if (this._tabs && this._tabs.length) {
+      event.tab = this._tabs.toArray()[index];
+    }
+    return event;
+  }
+  /**
+   * Subscribes to changes in the tab labels. This is needed, because the @Input for the label is
+   * on the MatTab component, whereas the data binding is inside the MatTabGroup. In order for the
+   * binding to be updated, we need to subscribe to changes in it and trigger change detection
+   * manually.
+   */
+  _subscribeToTabLabels() {
+    if (this._tabLabelSubscription) {
+      this._tabLabelSubscription.unsubscribe();
+    }
+    this._tabLabelSubscription = merge(...this._tabs.map((tab) => tab._stateChanges)).subscribe(() => this._changeDetectorRef.markForCheck());
+  }
+  /** Clamps the given index to the bounds of 0 and the tabs length. */
+  _clampTabIndex(index) {
+    return Math.min(this._tabs.length - 1, Math.max(index || 0, 0));
+  }
+  /** Returns a unique id for each tab label element */
+  _getTabLabelId(i) {
+    return `mat-tab-label-${this._groupId}-${i}`;
+  }
+  /** Returns a unique id for each tab content element */
+  _getTabContentId(i) {
+    return `mat-tab-content-${this._groupId}-${i}`;
+  }
+  /**
+   * Sets the height of the body wrapper to the height of the activating tab if dynamic
+   * height property is true.
+   */
+  _setTabBodyWrapperHeight(tabHeight) {
+    if (!this.dynamicHeight || !this._tabBodyWrapperHeight) {
+      return;
+    }
+    const wrapper = this._tabBodyWrapper.nativeElement;
+    wrapper.style.height = this._tabBodyWrapperHeight + "px";
+    if (this._tabBodyWrapper.nativeElement.offsetHeight) {
+      wrapper.style.height = tabHeight + "px";
+    }
+  }
+  /** Removes the height of the tab body wrapper. */
+  _removeTabBodyWrapperHeight() {
+    const wrapper = this._tabBodyWrapper.nativeElement;
+    this._tabBodyWrapperHeight = wrapper.clientHeight;
+    wrapper.style.height = "";
+    this.animationDone.emit();
+  }
+  /** Handle click events, setting new selected index if appropriate. */
+  _handleClick(tab, tabHeader, index) {
+    tabHeader.focusIndex = index;
+    if (!tab.disabled) {
+      this.selectedIndex = index;
+    }
+  }
+  /** Retrieves the tabindex for the tab. */
+  _getTabIndex(index) {
+    const targetIndex = this._lastFocusedTabIndex ?? this.selectedIndex;
+    return index === targetIndex ? 0 : -1;
+  }
+  /** Callback for when the focused state of a tab has changed. */
+  _tabFocusChanged(focusOrigin, index) {
+    if (focusOrigin && focusOrigin !== "mouse" && focusOrigin !== "touch") {
+      this._tabHeader.focusIndex = index;
+    }
+  }
+};
+_MatTabGroup.\u0275fac = function MatTabGroup_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatTabGroup)(\u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(ChangeDetectorRef), \u0275\u0275directiveInject(MAT_TABS_CONFIG, 8), \u0275\u0275directiveInject(ANIMATION_MODULE_TYPE, 8));
+};
+_MatTabGroup.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
+  type: _MatTabGroup,
+  selectors: [["mat-tab-group"]],
+  contentQueries: function MatTabGroup_ContentQueries(rf, ctx, dirIndex) {
+    if (rf & 1) {
+      \u0275\u0275contentQuery(dirIndex, MatTab, 5);
+    }
+    if (rf & 2) {
+      let _t;
+      \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx._allTabs = _t);
+    }
+  },
+  viewQuery: function MatTabGroup_Query(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275viewQuery(_c82, 5);
+      \u0275\u0275viewQuery(_c92, 5);
+    }
+    if (rf & 2) {
+      let _t;
+      \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx._tabBodyWrapper = _t.first);
+      \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx._tabHeader = _t.first);
+    }
+  },
+  hostAttrs: [1, "mat-mdc-tab-group"],
+  hostVars: 10,
+  hostBindings: function MatTabGroup_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      \u0275\u0275classMap("mat-" + (ctx.color || "primary"));
+      \u0275\u0275styleProp("--mat-tab-animation-duration", ctx.animationDuration);
+      \u0275\u0275classProp("mat-mdc-tab-group-dynamic-height", ctx.dynamicHeight)("mat-mdc-tab-group-inverted-header", ctx.headerPosition === "below")("mat-mdc-tab-group-stretch-tabs", ctx.stretchTabs);
+    }
+  },
+  inputs: {
+    color: "color",
+    fitInkBarToContent: [2, "fitInkBarToContent", "fitInkBarToContent", booleanAttribute],
+    stretchTabs: [2, "mat-stretch-tabs", "stretchTabs", booleanAttribute],
+    dynamicHeight: [2, "dynamicHeight", "dynamicHeight", booleanAttribute],
+    selectedIndex: [2, "selectedIndex", "selectedIndex", numberAttribute],
+    headerPosition: "headerPosition",
+    animationDuration: "animationDuration",
+    contentTabIndex: [2, "contentTabIndex", "contentTabIndex", numberAttribute],
+    disablePagination: [2, "disablePagination", "disablePagination", booleanAttribute],
+    disableRipple: [2, "disableRipple", "disableRipple", booleanAttribute],
+    preserveContent: [2, "preserveContent", "preserveContent", booleanAttribute],
+    backgroundColor: "backgroundColor"
+  },
+  outputs: {
+    selectedIndexChange: "selectedIndexChange",
+    focusChange: "focusChange",
+    animationDone: "animationDone",
+    selectedTabChange: "selectedTabChange"
+  },
+  exportAs: ["matTabGroup"],
+  standalone: true,
+  features: [\u0275\u0275ProvidersFeature([{
+    provide: MAT_TAB_GROUP,
+    useExisting: _MatTabGroup
+  }]), \u0275\u0275InputTransformsFeature, \u0275\u0275StandaloneFeature],
+  ngContentSelectors: _c010,
+  decls: 9,
+  vars: 6,
+  consts: [["tabHeader", ""], ["tabBodyWrapper", ""], ["tabNode", ""], [3, "indexFocused", "selectFocusedIndex", "selectedIndex", "disableRipple", "disablePagination"], ["role", "tab", "matTabLabelWrapper", "", "cdkMonitorElementFocus", "", 1, "mdc-tab", "mat-mdc-tab", "mat-mdc-focus-indicator", 3, "id", "mdc-tab--active", "class", "disabled", "fitInkBarToContent"], [1, "mat-mdc-tab-body-wrapper"], ["role", "tabpanel", 3, "id", "mat-mdc-tab-body-active", "class", "content", "position", "origin", "animationDuration", "preserveContent"], ["role", "tab", "matTabLabelWrapper", "", "cdkMonitorElementFocus", "", 1, "mdc-tab", "mat-mdc-tab", "mat-mdc-focus-indicator", 3, "click", "cdkFocusChange", "id", "disabled", "fitInkBarToContent"], [1, "mdc-tab__ripple"], ["mat-ripple", "", 1, "mat-mdc-tab-ripple", 3, "matRippleTrigger", "matRippleDisabled"], [1, "mdc-tab__content"], [1, "mdc-tab__text-label"], [3, "cdkPortalOutlet"], ["role", "tabpanel", 3, "_onCentered", "_onCentering", "id", "content", "position", "origin", "animationDuration", "preserveContent"]],
+  template: function MatTabGroup_Template(rf, ctx) {
+    if (rf & 1) {
+      const _r1 = \u0275\u0275getCurrentView();
+      \u0275\u0275projectionDef();
+      \u0275\u0275elementStart(0, "mat-tab-header", 3, 0);
+      \u0275\u0275listener("indexFocused", function MatTabGroup_Template_mat_tab_header_indexFocused_0_listener($event) {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx._focusChanged($event));
+      })("selectFocusedIndex", function MatTabGroup_Template_mat_tab_header_selectFocusedIndex_0_listener($event) {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx.selectedIndex = $event);
+      });
+      \u0275\u0275repeaterCreate(2, MatTabGroup_For_3_Template, 8, 17, "div", 4, \u0275\u0275repeaterTrackByIdentity);
+      \u0275\u0275elementEnd();
+      \u0275\u0275template(4, MatTabGroup_Conditional_4_Template, 1, 0);
+      \u0275\u0275elementStart(5, "div", 5, 1);
+      \u0275\u0275repeaterCreate(7, MatTabGroup_For_8_Template, 1, 13, "mat-tab-body", 6, \u0275\u0275repeaterTrackByIdentity);
+      \u0275\u0275elementEnd();
+    }
+    if (rf & 2) {
+      \u0275\u0275property("selectedIndex", ctx.selectedIndex || 0)("disableRipple", ctx.disableRipple)("disablePagination", ctx.disablePagination);
+      \u0275\u0275advance(2);
+      \u0275\u0275repeater(ctx._tabs);
+      \u0275\u0275advance(2);
+      \u0275\u0275conditional(ctx._isServer ? 4 : -1);
+      \u0275\u0275advance();
+      \u0275\u0275classProp("_mat-animation-noopable", ctx._animationMode === "NoopAnimations");
+      \u0275\u0275advance(2);
+      \u0275\u0275repeater(ctx._tabs);
+    }
+  },
+  dependencies: [MatTabHeader, MatTabLabelWrapper, CdkMonitorFocus, MatRipple, CdkPortalOutlet, MatTabBody],
+  styles: ['.mdc-tab{min-width:90px;padding:0 24px;display:flex;flex:1 0 auto;justify-content:center;box-sizing:border-box;border:none;outline:none;text-align:center;white-space:nowrap;cursor:pointer;z-index:1}.mdc-tab__content{display:flex;align-items:center;justify-content:center;height:inherit;pointer-events:none}.mdc-tab__text-label{transition:150ms color linear;display:inline-block;line-height:1;z-index:2}.mdc-tab--active .mdc-tab__text-label{transition-delay:100ms}._mat-animation-noopable .mdc-tab__text-label{transition:none}.mdc-tab-indicator{display:flex;position:absolute;top:0;left:0;justify-content:center;width:100%;height:100%;pointer-events:none;z-index:1}.mdc-tab-indicator__content{transition:var(--mat-tab-animation-duration, 250ms) transform cubic-bezier(0.4, 0, 0.2, 1);transform-origin:left;opacity:0}.mdc-tab-indicator__content--underline{align-self:flex-end;box-sizing:border-box;width:100%;border-top-style:solid}.mdc-tab-indicator--active .mdc-tab-indicator__content{opacity:1}._mat-animation-noopable .mdc-tab-indicator__content,.mdc-tab-indicator--no-transition .mdc-tab-indicator__content{transition:none}.mat-mdc-tab-ripple{position:absolute;top:0;left:0;bottom:0;right:0;pointer-events:none}.mat-mdc-tab{-webkit-tap-highlight-color:rgba(0,0,0,0);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-decoration:none;background:none;height:var(--mdc-secondary-navigation-tab-container-height);font-family:var(--mat-tab-header-label-text-font);font-size:var(--mat-tab-header-label-text-size);letter-spacing:var(--mat-tab-header-label-text-tracking);line-height:var(--mat-tab-header-label-text-line-height);font-weight:var(--mat-tab-header-label-text-weight)}.mat-mdc-tab.mdc-tab{flex-grow:0}.mat-mdc-tab .mdc-tab-indicator__content--underline{border-color:var(--mdc-tab-indicator-active-indicator-color);border-top-width:var(--mdc-tab-indicator-active-indicator-height);border-radius:var(--mdc-tab-indicator-active-indicator-shape)}.mat-mdc-tab:hover .mdc-tab__text-label{color:var(--mat-tab-header-inactive-hover-label-text-color)}.mat-mdc-tab:focus .mdc-tab__text-label{color:var(--mat-tab-header-inactive-focus-label-text-color)}.mat-mdc-tab.mdc-tab--active .mdc-tab__text-label{color:var(--mat-tab-header-active-label-text-color)}.mat-mdc-tab.mdc-tab--active .mdc-tab__ripple::before,.mat-mdc-tab.mdc-tab--active .mat-ripple-element{background-color:var(--mat-tab-header-active-ripple-color)}.mat-mdc-tab.mdc-tab--active:hover .mdc-tab__text-label{color:var(--mat-tab-header-active-hover-label-text-color)}.mat-mdc-tab.mdc-tab--active:hover .mdc-tab-indicator__content--underline{border-color:var(--mat-tab-header-active-hover-indicator-color)}.mat-mdc-tab.mdc-tab--active:focus .mdc-tab__text-label{color:var(--mat-tab-header-active-focus-label-text-color)}.mat-mdc-tab.mdc-tab--active:focus .mdc-tab-indicator__content--underline{border-color:var(--mat-tab-header-active-focus-indicator-color)}.mat-mdc-tab.mat-mdc-tab-disabled{opacity:.4;pointer-events:none}.mat-mdc-tab.mat-mdc-tab-disabled .mdc-tab__content{pointer-events:none}.mat-mdc-tab.mat-mdc-tab-disabled .mdc-tab__ripple::before,.mat-mdc-tab.mat-mdc-tab-disabled .mat-ripple-element{background-color:var(--mat-tab-header-disabled-ripple-color)}.mat-mdc-tab .mdc-tab__ripple::before{content:"";display:block;position:absolute;top:0;left:0;right:0;bottom:0;opacity:0;pointer-events:none;background-color:var(--mat-tab-header-inactive-ripple-color)}.mat-mdc-tab .mdc-tab__text-label{color:var(--mat-tab-header-inactive-label-text-color);display:inline-flex;align-items:center}.mat-mdc-tab .mdc-tab__content{position:relative;pointer-events:auto}.mat-mdc-tab:hover .mdc-tab__ripple::before{opacity:.04}.mat-mdc-tab.cdk-program-focused .mdc-tab__ripple::before,.mat-mdc-tab.cdk-keyboard-focused .mdc-tab__ripple::before{opacity:.12}.mat-mdc-tab .mat-ripple-element{opacity:.12;background-color:var(--mat-tab-header-inactive-ripple-color)}.mat-mdc-tab-group.mat-mdc-tab-group-stretch-tabs>.mat-mdc-tab-header .mat-mdc-tab{flex-grow:1}.mat-mdc-tab-group{display:flex;flex-direction:column;max-width:100%}.mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header,.mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header-pagination{background-color:var(--mat-tab-header-with-background-background-color)}.mat-mdc-tab-group.mat-tabs-with-background.mat-primary>.mat-mdc-tab-header .mat-mdc-tab .mdc-tab__text-label{color:var(--mat-tab-header-with-background-foreground-color)}.mat-mdc-tab-group.mat-tabs-with-background.mat-primary>.mat-mdc-tab-header .mdc-tab-indicator__content--underline{border-color:var(--mat-tab-header-with-background-foreground-color)}.mat-mdc-tab-group.mat-tabs-with-background:not(.mat-primary)>.mat-mdc-tab-header .mat-mdc-tab:not(.mdc-tab--active) .mdc-tab__text-label{color:var(--mat-tab-header-with-background-foreground-color)}.mat-mdc-tab-group.mat-tabs-with-background:not(.mat-primary)>.mat-mdc-tab-header .mat-mdc-tab:not(.mdc-tab--active) .mdc-tab-indicator__content--underline{border-color:var(--mat-tab-header-with-background-foreground-color)}.mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header .mat-mdc-tab-header-pagination-chevron,.mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header .mat-mdc-focus-indicator::before,.mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header-pagination .mat-mdc-tab-header-pagination-chevron,.mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header-pagination .mat-mdc-focus-indicator::before{border-color:var(--mat-tab-header-with-background-foreground-color)}.mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header .mat-ripple-element,.mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header .mdc-tab__ripple::before,.mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header-pagination .mat-ripple-element,.mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header-pagination .mdc-tab__ripple::before{background-color:var(--mat-tab-header-with-background-foreground-color)}.mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header .mat-mdc-tab-header-pagination-chevron,.mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header-pagination .mat-mdc-tab-header-pagination-chevron{color:var(--mat-tab-header-with-background-foreground-color)}.mat-mdc-tab-group.mat-mdc-tab-group-inverted-header{flex-direction:column-reverse}.mat-mdc-tab-group.mat-mdc-tab-group-inverted-header .mdc-tab-indicator__content--underline{align-self:flex-start}.mat-mdc-tab-body-wrapper{position:relative;overflow:hidden;display:flex;transition:height 500ms cubic-bezier(0.35, 0, 0.25, 1)}.mat-mdc-tab-body-wrapper._mat-animation-noopable{transition:none !important;animation:none !important}'],
+  encapsulation: 2
+});
+var MatTabGroup = _MatTabGroup;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatTabGroup, [{
+    type: Component,
+    args: [{
+      selector: "mat-tab-group",
+      exportAs: "matTabGroup",
+      encapsulation: ViewEncapsulation$1.None,
+      changeDetection: ChangeDetectionStrategy.Default,
+      providers: [{
+        provide: MAT_TAB_GROUP,
+        useExisting: MatTabGroup
+      }],
+      host: {
+        "class": "mat-mdc-tab-group",
+        "[class]": '"mat-" + (color || "primary")',
+        "[class.mat-mdc-tab-group-dynamic-height]": "dynamicHeight",
+        "[class.mat-mdc-tab-group-inverted-header]": 'headerPosition === "below"',
+        "[class.mat-mdc-tab-group-stretch-tabs]": "stretchTabs",
+        "[style.--mat-tab-animation-duration]": "animationDuration"
+      },
+      standalone: true,
+      imports: [MatTabHeader, MatTabLabelWrapper, CdkMonitorFocus, MatRipple, CdkPortalOutlet, MatTabBody],
+      template: '<mat-tab-header #tabHeader\n                [selectedIndex]="selectedIndex || 0"\n                [disableRipple]="disableRipple"\n                [disablePagination]="disablePagination"\n                (indexFocused)="_focusChanged($event)"\n                (selectFocusedIndex)="selectedIndex = $event">\n\n  @for (tab of _tabs; track tab; let i = $index) {\n    <div class="mdc-tab mat-mdc-tab mat-mdc-focus-indicator"\n        #tabNode\n        role="tab"\n        matTabLabelWrapper\n        cdkMonitorElementFocus\n        [id]="_getTabLabelId(i)"\n        [attr.tabIndex]="_getTabIndex(i)"\n        [attr.aria-posinset]="i + 1"\n        [attr.aria-setsize]="_tabs.length"\n        [attr.aria-controls]="_getTabContentId(i)"\n        [attr.aria-selected]="selectedIndex === i"\n        [attr.aria-label]="tab.ariaLabel || null"\n        [attr.aria-labelledby]="(!tab.ariaLabel && tab.ariaLabelledby) ? tab.ariaLabelledby : null"\n        [class.mdc-tab--active]="selectedIndex === i"\n        [class]="tab.labelClass"\n        [disabled]="tab.disabled"\n        [fitInkBarToContent]="fitInkBarToContent"\n        (click)="_handleClick(tab, tabHeader, i)"\n        (cdkFocusChange)="_tabFocusChanged($event, i)">\n      <span class="mdc-tab__ripple"></span>\n\n      <!-- Needs to be a separate element, because we can\'t put\n          `overflow: hidden` on tab due to the ink bar. -->\n      <div\n        class="mat-mdc-tab-ripple"\n        mat-ripple\n        [matRippleTrigger]="tabNode"\n        [matRippleDisabled]="tab.disabled || disableRipple"></div>\n\n      <span class="mdc-tab__content">\n        <span class="mdc-tab__text-label">\n          <!--\n            If there is a label template, use it, otherwise fall back to the text label.\n            Note that we don\'t have indentation around the text label, because it adds\n            whitespace around the text which breaks some internal tests.\n          -->\n          @if (tab.templateLabel) {\n            <ng-template [cdkPortalOutlet]="tab.templateLabel"></ng-template>\n          } @else {{{tab.textLabel}}}\n        </span>\n      </span>\n    </div>\n  }\n</mat-tab-header>\n\n<!--\n  We need to project the content somewhere to avoid hydration errors. Some observations:\n  1. This is only necessary on the server.\n  2. We get a hydration error if there aren\'t any nodes after the `ng-content`.\n  3. We get a hydration error if `ng-content` is wrapped in another element.\n-->\n@if (_isServer) {\n  <ng-content/>\n}\n\n<div\n  class="mat-mdc-tab-body-wrapper"\n  [class._mat-animation-noopable]="_animationMode === \'NoopAnimations\'"\n  #tabBodyWrapper>\n  @for (tab of _tabs; track tab; let i = $index) {\n    <mat-tab-body role="tabpanel"\n                 [id]="_getTabContentId(i)"\n                 [attr.tabindex]="(contentTabIndex != null && selectedIndex === i) ? contentTabIndex : null"\n                 [attr.aria-labelledby]="_getTabLabelId(i)"\n                 [attr.aria-hidden]="selectedIndex !== i"\n                 [class.mat-mdc-tab-body-active]="selectedIndex === i"\n                 [class]="tab.bodyClass"\n                 [content]="tab.content!"\n                 [position]="tab.position!"\n                 [origin]="tab.origin"\n                 [animationDuration]="animationDuration"\n                 [preserveContent]="preserveContent"\n                 (_onCentered)="_removeTabBodyWrapperHeight()"\n                 (_onCentering)="_setTabBodyWrapperHeight($event)">\n    </mat-tab-body>\n  }\n</div>\n',
+      styles: ['.mdc-tab{min-width:90px;padding:0 24px;display:flex;flex:1 0 auto;justify-content:center;box-sizing:border-box;border:none;outline:none;text-align:center;white-space:nowrap;cursor:pointer;z-index:1}.mdc-tab__content{display:flex;align-items:center;justify-content:center;height:inherit;pointer-events:none}.mdc-tab__text-label{transition:150ms color linear;display:inline-block;line-height:1;z-index:2}.mdc-tab--active .mdc-tab__text-label{transition-delay:100ms}._mat-animation-noopable .mdc-tab__text-label{transition:none}.mdc-tab-indicator{display:flex;position:absolute;top:0;left:0;justify-content:center;width:100%;height:100%;pointer-events:none;z-index:1}.mdc-tab-indicator__content{transition:var(--mat-tab-animation-duration, 250ms) transform cubic-bezier(0.4, 0, 0.2, 1);transform-origin:left;opacity:0}.mdc-tab-indicator__content--underline{align-self:flex-end;box-sizing:border-box;width:100%;border-top-style:solid}.mdc-tab-indicator--active .mdc-tab-indicator__content{opacity:1}._mat-animation-noopable .mdc-tab-indicator__content,.mdc-tab-indicator--no-transition .mdc-tab-indicator__content{transition:none}.mat-mdc-tab-ripple{position:absolute;top:0;left:0;bottom:0;right:0;pointer-events:none}.mat-mdc-tab{-webkit-tap-highlight-color:rgba(0,0,0,0);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-decoration:none;background:none;height:var(--mdc-secondary-navigation-tab-container-height);font-family:var(--mat-tab-header-label-text-font);font-size:var(--mat-tab-header-label-text-size);letter-spacing:var(--mat-tab-header-label-text-tracking);line-height:var(--mat-tab-header-label-text-line-height);font-weight:var(--mat-tab-header-label-text-weight)}.mat-mdc-tab.mdc-tab{flex-grow:0}.mat-mdc-tab .mdc-tab-indicator__content--underline{border-color:var(--mdc-tab-indicator-active-indicator-color);border-top-width:var(--mdc-tab-indicator-active-indicator-height);border-radius:var(--mdc-tab-indicator-active-indicator-shape)}.mat-mdc-tab:hover .mdc-tab__text-label{color:var(--mat-tab-header-inactive-hover-label-text-color)}.mat-mdc-tab:focus .mdc-tab__text-label{color:var(--mat-tab-header-inactive-focus-label-text-color)}.mat-mdc-tab.mdc-tab--active .mdc-tab__text-label{color:var(--mat-tab-header-active-label-text-color)}.mat-mdc-tab.mdc-tab--active .mdc-tab__ripple::before,.mat-mdc-tab.mdc-tab--active .mat-ripple-element{background-color:var(--mat-tab-header-active-ripple-color)}.mat-mdc-tab.mdc-tab--active:hover .mdc-tab__text-label{color:var(--mat-tab-header-active-hover-label-text-color)}.mat-mdc-tab.mdc-tab--active:hover .mdc-tab-indicator__content--underline{border-color:var(--mat-tab-header-active-hover-indicator-color)}.mat-mdc-tab.mdc-tab--active:focus .mdc-tab__text-label{color:var(--mat-tab-header-active-focus-label-text-color)}.mat-mdc-tab.mdc-tab--active:focus .mdc-tab-indicator__content--underline{border-color:var(--mat-tab-header-active-focus-indicator-color)}.mat-mdc-tab.mat-mdc-tab-disabled{opacity:.4;pointer-events:none}.mat-mdc-tab.mat-mdc-tab-disabled .mdc-tab__content{pointer-events:none}.mat-mdc-tab.mat-mdc-tab-disabled .mdc-tab__ripple::before,.mat-mdc-tab.mat-mdc-tab-disabled .mat-ripple-element{background-color:var(--mat-tab-header-disabled-ripple-color)}.mat-mdc-tab .mdc-tab__ripple::before{content:"";display:block;position:absolute;top:0;left:0;right:0;bottom:0;opacity:0;pointer-events:none;background-color:var(--mat-tab-header-inactive-ripple-color)}.mat-mdc-tab .mdc-tab__text-label{color:var(--mat-tab-header-inactive-label-text-color);display:inline-flex;align-items:center}.mat-mdc-tab .mdc-tab__content{position:relative;pointer-events:auto}.mat-mdc-tab:hover .mdc-tab__ripple::before{opacity:.04}.mat-mdc-tab.cdk-program-focused .mdc-tab__ripple::before,.mat-mdc-tab.cdk-keyboard-focused .mdc-tab__ripple::before{opacity:.12}.mat-mdc-tab .mat-ripple-element{opacity:.12;background-color:var(--mat-tab-header-inactive-ripple-color)}.mat-mdc-tab-group.mat-mdc-tab-group-stretch-tabs>.mat-mdc-tab-header .mat-mdc-tab{flex-grow:1}.mat-mdc-tab-group{display:flex;flex-direction:column;max-width:100%}.mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header,.mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header-pagination{background-color:var(--mat-tab-header-with-background-background-color)}.mat-mdc-tab-group.mat-tabs-with-background.mat-primary>.mat-mdc-tab-header .mat-mdc-tab .mdc-tab__text-label{color:var(--mat-tab-header-with-background-foreground-color)}.mat-mdc-tab-group.mat-tabs-with-background.mat-primary>.mat-mdc-tab-header .mdc-tab-indicator__content--underline{border-color:var(--mat-tab-header-with-background-foreground-color)}.mat-mdc-tab-group.mat-tabs-with-background:not(.mat-primary)>.mat-mdc-tab-header .mat-mdc-tab:not(.mdc-tab--active) .mdc-tab__text-label{color:var(--mat-tab-header-with-background-foreground-color)}.mat-mdc-tab-group.mat-tabs-with-background:not(.mat-primary)>.mat-mdc-tab-header .mat-mdc-tab:not(.mdc-tab--active) .mdc-tab-indicator__content--underline{border-color:var(--mat-tab-header-with-background-foreground-color)}.mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header .mat-mdc-tab-header-pagination-chevron,.mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header .mat-mdc-focus-indicator::before,.mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header-pagination .mat-mdc-tab-header-pagination-chevron,.mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header-pagination .mat-mdc-focus-indicator::before{border-color:var(--mat-tab-header-with-background-foreground-color)}.mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header .mat-ripple-element,.mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header .mdc-tab__ripple::before,.mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header-pagination .mat-ripple-element,.mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header-pagination .mdc-tab__ripple::before{background-color:var(--mat-tab-header-with-background-foreground-color)}.mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header .mat-mdc-tab-header-pagination-chevron,.mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header-pagination .mat-mdc-tab-header-pagination-chevron{color:var(--mat-tab-header-with-background-foreground-color)}.mat-mdc-tab-group.mat-mdc-tab-group-inverted-header{flex-direction:column-reverse}.mat-mdc-tab-group.mat-mdc-tab-group-inverted-header .mdc-tab-indicator__content--underline{align-self:flex-start}.mat-mdc-tab-body-wrapper{position:relative;overflow:hidden;display:flex;transition:height 500ms cubic-bezier(0.35, 0, 0.25, 1)}.mat-mdc-tab-body-wrapper._mat-animation-noopable{transition:none !important;animation:none !important}']
+    }]
+  }], () => [{
+    type: ElementRef
+  }, {
+    type: ChangeDetectorRef
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Inject,
+      args: [MAT_TABS_CONFIG]
+    }, {
+      type: Optional
+    }]
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [ANIMATION_MODULE_TYPE]
+    }]
+  }], {
+    _allTabs: [{
+      type: ContentChildren,
+      args: [MatTab, {
+        descendants: true
+      }]
+    }],
+    _tabBodyWrapper: [{
+      type: ViewChild,
+      args: ["tabBodyWrapper"]
+    }],
+    _tabHeader: [{
+      type: ViewChild,
+      args: ["tabHeader"]
+    }],
+    color: [{
+      type: Input
+    }],
+    fitInkBarToContent: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }],
+    stretchTabs: [{
+      type: Input,
+      args: [{
+        alias: "mat-stretch-tabs",
+        transform: booleanAttribute
+      }]
+    }],
+    dynamicHeight: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }],
+    selectedIndex: [{
+      type: Input,
+      args: [{
+        transform: numberAttribute
+      }]
+    }],
+    headerPosition: [{
+      type: Input
+    }],
+    animationDuration: [{
+      type: Input
+    }],
+    contentTabIndex: [{
+      type: Input,
+      args: [{
+        transform: numberAttribute
+      }]
+    }],
+    disablePagination: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }],
+    disableRipple: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }],
+    preserveContent: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }],
+    backgroundColor: [{
+      type: Input
+    }],
+    selectedIndexChange: [{
+      type: Output
+    }],
+    focusChange: [{
+      type: Output
+    }],
+    animationDone: [{
+      type: Output
+    }],
+    selectedTabChange: [{
+      type: Output
+    }]
+  });
+})();
+var MatTabChangeEvent = class {
+};
+var nextUniqueId4 = 0;
+var _MatTabNav = class _MatTabNav extends MatPaginatedTabHeader {
+  /** Whether the ink bar should fit its width to the size of the tab label content. */
+  get fitInkBarToContent() {
+    return this._fitInkBarToContent.value;
+  }
+  set fitInkBarToContent(value) {
+    this._fitInkBarToContent.next(value);
+    this._changeDetectorRef.markForCheck();
+  }
+  get animationDuration() {
+    return this._animationDuration;
+  }
+  set animationDuration(value) {
+    const stringValue = value + "";
+    this._animationDuration = /^\d+$/.test(stringValue) ? value + "ms" : stringValue;
+  }
+  /**
+   * Theme color of the background of the tab nav. This API is supported in M2 themes only, it
+   * has no effect in M3 themes.
+   *
+   * For information on applying color variants in M3, see
+   * https://material.angular.io/guide/theming#using-component-color-variants.
+   */
+  get backgroundColor() {
+    return this._backgroundColor;
+  }
+  set backgroundColor(value) {
+    const classList = this._elementRef.nativeElement.classList;
+    classList.remove("mat-tabs-with-background", `mat-background-${this.backgroundColor}`);
+    if (value) {
+      classList.add("mat-tabs-with-background", `mat-background-${value}`);
+    }
+    this._backgroundColor = value;
+  }
+  constructor(elementRef, dir, ngZone, changeDetectorRef, viewportRuler, platform, animationMode, defaultConfig) {
+    super(elementRef, changeDetectorRef, viewportRuler, dir, ngZone, platform, animationMode);
+    this._fitInkBarToContent = new BehaviorSubject(false);
+    this.stretchTabs = true;
+    this.disableRipple = false;
+    this.color = "primary";
+    this.disablePagination = defaultConfig && defaultConfig.disablePagination != null ? defaultConfig.disablePagination : false;
+    this.fitInkBarToContent = defaultConfig && defaultConfig.fitInkBarToContent != null ? defaultConfig.fitInkBarToContent : false;
+    this.stretchTabs = defaultConfig && defaultConfig.stretchTabs != null ? defaultConfig.stretchTabs : true;
+  }
+  _itemSelected() {
+  }
+  ngAfterContentInit() {
+    this._inkBar = new MatInkBar(this._items);
+    this._items.changes.pipe(startWith(null), takeUntil(this._destroyed)).subscribe(() => {
+      this.updateActiveLink();
+    });
+    super.ngAfterContentInit();
+  }
+  ngAfterViewInit() {
+    if (!this.tabPanel && (typeof ngDevMode === "undefined" || ngDevMode)) {
+      throw new Error("A mat-tab-nav-panel must be specified via [tabPanel].");
+    }
+    super.ngAfterViewInit();
+  }
+  /** Notifies the component that the active link has been changed. */
+  updateActiveLink() {
+    if (!this._items) {
+      return;
+    }
+    const items = this._items.toArray();
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].active) {
+        this.selectedIndex = i;
+        this._changeDetectorRef.markForCheck();
+        if (this.tabPanel) {
+          this.tabPanel._activeTabId = items[i].id;
+        }
+        return;
+      }
+    }
+    this.selectedIndex = -1;
+    this._inkBar.hide();
+  }
+  _getRole() {
+    return this.tabPanel ? "tablist" : this._elementRef.nativeElement.getAttribute("role");
+  }
+};
+_MatTabNav.\u0275fac = function MatTabNav_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatTabNav)(\u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(Directionality, 8), \u0275\u0275directiveInject(NgZone), \u0275\u0275directiveInject(ChangeDetectorRef), \u0275\u0275directiveInject(ViewportRuler), \u0275\u0275directiveInject(Platform), \u0275\u0275directiveInject(ANIMATION_MODULE_TYPE, 8), \u0275\u0275directiveInject(MAT_TABS_CONFIG, 8));
+};
+_MatTabNav.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
+  type: _MatTabNav,
+  selectors: [["", "mat-tab-nav-bar", ""]],
+  contentQueries: function MatTabNav_ContentQueries(rf, ctx, dirIndex) {
+    if (rf & 1) {
+      \u0275\u0275contentQuery(dirIndex, MatTabLink, 5);
+    }
+    if (rf & 2) {
+      let _t;
+      \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx._items = _t);
+    }
+  },
+  viewQuery: function MatTabNav_Query(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275viewQuery(_c18, 7);
+      \u0275\u0275viewQuery(_c25, 7);
+      \u0275\u0275viewQuery(_c35, 7);
+      \u0275\u0275viewQuery(_c45, 5);
+      \u0275\u0275viewQuery(_c54, 5);
+    }
+    if (rf & 2) {
+      let _t;
+      \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx._tabListContainer = _t.first);
+      \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx._tabList = _t.first);
+      \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx._tabListInner = _t.first);
+      \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx._nextPaginator = _t.first);
+      \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx._previousPaginator = _t.first);
+    }
+  },
+  hostAttrs: [1, "mat-mdc-tab-nav-bar", "mat-mdc-tab-header"],
+  hostVars: 17,
+  hostBindings: function MatTabNav_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      \u0275\u0275attribute("role", ctx._getRole());
+      \u0275\u0275styleProp("--mat-tab-animation-duration", ctx.animationDuration);
+      \u0275\u0275classProp("mat-mdc-tab-header-pagination-controls-enabled", ctx._showPaginationControls)("mat-mdc-tab-header-rtl", ctx._getLayoutDirection() == "rtl")("mat-mdc-tab-nav-bar-stretch-tabs", ctx.stretchTabs)("mat-primary", ctx.color !== "warn" && ctx.color !== "accent")("mat-accent", ctx.color === "accent")("mat-warn", ctx.color === "warn")("_mat-animation-noopable", ctx._animationMode === "NoopAnimations");
+    }
+  },
+  inputs: {
+    fitInkBarToContent: [2, "fitInkBarToContent", "fitInkBarToContent", booleanAttribute],
+    stretchTabs: [2, "mat-stretch-tabs", "stretchTabs", booleanAttribute],
+    animationDuration: "animationDuration",
+    backgroundColor: "backgroundColor",
+    disableRipple: [2, "disableRipple", "disableRipple", booleanAttribute],
+    color: "color",
+    tabPanel: "tabPanel"
+  },
+  exportAs: ["matTabNavBar", "matTabNav"],
+  standalone: true,
+  features: [\u0275\u0275InputTransformsFeature, \u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
+  attrs: _c102,
+  ngContentSelectors: _c010,
+  decls: 13,
+  vars: 8,
+  consts: [["previousPaginator", ""], ["tabListContainer", ""], ["tabList", ""], ["tabListInner", ""], ["nextPaginator", ""], ["aria-hidden", "true", "type", "button", "mat-ripple", "", "tabindex", "-1", 1, "mat-mdc-tab-header-pagination", "mat-mdc-tab-header-pagination-before", 3, "click", "mousedown", "touchend", "matRippleDisabled", "disabled"], [1, "mat-mdc-tab-header-pagination-chevron"], [1, "mat-mdc-tab-link-container", 3, "keydown"], [1, "mat-mdc-tab-list", 3, "cdkObserveContent"], [1, "mat-mdc-tab-links"], ["aria-hidden", "true", "type", "button", "mat-ripple", "", "tabindex", "-1", 1, "mat-mdc-tab-header-pagination", "mat-mdc-tab-header-pagination-after", 3, "mousedown", "click", "touchend", "matRippleDisabled", "disabled"]],
+  template: function MatTabNav_Template(rf, ctx) {
+    if (rf & 1) {
+      const _r1 = \u0275\u0275getCurrentView();
+      \u0275\u0275projectionDef();
+      \u0275\u0275elementStart(0, "button", 5, 0);
+      \u0275\u0275listener("click", function MatTabNav_Template_button_click_0_listener() {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx._handlePaginatorClick("before"));
+      })("mousedown", function MatTabNav_Template_button_mousedown_0_listener($event) {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx._handlePaginatorPress("before", $event));
+      })("touchend", function MatTabNav_Template_button_touchend_0_listener() {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx._stopInterval());
+      });
+      \u0275\u0275element(2, "div", 6);
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(3, "div", 7, 1);
+      \u0275\u0275listener("keydown", function MatTabNav_Template_div_keydown_3_listener($event) {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx._handleKeydown($event));
+      });
+      \u0275\u0275elementStart(5, "div", 8, 2);
+      \u0275\u0275listener("cdkObserveContent", function MatTabNav_Template_div_cdkObserveContent_5_listener() {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx._onContentChanges());
+      });
+      \u0275\u0275elementStart(7, "div", 9, 3);
+      \u0275\u0275projection(9);
+      \u0275\u0275elementEnd()()();
+      \u0275\u0275elementStart(10, "button", 10, 4);
+      \u0275\u0275listener("mousedown", function MatTabNav_Template_button_mousedown_10_listener($event) {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx._handlePaginatorPress("after", $event));
+      })("click", function MatTabNav_Template_button_click_10_listener() {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx._handlePaginatorClick("after"));
+      })("touchend", function MatTabNav_Template_button_touchend_10_listener() {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx._stopInterval());
+      });
+      \u0275\u0275element(12, "div", 6);
+      \u0275\u0275elementEnd();
+    }
+    if (rf & 2) {
+      \u0275\u0275classProp("mat-mdc-tab-header-pagination-disabled", ctx._disableScrollBefore);
+      \u0275\u0275property("matRippleDisabled", ctx._disableScrollBefore || ctx.disableRipple)("disabled", ctx._disableScrollBefore || null);
+      \u0275\u0275advance(10);
+      \u0275\u0275classProp("mat-mdc-tab-header-pagination-disabled", ctx._disableScrollAfter);
+      \u0275\u0275property("matRippleDisabled", ctx._disableScrollAfter || ctx.disableRipple)("disabled", ctx._disableScrollAfter || null);
+    }
+  },
+  dependencies: [MatRipple, CdkObserveContent],
+  styles: [".mdc-tab{min-width:90px;padding:0 24px;display:flex;flex:1 0 auto;justify-content:center;box-sizing:border-box;border:none;outline:none;text-align:center;white-space:nowrap;cursor:pointer;z-index:1}.mdc-tab__content{display:flex;align-items:center;justify-content:center;height:inherit;pointer-events:none}.mdc-tab__text-label{transition:150ms color linear;display:inline-block;line-height:1;z-index:2}.mdc-tab--active .mdc-tab__text-label{transition-delay:100ms}._mat-animation-noopable .mdc-tab__text-label{transition:none}.mdc-tab-indicator{display:flex;position:absolute;top:0;left:0;justify-content:center;width:100%;height:100%;pointer-events:none;z-index:1}.mdc-tab-indicator__content{transition:var(--mat-tab-animation-duration, 250ms) transform cubic-bezier(0.4, 0, 0.2, 1);transform-origin:left;opacity:0}.mdc-tab-indicator__content--underline{align-self:flex-end;box-sizing:border-box;width:100%;border-top-style:solid}.mdc-tab-indicator--active .mdc-tab-indicator__content{opacity:1}._mat-animation-noopable .mdc-tab-indicator__content,.mdc-tab-indicator--no-transition .mdc-tab-indicator__content{transition:none}.mat-mdc-tab-ripple{position:absolute;top:0;left:0;bottom:0;right:0;pointer-events:none}.mat-mdc-tab-header{display:flex;overflow:hidden;position:relative;flex-shrink:0}.mdc-tab-indicator .mdc-tab-indicator__content{transition-duration:var(--mat-tab-animation-duration, 250ms)}.mat-mdc-tab-header-pagination{-webkit-user-select:none;user-select:none;position:relative;display:none;justify-content:center;align-items:center;min-width:32px;cursor:pointer;z-index:2;-webkit-tap-highlight-color:rgba(0,0,0,0);touch-action:none;box-sizing:content-box;background:none;border:none;outline:0;padding:0}.mat-mdc-tab-header-pagination::-moz-focus-inner{border:0}.mat-mdc-tab-header-pagination .mat-ripple-element{opacity:.12;background-color:var(--mat-tab-header-inactive-ripple-color)}.mat-mdc-tab-header-pagination-controls-enabled .mat-mdc-tab-header-pagination{display:flex}.mat-mdc-tab-header-pagination-before,.mat-mdc-tab-header-rtl .mat-mdc-tab-header-pagination-after{padding-left:4px}.mat-mdc-tab-header-pagination-before .mat-mdc-tab-header-pagination-chevron,.mat-mdc-tab-header-rtl .mat-mdc-tab-header-pagination-after .mat-mdc-tab-header-pagination-chevron{transform:rotate(-135deg)}.mat-mdc-tab-header-rtl .mat-mdc-tab-header-pagination-before,.mat-mdc-tab-header-pagination-after{padding-right:4px}.mat-mdc-tab-header-rtl .mat-mdc-tab-header-pagination-before .mat-mdc-tab-header-pagination-chevron,.mat-mdc-tab-header-pagination-after .mat-mdc-tab-header-pagination-chevron{transform:rotate(45deg)}.mat-mdc-tab-header-pagination-chevron{border-style:solid;border-width:2px 2px 0 0;height:8px;width:8px;border-color:var(--mat-tab-header-pagination-icon-color)}.mat-mdc-tab-header-pagination-disabled{box-shadow:none;cursor:default;pointer-events:none}.mat-mdc-tab-header-pagination-disabled .mat-mdc-tab-header-pagination-chevron{opacity:.4}.mat-mdc-tab-list{flex-grow:1;position:relative;transition:transform 500ms cubic-bezier(0.35, 0, 0.25, 1)}._mat-animation-noopable .mat-mdc-tab-list{transition:none}.mat-mdc-tab-links{display:flex;flex:1 0 auto}[mat-align-tabs=center]>.mat-mdc-tab-link-container .mat-mdc-tab-links{justify-content:center}[mat-align-tabs=end]>.mat-mdc-tab-link-container .mat-mdc-tab-links{justify-content:flex-end}.cdk-drop-list .mat-mdc-tab-links,.mat-mdc-tab-links.cdk-drop-list{min-height:var(--mdc-secondary-navigation-tab-container-height)}.mat-mdc-tab-link-container{display:flex;flex-grow:1;overflow:hidden;z-index:1;border-bottom-style:solid;border-bottom-width:var(--mat-tab-header-divider-height);border-bottom-color:var(--mat-tab-header-divider-color)}.mat-mdc-tab-nav-bar.mat-tabs-with-background>.mat-mdc-tab-link-container,.mat-mdc-tab-nav-bar.mat-tabs-with-background>.mat-mdc-tab-header-pagination{background-color:var(--mat-tab-header-with-background-background-color)}.mat-mdc-tab-nav-bar.mat-tabs-with-background.mat-primary>.mat-mdc-tab-link-container .mat-mdc-tab-link .mdc-tab__text-label{color:var(--mat-tab-header-with-background-foreground-color)}.mat-mdc-tab-nav-bar.mat-tabs-with-background.mat-primary>.mat-mdc-tab-link-container .mdc-tab-indicator__content--underline{border-color:var(--mat-tab-header-with-background-foreground-color)}.mat-mdc-tab-nav-bar.mat-tabs-with-background:not(.mat-primary)>.mat-mdc-tab-link-container .mat-mdc-tab-link:not(.mdc-tab--active) .mdc-tab__text-label{color:var(--mat-tab-header-with-background-foreground-color)}.mat-mdc-tab-nav-bar.mat-tabs-with-background:not(.mat-primary)>.mat-mdc-tab-link-container .mat-mdc-tab-link:not(.mdc-tab--active) .mdc-tab-indicator__content--underline{border-color:var(--mat-tab-header-with-background-foreground-color)}.mat-mdc-tab-nav-bar.mat-tabs-with-background>.mat-mdc-tab-link-container .mat-mdc-tab-header-pagination-chevron,.mat-mdc-tab-nav-bar.mat-tabs-with-background>.mat-mdc-tab-link-container .mat-mdc-focus-indicator::before,.mat-mdc-tab-nav-bar.mat-tabs-with-background>.mat-mdc-tab-header-pagination .mat-mdc-tab-header-pagination-chevron,.mat-mdc-tab-nav-bar.mat-tabs-with-background>.mat-mdc-tab-header-pagination .mat-mdc-focus-indicator::before{border-color:var(--mat-tab-header-with-background-foreground-color)}.mat-mdc-tab-nav-bar.mat-tabs-with-background>.mat-mdc-tab-link-container .mat-ripple-element,.mat-mdc-tab-nav-bar.mat-tabs-with-background>.mat-mdc-tab-link-container .mdc-tab__ripple::before,.mat-mdc-tab-nav-bar.mat-tabs-with-background>.mat-mdc-tab-header-pagination .mat-ripple-element,.mat-mdc-tab-nav-bar.mat-tabs-with-background>.mat-mdc-tab-header-pagination .mdc-tab__ripple::before{background-color:var(--mat-tab-header-with-background-foreground-color)}.mat-mdc-tab-nav-bar.mat-tabs-with-background>.mat-mdc-tab-link-container .mat-mdc-tab-header-pagination-chevron,.mat-mdc-tab-nav-bar.mat-tabs-with-background>.mat-mdc-tab-header-pagination .mat-mdc-tab-header-pagination-chevron{color:var(--mat-tab-header-with-background-foreground-color)}"],
+  encapsulation: 2
+});
+var MatTabNav = _MatTabNav;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatTabNav, [{
+    type: Component,
+    args: [{
+      selector: "[mat-tab-nav-bar]",
+      exportAs: "matTabNavBar, matTabNav",
+      host: {
+        "[attr.role]": "_getRole()",
+        "class": "mat-mdc-tab-nav-bar mat-mdc-tab-header",
+        "[class.mat-mdc-tab-header-pagination-controls-enabled]": "_showPaginationControls",
+        "[class.mat-mdc-tab-header-rtl]": "_getLayoutDirection() == 'rtl'",
+        "[class.mat-mdc-tab-nav-bar-stretch-tabs]": "stretchTabs",
+        "[class.mat-primary]": 'color !== "warn" && color !== "accent"',
+        "[class.mat-accent]": 'color === "accent"',
+        "[class.mat-warn]": 'color === "warn"',
+        "[class._mat-animation-noopable]": '_animationMode === "NoopAnimations"',
+        "[style.--mat-tab-animation-duration]": "animationDuration"
+      },
+      encapsulation: ViewEncapsulation$1.None,
+      changeDetection: ChangeDetectionStrategy.Default,
+      standalone: true,
+      imports: [MatRipple, CdkObserveContent],
+      template: `<button class="mat-mdc-tab-header-pagination mat-mdc-tab-header-pagination-before"
+     #previousPaginator
+     aria-hidden="true"
+     type="button"
+     mat-ripple
+     tabindex="-1"
+     [matRippleDisabled]="_disableScrollBefore || disableRipple"
+     [class.mat-mdc-tab-header-pagination-disabled]="_disableScrollBefore"
+     [disabled]="_disableScrollBefore || null"
+     (click)="_handlePaginatorClick('before')"
+     (mousedown)="_handlePaginatorPress('before', $event)"
+     (touchend)="_stopInterval()">
+  <div class="mat-mdc-tab-header-pagination-chevron"></div>
+</button>
+
+<div class="mat-mdc-tab-link-container" #tabListContainer (keydown)="_handleKeydown($event)">
+  <div class="mat-mdc-tab-list" #tabList (cdkObserveContent)="_onContentChanges()">
+    <div class="mat-mdc-tab-links" #tabListInner>
+      <ng-content></ng-content>
+    </div>
+  </div>
+</div>
+
+<button class="mat-mdc-tab-header-pagination mat-mdc-tab-header-pagination-after"
+     #nextPaginator
+     aria-hidden="true"
+     type="button"
+     mat-ripple
+     [matRippleDisabled]="_disableScrollAfter || disableRipple"
+     [class.mat-mdc-tab-header-pagination-disabled]="_disableScrollAfter"
+     [disabled]="_disableScrollAfter || null"
+     tabindex="-1"
+     (mousedown)="_handlePaginatorPress('after', $event)"
+     (click)="_handlePaginatorClick('after')"
+     (touchend)="_stopInterval()">
+  <div class="mat-mdc-tab-header-pagination-chevron"></div>
+</button>
+`,
+      styles: [".mdc-tab{min-width:90px;padding:0 24px;display:flex;flex:1 0 auto;justify-content:center;box-sizing:border-box;border:none;outline:none;text-align:center;white-space:nowrap;cursor:pointer;z-index:1}.mdc-tab__content{display:flex;align-items:center;justify-content:center;height:inherit;pointer-events:none}.mdc-tab__text-label{transition:150ms color linear;display:inline-block;line-height:1;z-index:2}.mdc-tab--active .mdc-tab__text-label{transition-delay:100ms}._mat-animation-noopable .mdc-tab__text-label{transition:none}.mdc-tab-indicator{display:flex;position:absolute;top:0;left:0;justify-content:center;width:100%;height:100%;pointer-events:none;z-index:1}.mdc-tab-indicator__content{transition:var(--mat-tab-animation-duration, 250ms) transform cubic-bezier(0.4, 0, 0.2, 1);transform-origin:left;opacity:0}.mdc-tab-indicator__content--underline{align-self:flex-end;box-sizing:border-box;width:100%;border-top-style:solid}.mdc-tab-indicator--active .mdc-tab-indicator__content{opacity:1}._mat-animation-noopable .mdc-tab-indicator__content,.mdc-tab-indicator--no-transition .mdc-tab-indicator__content{transition:none}.mat-mdc-tab-ripple{position:absolute;top:0;left:0;bottom:0;right:0;pointer-events:none}.mat-mdc-tab-header{display:flex;overflow:hidden;position:relative;flex-shrink:0}.mdc-tab-indicator .mdc-tab-indicator__content{transition-duration:var(--mat-tab-animation-duration, 250ms)}.mat-mdc-tab-header-pagination{-webkit-user-select:none;user-select:none;position:relative;display:none;justify-content:center;align-items:center;min-width:32px;cursor:pointer;z-index:2;-webkit-tap-highlight-color:rgba(0,0,0,0);touch-action:none;box-sizing:content-box;background:none;border:none;outline:0;padding:0}.mat-mdc-tab-header-pagination::-moz-focus-inner{border:0}.mat-mdc-tab-header-pagination .mat-ripple-element{opacity:.12;background-color:var(--mat-tab-header-inactive-ripple-color)}.mat-mdc-tab-header-pagination-controls-enabled .mat-mdc-tab-header-pagination{display:flex}.mat-mdc-tab-header-pagination-before,.mat-mdc-tab-header-rtl .mat-mdc-tab-header-pagination-after{padding-left:4px}.mat-mdc-tab-header-pagination-before .mat-mdc-tab-header-pagination-chevron,.mat-mdc-tab-header-rtl .mat-mdc-tab-header-pagination-after .mat-mdc-tab-header-pagination-chevron{transform:rotate(-135deg)}.mat-mdc-tab-header-rtl .mat-mdc-tab-header-pagination-before,.mat-mdc-tab-header-pagination-after{padding-right:4px}.mat-mdc-tab-header-rtl .mat-mdc-tab-header-pagination-before .mat-mdc-tab-header-pagination-chevron,.mat-mdc-tab-header-pagination-after .mat-mdc-tab-header-pagination-chevron{transform:rotate(45deg)}.mat-mdc-tab-header-pagination-chevron{border-style:solid;border-width:2px 2px 0 0;height:8px;width:8px;border-color:var(--mat-tab-header-pagination-icon-color)}.mat-mdc-tab-header-pagination-disabled{box-shadow:none;cursor:default;pointer-events:none}.mat-mdc-tab-header-pagination-disabled .mat-mdc-tab-header-pagination-chevron{opacity:.4}.mat-mdc-tab-list{flex-grow:1;position:relative;transition:transform 500ms cubic-bezier(0.35, 0, 0.25, 1)}._mat-animation-noopable .mat-mdc-tab-list{transition:none}.mat-mdc-tab-links{display:flex;flex:1 0 auto}[mat-align-tabs=center]>.mat-mdc-tab-link-container .mat-mdc-tab-links{justify-content:center}[mat-align-tabs=end]>.mat-mdc-tab-link-container .mat-mdc-tab-links{justify-content:flex-end}.cdk-drop-list .mat-mdc-tab-links,.mat-mdc-tab-links.cdk-drop-list{min-height:var(--mdc-secondary-navigation-tab-container-height)}.mat-mdc-tab-link-container{display:flex;flex-grow:1;overflow:hidden;z-index:1;border-bottom-style:solid;border-bottom-width:var(--mat-tab-header-divider-height);border-bottom-color:var(--mat-tab-header-divider-color)}.mat-mdc-tab-nav-bar.mat-tabs-with-background>.mat-mdc-tab-link-container,.mat-mdc-tab-nav-bar.mat-tabs-with-background>.mat-mdc-tab-header-pagination{background-color:var(--mat-tab-header-with-background-background-color)}.mat-mdc-tab-nav-bar.mat-tabs-with-background.mat-primary>.mat-mdc-tab-link-container .mat-mdc-tab-link .mdc-tab__text-label{color:var(--mat-tab-header-with-background-foreground-color)}.mat-mdc-tab-nav-bar.mat-tabs-with-background.mat-primary>.mat-mdc-tab-link-container .mdc-tab-indicator__content--underline{border-color:var(--mat-tab-header-with-background-foreground-color)}.mat-mdc-tab-nav-bar.mat-tabs-with-background:not(.mat-primary)>.mat-mdc-tab-link-container .mat-mdc-tab-link:not(.mdc-tab--active) .mdc-tab__text-label{color:var(--mat-tab-header-with-background-foreground-color)}.mat-mdc-tab-nav-bar.mat-tabs-with-background:not(.mat-primary)>.mat-mdc-tab-link-container .mat-mdc-tab-link:not(.mdc-tab--active) .mdc-tab-indicator__content--underline{border-color:var(--mat-tab-header-with-background-foreground-color)}.mat-mdc-tab-nav-bar.mat-tabs-with-background>.mat-mdc-tab-link-container .mat-mdc-tab-header-pagination-chevron,.mat-mdc-tab-nav-bar.mat-tabs-with-background>.mat-mdc-tab-link-container .mat-mdc-focus-indicator::before,.mat-mdc-tab-nav-bar.mat-tabs-with-background>.mat-mdc-tab-header-pagination .mat-mdc-tab-header-pagination-chevron,.mat-mdc-tab-nav-bar.mat-tabs-with-background>.mat-mdc-tab-header-pagination .mat-mdc-focus-indicator::before{border-color:var(--mat-tab-header-with-background-foreground-color)}.mat-mdc-tab-nav-bar.mat-tabs-with-background>.mat-mdc-tab-link-container .mat-ripple-element,.mat-mdc-tab-nav-bar.mat-tabs-with-background>.mat-mdc-tab-link-container .mdc-tab__ripple::before,.mat-mdc-tab-nav-bar.mat-tabs-with-background>.mat-mdc-tab-header-pagination .mat-ripple-element,.mat-mdc-tab-nav-bar.mat-tabs-with-background>.mat-mdc-tab-header-pagination .mdc-tab__ripple::before{background-color:var(--mat-tab-header-with-background-foreground-color)}.mat-mdc-tab-nav-bar.mat-tabs-with-background>.mat-mdc-tab-link-container .mat-mdc-tab-header-pagination-chevron,.mat-mdc-tab-nav-bar.mat-tabs-with-background>.mat-mdc-tab-header-pagination .mat-mdc-tab-header-pagination-chevron{color:var(--mat-tab-header-with-background-foreground-color)}"]
+    }]
+  }], () => [{
+    type: ElementRef
+  }, {
+    type: Directionality,
+    decorators: [{
+      type: Optional
+    }]
+  }, {
+    type: NgZone
+  }, {
+    type: ChangeDetectorRef
+  }, {
+    type: ViewportRuler
+  }, {
+    type: Platform
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [ANIMATION_MODULE_TYPE]
+    }]
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [MAT_TABS_CONFIG]
+    }]
+  }], {
+    fitInkBarToContent: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }],
+    stretchTabs: [{
+      type: Input,
+      args: [{
+        alias: "mat-stretch-tabs",
+        transform: booleanAttribute
+      }]
+    }],
+    animationDuration: [{
+      type: Input
+    }],
+    _items: [{
+      type: ContentChildren,
+      args: [forwardRef(() => MatTabLink), {
+        descendants: true
+      }]
+    }],
+    backgroundColor: [{
+      type: Input
+    }],
+    disableRipple: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }],
+    color: [{
+      type: Input
+    }],
+    tabPanel: [{
+      type: Input
+    }],
+    _tabListContainer: [{
+      type: ViewChild,
+      args: ["tabListContainer", {
+        static: true
+      }]
+    }],
+    _tabList: [{
+      type: ViewChild,
+      args: ["tabList", {
+        static: true
+      }]
+    }],
+    _tabListInner: [{
+      type: ViewChild,
+      args: ["tabListInner", {
+        static: true
+      }]
+    }],
+    _nextPaginator: [{
+      type: ViewChild,
+      args: ["nextPaginator"]
+    }],
+    _previousPaginator: [{
+      type: ViewChild,
+      args: ["previousPaginator"]
+    }]
+  });
+})();
+var _MatTabLink = class _MatTabLink extends InkBarItem {
+  /** Whether the link is active. */
+  get active() {
+    return this._isActive;
+  }
+  set active(value) {
+    if (value !== this._isActive) {
+      this._isActive = value;
+      this._tabNavBar.updateActiveLink();
+    }
+  }
+  /**
+   * Whether ripples are disabled on interaction.
+   * @docs-private
+   */
+  get rippleDisabled() {
+    return this.disabled || this.disableRipple || this._tabNavBar.disableRipple || !!this.rippleConfig.disabled;
+  }
+  constructor(_tabNavBar, elementRef, globalRippleOptions, tabIndex, _focusMonitor, animationMode) {
+    super();
+    this._tabNavBar = _tabNavBar;
+    this.elementRef = elementRef;
+    this._focusMonitor = _focusMonitor;
+    this._destroyed = new Subject();
+    this._isActive = false;
+    this.disabled = false;
+    this.disableRipple = false;
+    this.tabIndex = 0;
+    this.id = `mat-tab-link-${nextUniqueId4++}`;
+    this.rippleConfig = globalRippleOptions || {};
+    this.tabIndex = parseInt(tabIndex) || 0;
+    if (animationMode === "NoopAnimations") {
+      this.rippleConfig.animation = {
+        enterDuration: 0,
+        exitDuration: 0
+      };
+    }
+    _tabNavBar._fitInkBarToContent.pipe(takeUntil(this._destroyed)).subscribe((fitInkBarToContent) => {
+      this.fitInkBarToContent = fitInkBarToContent;
+    });
+  }
+  /** Focuses the tab link. */
+  focus() {
+    this.elementRef.nativeElement.focus();
+  }
+  ngAfterViewInit() {
+    this._focusMonitor.monitor(this.elementRef);
+  }
+  ngOnDestroy() {
+    this._destroyed.next();
+    this._destroyed.complete();
+    super.ngOnDestroy();
+    this._focusMonitor.stopMonitoring(this.elementRef);
+  }
+  _handleFocus() {
+    this._tabNavBar.focusIndex = this._tabNavBar._items.toArray().indexOf(this);
+  }
+  _handleKeydown(event) {
+    if (event.keyCode === SPACE || event.keyCode === ENTER) {
+      if (this.disabled) {
+        event.preventDefault();
+      } else if (this._tabNavBar.tabPanel) {
+        if (event.keyCode === SPACE) {
+          event.preventDefault();
+        }
+        this.elementRef.nativeElement.click();
+      }
+    }
+  }
+  _getAriaControls() {
+    return this._tabNavBar.tabPanel ? this._tabNavBar.tabPanel?.id : this.elementRef.nativeElement.getAttribute("aria-controls");
+  }
+  _getAriaSelected() {
+    if (this._tabNavBar.tabPanel) {
+      return this.active ? "true" : "false";
+    } else {
+      return this.elementRef.nativeElement.getAttribute("aria-selected");
+    }
+  }
+  _getAriaCurrent() {
+    return this.active && !this._tabNavBar.tabPanel ? "page" : null;
+  }
+  _getRole() {
+    return this._tabNavBar.tabPanel ? "tab" : this.elementRef.nativeElement.getAttribute("role");
+  }
+  _getTabIndex() {
+    if (this._tabNavBar.tabPanel) {
+      return this._isActive && !this.disabled ? 0 : -1;
+    } else {
+      return this.disabled ? -1 : this.tabIndex;
+    }
+  }
+};
+_MatTabLink.\u0275fac = function MatTabLink_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatTabLink)(\u0275\u0275directiveInject(MatTabNav), \u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(MAT_RIPPLE_GLOBAL_OPTIONS, 8), \u0275\u0275injectAttribute("tabindex"), \u0275\u0275directiveInject(FocusMonitor), \u0275\u0275directiveInject(ANIMATION_MODULE_TYPE, 8));
+};
+_MatTabLink.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
+  type: _MatTabLink,
+  selectors: [["", "mat-tab-link", ""], ["", "matTabLink", ""]],
+  hostAttrs: [1, "mdc-tab", "mat-mdc-tab-link", "mat-mdc-focus-indicator"],
+  hostVars: 11,
+  hostBindings: function MatTabLink_HostBindings(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275listener("focus", function MatTabLink_focus_HostBindingHandler() {
+        return ctx._handleFocus();
+      })("keydown", function MatTabLink_keydown_HostBindingHandler($event) {
+        return ctx._handleKeydown($event);
+      });
+    }
+    if (rf & 2) {
+      \u0275\u0275attribute("aria-controls", ctx._getAriaControls())("aria-current", ctx._getAriaCurrent())("aria-disabled", ctx.disabled)("aria-selected", ctx._getAriaSelected())("id", ctx.id)("tabIndex", ctx._getTabIndex())("role", ctx._getRole());
+      \u0275\u0275classProp("mat-mdc-tab-disabled", ctx.disabled)("mdc-tab--active", ctx.active);
+    }
+  },
+  inputs: {
+    active: [2, "active", "active", booleanAttribute],
+    disabled: [2, "disabled", "disabled", booleanAttribute],
+    disableRipple: [2, "disableRipple", "disableRipple", booleanAttribute],
+    tabIndex: [2, "tabIndex", "tabIndex", (value) => value == null ? 0 : numberAttribute(value)],
+    id: "id"
+  },
+  exportAs: ["matTabLink"],
+  standalone: true,
+  features: [\u0275\u0275InputTransformsFeature, \u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
+  attrs: _c11,
+  ngContentSelectors: _c010,
+  decls: 5,
+  vars: 2,
+  consts: [[1, "mdc-tab__ripple"], ["mat-ripple", "", 1, "mat-mdc-tab-ripple", 3, "matRippleTrigger", "matRippleDisabled"], [1, "mdc-tab__content"], [1, "mdc-tab__text-label"]],
+  template: function MatTabLink_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275projectionDef();
+      \u0275\u0275element(0, "span", 0)(1, "div", 1);
+      \u0275\u0275elementStart(2, "span", 2)(3, "span", 3);
+      \u0275\u0275projection(4);
+      \u0275\u0275elementEnd()();
+    }
+    if (rf & 2) {
+      \u0275\u0275advance();
+      \u0275\u0275property("matRippleTrigger", ctx.elementRef.nativeElement)("matRippleDisabled", ctx.rippleDisabled);
+    }
+  },
+  dependencies: [MatRipple],
+  styles: ['.mat-mdc-tab-link{-webkit-tap-highlight-color:rgba(0,0,0,0);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-decoration:none;background:none;height:var(--mdc-secondary-navigation-tab-container-height);font-family:var(--mat-tab-header-label-text-font);font-size:var(--mat-tab-header-label-text-size);letter-spacing:var(--mat-tab-header-label-text-tracking);line-height:var(--mat-tab-header-label-text-line-height);font-weight:var(--mat-tab-header-label-text-weight)}.mat-mdc-tab-link.mdc-tab{flex-grow:0}.mat-mdc-tab-link .mdc-tab-indicator__content--underline{border-color:var(--mdc-tab-indicator-active-indicator-color);border-top-width:var(--mdc-tab-indicator-active-indicator-height);border-radius:var(--mdc-tab-indicator-active-indicator-shape)}.mat-mdc-tab-link:hover .mdc-tab__text-label{color:var(--mat-tab-header-inactive-hover-label-text-color)}.mat-mdc-tab-link:focus .mdc-tab__text-label{color:var(--mat-tab-header-inactive-focus-label-text-color)}.mat-mdc-tab-link.mdc-tab--active .mdc-tab__text-label{color:var(--mat-tab-header-active-label-text-color)}.mat-mdc-tab-link.mdc-tab--active .mdc-tab__ripple::before,.mat-mdc-tab-link.mdc-tab--active .mat-ripple-element{background-color:var(--mat-tab-header-active-ripple-color)}.mat-mdc-tab-link.mdc-tab--active:hover .mdc-tab__text-label{color:var(--mat-tab-header-active-hover-label-text-color)}.mat-mdc-tab-link.mdc-tab--active:hover .mdc-tab-indicator__content--underline{border-color:var(--mat-tab-header-active-hover-indicator-color)}.mat-mdc-tab-link.mdc-tab--active:focus .mdc-tab__text-label{color:var(--mat-tab-header-active-focus-label-text-color)}.mat-mdc-tab-link.mdc-tab--active:focus .mdc-tab-indicator__content--underline{border-color:var(--mat-tab-header-active-focus-indicator-color)}.mat-mdc-tab-link.mat-mdc-tab-disabled{opacity:.4;pointer-events:none}.mat-mdc-tab-link.mat-mdc-tab-disabled .mdc-tab__content{pointer-events:none}.mat-mdc-tab-link.mat-mdc-tab-disabled .mdc-tab__ripple::before,.mat-mdc-tab-link.mat-mdc-tab-disabled .mat-ripple-element{background-color:var(--mat-tab-header-disabled-ripple-color)}.mat-mdc-tab-link .mdc-tab__ripple::before{content:"";display:block;position:absolute;top:0;left:0;right:0;bottom:0;opacity:0;pointer-events:none;background-color:var(--mat-tab-header-inactive-ripple-color)}.mat-mdc-tab-link .mdc-tab__text-label{color:var(--mat-tab-header-inactive-label-text-color);display:inline-flex;align-items:center}.mat-mdc-tab-link .mdc-tab__content{position:relative;pointer-events:auto}.mat-mdc-tab-link:hover .mdc-tab__ripple::before{opacity:.04}.mat-mdc-tab-link.cdk-program-focused .mdc-tab__ripple::before,.mat-mdc-tab-link.cdk-keyboard-focused .mdc-tab__ripple::before{opacity:.12}.mat-mdc-tab-link .mat-ripple-element{opacity:.12;background-color:var(--mat-tab-header-inactive-ripple-color)}.mat-mdc-tab-header.mat-mdc-tab-nav-bar-stretch-tabs .mat-mdc-tab-link{flex-grow:1}.mat-mdc-tab-link::before{margin:5px}@media(max-width: 599px){.mat-mdc-tab-link{min-width:72px}}'],
+  encapsulation: 2,
+  changeDetection: 0
+});
+var MatTabLink = _MatTabLink;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatTabLink, [{
+    type: Component,
+    args: [{
+      selector: "[mat-tab-link], [matTabLink]",
+      exportAs: "matTabLink",
+      changeDetection: ChangeDetectionStrategy.OnPush,
+      encapsulation: ViewEncapsulation$1.None,
+      host: {
+        "class": "mdc-tab mat-mdc-tab-link mat-mdc-focus-indicator",
+        "[attr.aria-controls]": "_getAriaControls()",
+        "[attr.aria-current]": "_getAriaCurrent()",
+        "[attr.aria-disabled]": "disabled",
+        "[attr.aria-selected]": "_getAriaSelected()",
+        "[attr.id]": "id",
+        "[attr.tabIndex]": "_getTabIndex()",
+        "[attr.role]": "_getRole()",
+        "[class.mat-mdc-tab-disabled]": "disabled",
+        "[class.mdc-tab--active]": "active",
+        "(focus)": "_handleFocus()",
+        "(keydown)": "_handleKeydown($event)"
+      },
+      standalone: true,
+      imports: [MatRipple],
+      template: '<span class="mdc-tab__ripple"></span>\n\n<div\n  class="mat-mdc-tab-ripple"\n  mat-ripple\n  [matRippleTrigger]="elementRef.nativeElement"\n  [matRippleDisabled]="rippleDisabled"></div>\n\n<span class="mdc-tab__content">\n  <span class="mdc-tab__text-label">\n    <ng-content></ng-content>\n  </span>\n</span>\n\n',
+      styles: ['.mat-mdc-tab-link{-webkit-tap-highlight-color:rgba(0,0,0,0);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-decoration:none;background:none;height:var(--mdc-secondary-navigation-tab-container-height);font-family:var(--mat-tab-header-label-text-font);font-size:var(--mat-tab-header-label-text-size);letter-spacing:var(--mat-tab-header-label-text-tracking);line-height:var(--mat-tab-header-label-text-line-height);font-weight:var(--mat-tab-header-label-text-weight)}.mat-mdc-tab-link.mdc-tab{flex-grow:0}.mat-mdc-tab-link .mdc-tab-indicator__content--underline{border-color:var(--mdc-tab-indicator-active-indicator-color);border-top-width:var(--mdc-tab-indicator-active-indicator-height);border-radius:var(--mdc-tab-indicator-active-indicator-shape)}.mat-mdc-tab-link:hover .mdc-tab__text-label{color:var(--mat-tab-header-inactive-hover-label-text-color)}.mat-mdc-tab-link:focus .mdc-tab__text-label{color:var(--mat-tab-header-inactive-focus-label-text-color)}.mat-mdc-tab-link.mdc-tab--active .mdc-tab__text-label{color:var(--mat-tab-header-active-label-text-color)}.mat-mdc-tab-link.mdc-tab--active .mdc-tab__ripple::before,.mat-mdc-tab-link.mdc-tab--active .mat-ripple-element{background-color:var(--mat-tab-header-active-ripple-color)}.mat-mdc-tab-link.mdc-tab--active:hover .mdc-tab__text-label{color:var(--mat-tab-header-active-hover-label-text-color)}.mat-mdc-tab-link.mdc-tab--active:hover .mdc-tab-indicator__content--underline{border-color:var(--mat-tab-header-active-hover-indicator-color)}.mat-mdc-tab-link.mdc-tab--active:focus .mdc-tab__text-label{color:var(--mat-tab-header-active-focus-label-text-color)}.mat-mdc-tab-link.mdc-tab--active:focus .mdc-tab-indicator__content--underline{border-color:var(--mat-tab-header-active-focus-indicator-color)}.mat-mdc-tab-link.mat-mdc-tab-disabled{opacity:.4;pointer-events:none}.mat-mdc-tab-link.mat-mdc-tab-disabled .mdc-tab__content{pointer-events:none}.mat-mdc-tab-link.mat-mdc-tab-disabled .mdc-tab__ripple::before,.mat-mdc-tab-link.mat-mdc-tab-disabled .mat-ripple-element{background-color:var(--mat-tab-header-disabled-ripple-color)}.mat-mdc-tab-link .mdc-tab__ripple::before{content:"";display:block;position:absolute;top:0;left:0;right:0;bottom:0;opacity:0;pointer-events:none;background-color:var(--mat-tab-header-inactive-ripple-color)}.mat-mdc-tab-link .mdc-tab__text-label{color:var(--mat-tab-header-inactive-label-text-color);display:inline-flex;align-items:center}.mat-mdc-tab-link .mdc-tab__content{position:relative;pointer-events:auto}.mat-mdc-tab-link:hover .mdc-tab__ripple::before{opacity:.04}.mat-mdc-tab-link.cdk-program-focused .mdc-tab__ripple::before,.mat-mdc-tab-link.cdk-keyboard-focused .mdc-tab__ripple::before{opacity:.12}.mat-mdc-tab-link .mat-ripple-element{opacity:.12;background-color:var(--mat-tab-header-inactive-ripple-color)}.mat-mdc-tab-header.mat-mdc-tab-nav-bar-stretch-tabs .mat-mdc-tab-link{flex-grow:1}.mat-mdc-tab-link::before{margin:5px}@media(max-width: 599px){.mat-mdc-tab-link{min-width:72px}}']
+    }]
+  }], () => [{
+    type: MatTabNav
+  }, {
+    type: ElementRef
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [MAT_RIPPLE_GLOBAL_OPTIONS]
+    }]
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Attribute,
+      args: ["tabindex"]
+    }]
+  }, {
+    type: FocusMonitor
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [ANIMATION_MODULE_TYPE]
+    }]
+  }], {
+    active: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }],
+    disabled: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }],
+    disableRipple: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }],
+    tabIndex: [{
+      type: Input,
+      args: [{
+        transform: (value) => value == null ? 0 : numberAttribute(value)
+      }]
+    }],
+    id: [{
+      type: Input
+    }]
+  });
+})();
+var _MatTabNavPanel = class _MatTabNavPanel {
+  constructor() {
+    this.id = `mat-tab-nav-panel-${nextUniqueId4++}`;
+  }
+};
+_MatTabNavPanel.\u0275fac = function MatTabNavPanel_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatTabNavPanel)();
+};
+_MatTabNavPanel.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
+  type: _MatTabNavPanel,
+  selectors: [["mat-tab-nav-panel"]],
+  hostAttrs: ["role", "tabpanel", 1, "mat-mdc-tab-nav-panel"],
+  hostVars: 2,
+  hostBindings: function MatTabNavPanel_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      \u0275\u0275attribute("aria-labelledby", ctx._activeTabId)("id", ctx.id);
+    }
+  },
+  inputs: {
+    id: "id"
+  },
+  exportAs: ["matTabNavPanel"],
+  standalone: true,
+  features: [\u0275\u0275StandaloneFeature],
+  ngContentSelectors: _c010,
+  decls: 1,
+  vars: 0,
+  template: function MatTabNavPanel_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275projectionDef();
+      \u0275\u0275projection(0);
+    }
+  },
+  encapsulation: 2,
+  changeDetection: 0
+});
+var MatTabNavPanel = _MatTabNavPanel;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatTabNavPanel, [{
+    type: Component,
+    args: [{
+      selector: "mat-tab-nav-panel",
+      exportAs: "matTabNavPanel",
+      template: "<ng-content></ng-content>",
+      host: {
+        "[attr.aria-labelledby]": "_activeTabId",
+        "[attr.id]": "id",
+        "class": "mat-mdc-tab-nav-panel",
+        "role": "tabpanel"
+      },
+      encapsulation: ViewEncapsulation$1.None,
+      changeDetection: ChangeDetectionStrategy.OnPush,
+      standalone: true
+    }]
+  }], null, {
+    id: [{
+      type: Input
+    }]
+  });
+})();
+var _MatTabsModule = class _MatTabsModule {
+};
+_MatTabsModule.\u0275fac = function MatTabsModule_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatTabsModule)();
+};
+_MatTabsModule.\u0275mod = /* @__PURE__ */ \u0275\u0275defineNgModule({
+  type: _MatTabsModule
+});
+_MatTabsModule.\u0275inj = /* @__PURE__ */ \u0275\u0275defineInjector({
+  imports: [MatCommonModule, MatCommonModule]
+});
+var MatTabsModule = _MatTabsModule;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatTabsModule, [{
+    type: NgModule,
+    args: [{
+      imports: [MatCommonModule, MatTabContent, MatTabLabel, MatTab, MatTabGroup, MatTabNav, MatTabNavPanel, MatTabLink],
+      exports: [MatCommonModule, MatTabContent, MatTabLabel, MatTab, MatTabGroup, MatTabNav, MatTabNavPanel, MatTabLink]
+    }]
+  }], null, null);
+})();
+
+// node_modules/@angular/material/fesm2022/badge.mjs
+var nextId3 = 0;
+var BADGE_CONTENT_CLASS = "mat-badge-content";
+var badgeApps = /* @__PURE__ */ new Set();
+var __MatBadgeStyleLoader = class __MatBadgeStyleLoader {
+};
+__MatBadgeStyleLoader.\u0275fac = function _MatBadgeStyleLoader_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || __MatBadgeStyleLoader)();
+};
+__MatBadgeStyleLoader.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
+  type: __MatBadgeStyleLoader,
+  selectors: [["ng-component"]],
+  standalone: true,
+  features: [\u0275\u0275StandaloneFeature],
+  decls: 0,
+  vars: 0,
+  template: function _MatBadgeStyleLoader_Template(rf, ctx) {
+  },
+  styles: [".mat-badge{position:relative}.mat-badge.mat-badge{overflow:visible}.mat-badge-content{position:absolute;text-align:center;display:inline-block;transition:transform 200ms ease-in-out;transform:scale(0.6);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;box-sizing:border-box;pointer-events:none;background-color:var(--mat-badge-background-color);color:var(--mat-badge-text-color);font-family:var(--mat-badge-text-font);font-weight:var(--mat-badge-text-weight);border-radius:var(--mat-badge-container-shape)}.cdk-high-contrast-active .mat-badge-content{outline:solid 1px;border-radius:0}.mat-badge-above .mat-badge-content{bottom:100%}.mat-badge-below .mat-badge-content{top:100%}.mat-badge-before .mat-badge-content{right:100%}[dir=rtl] .mat-badge-before .mat-badge-content{right:auto;left:100%}.mat-badge-after .mat-badge-content{left:100%}[dir=rtl] .mat-badge-after .mat-badge-content{left:auto;right:100%}.mat-badge-disabled .mat-badge-content{background-color:var(--mat-badge-disabled-state-background-color);color:var(--mat-badge-disabled-state-text-color)}.mat-badge-hidden .mat-badge-content{display:none}.ng-animate-disabled .mat-badge-content,.mat-badge-content._mat-animation-noopable{transition:none}.mat-badge-content.mat-badge-active{transform:none}.mat-badge-small .mat-badge-content{width:var(--mat-badge-legacy-small-size-container-size, unset);height:var(--mat-badge-legacy-small-size-container-size, unset);min-width:var(--mat-badge-small-size-container-size, unset);min-height:var(--mat-badge-small-size-container-size, unset);line-height:var(--mat-badge-legacy-small-size-container-size, var(--mat-badge-small-size-container-size));padding:var(--mat-badge-small-size-container-padding);font-size:var(--mat-badge-small-size-text-size);margin:var(--mat-badge-small-size-container-offset)}.mat-badge-small.mat-badge-overlap .mat-badge-content{margin:var(--mat-badge-small-size-container-overlap-offset)}.mat-badge-medium .mat-badge-content{width:var(--mat-badge-legacy-container-size, unset);height:var(--mat-badge-legacy-container-size, unset);min-width:var(--mat-badge-container-size, unset);min-height:var(--mat-badge-container-size, unset);line-height:var(--mat-badge-legacy-container-size, var(--mat-badge-container-size));padding:var(--mat-badge-container-padding);font-size:var(--mat-badge-text-size);margin:var(--mat-badge-container-offset)}.mat-badge-medium.mat-badge-overlap .mat-badge-content{margin:var(--mat-badge-container-overlap-offset)}.mat-badge-large .mat-badge-content{width:var(--mat-badge-legacy-large-size-container-size, unset);height:var(--mat-badge-legacy-large-size-container-size, unset);min-width:var(--mat-badge-large-size-container-size, unset);min-height:var(--mat-badge-large-size-container-size, unset);line-height:var(--mat-badge-legacy-large-size-container-size, var(--mat-badge-large-size-container-size));padding:var(--mat-badge-large-size-container-padding);font-size:var(--mat-badge-large-size-text-size);margin:var(--mat-badge-large-size-container-offset)}.mat-badge-large.mat-badge-overlap .mat-badge-content{margin:var(--mat-badge-large-size-container-overlap-offset)}"],
+  encapsulation: 2,
+  changeDetection: 0
+});
+var _MatBadgeStyleLoader = __MatBadgeStyleLoader;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(_MatBadgeStyleLoader, [{
+    type: Component,
+    args: [{
+      standalone: true,
+      encapsulation: ViewEncapsulation$1.None,
+      template: "",
+      changeDetection: ChangeDetectionStrategy.OnPush,
+      styles: [".mat-badge{position:relative}.mat-badge.mat-badge{overflow:visible}.mat-badge-content{position:absolute;text-align:center;display:inline-block;transition:transform 200ms ease-in-out;transform:scale(0.6);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;box-sizing:border-box;pointer-events:none;background-color:var(--mat-badge-background-color);color:var(--mat-badge-text-color);font-family:var(--mat-badge-text-font);font-weight:var(--mat-badge-text-weight);border-radius:var(--mat-badge-container-shape)}.cdk-high-contrast-active .mat-badge-content{outline:solid 1px;border-radius:0}.mat-badge-above .mat-badge-content{bottom:100%}.mat-badge-below .mat-badge-content{top:100%}.mat-badge-before .mat-badge-content{right:100%}[dir=rtl] .mat-badge-before .mat-badge-content{right:auto;left:100%}.mat-badge-after .mat-badge-content{left:100%}[dir=rtl] .mat-badge-after .mat-badge-content{left:auto;right:100%}.mat-badge-disabled .mat-badge-content{background-color:var(--mat-badge-disabled-state-background-color);color:var(--mat-badge-disabled-state-text-color)}.mat-badge-hidden .mat-badge-content{display:none}.ng-animate-disabled .mat-badge-content,.mat-badge-content._mat-animation-noopable{transition:none}.mat-badge-content.mat-badge-active{transform:none}.mat-badge-small .mat-badge-content{width:var(--mat-badge-legacy-small-size-container-size, unset);height:var(--mat-badge-legacy-small-size-container-size, unset);min-width:var(--mat-badge-small-size-container-size, unset);min-height:var(--mat-badge-small-size-container-size, unset);line-height:var(--mat-badge-legacy-small-size-container-size, var(--mat-badge-small-size-container-size));padding:var(--mat-badge-small-size-container-padding);font-size:var(--mat-badge-small-size-text-size);margin:var(--mat-badge-small-size-container-offset)}.mat-badge-small.mat-badge-overlap .mat-badge-content{margin:var(--mat-badge-small-size-container-overlap-offset)}.mat-badge-medium .mat-badge-content{width:var(--mat-badge-legacy-container-size, unset);height:var(--mat-badge-legacy-container-size, unset);min-width:var(--mat-badge-container-size, unset);min-height:var(--mat-badge-container-size, unset);line-height:var(--mat-badge-legacy-container-size, var(--mat-badge-container-size));padding:var(--mat-badge-container-padding);font-size:var(--mat-badge-text-size);margin:var(--mat-badge-container-offset)}.mat-badge-medium.mat-badge-overlap .mat-badge-content{margin:var(--mat-badge-container-overlap-offset)}.mat-badge-large .mat-badge-content{width:var(--mat-badge-legacy-large-size-container-size, unset);height:var(--mat-badge-legacy-large-size-container-size, unset);min-width:var(--mat-badge-large-size-container-size, unset);min-height:var(--mat-badge-large-size-container-size, unset);line-height:var(--mat-badge-legacy-large-size-container-size, var(--mat-badge-large-size-container-size));padding:var(--mat-badge-large-size-container-padding);font-size:var(--mat-badge-large-size-text-size);margin:var(--mat-badge-large-size-container-offset)}.mat-badge-large.mat-badge-overlap .mat-badge-content{margin:var(--mat-badge-large-size-container-overlap-offset)}"]
+    }]
+  }], null, null);
+})();
+var _MatBadge = class _MatBadge {
+  /**
+   * Theme color of the badge. This API is supported in M2 themes only, it
+   * has no effect in M3 themes.
+   *
+   * For information on applying color variants in M3, see
+   * https://material.angular.io/guide/theming#using-component-color-variants.
+   */
+  get color() {
+    return this._color;
+  }
+  set color(value) {
+    this._setColor(value);
+    this._color = value;
+  }
+  /** The content for the badge */
+  get content() {
+    return this._content;
+  }
+  set content(newContent) {
+    this._updateRenderedContent(newContent);
+  }
+  /** Message used to describe the decorated element via aria-describedby */
+  get description() {
+    return this._description;
+  }
+  set description(newDescription) {
+    this._updateDescription(newDescription);
+  }
+  constructor(_ngZone, _elementRef, _ariaDescriber, _renderer, _animationMode) {
+    this._ngZone = _ngZone;
+    this._elementRef = _elementRef;
+    this._ariaDescriber = _ariaDescriber;
+    this._renderer = _renderer;
+    this._animationMode = _animationMode;
+    this._color = "primary";
+    this.overlap = true;
+    this.position = "above after";
+    this.size = "medium";
+    this._id = nextId3++;
+    this._isInitialized = false;
+    this._interactivityChecker = inject(InteractivityChecker);
+    this._document = inject(DOCUMENT);
+    const appRef = inject(ApplicationRef);
+    if (!badgeApps.has(appRef)) {
+      badgeApps.add(appRef);
+      const componentRef = createComponent(_MatBadgeStyleLoader, {
+        environmentInjector: inject(EnvironmentInjector)
+      });
+      appRef.onDestroy(() => {
+        badgeApps.delete(appRef);
+        if (badgeApps.size === 0) {
+          componentRef.destroy();
+        }
+      });
+    }
+    if (typeof ngDevMode === "undefined" || ngDevMode) {
+      const nativeElement = _elementRef.nativeElement;
+      if (nativeElement.nodeType !== nativeElement.ELEMENT_NODE) {
+        throw Error("matBadge must be attached to an element node.");
+      }
+      const matIconTagName = "mat-icon";
+      if (nativeElement.tagName.toLowerCase() === matIconTagName && nativeElement.getAttribute("aria-hidden") === "true") {
+        console.warn(`Detected a matBadge on an "aria-hidden" "<mat-icon>". Consider setting aria-hidden="false" in order to surface the information assistive technology.
+${nativeElement.outerHTML}`);
+      }
+    }
+  }
+  /** Whether the badge is above the host or not */
+  isAbove() {
+    return this.position.indexOf("below") === -1;
+  }
+  /** Whether the badge is after the host or not */
+  isAfter() {
+    return this.position.indexOf("before") === -1;
+  }
+  /**
+   * Gets the element into which the badge's content is being rendered. Undefined if the element
+   * hasn't been created (e.g. if the badge doesn't have content).
+   */
+  getBadgeElement() {
+    return this._badgeElement;
+  }
+  ngOnInit() {
+    this._clearExistingBadges();
+    if (this.content && !this._badgeElement) {
+      this._badgeElement = this._createBadgeElement();
+      this._updateRenderedContent(this.content);
+    }
+    this._isInitialized = true;
+  }
+  ngOnDestroy() {
+    if (this._renderer.destroyNode) {
+      this._renderer.destroyNode(this._badgeElement);
+      this._inlineBadgeDescription?.remove();
+    }
+    this._ariaDescriber.removeDescription(this._elementRef.nativeElement, this.description);
+  }
+  /** Gets whether the badge's host element is interactive. */
+  _isHostInteractive() {
+    return this._interactivityChecker.isFocusable(this._elementRef.nativeElement, {
+      ignoreVisibility: true
+    });
+  }
+  /** Creates the badge element */
+  _createBadgeElement() {
+    const badgeElement = this._renderer.createElement("span");
+    const activeClass = "mat-badge-active";
+    badgeElement.setAttribute("id", `mat-badge-content-${this._id}`);
+    badgeElement.setAttribute("aria-hidden", "true");
+    badgeElement.classList.add(BADGE_CONTENT_CLASS);
+    if (this._animationMode === "NoopAnimations") {
+      badgeElement.classList.add("_mat-animation-noopable");
+    }
+    this._elementRef.nativeElement.appendChild(badgeElement);
+    if (typeof requestAnimationFrame === "function" && this._animationMode !== "NoopAnimations") {
+      this._ngZone.runOutsideAngular(() => {
+        requestAnimationFrame(() => {
+          badgeElement.classList.add(activeClass);
+        });
+      });
+    } else {
+      badgeElement.classList.add(activeClass);
+    }
+    return badgeElement;
+  }
+  /** Update the text content of the badge element in the DOM, creating the element if necessary. */
+  _updateRenderedContent(newContent) {
+    const newContentNormalized = `${newContent ?? ""}`.trim();
+    if (this._isInitialized && newContentNormalized && !this._badgeElement) {
+      this._badgeElement = this._createBadgeElement();
+    }
+    if (this._badgeElement) {
+      this._badgeElement.textContent = newContentNormalized;
+    }
+    this._content = newContentNormalized;
+  }
+  /** Updates the host element's aria description via AriaDescriber. */
+  _updateDescription(newDescription) {
+    this._ariaDescriber.removeDescription(this._elementRef.nativeElement, this.description);
+    if (!newDescription || this._isHostInteractive()) {
+      this._removeInlineDescription();
+    }
+    this._description = newDescription;
+    if (this._isHostInteractive()) {
+      this._ariaDescriber.describe(this._elementRef.nativeElement, newDescription);
+    } else {
+      this._updateInlineDescription();
+    }
+  }
+  _updateInlineDescription() {
+    if (!this._inlineBadgeDescription) {
+      this._inlineBadgeDescription = this._document.createElement("span");
+      this._inlineBadgeDescription.classList.add("cdk-visually-hidden");
+    }
+    this._inlineBadgeDescription.textContent = this.description;
+    this._badgeElement?.appendChild(this._inlineBadgeDescription);
+  }
+  _removeInlineDescription() {
+    this._inlineBadgeDescription?.remove();
+    this._inlineBadgeDescription = void 0;
+  }
+  /** Adds css theme class given the color to the component host */
+  _setColor(colorPalette) {
+    const classList = this._elementRef.nativeElement.classList;
+    classList.remove(`mat-badge-${this._color}`);
+    if (colorPalette) {
+      classList.add(`mat-badge-${colorPalette}`);
+    }
+  }
+  /** Clears any existing badges that might be left over from server-side rendering. */
+  _clearExistingBadges() {
+    const badges = this._elementRef.nativeElement.querySelectorAll(`:scope > .${BADGE_CONTENT_CLASS}`);
+    for (const badgeElement of Array.from(badges)) {
+      if (badgeElement !== this._badgeElement) {
+        badgeElement.remove();
+      }
+    }
+  }
+};
+_MatBadge.\u0275fac = function MatBadge_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatBadge)(\u0275\u0275directiveInject(NgZone), \u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(AriaDescriber), \u0275\u0275directiveInject(Renderer2), \u0275\u0275directiveInject(ANIMATION_MODULE_TYPE, 8));
+};
+_MatBadge.\u0275dir = /* @__PURE__ */ \u0275\u0275defineDirective({
+  type: _MatBadge,
+  selectors: [["", "matBadge", ""]],
+  hostAttrs: [1, "mat-badge"],
+  hostVars: 20,
+  hostBindings: function MatBadge_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      \u0275\u0275classProp("mat-badge-overlap", ctx.overlap)("mat-badge-above", ctx.isAbove())("mat-badge-below", !ctx.isAbove())("mat-badge-before", !ctx.isAfter())("mat-badge-after", ctx.isAfter())("mat-badge-small", ctx.size === "small")("mat-badge-medium", ctx.size === "medium")("mat-badge-large", ctx.size === "large")("mat-badge-hidden", ctx.hidden || !ctx.content)("mat-badge-disabled", ctx.disabled);
+    }
+  },
+  inputs: {
+    color: [0, "matBadgeColor", "color"],
+    overlap: [2, "matBadgeOverlap", "overlap", booleanAttribute],
+    disabled: [2, "matBadgeDisabled", "disabled", booleanAttribute],
+    position: [0, "matBadgePosition", "position"],
+    content: [0, "matBadge", "content"],
+    description: [0, "matBadgeDescription", "description"],
+    size: [0, "matBadgeSize", "size"],
+    hidden: [2, "matBadgeHidden", "hidden", booleanAttribute]
+  },
+  standalone: true,
+  features: [\u0275\u0275InputTransformsFeature]
+});
+var MatBadge = _MatBadge;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatBadge, [{
+    type: Directive,
+    args: [{
+      selector: "[matBadge]",
+      host: {
+        "class": "mat-badge",
+        "[class.mat-badge-overlap]": "overlap",
+        "[class.mat-badge-above]": "isAbove()",
+        "[class.mat-badge-below]": "!isAbove()",
+        "[class.mat-badge-before]": "!isAfter()",
+        "[class.mat-badge-after]": "isAfter()",
+        "[class.mat-badge-small]": 'size === "small"',
+        "[class.mat-badge-medium]": 'size === "medium"',
+        "[class.mat-badge-large]": 'size === "large"',
+        "[class.mat-badge-hidden]": "hidden || !content",
+        "[class.mat-badge-disabled]": "disabled"
+      },
+      standalone: true
+    }]
+  }], () => [{
+    type: NgZone
+  }, {
+    type: ElementRef
+  }, {
+    type: AriaDescriber
+  }, {
+    type: Renderer2
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [ANIMATION_MODULE_TYPE]
+    }]
+  }], {
+    color: [{
+      type: Input,
+      args: ["matBadgeColor"]
+    }],
+    overlap: [{
+      type: Input,
+      args: [{
+        alias: "matBadgeOverlap",
+        transform: booleanAttribute
+      }]
+    }],
+    disabled: [{
+      type: Input,
+      args: [{
+        alias: "matBadgeDisabled",
+        transform: booleanAttribute
+      }]
+    }],
+    position: [{
+      type: Input,
+      args: ["matBadgePosition"]
+    }],
+    content: [{
+      type: Input,
+      args: ["matBadge"]
+    }],
+    description: [{
+      type: Input,
+      args: ["matBadgeDescription"]
+    }],
+    size: [{
+      type: Input,
+      args: ["matBadgeSize"]
+    }],
+    hidden: [{
+      type: Input,
+      args: [{
+        alias: "matBadgeHidden",
+        transform: booleanAttribute
+      }]
+    }]
+  });
+})();
+var _MatBadgeModule = class _MatBadgeModule {
+};
+_MatBadgeModule.\u0275fac = function MatBadgeModule_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatBadgeModule)();
+};
+_MatBadgeModule.\u0275mod = /* @__PURE__ */ \u0275\u0275defineNgModule({
+  type: _MatBadgeModule
+});
+_MatBadgeModule.\u0275inj = /* @__PURE__ */ \u0275\u0275defineInjector({
+  imports: [A11yModule, MatCommonModule, MatCommonModule]
+});
+var MatBadgeModule = _MatBadgeModule;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatBadgeModule, [{
+    type: NgModule,
+    args: [{
+      // Note: we _shouldn't_ have to import `_MatBadgeStyleLoader`,
+      // but it seems to be necessary for tests.
+      imports: [A11yModule, MatCommonModule, MatBadge, _MatBadgeStyleLoader],
+      exports: [MatBadge, MatCommonModule]
+    }]
+  }], null, null);
+})();
+
+// src/app/component/home/home.component.ts
+var _forTrack0 = ($index, $item) => $item.task.taskId;
+var _forTrack1 = ($index, $item) => $item.taskDescription;
+function HomeComponent_Conditional_11_ng_template_5_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "mat-icon");
+    \u0275\u0275text(1, "task_alt");
+    \u0275\u0275elementEnd();
+    \u0275\u0275text(2, " Tasks ");
+  }
+}
+function HomeComponent_Conditional_11_For_8_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275element(0, "app-task-registration", 10);
   }
   if (rf & 2) {
     const task_r1 = ctx.$implicit;
     \u0275\u0275property("task", task_r1);
   }
 }
-function HomeComponent_Conditional_12_Template(rf, ctx) {
+function HomeComponent_Conditional_11_ng_template_10_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275repeaterCreate(0, HomeComponent_Conditional_12_For_1_Template, 1, 1, "app-unregistered-task-registration", 6, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275elementStart(0, "mat-icon", 11);
+    \u0275\u0275text(1, " notes ");
+    \u0275\u0275elementEnd();
+    \u0275\u0275text(2, " Drafts ");
   }
   if (rf & 2) {
-    let tmp_1_0;
-    const ctx_r1 = \u0275\u0275nextContext();
-    \u0275\u0275repeater((tmp_1_0 = ctx_r1.timeRegistrationByTaskSignal()) == null ? null : tmp_1_0.tasklessTimeRegistrations);
+    const timeRegistrationsByTaskResponse_r2 = \u0275\u0275nextContext();
+    \u0275\u0275property("matBadge", timeRegistrationsByTaskResponse_r2.tasklessTimeRegistrations.length ? timeRegistrationsByTaskResponse_r2.tasklessTimeRegistrations.length : null);
   }
 }
-function HomeComponent_Conditional_18_For_2_Template(rf, ctx) {
+function HomeComponent_Conditional_11_For_13_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275element(0, "app-task-registration", 6);
+    \u0275\u0275element(0, "app-task-registration", 10);
   }
   if (rf & 2) {
     const task_r3 = ctx.$implicit;
     \u0275\u0275property("task", task_r3);
   }
 }
-function HomeComponent_Conditional_18_Template(rf, ctx) {
+function HomeComponent_Conditional_11_ForEmpty_14_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 2);
-    \u0275\u0275repeaterCreate(1, HomeComponent_Conditional_18_For_2_Template, 1, 1, "app-task-registration", 6, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275elementStart(0, "p");
+    \u0275\u0275text(1, "Congratulations, there are no unregistered tasks");
     \u0275\u0275elementEnd();
   }
+}
+function HomeComponent_Conditional_11_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "mat-card-content");
+    \u0275\u0275element(1, "app-total-line", 6);
+    \u0275\u0275elementStart(2, "div", 7)(3, "mat-tab-group")(4, "mat-tab");
+    \u0275\u0275template(5, HomeComponent_Conditional_11_ng_template_5_Template, 3, 0, "ng-template", 8);
+    \u0275\u0275elementStart(6, "div", 9);
+    \u0275\u0275repeaterCreate(7, HomeComponent_Conditional_11_For_8_Template, 1, 1, "app-task-registration", 10, _forTrack0);
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(9, "mat-tab");
+    \u0275\u0275template(10, HomeComponent_Conditional_11_ng_template_10_Template, 3, 1, "ng-template", 8);
+    \u0275\u0275elementStart(11, "div", 9);
+    \u0275\u0275repeaterCreate(12, HomeComponent_Conditional_11_For_13_Template, 1, 1, "app-task-registration", 10, _forTrack1, false, HomeComponent_Conditional_11_ForEmpty_14_Template, 2, 0, "p");
+    \u0275\u0275elementEnd()()()()();
+  }
   if (rf & 2) {
-    let tmp_1_0;
-    const ctx_r1 = \u0275\u0275nextContext();
-    \u0275\u0275advance();
-    \u0275\u0275repeater((tmp_1_0 = ctx_r1.timeRegistrationByTaskSignal()) == null ? null : tmp_1_0.taskTimeRegistrations);
+    const timeRegistrationsByTaskResponse_r2 = ctx;
+    \u0275\u0275advance(7);
+    \u0275\u0275repeater(timeRegistrationsByTaskResponse_r2.taskTimeRegistrations);
+    \u0275\u0275advance(5);
+    \u0275\u0275repeater(timeRegistrationsByTaskResponse_r2.tasklessTimeRegistrations);
   }
 }
 var _HomeComponent = class _HomeComponent {
   constructor() {
-    this.timeRegistrationService = inject(TimeRegistrationService);
     this.totalTimeService = inject(TotalTimeService);
     this.dialog = inject(MatDialog);
-    this.timeRegistrationByTaskSignal = signal(void 0);
-    this.effectRef = effect(() => {
-      this.timeRegistrationService.getTaskTimeRegistrationsOverview(DateTime.now().toISODate(), OverviewPeriod.Week).subscribe({
-        next: (value) => {
-          this.totalTimeService.next(value);
-          this.timeRegistrationByTaskSignal.set(value);
-        }
-      });
-    }, { allowSignalWrites: true });
   }
   openCreateDialog() {
-    const dialogRef = this.dialog.open(CreateTaskDialogComponent, { width: "800px" });
-    dialogRef.afterClosed().subscribe({
-      next: (value) => __async(this, null, function* () {
-        if (value) {
-          const extraTasks = value.taskId ? [value.taskId] : [0];
-          this.timeRegistrationService.getTaskTimeRegistrationsOverview(DateTime.now().toISODate(), OverviewPeriod.Week, extraTasks).subscribe({
-            next: (value2) => {
-              this.totalTimeService.next(value2);
-              this.timeRegistrationByTaskSignal.set(value2);
-            }
-          });
-        }
-      })
-    });
-  }
-  addTimeRegistration(timeRegistrationId) {
     return __async(this, null, function* () {
-      yield firstValueFrom(this.timeRegistrationService.addTimeRegistrationForUser({
-        taskId: timeRegistrationId || 1,
-        date: DateTime.now().toISODate(),
-        duration: "PT1H30M"
-      }));
+      const dialogRef = this.dialog.open(CreateTaskDialogComponent, { width: "800px" });
+      const value = yield firstValueFrom(dialogRef.afterClosed());
+      if (value) {
+        const extraTasks = value.taskId ? [value.taskId] : [];
+        this.totalTimeService.setExtraTasks(extraTasks);
+      }
     });
   }
-  getWeekRangeAsString() {
-    const startOfWeek = DateTime.now().startOf("week");
-    const endOfWeek = DateTime.now().endOf("week");
-    return `Total for week ${startOfWeek.weekNumber} - ${startOfWeek.toFormat("dd-MM-yyyy")} to ${endOfWeek.toFormat("dd-MM-yyyy")}`;
+  getTimeRegistrationSignalAsReadonly() {
+    return this.totalTimeService.getTimeRegistrationSignalAsReadonly()();
+  }
+  goToNextWeek() {
+    return this.totalTimeService.gotoNextWeek();
+  }
+  gotoPreviousWeek() {
+    return this.totalTimeService.gotoPreviousWeek();
   }
 };
 _HomeComponent.\u0275fac = function HomeComponent_Factory(__ngFactoryType__) {
   return new (__ngFactoryType__ || _HomeComponent)();
 };
-_HomeComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _HomeComponent, selectors: [["app-home"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 24, vars: 3, consts: [["appearance", "outlined", 1, "card-1"], [2, "padding", "0 1rem"], [1, "flex-column"], ["appearance", "outlined"], [1, "bottom-right-fab-button"], ["mat-fab", "", "extended", "", 3, "click"], [3, "task"]], template: function HomeComponent_Template(rf, ctx) {
+_HomeComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _HomeComponent, selectors: [["app-home"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 17, vars: 2, consts: [["appearance", "outlined"], [1, "flex-row", "align-items-center"], ["mat-icon-button", "", "matTooltip", "Go to previous week", 3, "click"], ["mat-icon-button", "", "matTooltip", "Go to next week", 3, "click"], [1, "bottom-right-fab-button"], ["mat-fab", "", "extended", "", 3, "click"], [2, "padding", "0 1rem"], [1, "flex-column"], ["mat-tab-label", ""], [1, "flex-column", 2, "overflow", "hidden"], [3, "task"], [3, "matBadge"]], template: function HomeComponent_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "mat-card", 0)(1, "mat-card-header")(2, "mat-card-title");
-    \u0275\u0275text(3);
+    \u0275\u0275elementStart(0, "mat-card", 0)(1, "mat-card-header")(2, "mat-card-title")(3, "div", 1)(4, "button", 2);
+    \u0275\u0275listener("click", function HomeComponent_Template_button_click_4_listener() {
+      return ctx.gotoPreviousWeek();
+    });
+    \u0275\u0275elementStart(5, "mat-icon");
+    \u0275\u0275text(6, "navigate_before");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(4, "mat-card-content");
-    \u0275\u0275element(5, "app-total-line", 1);
-    \u0275\u0275elementStart(6, "div", 2)(7, "mat-card", 3)(8, "mat-card-header")(9, "mat-card-title");
-    \u0275\u0275text(10, "Unregistered tasks");
-    \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(11, "mat-card-content");
-    \u0275\u0275template(12, HomeComponent_Conditional_12_Template, 2, 0);
-    \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(13, "mat-card", 3)(14, "mat-card-header")(15, "mat-card-title");
-    \u0275\u0275text(16, "Registered tasks");
-    \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(17, "mat-card-content");
-    \u0275\u0275template(18, HomeComponent_Conditional_18_Template, 3, 0, "div", 2);
+    \u0275\u0275text(7);
+    \u0275\u0275elementStart(8, "button", 3);
+    \u0275\u0275listener("click", function HomeComponent_Template_button_click_8_listener() {
+      return ctx.goToNextWeek();
+    });
+    \u0275\u0275elementStart(9, "mat-icon");
+    \u0275\u0275text(10, "navigate_next");
     \u0275\u0275elementEnd()()()()();
-    \u0275\u0275elementStart(19, "div", 4)(20, "button", 5);
-    \u0275\u0275listener("click", function HomeComponent_Template_button_click_20_listener() {
+    \u0275\u0275template(11, HomeComponent_Conditional_11_Template, 15, 1, "mat-card-content");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(12, "div", 4)(13, "button", 5);
+    \u0275\u0275listener("click", function HomeComponent_Template_button_click_13_listener() {
       return ctx.openCreateDialog();
     });
-    \u0275\u0275elementStart(21, "mat-icon");
-    \u0275\u0275text(22, "add");
+    \u0275\u0275elementStart(14, "mat-icon");
+    \u0275\u0275text(15, "add");
     \u0275\u0275elementEnd();
-    \u0275\u0275text(23, " New task ");
+    \u0275\u0275text(16, " New task ");
     \u0275\u0275elementEnd()();
   }
   if (rf & 2) {
-    \u0275\u0275advance(3);
-    \u0275\u0275textInterpolate(ctx.getWeekRangeAsString());
-    \u0275\u0275advance(9);
-    \u0275\u0275conditional(ctx.timeRegistrationByTaskSignal() ? 12 : -1);
-    \u0275\u0275advance(6);
-    \u0275\u0275conditional(ctx.timeRegistrationByTaskSignal() ? 18 : -1);
+    let tmp_1_0;
+    \u0275\u0275advance(7);
+    \u0275\u0275textInterpolate1(" ", ctx.totalTimeService.getWeekDateString()(), " ");
+    \u0275\u0275advance(4);
+    \u0275\u0275conditional((tmp_1_0 = ctx.getTimeRegistrationSignalAsReadonly()) ? 11 : -1, tmp_1_0);
   }
-}, dependencies: [MatFormFieldModule, MatIconModule, MatIcon, MatInputModule, ReactiveFormsModule, MatAutocompleteModule, MatOptionModule, TotalLineComponent, MatCardModule, MatCard, MatCardContent, MatCardHeader, MatCardTitle, TaskRegistrationComponent, UnregisteredTaskRegistrationComponent, MatFabButton], styles: ["\n\n[_nghost-%COMP%] {\n  padding: 1rem;\n}\n/*# sourceMappingURL=home.component.css.map */"] });
+}, dependencies: [MatFormFieldModule, MatIconModule, MatIcon, MatInputModule, ReactiveFormsModule, MatAutocompleteModule, MatOptionModule, TotalLineComponent, MatCardModule, MatCard, MatCardContent, MatCardHeader, MatCardTitle, TaskRegistrationComponent, MatFabButton, MatIconButton, MatTabsModule, MatTabLabel, MatTab, MatTabGroup, MatBadge, MatTooltip], styles: ["\n\n[_nghost-%COMP%] {\n  padding: 1rem;\n}\n/*# sourceMappingURL=home.component.css.map */"] });
 var HomeComponent = _HomeComponent;
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(HomeComponent, { className: "HomeComponent", filePath: "src\\app\\component\\home\\home.component.ts", lineNumber: 30 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(HomeComponent, { className: "HomeComponent", filePath: "src\\app\\component\\home\\home.component.ts", lineNumber: 28 });
 })();
 
 // src/app/component/login/login.component.ts
@@ -43320,7 +47542,7 @@ var _AsyncAnimationRendererFactory = class _AsyncAnimationRendererFactory {
    * @internal
    */
   loadImpl() {
-    const moduleImpl = this.moduleImpl ?? import("./chunk-L43IZHEO.js").then((m) => m);
+    const moduleImpl = this.moduleImpl ?? import("./chunk-IFECP5V5.js").then((m) => m);
     return moduleImpl.catch((e) => {
       throw new RuntimeError(5300, (typeof ngDevMode === "undefined" || ngDevMode) && "Async loading for animations package was enabled, but loading failed. Angular falls back to using regular rendering. No animations will be displayed and their styles won't be applied.");
     }).then(({
@@ -43548,10 +47770,10 @@ var appConfig = {
 };
 
 // node_modules/@angular/material/fesm2022/sidenav.mjs
-var _c09 = ["*"];
-var _c18 = ["content"];
-var _c25 = [[["mat-drawer"]], [["mat-drawer-content"]], "*"];
-var _c35 = ["mat-drawer", "mat-drawer-content", "*"];
+var _c011 = ["*"];
+var _c19 = ["content"];
+var _c26 = [[["mat-drawer"]], [["mat-drawer-content"]], "*"];
+var _c36 = ["mat-drawer", "mat-drawer-content", "*"];
 function MatDrawerContainer_Conditional_0_Template(rf, ctx) {
   if (rf & 1) {
     const _r1 = \u0275\u0275getCurrentView();
@@ -43575,8 +47797,8 @@ function MatDrawerContainer_Conditional_3_Template(rf, ctx) {
     \u0275\u0275elementEnd();
   }
 }
-var _c45 = [[["mat-sidenav"]], [["mat-sidenav-content"]], "*"];
-var _c54 = ["mat-sidenav", "mat-sidenav-content", "*"];
+var _c46 = [[["mat-sidenav"]], [["mat-sidenav-content"]], "*"];
+var _c55 = ["mat-sidenav", "mat-sidenav-content", "*"];
 function MatSidenavContainer_Conditional_0_Template(rf, ctx) {
   if (rf & 1) {
     const _r1 = \u0275\u0275getCurrentView();
@@ -43600,7 +47822,7 @@ function MatSidenavContainer_Conditional_3_Template(rf, ctx) {
     \u0275\u0275elementEnd();
   }
 }
-var _c64 = '.mat-drawer-container{position:relative;z-index:1;color:var(--mat-sidenav-content-text-color);background-color:var(--mat-sidenav-content-background-color);box-sizing:border-box;-webkit-overflow-scrolling:touch;display:block;overflow:hidden}.mat-drawer-container[fullscreen]{top:0;left:0;right:0;bottom:0;position:absolute}.mat-drawer-container[fullscreen].mat-drawer-container-has-open{overflow:hidden}.mat-drawer-container.mat-drawer-container-explicit-backdrop .mat-drawer-side{z-index:3}.mat-drawer-container.ng-animate-disabled .mat-drawer-backdrop,.mat-drawer-container.ng-animate-disabled .mat-drawer-content,.ng-animate-disabled .mat-drawer-container .mat-drawer-backdrop,.ng-animate-disabled .mat-drawer-container .mat-drawer-content{transition:none}.mat-drawer-backdrop{top:0;left:0;right:0;bottom:0;position:absolute;display:block;z-index:3;visibility:hidden}.mat-drawer-backdrop.mat-drawer-shown{visibility:visible;background-color:var(--mat-sidenav-scrim-color)}.mat-drawer-transition .mat-drawer-backdrop{transition-duration:400ms;transition-timing-function:cubic-bezier(0.25, 0.8, 0.25, 1);transition-property:background-color,visibility}.cdk-high-contrast-active .mat-drawer-backdrop{opacity:.5}.mat-drawer-content{position:relative;z-index:1;display:block;height:100%;overflow:auto}.mat-drawer-transition .mat-drawer-content{transition-duration:400ms;transition-timing-function:cubic-bezier(0.25, 0.8, 0.25, 1);transition-property:transform,margin-left,margin-right}.mat-drawer{position:relative;z-index:4;color:var(--mat-sidenav-container-text-color);box-shadow:var(--mat-sidenav-container-elevation-shadow);background-color:var(--mat-sidenav-container-background-color);border-top-right-radius:var(--mat-sidenav-container-shape);border-bottom-right-radius:var(--mat-sidenav-container-shape);width:var(--mat-sidenav-container-width);display:block;position:absolute;top:0;bottom:0;z-index:3;outline:0;box-sizing:border-box;overflow-y:auto;transform:translate3d(-100%, 0, 0)}.cdk-high-contrast-active .mat-drawer,.cdk-high-contrast-active [dir=rtl] .mat-drawer.mat-drawer-end{border-right:solid 1px currentColor}.cdk-high-contrast-active [dir=rtl] .mat-drawer,.cdk-high-contrast-active .mat-drawer.mat-drawer-end{border-left:solid 1px currentColor;border-right:none}.mat-drawer.mat-drawer-side{z-index:2}.mat-drawer.mat-drawer-end{right:0;transform:translate3d(100%, 0, 0);border-top-left-radius:var(--mat-sidenav-container-shape);border-bottom-left-radius:var(--mat-sidenav-container-shape);border-top-right-radius:0;border-bottom-right-radius:0}[dir=rtl] .mat-drawer{border-top-left-radius:var(--mat-sidenav-container-shape);border-bottom-left-radius:var(--mat-sidenav-container-shape);border-top-right-radius:0;border-bottom-right-radius:0;transform:translate3d(100%, 0, 0)}[dir=rtl] .mat-drawer.mat-drawer-end{border-top-right-radius:var(--mat-sidenav-container-shape);border-bottom-right-radius:var(--mat-sidenav-container-shape);border-top-left-radius:0;border-bottom-left-radius:0;left:0;right:auto;transform:translate3d(-100%, 0, 0)}.mat-drawer[style*="visibility: hidden"]{display:none}.mat-drawer-side{box-shadow:none;border-right-color:var(--mat-sidenav-container-divider-color);border-right-width:1px;border-right-style:solid}.mat-drawer-side.mat-drawer-end{border-left-color:var(--mat-sidenav-container-divider-color);border-left-width:1px;border-left-style:solid;border-right:none}[dir=rtl] .mat-drawer-side{border-left-color:var(--mat-sidenav-container-divider-color);border-left-width:1px;border-left-style:solid;border-right:none}[dir=rtl] .mat-drawer-side.mat-drawer-end{border-right-color:var(--mat-sidenav-container-divider-color);border-right-width:1px;border-right-style:solid;border-left:none}.mat-drawer-inner-container{width:100%;height:100%;overflow:auto;-webkit-overflow-scrolling:touch}.mat-sidenav-fixed{position:fixed}';
+var _c65 = '.mat-drawer-container{position:relative;z-index:1;color:var(--mat-sidenav-content-text-color);background-color:var(--mat-sidenav-content-background-color);box-sizing:border-box;-webkit-overflow-scrolling:touch;display:block;overflow:hidden}.mat-drawer-container[fullscreen]{top:0;left:0;right:0;bottom:0;position:absolute}.mat-drawer-container[fullscreen].mat-drawer-container-has-open{overflow:hidden}.mat-drawer-container.mat-drawer-container-explicit-backdrop .mat-drawer-side{z-index:3}.mat-drawer-container.ng-animate-disabled .mat-drawer-backdrop,.mat-drawer-container.ng-animate-disabled .mat-drawer-content,.ng-animate-disabled .mat-drawer-container .mat-drawer-backdrop,.ng-animate-disabled .mat-drawer-container .mat-drawer-content{transition:none}.mat-drawer-backdrop{top:0;left:0;right:0;bottom:0;position:absolute;display:block;z-index:3;visibility:hidden}.mat-drawer-backdrop.mat-drawer-shown{visibility:visible;background-color:var(--mat-sidenav-scrim-color)}.mat-drawer-transition .mat-drawer-backdrop{transition-duration:400ms;transition-timing-function:cubic-bezier(0.25, 0.8, 0.25, 1);transition-property:background-color,visibility}.cdk-high-contrast-active .mat-drawer-backdrop{opacity:.5}.mat-drawer-content{position:relative;z-index:1;display:block;height:100%;overflow:auto}.mat-drawer-transition .mat-drawer-content{transition-duration:400ms;transition-timing-function:cubic-bezier(0.25, 0.8, 0.25, 1);transition-property:transform,margin-left,margin-right}.mat-drawer{position:relative;z-index:4;color:var(--mat-sidenav-container-text-color);box-shadow:var(--mat-sidenav-container-elevation-shadow);background-color:var(--mat-sidenav-container-background-color);border-top-right-radius:var(--mat-sidenav-container-shape);border-bottom-right-radius:var(--mat-sidenav-container-shape);width:var(--mat-sidenav-container-width);display:block;position:absolute;top:0;bottom:0;z-index:3;outline:0;box-sizing:border-box;overflow-y:auto;transform:translate3d(-100%, 0, 0)}.cdk-high-contrast-active .mat-drawer,.cdk-high-contrast-active [dir=rtl] .mat-drawer.mat-drawer-end{border-right:solid 1px currentColor}.cdk-high-contrast-active [dir=rtl] .mat-drawer,.cdk-high-contrast-active .mat-drawer.mat-drawer-end{border-left:solid 1px currentColor;border-right:none}.mat-drawer.mat-drawer-side{z-index:2}.mat-drawer.mat-drawer-end{right:0;transform:translate3d(100%, 0, 0);border-top-left-radius:var(--mat-sidenav-container-shape);border-bottom-left-radius:var(--mat-sidenav-container-shape);border-top-right-radius:0;border-bottom-right-radius:0}[dir=rtl] .mat-drawer{border-top-left-radius:var(--mat-sidenav-container-shape);border-bottom-left-radius:var(--mat-sidenav-container-shape);border-top-right-radius:0;border-bottom-right-radius:0;transform:translate3d(100%, 0, 0)}[dir=rtl] .mat-drawer.mat-drawer-end{border-top-right-radius:var(--mat-sidenav-container-shape);border-bottom-right-radius:var(--mat-sidenav-container-shape);border-top-left-radius:0;border-bottom-left-radius:0;left:0;right:auto;transform:translate3d(-100%, 0, 0)}.mat-drawer[style*="visibility: hidden"]{display:none}.mat-drawer-side{box-shadow:none;border-right-color:var(--mat-sidenav-container-divider-color);border-right-width:1px;border-right-style:solid}.mat-drawer-side.mat-drawer-end{border-left-color:var(--mat-sidenav-container-divider-color);border-left-width:1px;border-left-style:solid;border-right:none}[dir=rtl] .mat-drawer-side{border-left-color:var(--mat-sidenav-container-divider-color);border-left-width:1px;border-left-style:solid;border-right:none}[dir=rtl] .mat-drawer-side.mat-drawer-end{border-right-color:var(--mat-sidenav-container-divider-color);border-right-width:1px;border-right-style:solid;border-left:none}.mat-drawer-inner-container{width:100%;height:100%;overflow:auto;-webkit-overflow-scrolling:touch}.mat-sidenav-fixed{position:fixed}';
 var matDrawerAnimations = {
   /** Animation that slides a drawer in and out. */
   transformDrawer: trigger("transform", [
@@ -43662,7 +47884,7 @@ _MatDrawerContent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
     provide: CdkScrollable,
     useExisting: _MatDrawerContent
   }]), \u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
-  ngContentSelectors: _c09,
+  ngContentSelectors: _c011,
   decls: 1,
   vars: 0,
   template: function MatDrawerContent_Template(rf, ctx) {
@@ -44053,7 +48275,7 @@ _MatDrawer.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
   selectors: [["mat-drawer"]],
   viewQuery: function MatDrawer_Query(rf, ctx) {
     if (rf & 1) {
-      \u0275\u0275viewQuery(_c18, 5);
+      \u0275\u0275viewQuery(_c19, 5);
     }
     if (rf & 2) {
       let _t;
@@ -44094,7 +48316,7 @@ _MatDrawer.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
   exportAs: ["matDrawer"],
   standalone: true,
   features: [\u0275\u0275StandaloneFeature],
-  ngContentSelectors: _c09,
+  ngContentSelectors: _c011,
   decls: 3,
   vars: 0,
   consts: [["content", ""], ["cdkScrollable", "", 1, "mat-drawer-inner-container"]],
@@ -44504,13 +48726,13 @@ _MatDrawerContainer.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
     provide: MAT_DRAWER_CONTAINER,
     useExisting: _MatDrawerContainer
   }]), \u0275\u0275StandaloneFeature],
-  ngContentSelectors: _c35,
+  ngContentSelectors: _c36,
   decls: 4,
   vars: 2,
   consts: [[1, "mat-drawer-backdrop", 3, "mat-drawer-shown"], [1, "mat-drawer-backdrop", 3, "click"]],
   template: function MatDrawerContainer_Template(rf, ctx) {
     if (rf & 1) {
-      \u0275\u0275projectionDef(_c25);
+      \u0275\u0275projectionDef(_c26);
       \u0275\u0275template(0, MatDrawerContainer_Conditional_0_Template, 1, 2, "div", 0);
       \u0275\u0275projection(1);
       \u0275\u0275projection(2, 1);
@@ -44627,7 +48849,7 @@ _MatSidenavContent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
     provide: CdkScrollable,
     useExisting: _MatSidenavContent
   }]), \u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
-  ngContentSelectors: _c09,
+  ngContentSelectors: _c011,
   decls: 1,
   vars: 0,
   template: function MatSidenavContent_Template(rf, ctx) {
@@ -44736,7 +48958,7 @@ _MatSidenav.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
   exportAs: ["matSidenav"],
   standalone: true,
   features: [\u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
-  ngContentSelectors: _c09,
+  ngContentSelectors: _c011,
   decls: 3,
   vars: 0,
   consts: [["content", ""], ["cdkScrollable", "", 1, "mat-drawer-inner-container"]],
@@ -44835,13 +49057,13 @@ _MatSidenavContainer.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
     provide: MAT_DRAWER_CONTAINER,
     useExisting: _MatSidenavContainer
   }]), \u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
-  ngContentSelectors: _c54,
+  ngContentSelectors: _c55,
   decls: 4,
   vars: 2,
   consts: [[1, "mat-drawer-backdrop", 3, "mat-drawer-shown"], [1, "mat-drawer-backdrop", 3, "click"]],
   template: function MatSidenavContainer_Template(rf, ctx) {
     if (rf & 1) {
-      \u0275\u0275projectionDef(_c45);
+      \u0275\u0275projectionDef(_c46);
       \u0275\u0275template(0, MatSidenavContainer_Conditional_0_Template, 1, 2, "div", 0);
       \u0275\u0275projection(1);
       \u0275\u0275projection(2, 1);
@@ -44854,7 +49076,7 @@ _MatSidenavContainer.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
     }
   },
   dependencies: [MatSidenavContent],
-  styles: [_c64],
+  styles: [_c65],
   encapsulation: 2,
   changeDetection: 0
 });
@@ -44918,8 +49140,8 @@ var MatSidenavModule = _MatSidenavModule;
 })();
 
 // node_modules/@angular/material/fesm2022/toolbar.mjs
-var _c010 = ["*", [["mat-toolbar-row"]]];
-var _c19 = ["*", "mat-toolbar-row"];
+var _c012 = ["*", [["mat-toolbar-row"]]];
+var _c110 = ["*", "mat-toolbar-row"];
 var _MatToolbarRow = class _MatToolbarRow {
 };
 _MatToolbarRow.\u0275fac = function MatToolbarRow_Factory(__ngFactoryType__) {
@@ -44999,12 +49221,12 @@ _MatToolbar.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
   exportAs: ["matToolbar"],
   standalone: true,
   features: [\u0275\u0275StandaloneFeature],
-  ngContentSelectors: _c19,
+  ngContentSelectors: _c110,
   decls: 2,
   vars: 0,
   template: function MatToolbar_Template(rf, ctx) {
     if (rf & 1) {
-      \u0275\u0275projectionDef(_c010);
+      \u0275\u0275projectionDef(_c012);
       \u0275\u0275projection(0);
       \u0275\u0275projection(1, 1);
     }

@@ -1,12 +1,9 @@
 <div class="flex-row justify-space-between align-items-center">
-  <div>
-    Total time
-  </div>
-  <div class="flex-row flex-wrap-wrap">
+  <div class="flex-row flex-wrap-wrap" style="margin-left: 1.5rem">
     @for (dateAndMinutes of dateToMinuteSignal(); track dateAndMinutes) {
-      <div class="flex-column half-gap" style="width: 5rem">
+      <div class="flex-column half-gap" style="width: 5rem;">
         <span>{{ formatDanishDate(dateAndMinutes.date) }}</span>
-        <span>{{ DurationConverter.toHumanFromMinutes(dateAndMinutes.minutes) }}</span>
+        <span>{{ getHours(dateAndMinutes) }}</span>
       </div>
     }
   </div>

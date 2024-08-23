@@ -1,0 +1,11 @@
+<form [formGroup]="formGroup" class="flex-column half-gap" (ngSubmit)="associateTask()">
+  <h2 mat-dialog-title>Associate draft with a task</h2>
+  <mat-dialog-content>
+        <app-create-registered-task-form
+          (onRegisteredTaskRegistered)="registeredTaskRegistered($event)"></app-create-registered-task-form>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button type="button" mat-button mat-dialog-close>Cancel</button>
+    <button [disabled]="formGroup.invalid" type="submit" mat-button cdkFocusInitial>Associate</button>
+  </mat-dialog-actions>
+</form>

@@ -10,31 +10,25 @@ import {
   signal,
   WritableSignal
 } from '@angular/core';
-import {
-  MatAutocomplete,
-  MatAutocompleteSelectedEvent,
-  MatAutocompleteTrigger,
-  MatOption
-} from "@angular/material/autocomplete";
+import {MatAutocomplete, MatAutocompleteTrigger, MatOption} from "@angular/material/autocomplete";
 import {MatFormField, MatLabel} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
 import {FormControl, ReactiveFormsModule} from "@angular/forms";
-import {OverviewPeriod, TaskCreateResponseInner, TaskService} from "../../../generated";
-import {DateTime} from "luxon";
+import {TaskCreateResponseInner, TaskService} from "../../../generated";
 import {toSignal} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-create-registered-task-form',
   standalone: true,
-    imports: [
-        MatAutocomplete,
-        MatAutocompleteTrigger,
-        MatFormField,
-        MatInput,
-        MatLabel,
-        MatOption,
-        ReactiveFormsModule
-    ],
+  imports: [
+    MatAutocomplete,
+    MatAutocompleteTrigger,
+    MatFormField,
+    MatInput,
+    MatLabel,
+    MatOption,
+    ReactiveFormsModule
+  ],
   templateUrl: './create-registered-task-form.component.html',
   styleUrl: './create-registered-task-form.component.scss'
 })

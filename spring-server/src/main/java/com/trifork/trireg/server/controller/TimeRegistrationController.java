@@ -71,4 +71,13 @@ public class TimeRegistrationController implements TimeRegistrationApi {
         }
         throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Did not find a registration for the user");
     }
+
+    @Override
+    public ResponseEntity<DefaultUpdateResponse> associateTimeRegistrationWithTask(TimeRegistrationAssociateTaskRequest timeRegistrationAssociateTaskRequest) {
+        DefaultUpdateResponse response = service.associateTimeRegistrationWithTask(timeRegistrationAssociateTaskRequest);
+        if (response != null) {
+            return HTTPResponseUtil.createOKResponse(response);
+        }
+        throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Did not find a registration for the user");
+    }
 }

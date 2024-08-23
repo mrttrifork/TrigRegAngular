@@ -1384,20 +1384,11 @@ body {
 .flex-column.flex-wrap-wrap {
   flex-wrap: wrap;
 }
-mat-card.mat-mdc-card.mat-mdc-card-outlined {
-  background-color: #f9f9ff;
-  border: none;
-}
-mat-card.mat-mdc-card.mat-mdc-card-outlined mat-card {
-  background-color: #ecf0ff;
-}
-mat-card.mat-mdc-card.mat-mdc-card-outlined mat-card mat-card {
-  background-color: #d7e3ff;
-}
 .bottom-right-fab-button {
   position: fixed;
   right: 1.5rem;
   bottom: 1.5rem;
+  z-index: 5;
 }
 
 /* angular:styles/global:styles */

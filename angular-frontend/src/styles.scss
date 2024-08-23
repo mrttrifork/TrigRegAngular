@@ -22,7 +22,6 @@ $angular-material-3-theme: mat.define-theme(
   @include mat.all-component-themes($angular-material-3-theme);
 }
 
-
 html, body {
   height: 100%;
 }
@@ -93,25 +92,9 @@ body {
   }
 }
 
-mat-card {
-  &.mat-mdc-card {
-    &.mat-mdc-card-outlined {
-      background-color: map.get(mat.$azure-palette, 98);
-      border: none;
-
-      mat-card {
-        background-color: map.get(mat.$azure-palette, 95);
-
-        mat-card {
-          background-color: map.get(mat.$azure-palette, 90);
-        }
-      }
-    }
-  }
-}
-
 .bottom-right-fab-button {
   position: fixed;
   right: 1.5rem;
   bottom: 1.5rem;
+  z-index: 5;
 }

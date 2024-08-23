@@ -8,6 +8,8 @@ import {toSignal} from "@angular/core/rxjs-interop";
 import {MatInputModule} from "@angular/material/input";
 import {firstValueFrom} from "rxjs/internal/firstValueFrom";
 import {TotalTimeService} from "../../service/total-time.service";
+import {TaskAndTasklessRegistrationInterval} from "../../model/TaskAndTasklessRegistrationInterval";
+import {HttpErrorResponse} from "@angular/common/http";
 
 @Component({
   selector: 'app-time-registration-day',
@@ -48,8 +50,7 @@ export class TimeRegistrationDayComponent {
     return this._dayTimeRegistrations;
   }
 
-  @Input() taskId?: number;
-  @Input() taskDescription?: string;
+  @Input({required: true}) task!: TaskAndTasklessRegistrationInterval;
 
   @Input({required: true}) set dayTimeRegistrations(value: DayTimeRegistrations) {
     this._dayTimeRegistrations = value;
@@ -63,41 +64,49 @@ export class TimeRegistrationDayComponent {
   private effectRef = effect(async () => {
     const timeChange = this.timeRegistrationChange();
     if (this.dayRegistrationFormControl.dirty && this.dayRegistrationFormControl.valid) {
-      const [firstRegistration] = this.dayTimeRegistrations.timeRegistrations;
-      const formattedTimeChange = timeChange ? DurationConverter.convertToISO8601Duration(timeChange) : undefined;
-      if (!firstRegistration && formattedTimeChange) {
-        const newRegistration = {
-          date: this.dayTimeRegistrations.date,
-          duration: formattedTimeChange,
-          taskId: this.taskId,
-          description: this.taskDescription
-        };
-        const response = await firstValueFrom(this.timeRegistrationService.addTimeRegistrationForUser(newRegistration));
-        const newTimeRegistration: TimeRegistration = {
-          ...newRegistration, ...{
-            timeRegistrationId: response.id,
-            status: TimeRegistrationStatus.Valid,
-            tags: []
-          }
-        };
-        this.dayTimeRegistrations.timeRegistrations.push(newTimeRegistration);
-      } else {
-        if (formattedTimeChange) {
-          const response = await firstValueFrom(this.timeRegistrationService.updateTimeRegistrationForUser(firstRegistration.timeRegistrationId, {
-            duration: formattedTimeChange
-          }));
-          this.dayTimeRegistrations.timeRegistrations.splice(0, 1, {
-            timeRegistrationId: response.id,
-            status: TimeRegistrationStatus.Valid,
-            tags: [],
-            duration: formattedTimeChange
-          });
+      try {
+        const [firstRegistration] = this.dayTimeRegistrations.timeRegistrations;
+        const formattedTimeChange = timeChange ? DurationConverter.convertToISO8601Duration(timeChange) : undefined;
+        if (!firstRegistration && formattedTimeChange) {
+          const newRegistration = {
+            date: this.dayTimeRegistrations.date,
+            duration: formattedTimeChange,
+            taskId: this.task.task?.taskId,
+            description: this.task.taskDescription
+          };
+          const response = await firstValueFrom(this.timeRegistrationService.addTimeRegistrationForUser(newRegistration));
+          const newTimeRegistration: TimeRegistration = {
+            ...newRegistration, ...{
+              timeRegistrationId: response.id,
+              status: TimeRegistrationStatus.Valid,
+              tags: []
+            }
+          };
+          this.dayTimeRegistrations.timeRegistrations.push(newTimeRegistration);
         } else {
-          await firstValueFrom(this.timeRegistrationService.deleteTimeRegistration(firstRegistration.timeRegistrationId));
-          this.dayTimeRegistrations.timeRegistrations.splice(0, 1);
+          if (formattedTimeChange) {
+            const response = await firstValueFrom(this.timeRegistrationService.updateTimeRegistrationForUser(firstRegistration.timeRegistrationId, {
+              duration: formattedTimeChange
+            }));
+            this.dayTimeRegistrations.timeRegistrations.splice(0, 1, {
+              timeRegistrationId: response.id,
+              status: TimeRegistrationStatus.Valid,
+              tags: [],
+              duration: formattedTimeChange
+            });
+          } else {
+            await firstValueFrom(this.timeRegistrationService.deleteTimeRegistration(firstRegistration.timeRegistrationId));
+            this.dayTimeRegistrations.timeRegistrations.splice(0, 1);
+          }
+        }
+        this.totalTimeService.patch();
+      } catch (error) {
+        if (error instanceof HttpErrorResponse) {
+          this.dayRegistrationFormControl.setErrors({
+            registrationFailed: error.error.message
+          })
         }
       }
-      this.totalTimeService.patch();
     }
   });
 
@@ -106,6 +115,6 @@ export class TimeRegistrationDayComponent {
   }
 
   public formatDanishDate(isoDate: string): string {
-    return DateTime.fromISO(isoDate).toFormat("dd-MM")
+    return DateTime.fromISO(isoDate).toFormat("dd/MM")
   }
 }

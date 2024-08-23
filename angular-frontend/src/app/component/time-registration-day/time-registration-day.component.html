@@ -1,8 +1,11 @@
-<mat-form-field>
-  <mat-label>{{ formatShortDay(dayTimeRegistrations.date) }}</mat-label>
+<mat-form-field subscriptSizing="dynamic">
+  <mat-label>hours</mat-label>
   <input matInput placeholder="hh,mm" [formControl]="dayRegistrationFormControl">
   <mat-hint>{{ formatDanishDate(dayTimeRegistrations.date) }}</mat-hint>
   @if (dayRegistrationFormControl.hasError('invalidInput')) {
     <mat-error>{{dayRegistrationFormControl.getError('invalidInput')}}</mat-error>
+  }
+  @if (dayRegistrationFormControl.hasError('registrationFailed')) {
+    <mat-error>{{dayRegistrationFormControl.getError('registrationFailed')}}</mat-error>
   }
 </mat-form-field>

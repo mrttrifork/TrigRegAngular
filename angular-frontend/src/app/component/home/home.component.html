@@ -1,38 +1,55 @@
-<mat-card appearance="outlined" class="card-1">
+<mat-card appearance="outlined">
   <mat-card-header>
-    <mat-card-title>{{ getWeekRangeAsString() }}</mat-card-title>
+    <mat-card-title>
+      <div class="flex-row align-items-center">
+        <button (click)="gotoPreviousWeek()" mat-icon-button matTooltip="Go to previous week">
+          <mat-icon>navigate_before</mat-icon>
+        </button>
+        {{ totalTimeService.getWeekDateString()() }}
+        <button (click)="goToNextWeek()" mat-icon-button matTooltip="Go to next week">
+          <mat-icon>navigate_next</mat-icon>
+        </button>
+      </div>
+    </mat-card-title>
   </mat-card-header>
-  <mat-card-content>
-    <app-total-line style="padding: 0 1rem;"></app-total-line>
-    <div class="flex-column">
-      <mat-card appearance="outlined">
-        <mat-card-header>
-          <mat-card-title>Unregistered tasks</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          @if (timeRegistrationByTaskSignal()) {
-            @for (task of timeRegistrationByTaskSignal()?.tasklessTimeRegistrations; track task) {
-              <app-unregistered-task-registration [task]="task"></app-unregistered-task-registration>
-            }
-          }
-        </mat-card-content>
-      </mat-card>
-      <mat-card appearance="outlined">
-        <mat-card-header>
-          <mat-card-title>Registered tasks</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          @if (timeRegistrationByTaskSignal()) {
-            <div class="flex-column">
-              @for (task of timeRegistrationByTaskSignal()?.taskTimeRegistrations; track task) {
+  @if (getTimeRegistrationSignalAsReadonly(); as timeRegistrationsByTaskResponse) {
+    <mat-card-content>
+      <app-total-line style="padding: 0 1rem;"></app-total-line>
+      <div class="flex-column">
+        <mat-tab-group>
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon>task_alt</mat-icon>
+              Tasks
+            </ng-template>
+            <div class="flex-column" style="overflow: hidden">
+              @for (task of timeRegistrationsByTaskResponse.taskTimeRegistrations; track task.task.taskId) {
                 <app-task-registration [task]="task"></app-task-registration>
               }
             </div>
-          }
-        </mat-card-content>
-      </mat-card>
-    </div>
-  </mat-card-content>
+          </mat-tab>
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon
+                [matBadge]="timeRegistrationsByTaskResponse.tasklessTimeRegistrations.length
+                ? timeRegistrationsByTaskResponse.tasklessTimeRegistrations.length
+                : null">
+                notes
+              </mat-icon>
+              Drafts
+            </ng-template>
+            <div class="flex-column" style="overflow: hidden">
+              @for (task of timeRegistrationsByTaskResponse.tasklessTimeRegistrations; track task.taskDescription) {
+                <app-task-registration [task]="task"></app-task-registration>
+              } @empty {
+                <p>Congratulations, there are no unregistered tasks</p>
+              }
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+    </mat-card-content>
+  }
 </mat-card>
 <div class="bottom-right-fab-button">
   <button mat-fab extended (click)="openCreateDialog()">

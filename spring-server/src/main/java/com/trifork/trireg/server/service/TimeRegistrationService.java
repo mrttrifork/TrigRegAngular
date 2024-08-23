@@ -35,7 +35,7 @@ public class TimeRegistrationService {
             });
         } catch (ApiException e) {
             logger.warn("Got an ApiException", e);
-            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "An error happened while calling getTimeRegistrationsForUser");
+            throw new HttpServerErrorException(HttpStatus.resolve(e.getCode()), e.getResponseBody());
         }
     }
 
@@ -47,7 +47,7 @@ public class TimeRegistrationService {
             });
         } catch (ApiException e) {
             logger.warn("Got an ApiException", e);
-            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "An error happened while calling getTimeRegistrationsForUser");
+            throw new HttpServerErrorException(HttpStatus.resolve(e.getCode()), e.getResponseBody());
         }
     }
 
@@ -60,7 +60,7 @@ public class TimeRegistrationService {
             });
         } catch (ApiException e) {
             logger.warn("Got an ApiException", e);
-            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "An error happened while calling getTimeRegistrationsForUser");
+            throw new HttpServerErrorException(HttpStatus.resolve(e.getCode()), e.getResponseBody());
         }
     }
 
@@ -73,7 +73,7 @@ public class TimeRegistrationService {
             });
         } catch (ApiException e) {
             logger.warn("Got an ApiException", e);
-            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "An error happened while calling getTimeRegistrationsForUser");
+            throw new HttpServerErrorException(HttpStatus.resolve(e.getCode()), e.getResponseBody());
         }
     }
 
@@ -84,7 +84,20 @@ public class TimeRegistrationService {
             });
         } catch (ApiException e) {
             logger.warn("Got an ApiException", e);
-            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "An error happened while calling getTimeRegistrationsForUser");
+            throw new HttpServerErrorException(HttpStatus.resolve(e.getCode()), e.getResponseBody());
+        }
+    }
+
+    public DefaultUpdateResponse associateTimeRegistrationWithTask(TimeRegistrationAssociateTaskRequest timeRegistrationAssociateTaskRequest) {
+        try {
+            com.trifork.trireg.client.api.TimeRegistrationAssociateTaskRequest clientRequest = CopyUtil.transferToTarget(timeRegistrationAssociateTaskRequest, new TypeReference<>() {
+            });
+            com.trifork.trireg.client.api.DefaultUpdateResponse response = client.associateTimeRegistrationWithTask(clientRequest);
+            return CopyUtil.transferToTarget(response, new TypeReference<>() {
+            });
+        } catch (ApiException e) {
+            logger.warn("Got an ApiException", e);
+            throw new HttpServerErrorException(HttpStatus.resolve(e.getCode()), e.getResponseBody());
         }
     }
 }

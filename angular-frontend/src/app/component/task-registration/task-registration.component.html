@@ -1,17 +1,28 @@
-<mat-card appearance="outlined">
-  <mat-card-content>
-    <div class="flex-row justify-space-between align-items-center">
-      <div>
-        @for (task of getTaskName(task.task.taskName); let index = $index; track task) {
-          <div [classList]="getMarginLeft(index)">{{ task }}</div>
-        }
-      </div>
-      <div class="flex-row flex-wrap-wrap">
-        @for (dailyRegistration of task.dailyRegistrations; track dailyRegistration) {
-          <app-time-registration-day [taskId]="task.task.taskId"
-                                     [dayTimeRegistrations]="dailyRegistration"></app-time-registration-day>
-        }
-      </div>
+<div class="flex-column" style="margin-top: 1rem">
+  <div class="flex-row justify-space-between align-items-center">
+    <strong>
+      @if (task.task) {
+        {{ task.task.taskName }}
+      } @else {
+        {{ task.taskDescription || "-" }}
+      }
+    </strong>
+    <div>
+      @if (hasDescription()) {
+        <button (click)="openAssociateTaskDialog()" mat-icon-button aria-label="Associate task" matTooltip="Associate task">
+          <mat-icon>add_task</mat-icon>
+        </button>
+      }
+      <button mat-icon-button aria-label="Advanced edit" matTooltip="Advanced edit">
+        <mat-icon>edit</mat-icon>
+      </button>
     </div>
-  </mat-card-content>
-</mat-card>
+  </div>
+  <div class="flex-row flex-wrap-wrap align-items-center">
+    @for (dailyRegistration of task.dailyRegistrations; track dailyRegistration) {
+      <app-time-registration-day [task]="task"
+                                 [dayTimeRegistrations]="dailyRegistration">
+      </app-time-registration-day>
+    }
+  </div>
+</div>

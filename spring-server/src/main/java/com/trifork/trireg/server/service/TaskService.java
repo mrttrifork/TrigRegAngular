@@ -33,7 +33,7 @@ public class TaskService {
             return CopyUtil.transferToTarget(response, new TypeReference<>() {});
         } catch (ApiException e) {
             logger.warn("Got an ApiException", e);
-            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "An error happened while calling getTimeRegistrationsForUser");
+            throw new HttpServerErrorException(HttpStatus.resolve(e.getCode()), e.getResponseBody());
         }
 
     }

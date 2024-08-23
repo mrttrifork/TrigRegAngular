@@ -38,4 +38,8 @@ public class TriforkRegistrationHttpClient {
     public DefaultDeleteResponse deleteTimeRegistration(Long timeRegistrationId) throws ApiException {
         return timeRegistrationApi.deleteTimeRegistration(timeRegistrationId);
     }
+
+    public DefaultUpdateResponse associateTimeRegistrationWithTask(TimeRegistrationAssociateTaskRequest timeRegistrationAssociateTaskRequest) throws ApiException {
+        return timeRegistrationApi.associateTimeRegistrationWithTask(timeRegistrationAssociateTaskRequest);
+    }
 }

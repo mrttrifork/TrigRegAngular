@@ -60,7 +60,11 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler(HttpServerErrorException.class)
     public ResponseEntity<ErrorResponse> HttpServerErrorException(HttpServerErrorException exception) {
         log.error("Got HttpServerErrorException", exception);
-        return HTTPResponseUtil.createResponse(exception.getStatusCode(), ErrorResponses.HTTP_CLIENT_ERROR_EXCEPTION(exception.getStatusCode(), "Der skete en fejl"));
+        if(exception.getStatusCode().is5xxServerError()) {
+            return HTTPResponseUtil.createResponse(exception.getStatusCode(), ErrorResponses.HTTP_CLIENT_ERROR_EXCEPTION(exception.getStatusCode(), "Der skete en fejl"));
+        } else {
+            return HTTPResponseUtil.createResponse(exception.getStatusCode(), ErrorResponses.HTTP_CLIENT_ERROR_EXCEPTION(exception.getStatusCode(), exception.getMessage()));
+        }
     }
 
     @ExceptionHandler(SoapFaultClientException.class)
