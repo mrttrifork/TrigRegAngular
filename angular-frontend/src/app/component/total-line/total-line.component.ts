@@ -64,7 +64,7 @@ export class TotalLineComponent {
   });
 
   public formatDanishDate(isoDate: string): string {
-    return DateTime.fromISO(isoDate).toFormat("dd-MM")
+    return DateTime.fromISO(isoDate).toFormat("dd/MM")
   }
 
   public getHours({taskMinutes, tasklessMinutes}: DateAndMinutes): string {
@@ -78,7 +78,6 @@ export class TotalLineComponent {
   }
 
   protected readonly Object = Object;
-  protected readonly DurationConverter = DurationConverter;
 
   private isTasklessTimeRegistrationsInterval(currentValue: TasklessTimeRegistrationsInterval | TaskTimeRegistrationsInterval): currentValue is TasklessTimeRegistrationsInterval {
     return "taskDescription" in currentValue;

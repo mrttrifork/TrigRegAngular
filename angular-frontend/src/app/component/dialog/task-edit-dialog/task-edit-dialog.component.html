@@ -1,0 +1,8 @@
+<h2 mat-dialog-title>Advanced Edit</h2>
+<mat-dialog-content>
+  <app-task-edit-form (taskByTagRegistrationsOutput)="taskRegistration($event)" [task]="task"></app-task-edit-form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button (click)="editTask()" mat-button cdkFocusInitial>Create</button>
+</mat-dialog-actions>

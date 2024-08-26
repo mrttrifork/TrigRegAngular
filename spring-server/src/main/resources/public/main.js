@@ -217,6 +217,8 @@ import {
   ɵɵinvalidFactory,
   ɵɵlistener,
   ɵɵloadQuery,
+  ɵɵnamespaceHTML,
+  ɵɵnamespaceSVG,
   ɵɵnextContext,
   ɵɵprojection,
   ɵɵprojectionDef,
@@ -241,7 +243,7 @@ import {
   ɵɵtextInterpolate,
   ɵɵtextInterpolate1,
   ɵɵviewQuery
-} from "./chunk-NKSW6AZX.js";
+} from "./chunk-ZPQ55IXX.js";
 
 // node_modules/@angular/common/fesm2022/http.mjs
 var HttpHandler = class {
@@ -28824,7 +28826,7 @@ var _MatIcon = class _MatIcon {
       this._updateFontIconClasses();
     }
   }
-  constructor(_elementRef, _iconRegistry, ariaHidden, _location, _errorHandler, defaults2) {
+  constructor(_elementRef, _iconRegistry, ariaHidden, _location, _errorHandler, defaults3) {
     this._elementRef = _elementRef;
     this._iconRegistry = _iconRegistry;
     this._location = _location;
@@ -28832,12 +28834,12 @@ var _MatIcon = class _MatIcon {
     this.inline = false;
     this._previousFontSetClass = [];
     this._currentIconFetch = Subscription.EMPTY;
-    if (defaults2) {
-      if (defaults2.color) {
-        this.color = this._defaultColor = defaults2.color;
+    if (defaults3) {
+      if (defaults3.color) {
+        this.color = this._defaultColor = defaults3.color;
       }
-      if (defaults2.fontSet) {
-        this.fontSet = defaults2.fontSet;
+      if (defaults3.fontSet) {
+        this.fontSet = defaults3.fontSet;
       }
     }
     if (!ariaHidden) {
@@ -39633,10 +39635,9 @@ var _TotalLineComponent = class _TotalLineComponent {
       });
     });
     this.Object = Object;
-    this.DurationConverter = DurationConverter;
   }
   formatDanishDate(isoDate) {
-    return DateTime.fromISO(isoDate).toFormat("dd-MM");
+    return DateTime.fromISO(isoDate).toFormat("dd/MM");
   }
   getHours({ taskMinutes, tasklessMinutes }) {
     const totalMinutes = DurationConverter.toHumanFromMinutes(taskMinutes + tasklessMinutes);
@@ -41738,8 +41739,8 @@ var _Dialog = class _Dialog {
     this._scrollStrategy = scrollStrategy;
   }
   open(componentOrTemplateRef, config) {
-    const defaults2 = this._defaultOptions || new DialogConfig();
-    config = __spreadValues(__spreadValues({}, defaults2), config);
+    const defaults3 = this._defaultOptions || new DialogConfig();
+    config = __spreadValues(__spreadValues({}, defaults3), config);
     config.id = config.id || `cdk-dialog-${uniqueId++}`;
     if (config.id && this.getDialogById(config.id) && (typeof ngDevMode === "undefined" || ngDevMode)) {
       throw Error(`Dialog with id "${config.id}" exists already. The dialog id must be unique.`);
@@ -43991,6 +43992,1156 @@ var AssociateTaskDialogComponent = _AssociateTaskDialogComponent;
   (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AssociateTaskDialogComponent, { className: "AssociateTaskDialogComponent", filePath: "src\\app\\component\\dialog\\associate-task-dialog\\associate-task-dialog.component.ts", lineNumber: 39 });
 })();
 
+// node_modules/@angular/material/fesm2022/checkbox.mjs
+var _c010 = ["input"];
+var _c18 = ["label"];
+var _c25 = ["*"];
+var MAT_CHECKBOX_DEFAULT_OPTIONS = new InjectionToken("mat-checkbox-default-options", {
+  providedIn: "root",
+  factory: MAT_CHECKBOX_DEFAULT_OPTIONS_FACTORY
+});
+function MAT_CHECKBOX_DEFAULT_OPTIONS_FACTORY() {
+  return {
+    color: "accent",
+    clickAction: "check-indeterminate"
+  };
+}
+var TransitionCheckState;
+(function(TransitionCheckState2) {
+  TransitionCheckState2[TransitionCheckState2["Init"] = 0] = "Init";
+  TransitionCheckState2[TransitionCheckState2["Checked"] = 1] = "Checked";
+  TransitionCheckState2[TransitionCheckState2["Unchecked"] = 2] = "Unchecked";
+  TransitionCheckState2[TransitionCheckState2["Indeterminate"] = 3] = "Indeterminate";
+})(TransitionCheckState || (TransitionCheckState = {}));
+var MAT_CHECKBOX_CONTROL_VALUE_ACCESSOR = {
+  provide: NG_VALUE_ACCESSOR,
+  useExisting: forwardRef(() => MatCheckbox),
+  multi: true
+};
+var MatCheckboxChange = class {
+};
+var nextUniqueId4 = 0;
+var defaults2 = MAT_CHECKBOX_DEFAULT_OPTIONS_FACTORY();
+var _MatCheckbox = class _MatCheckbox {
+  /** Focuses the checkbox. */
+  focus() {
+    this._inputElement.nativeElement.focus();
+  }
+  /** Creates the change event that will be emitted by the checkbox. */
+  _createChangeEvent(isChecked) {
+    const event = new MatCheckboxChange();
+    event.source = this;
+    event.checked = isChecked;
+    return event;
+  }
+  /** Gets the element on which to add the animation CSS classes. */
+  _getAnimationTargetElement() {
+    return this._inputElement?.nativeElement;
+  }
+  /** Returns the unique id for the visual hidden input. */
+  get inputId() {
+    return `${this.id || this._uniqueId}-input`;
+  }
+  constructor(_elementRef, _changeDetectorRef, _ngZone, tabIndex, _animationMode, _options) {
+    this._elementRef = _elementRef;
+    this._changeDetectorRef = _changeDetectorRef;
+    this._ngZone = _ngZone;
+    this._animationMode = _animationMode;
+    this._options = _options;
+    this._animationClasses = {
+      uncheckedToChecked: "mdc-checkbox--anim-unchecked-checked",
+      uncheckedToIndeterminate: "mdc-checkbox--anim-unchecked-indeterminate",
+      checkedToUnchecked: "mdc-checkbox--anim-checked-unchecked",
+      checkedToIndeterminate: "mdc-checkbox--anim-checked-indeterminate",
+      indeterminateToChecked: "mdc-checkbox--anim-indeterminate-checked",
+      indeterminateToUnchecked: "mdc-checkbox--anim-indeterminate-unchecked"
+    };
+    this.ariaLabel = "";
+    this.ariaLabelledby = null;
+    this.labelPosition = "after";
+    this.name = null;
+    this.change = new EventEmitter();
+    this.indeterminateChange = new EventEmitter();
+    this._onTouched = () => {
+    };
+    this._currentAnimationClass = "";
+    this._currentCheckState = TransitionCheckState.Init;
+    this._controlValueAccessorChangeFn = () => {
+    };
+    this._validatorChangeFn = () => {
+    };
+    this._checked = false;
+    this._disabled = false;
+    this._indeterminate = false;
+    this._options = this._options || defaults2;
+    this.color = this._options.color || defaults2.color;
+    this.tabIndex = parseInt(tabIndex) || 0;
+    this.id = this._uniqueId = `mat-mdc-checkbox-${++nextUniqueId4}`;
+  }
+  ngOnChanges(changes) {
+    if (changes["required"]) {
+      this._validatorChangeFn();
+    }
+  }
+  ngAfterViewInit() {
+    this._syncIndeterminate(this._indeterminate);
+  }
+  /** Whether the checkbox is checked. */
+  get checked() {
+    return this._checked;
+  }
+  set checked(value) {
+    if (value != this.checked) {
+      this._checked = value;
+      this._changeDetectorRef.markForCheck();
+    }
+  }
+  /** Whether the checkbox is disabled. */
+  get disabled() {
+    return this._disabled;
+  }
+  set disabled(value) {
+    if (value !== this.disabled) {
+      this._disabled = value;
+      this._changeDetectorRef.markForCheck();
+    }
+  }
+  /**
+   * Whether the checkbox is indeterminate. This is also known as "mixed" mode and can be used to
+   * represent a checkbox with three states, e.g. a checkbox that represents a nested list of
+   * checkable items. Note that whenever checkbox is manually clicked, indeterminate is immediately
+   * set to false.
+   */
+  get indeterminate() {
+    return this._indeterminate;
+  }
+  set indeterminate(value) {
+    const changed = value != this._indeterminate;
+    this._indeterminate = value;
+    if (changed) {
+      if (this._indeterminate) {
+        this._transitionCheckState(TransitionCheckState.Indeterminate);
+      } else {
+        this._transitionCheckState(this.checked ? TransitionCheckState.Checked : TransitionCheckState.Unchecked);
+      }
+      this.indeterminateChange.emit(this._indeterminate);
+    }
+    this._syncIndeterminate(this._indeterminate);
+  }
+  _isRippleDisabled() {
+    return this.disableRipple || this.disabled;
+  }
+  /** Method being called whenever the label text changes. */
+  _onLabelTextChange() {
+    this._changeDetectorRef.detectChanges();
+  }
+  // Implemented as part of ControlValueAccessor.
+  writeValue(value) {
+    this.checked = !!value;
+  }
+  // Implemented as part of ControlValueAccessor.
+  registerOnChange(fn) {
+    this._controlValueAccessorChangeFn = fn;
+  }
+  // Implemented as part of ControlValueAccessor.
+  registerOnTouched(fn) {
+    this._onTouched = fn;
+  }
+  // Implemented as part of ControlValueAccessor.
+  setDisabledState(isDisabled) {
+    this.disabled = isDisabled;
+  }
+  // Implemented as a part of Validator.
+  validate(control) {
+    return this.required && control.value !== true ? {
+      "required": true
+    } : null;
+  }
+  // Implemented as a part of Validator.
+  registerOnValidatorChange(fn) {
+    this._validatorChangeFn = fn;
+  }
+  _transitionCheckState(newState) {
+    let oldState = this._currentCheckState;
+    let element = this._getAnimationTargetElement();
+    if (oldState === newState || !element) {
+      return;
+    }
+    if (this._currentAnimationClass) {
+      element.classList.remove(this._currentAnimationClass);
+    }
+    this._currentAnimationClass = this._getAnimationClassForCheckStateTransition(oldState, newState);
+    this._currentCheckState = newState;
+    if (this._currentAnimationClass.length > 0) {
+      element.classList.add(this._currentAnimationClass);
+      const animationClass = this._currentAnimationClass;
+      this._ngZone.runOutsideAngular(() => {
+        setTimeout(() => {
+          element.classList.remove(animationClass);
+        }, 1e3);
+      });
+    }
+  }
+  _emitChangeEvent() {
+    this._controlValueAccessorChangeFn(this.checked);
+    this.change.emit(this._createChangeEvent(this.checked));
+    if (this._inputElement) {
+      this._inputElement.nativeElement.checked = this.checked;
+    }
+  }
+  /** Toggles the `checked` state of the checkbox. */
+  toggle() {
+    this.checked = !this.checked;
+    this._controlValueAccessorChangeFn(this.checked);
+  }
+  _handleInputClick() {
+    const clickAction = this._options?.clickAction;
+    if (!this.disabled && clickAction !== "noop") {
+      if (this.indeterminate && clickAction !== "check") {
+        Promise.resolve().then(() => {
+          this._indeterminate = false;
+          this.indeterminateChange.emit(this._indeterminate);
+        });
+      }
+      this._checked = !this._checked;
+      this._transitionCheckState(this._checked ? TransitionCheckState.Checked : TransitionCheckState.Unchecked);
+      this._emitChangeEvent();
+    } else if (!this.disabled && clickAction === "noop") {
+      this._inputElement.nativeElement.checked = this.checked;
+      this._inputElement.nativeElement.indeterminate = this.indeterminate;
+    }
+  }
+  _onInteractionEvent(event) {
+    event.stopPropagation();
+  }
+  _onBlur() {
+    Promise.resolve().then(() => {
+      this._onTouched();
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+  _getAnimationClassForCheckStateTransition(oldState, newState) {
+    if (this._animationMode === "NoopAnimations") {
+      return "";
+    }
+    switch (oldState) {
+      case TransitionCheckState.Init:
+        if (newState === TransitionCheckState.Checked) {
+          return this._animationClasses.uncheckedToChecked;
+        } else if (newState == TransitionCheckState.Indeterminate) {
+          return this._checked ? this._animationClasses.checkedToIndeterminate : this._animationClasses.uncheckedToIndeterminate;
+        }
+        break;
+      case TransitionCheckState.Unchecked:
+        return newState === TransitionCheckState.Checked ? this._animationClasses.uncheckedToChecked : this._animationClasses.uncheckedToIndeterminate;
+      case TransitionCheckState.Checked:
+        return newState === TransitionCheckState.Unchecked ? this._animationClasses.checkedToUnchecked : this._animationClasses.checkedToIndeterminate;
+      case TransitionCheckState.Indeterminate:
+        return newState === TransitionCheckState.Checked ? this._animationClasses.indeterminateToChecked : this._animationClasses.indeterminateToUnchecked;
+    }
+    return "";
+  }
+  /**
+   * Syncs the indeterminate value with the checkbox DOM node.
+   *
+   * We sync `indeterminate` directly on the DOM node, because in Ivy the check for whether a
+   * property is supported on an element boils down to `if (propName in element)`. Domino's
+   * HTMLInputElement doesn't have an `indeterminate` property so Ivy will warn during
+   * server-side rendering.
+   */
+  _syncIndeterminate(value) {
+    const nativeCheckbox = this._inputElement;
+    if (nativeCheckbox) {
+      nativeCheckbox.nativeElement.indeterminate = value;
+    }
+  }
+  _onInputClick() {
+    this._handleInputClick();
+  }
+  _onTouchTargetClick() {
+    this._handleInputClick();
+    if (!this.disabled) {
+      this._inputElement.nativeElement.focus();
+    }
+  }
+  /**
+   *  Prevent click events that come from the `<label/>` element from bubbling. This prevents the
+   *  click handler on the host from triggering twice when clicking on the `<label/>` element. After
+   *  the click event on the `<label/>` propagates, the browsers dispatches click on the associated
+   *  `<input/>`. By preventing clicks on the label by bubbling, we ensure only one click event
+   *  bubbles when the label is clicked.
+   */
+  _preventBubblingFromLabel(event) {
+    if (!!event.target && this._labelElement.nativeElement.contains(event.target)) {
+      event.stopPropagation();
+    }
+  }
+};
+_MatCheckbox.\u0275fac = function MatCheckbox_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatCheckbox)(\u0275\u0275directiveInject(ElementRef), \u0275\u0275directiveInject(ChangeDetectorRef), \u0275\u0275directiveInject(NgZone), \u0275\u0275injectAttribute("tabindex"), \u0275\u0275directiveInject(ANIMATION_MODULE_TYPE, 8), \u0275\u0275directiveInject(MAT_CHECKBOX_DEFAULT_OPTIONS, 8));
+};
+_MatCheckbox.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
+  type: _MatCheckbox,
+  selectors: [["mat-checkbox"]],
+  viewQuery: function MatCheckbox_Query(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275viewQuery(_c010, 5);
+      \u0275\u0275viewQuery(_c18, 5);
+      \u0275\u0275viewQuery(MatRipple, 5);
+    }
+    if (rf & 2) {
+      let _t;
+      \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx._inputElement = _t.first);
+      \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx._labelElement = _t.first);
+      \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx.ripple = _t.first);
+    }
+  },
+  hostAttrs: [1, "mat-mdc-checkbox"],
+  hostVars: 14,
+  hostBindings: function MatCheckbox_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      \u0275\u0275hostProperty("id", ctx.id);
+      \u0275\u0275attribute("tabindex", null)("aria-label", null)("aria-labelledby", null);
+      \u0275\u0275classMap(ctx.color ? "mat-" + ctx.color : "mat-accent");
+      \u0275\u0275classProp("_mat-animation-noopable", ctx._animationMode === "NoopAnimations")("mdc-checkbox--disabled", ctx.disabled)("mat-mdc-checkbox-disabled", ctx.disabled)("mat-mdc-checkbox-checked", ctx.checked);
+    }
+  },
+  inputs: {
+    ariaLabel: [0, "aria-label", "ariaLabel"],
+    ariaLabelledby: [0, "aria-labelledby", "ariaLabelledby"],
+    ariaDescribedby: [0, "aria-describedby", "ariaDescribedby"],
+    id: "id",
+    required: [2, "required", "required", booleanAttribute],
+    labelPosition: "labelPosition",
+    name: "name",
+    value: "value",
+    disableRipple: [2, "disableRipple", "disableRipple", booleanAttribute],
+    tabIndex: [2, "tabIndex", "tabIndex", (value) => value == null ? void 0 : numberAttribute(value)],
+    color: "color",
+    checked: [2, "checked", "checked", booleanAttribute],
+    disabled: [2, "disabled", "disabled", booleanAttribute],
+    indeterminate: [2, "indeterminate", "indeterminate", booleanAttribute]
+  },
+  outputs: {
+    change: "change",
+    indeterminateChange: "indeterminateChange"
+  },
+  exportAs: ["matCheckbox"],
+  standalone: true,
+  features: [\u0275\u0275ProvidersFeature([MAT_CHECKBOX_CONTROL_VALUE_ACCESSOR, {
+    provide: NG_VALIDATORS,
+    useExisting: _MatCheckbox,
+    multi: true
+  }]), \u0275\u0275InputTransformsFeature, \u0275\u0275NgOnChangesFeature, \u0275\u0275StandaloneFeature],
+  ngContentSelectors: _c25,
+  decls: 15,
+  vars: 19,
+  consts: [["checkbox", ""], ["input", ""], ["label", ""], ["mat-internal-form-field", "", 3, "click", "labelPosition"], [1, "mdc-checkbox"], [1, "mat-mdc-checkbox-touch-target", 3, "click"], ["type", "checkbox", 1, "mdc-checkbox__native-control", 3, "blur", "click", "change", "checked", "indeterminate", "disabled", "id", "required", "tabIndex"], [1, "mdc-checkbox__ripple"], [1, "mdc-checkbox__background"], ["focusable", "false", "viewBox", "0 0 24 24", "aria-hidden", "true", 1, "mdc-checkbox__checkmark"], ["fill", "none", "d", "M1.73,12.91 8.1,19.28 22.79,4.59", 1, "mdc-checkbox__checkmark-path"], [1, "mdc-checkbox__mixedmark"], ["mat-ripple", "", 1, "mat-mdc-checkbox-ripple", "mat-mdc-focus-indicator", 3, "matRippleTrigger", "matRippleDisabled", "matRippleCentered"], [1, "mdc-label", 3, "for"]],
+  template: function MatCheckbox_Template(rf, ctx) {
+    if (rf & 1) {
+      const _r1 = \u0275\u0275getCurrentView();
+      \u0275\u0275projectionDef();
+      \u0275\u0275elementStart(0, "div", 3);
+      \u0275\u0275listener("click", function MatCheckbox_Template_div_click_0_listener($event) {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx._preventBubblingFromLabel($event));
+      });
+      \u0275\u0275elementStart(1, "div", 4, 0)(3, "div", 5);
+      \u0275\u0275listener("click", function MatCheckbox_Template_div_click_3_listener() {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx._onTouchTargetClick());
+      });
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(4, "input", 6, 1);
+      \u0275\u0275listener("blur", function MatCheckbox_Template_input_blur_4_listener() {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx._onBlur());
+      })("click", function MatCheckbox_Template_input_click_4_listener() {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx._onInputClick());
+      })("change", function MatCheckbox_Template_input_change_4_listener($event) {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx._onInteractionEvent($event));
+      });
+      \u0275\u0275elementEnd();
+      \u0275\u0275element(6, "div", 7);
+      \u0275\u0275elementStart(7, "div", 8);
+      \u0275\u0275namespaceSVG();
+      \u0275\u0275elementStart(8, "svg", 9);
+      \u0275\u0275element(9, "path", 10);
+      \u0275\u0275elementEnd();
+      \u0275\u0275namespaceHTML();
+      \u0275\u0275element(10, "div", 11);
+      \u0275\u0275elementEnd();
+      \u0275\u0275element(11, "div", 12);
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(12, "label", 13, 2);
+      \u0275\u0275projection(14);
+      \u0275\u0275elementEnd()();
+    }
+    if (rf & 2) {
+      const checkbox_r2 = \u0275\u0275reference(2);
+      \u0275\u0275property("labelPosition", ctx.labelPosition);
+      \u0275\u0275advance(4);
+      \u0275\u0275classProp("mdc-checkbox--selected", ctx.checked);
+      \u0275\u0275property("checked", ctx.checked)("indeterminate", ctx.indeterminate)("disabled", ctx.disabled)("id", ctx.inputId)("required", ctx.required)("tabIndex", ctx.disabled ? -1 : ctx.tabIndex);
+      \u0275\u0275attribute("aria-label", ctx.ariaLabel || null)("aria-labelledby", ctx.ariaLabelledby)("aria-describedby", ctx.ariaDescribedby)("aria-checked", ctx.indeterminate ? "mixed" : null)("name", ctx.name)("value", ctx.value);
+      \u0275\u0275advance(7);
+      \u0275\u0275property("matRippleTrigger", checkbox_r2)("matRippleDisabled", ctx.disableRipple || ctx.disabled)("matRippleCentered", true);
+      \u0275\u0275advance();
+      \u0275\u0275property("for", ctx.inputId);
+    }
+  },
+  dependencies: [MatRipple, _MatInternalFormField],
+  styles: ['.mdc-checkbox{display:inline-block;position:relative;flex:0 0 18px;box-sizing:content-box;width:18px;height:18px;line-height:0;white-space:nowrap;cursor:pointer;vertical-align:bottom;padding:calc((var(--mdc-checkbox-state-layer-size, 40px) - 18px)/2);margin:calc((var(--mdc-checkbox-state-layer-size, 40px) - var(--mdc-checkbox-state-layer-size, 40px))/2)}.mdc-checkbox:hover .mdc-checkbox__ripple{opacity:var(--mdc-checkbox-unselected-hover-state-layer-opacity);background-color:var(--mdc-checkbox-unselected-hover-state-layer-color)}.mdc-checkbox:hover .mat-mdc-checkbox-ripple .mat-ripple-element{background-color:var(--mdc-checkbox-unselected-hover-state-layer-color)}.mdc-checkbox .mdc-checkbox__native-control:focus~.mdc-checkbox__ripple{opacity:var(--mdc-checkbox-unselected-focus-state-layer-opacity);background-color:var(--mdc-checkbox-unselected-focus-state-layer-color)}.mdc-checkbox .mdc-checkbox__native-control:focus~.mat-mdc-checkbox-ripple .mat-ripple-element{background-color:var(--mdc-checkbox-unselected-focus-state-layer-color)}.mdc-checkbox:active .mdc-checkbox__native-control~.mdc-checkbox__ripple{opacity:var(--mdc-checkbox-unselected-pressed-state-layer-opacity);background-color:var(--mdc-checkbox-unselected-pressed-state-layer-color)}.mdc-checkbox:active .mdc-checkbox__native-control~.mat-mdc-checkbox-ripple .mat-ripple-element{background-color:var(--mdc-checkbox-unselected-pressed-state-layer-color)}.mdc-checkbox:hover .mdc-checkbox__native-control:checked~.mdc-checkbox__ripple{opacity:var(--mdc-checkbox-selected-hover-state-layer-opacity);background-color:var(--mdc-checkbox-selected-hover-state-layer-color)}.mdc-checkbox:hover .mdc-checkbox__native-control:checked~.mat-mdc-checkbox-ripple .mat-ripple-element{background-color:var(--mdc-checkbox-selected-hover-state-layer-color)}.mdc-checkbox .mdc-checkbox__native-control:focus:checked~.mdc-checkbox__ripple{opacity:var(--mdc-checkbox-selected-focus-state-layer-opacity);background-color:var(--mdc-checkbox-selected-focus-state-layer-color)}.mdc-checkbox .mdc-checkbox__native-control:focus:checked~.mat-mdc-checkbox-ripple .mat-ripple-element{background-color:var(--mdc-checkbox-selected-focus-state-layer-color)}.mdc-checkbox:active .mdc-checkbox__native-control:checked~.mdc-checkbox__ripple{opacity:var(--mdc-checkbox-selected-pressed-state-layer-opacity);background-color:var(--mdc-checkbox-selected-pressed-state-layer-color)}.mdc-checkbox:active .mdc-checkbox__native-control:checked~.mat-mdc-checkbox-ripple .mat-ripple-element{background-color:var(--mdc-checkbox-selected-pressed-state-layer-color)}.mdc-checkbox .mdc-checkbox__native-control{position:absolute;margin:0;padding:0;opacity:0;cursor:inherit;width:var(--mdc-checkbox-state-layer-size, 40px);height:var(--mdc-checkbox-state-layer-size, 40px);top:calc((var(--mdc-checkbox-state-layer-size, 40px) - var(--mdc-checkbox-state-layer-size, 40px))/2);right:calc((var(--mdc-checkbox-state-layer-size, 40px) - var(--mdc-checkbox-state-layer-size, 40px))/2);left:calc((var(--mdc-checkbox-state-layer-size, 40px) - var(--mdc-checkbox-state-layer-size, 40px))/2)}.mdc-checkbox--disabled{cursor:default;pointer-events:none}.mdc-checkbox__background{display:inline-flex;position:absolute;align-items:center;justify-content:center;box-sizing:border-box;width:18px;height:18px;border:2px solid currentColor;border-radius:2px;background-color:rgba(0,0,0,0);pointer-events:none;will-change:background-color,border-color;transition:background-color 90ms cubic-bezier(0.4, 0, 0.6, 1),border-color 90ms cubic-bezier(0.4, 0, 0.6, 1);border-color:var(--mdc-checkbox-unselected-icon-color);top:calc((var(--mdc-checkbox-state-layer-size, 40px) - 18px)/2);left:calc((var(--mdc-checkbox-state-layer-size, 40px) - 18px)/2)}.mdc-checkbox__native-control:enabled:checked~.mdc-checkbox__background,.mdc-checkbox__native-control:enabled:indeterminate~.mdc-checkbox__background{border-color:var(--mdc-checkbox-selected-icon-color);background-color:var(--mdc-checkbox-selected-icon-color)}.mdc-checkbox--disabled .mdc-checkbox__background{border-color:var(--mdc-checkbox-disabled-unselected-icon-color)}.mdc-checkbox__native-control:disabled:checked~.mdc-checkbox__background,.mdc-checkbox__native-control:disabled:indeterminate~.mdc-checkbox__background{background-color:var(--mdc-checkbox-disabled-selected-icon-color);border-color:rgba(0,0,0,0)}.mdc-checkbox:hover .mdc-checkbox__native-control:not(:checked)~.mdc-checkbox__background,.mdc-checkbox:hover .mdc-checkbox__native-control:not(:indeterminate)~.mdc-checkbox__background{border-color:var(--mdc-checkbox-unselected-hover-icon-color);background-color:rgba(0,0,0,0)}.mdc-checkbox:hover .mdc-checkbox__native-control:checked~.mdc-checkbox__background,.mdc-checkbox:hover .mdc-checkbox__native-control:indeterminate~.mdc-checkbox__background{border-color:var(--mdc-checkbox-selected-hover-icon-color);background-color:var(--mdc-checkbox-selected-hover-icon-color)}.mdc-checkbox__native-control:focus:focus:not(:checked)~.mdc-checkbox__background,.mdc-checkbox__native-control:focus:focus:not(:indeterminate)~.mdc-checkbox__background{border-color:var(--mdc-checkbox-unselected-focus-icon-color)}.mdc-checkbox__native-control:focus:focus:checked~.mdc-checkbox__background,.mdc-checkbox__native-control:focus:focus:indeterminate~.mdc-checkbox__background{border-color:var(--mdc-checkbox-selected-focus-icon-color);background-color:var(--mdc-checkbox-selected-focus-icon-color)}.mdc-checkbox__checkmark{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;opacity:0;transition:opacity 180ms cubic-bezier(0.4, 0, 0.6, 1);color:var(--mdc-checkbox-selected-checkmark-color)}.mdc-checkbox--disabled .mdc-checkbox__checkmark{color:var(--mdc-checkbox-disabled-selected-checkmark-color)}.mdc-checkbox__checkmark-path{transition:stroke-dashoffset 180ms cubic-bezier(0.4, 0, 0.6, 1);stroke:currentColor;stroke-width:3.12px;stroke-dashoffset:29.7833385;stroke-dasharray:29.7833385}.mdc-checkbox__mixedmark{width:100%;height:0;transform:scaleX(0) rotate(0deg);border-width:1px;border-style:solid;opacity:0;transition:opacity 90ms cubic-bezier(0.4, 0, 0.6, 1),transform 90ms cubic-bezier(0.4, 0, 0.6, 1);border-color:var(--mdc-checkbox-selected-checkmark-color)}.cdk-high-contrast-active .mdc-checkbox__mixedmark{margin:0 1px}.mdc-checkbox--disabled .mdc-checkbox__mixedmark{border-color:var(--mdc-checkbox-disabled-selected-checkmark-color)}.mdc-checkbox--anim-unchecked-checked .mdc-checkbox__background,.mdc-checkbox--anim-unchecked-indeterminate .mdc-checkbox__background,.mdc-checkbox--anim-checked-unchecked .mdc-checkbox__background,.mdc-checkbox--anim-indeterminate-unchecked .mdc-checkbox__background{animation-duration:180ms;animation-timing-function:linear}.mdc-checkbox--anim-unchecked-checked .mdc-checkbox__checkmark-path{animation:mdc-checkbox-unchecked-checked-checkmark-path 180ms linear;transition:none}.mdc-checkbox--anim-unchecked-indeterminate .mdc-checkbox__mixedmark{animation:mdc-checkbox-unchecked-indeterminate-mixedmark 90ms linear;transition:none}.mdc-checkbox--anim-checked-unchecked .mdc-checkbox__checkmark-path{animation:mdc-checkbox-checked-unchecked-checkmark-path 90ms linear;transition:none}.mdc-checkbox--anim-checked-indeterminate .mdc-checkbox__checkmark{animation:mdc-checkbox-checked-indeterminate-checkmark 90ms linear;transition:none}.mdc-checkbox--anim-checked-indeterminate .mdc-checkbox__mixedmark{animation:mdc-checkbox-checked-indeterminate-mixedmark 90ms linear;transition:none}.mdc-checkbox--anim-indeterminate-checked .mdc-checkbox__checkmark{animation:mdc-checkbox-indeterminate-checked-checkmark 500ms linear;transition:none}.mdc-checkbox--anim-indeterminate-checked .mdc-checkbox__mixedmark{animation:mdc-checkbox-indeterminate-checked-mixedmark 500ms linear;transition:none}.mdc-checkbox--anim-indeterminate-unchecked .mdc-checkbox__mixedmark{animation:mdc-checkbox-indeterminate-unchecked-mixedmark 300ms linear;transition:none}.mdc-checkbox__native-control:checked~.mdc-checkbox__background,.mdc-checkbox__native-control:indeterminate~.mdc-checkbox__background{transition:border-color 90ms cubic-bezier(0, 0, 0.2, 1),background-color 90ms cubic-bezier(0, 0, 0.2, 1)}.mdc-checkbox__native-control:checked~.mdc-checkbox__background .mdc-checkbox__checkmark-path,.mdc-checkbox__native-control:indeterminate~.mdc-checkbox__background .mdc-checkbox__checkmark-path{stroke-dashoffset:0}.mdc-checkbox__native-control:checked~.mdc-checkbox__background .mdc-checkbox__checkmark{transition:opacity 180ms cubic-bezier(0, 0, 0.2, 1),transform 180ms cubic-bezier(0, 0, 0.2, 1);opacity:1}.mdc-checkbox__native-control:checked~.mdc-checkbox__background .mdc-checkbox__mixedmark{transform:scaleX(1) rotate(-45deg)}.mdc-checkbox__native-control:indeterminate~.mdc-checkbox__background .mdc-checkbox__checkmark{transform:rotate(45deg);opacity:0;transition:opacity 90ms cubic-bezier(0.4, 0, 0.6, 1),transform 90ms cubic-bezier(0.4, 0, 0.6, 1)}.mdc-checkbox__native-control:indeterminate~.mdc-checkbox__background .mdc-checkbox__mixedmark{transform:scaleX(1) rotate(0deg);opacity:1}@keyframes mdc-checkbox-unchecked-checked-checkmark-path{0%,50%{stroke-dashoffset:29.7833385}50%{animation-timing-function:cubic-bezier(0, 0, 0.2, 1)}100%{stroke-dashoffset:0}}@keyframes mdc-checkbox-unchecked-indeterminate-mixedmark{0%,68.2%{transform:scaleX(0)}68.2%{animation-timing-function:cubic-bezier(0, 0, 0, 1)}100%{transform:scaleX(1)}}@keyframes mdc-checkbox-checked-unchecked-checkmark-path{from{animation-timing-function:cubic-bezier(0.4, 0, 1, 1);opacity:1;stroke-dashoffset:0}to{opacity:0;stroke-dashoffset:-29.7833385}}@keyframes mdc-checkbox-checked-indeterminate-checkmark{from{animation-timing-function:cubic-bezier(0, 0, 0.2, 1);transform:rotate(0deg);opacity:1}to{transform:rotate(45deg);opacity:0}}@keyframes mdc-checkbox-indeterminate-checked-checkmark{from{animation-timing-function:cubic-bezier(0.14, 0, 0, 1);transform:rotate(45deg);opacity:0}to{transform:rotate(360deg);opacity:1}}@keyframes mdc-checkbox-checked-indeterminate-mixedmark{from{animation-timing-function:cubic-bezier(0, 0, 0.2, 1);transform:rotate(-45deg);opacity:0}to{transform:rotate(0deg);opacity:1}}@keyframes mdc-checkbox-indeterminate-checked-mixedmark{from{animation-timing-function:cubic-bezier(0.14, 0, 0, 1);transform:rotate(0deg);opacity:1}to{transform:rotate(315deg);opacity:0}}@keyframes mdc-checkbox-indeterminate-unchecked-mixedmark{0%{animation-timing-function:linear;transform:scaleX(1);opacity:1}32.8%,100%{transform:scaleX(0);opacity:0}}.mat-mdc-checkbox{display:inline-block;position:relative;-webkit-tap-highlight-color:rgba(0,0,0,0)}.mat-mdc-checkbox._mat-animation-noopable .mdc-checkbox *,.mat-mdc-checkbox._mat-animation-noopable .mdc-checkbox *::before{transition:none !important;animation:none !important}.mat-mdc-checkbox .mdc-checkbox__background{-webkit-print-color-adjust:exact;color-adjust:exact}.mat-mdc-checkbox label{cursor:pointer}.mat-mdc-checkbox .mat-internal-form-field{color:var(--mat-checkbox-label-text-color);font-family:var(--mat-checkbox-label-text-font);line-height:var(--mat-checkbox-label-text-line-height);font-size:var(--mat-checkbox-label-text-size);letter-spacing:var(--mat-checkbox-label-text-tracking);font-weight:var(--mat-checkbox-label-text-weight)}.mat-mdc-checkbox.mat-mdc-checkbox-disabled label{cursor:default;color:var(--mat-checkbox-disabled-label-color)}.mat-mdc-checkbox label:empty{display:none}.cdk-high-contrast-active .mat-mdc-checkbox.mat-mdc-checkbox-disabled{opacity:.5}.cdk-high-contrast-active .mat-mdc-checkbox .mdc-checkbox__checkmark{--mdc-checkbox-selected-checkmark-color: CanvasText;--mdc-checkbox-disabled-selected-checkmark-color: CanvasText}.mat-mdc-checkbox .mdc-checkbox__ripple{opacity:0}.mat-mdc-checkbox-ripple,.mdc-checkbox__ripple{top:0;left:0;right:0;bottom:0;position:absolute;border-radius:50%;pointer-events:none}.mat-mdc-checkbox-ripple:not(:empty),.mdc-checkbox__ripple:not(:empty){transform:translateZ(0)}.mat-mdc-checkbox-ripple .mat-ripple-element{opacity:.1}.mat-mdc-checkbox-touch-target{position:absolute;top:50%;left:50%;height:48px;width:48px;transform:translate(-50%, -50%);display:var(--mat-checkbox-touch-target-display)}.mat-mdc-checkbox-ripple::before{border-radius:50%}.mdc-checkbox__native-control:focus~.mat-mdc-focus-indicator::before{content:""}'],
+  encapsulation: 2,
+  changeDetection: 0
+});
+var MatCheckbox = _MatCheckbox;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatCheckbox, [{
+    type: Component,
+    args: [{
+      selector: "mat-checkbox",
+      host: {
+        "class": "mat-mdc-checkbox",
+        "[attr.tabindex]": "null",
+        "[attr.aria-label]": "null",
+        "[attr.aria-labelledby]": "null",
+        "[class._mat-animation-noopable]": `_animationMode === 'NoopAnimations'`,
+        "[class.mdc-checkbox--disabled]": "disabled",
+        "[id]": "id",
+        // Add classes that users can use to more easily target disabled or checked checkboxes.
+        "[class.mat-mdc-checkbox-disabled]": "disabled",
+        "[class.mat-mdc-checkbox-checked]": "checked",
+        "[class]": 'color ? "mat-" + color : "mat-accent"'
+      },
+      providers: [MAT_CHECKBOX_CONTROL_VALUE_ACCESSOR, {
+        provide: NG_VALIDATORS,
+        useExisting: MatCheckbox,
+        multi: true
+      }],
+      exportAs: "matCheckbox",
+      encapsulation: ViewEncapsulation$1.None,
+      changeDetection: ChangeDetectionStrategy.OnPush,
+      standalone: true,
+      imports: [MatRipple, _MatInternalFormField],
+      template: `<div mat-internal-form-field [labelPosition]="labelPosition" (click)="_preventBubblingFromLabel($event)">
+  <div #checkbox class="mdc-checkbox">
+    <!-- Render this element first so the input is on top. -->
+    <div class="mat-mdc-checkbox-touch-target" (click)="_onTouchTargetClick()"></div>
+    <input #input
+           type="checkbox"
+           class="mdc-checkbox__native-control"
+           [class.mdc-checkbox--selected]="checked"
+           [attr.aria-label]="ariaLabel || null"
+           [attr.aria-labelledby]="ariaLabelledby"
+           [attr.aria-describedby]="ariaDescribedby"
+           [attr.aria-checked]="indeterminate ? 'mixed' : null"
+           [attr.name]="name"
+           [attr.value]="value"
+           [checked]="checked"
+           [indeterminate]="indeterminate"
+           [disabled]="disabled"
+           [id]="inputId"
+           [required]="required"
+           [tabIndex]="disabled ? -1 : tabIndex"
+           (blur)="_onBlur()"
+           (click)="_onInputClick()"
+           (change)="_onInteractionEvent($event)"/>
+    <div class="mdc-checkbox__ripple"></div>
+    <div class="mdc-checkbox__background">
+      <svg class="mdc-checkbox__checkmark"
+           focusable="false"
+           viewBox="0 0 24 24"
+           aria-hidden="true">
+        <path class="mdc-checkbox__checkmark-path"
+              fill="none"
+              d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+      </svg>
+      <div class="mdc-checkbox__mixedmark"></div>
+    </div>
+    <div class="mat-mdc-checkbox-ripple mat-mdc-focus-indicator" mat-ripple
+      [matRippleTrigger]="checkbox"
+      [matRippleDisabled]="disableRipple || disabled"
+      [matRippleCentered]="true"></div>
+  </div>
+  <!--
+    Avoid putting a click handler on the <label/> to fix duplicate navigation stop on Talk Back
+    (#14385). Putting a click handler on the <label/> caused this bug because the browser produced
+    an unnecessary accessibility tree node.
+  -->
+  <label class="mdc-label"
+         #label
+         [for]="inputId">
+    <ng-content></ng-content>
+  </label>
+</div>
+`,
+      styles: ['.mdc-checkbox{display:inline-block;position:relative;flex:0 0 18px;box-sizing:content-box;width:18px;height:18px;line-height:0;white-space:nowrap;cursor:pointer;vertical-align:bottom;padding:calc((var(--mdc-checkbox-state-layer-size, 40px) - 18px)/2);margin:calc((var(--mdc-checkbox-state-layer-size, 40px) - var(--mdc-checkbox-state-layer-size, 40px))/2)}.mdc-checkbox:hover .mdc-checkbox__ripple{opacity:var(--mdc-checkbox-unselected-hover-state-layer-opacity);background-color:var(--mdc-checkbox-unselected-hover-state-layer-color)}.mdc-checkbox:hover .mat-mdc-checkbox-ripple .mat-ripple-element{background-color:var(--mdc-checkbox-unselected-hover-state-layer-color)}.mdc-checkbox .mdc-checkbox__native-control:focus~.mdc-checkbox__ripple{opacity:var(--mdc-checkbox-unselected-focus-state-layer-opacity);background-color:var(--mdc-checkbox-unselected-focus-state-layer-color)}.mdc-checkbox .mdc-checkbox__native-control:focus~.mat-mdc-checkbox-ripple .mat-ripple-element{background-color:var(--mdc-checkbox-unselected-focus-state-layer-color)}.mdc-checkbox:active .mdc-checkbox__native-control~.mdc-checkbox__ripple{opacity:var(--mdc-checkbox-unselected-pressed-state-layer-opacity);background-color:var(--mdc-checkbox-unselected-pressed-state-layer-color)}.mdc-checkbox:active .mdc-checkbox__native-control~.mat-mdc-checkbox-ripple .mat-ripple-element{background-color:var(--mdc-checkbox-unselected-pressed-state-layer-color)}.mdc-checkbox:hover .mdc-checkbox__native-control:checked~.mdc-checkbox__ripple{opacity:var(--mdc-checkbox-selected-hover-state-layer-opacity);background-color:var(--mdc-checkbox-selected-hover-state-layer-color)}.mdc-checkbox:hover .mdc-checkbox__native-control:checked~.mat-mdc-checkbox-ripple .mat-ripple-element{background-color:var(--mdc-checkbox-selected-hover-state-layer-color)}.mdc-checkbox .mdc-checkbox__native-control:focus:checked~.mdc-checkbox__ripple{opacity:var(--mdc-checkbox-selected-focus-state-layer-opacity);background-color:var(--mdc-checkbox-selected-focus-state-layer-color)}.mdc-checkbox .mdc-checkbox__native-control:focus:checked~.mat-mdc-checkbox-ripple .mat-ripple-element{background-color:var(--mdc-checkbox-selected-focus-state-layer-color)}.mdc-checkbox:active .mdc-checkbox__native-control:checked~.mdc-checkbox__ripple{opacity:var(--mdc-checkbox-selected-pressed-state-layer-opacity);background-color:var(--mdc-checkbox-selected-pressed-state-layer-color)}.mdc-checkbox:active .mdc-checkbox__native-control:checked~.mat-mdc-checkbox-ripple .mat-ripple-element{background-color:var(--mdc-checkbox-selected-pressed-state-layer-color)}.mdc-checkbox .mdc-checkbox__native-control{position:absolute;margin:0;padding:0;opacity:0;cursor:inherit;width:var(--mdc-checkbox-state-layer-size, 40px);height:var(--mdc-checkbox-state-layer-size, 40px);top:calc((var(--mdc-checkbox-state-layer-size, 40px) - var(--mdc-checkbox-state-layer-size, 40px))/2);right:calc((var(--mdc-checkbox-state-layer-size, 40px) - var(--mdc-checkbox-state-layer-size, 40px))/2);left:calc((var(--mdc-checkbox-state-layer-size, 40px) - var(--mdc-checkbox-state-layer-size, 40px))/2)}.mdc-checkbox--disabled{cursor:default;pointer-events:none}.mdc-checkbox__background{display:inline-flex;position:absolute;align-items:center;justify-content:center;box-sizing:border-box;width:18px;height:18px;border:2px solid currentColor;border-radius:2px;background-color:rgba(0,0,0,0);pointer-events:none;will-change:background-color,border-color;transition:background-color 90ms cubic-bezier(0.4, 0, 0.6, 1),border-color 90ms cubic-bezier(0.4, 0, 0.6, 1);border-color:var(--mdc-checkbox-unselected-icon-color);top:calc((var(--mdc-checkbox-state-layer-size, 40px) - 18px)/2);left:calc((var(--mdc-checkbox-state-layer-size, 40px) - 18px)/2)}.mdc-checkbox__native-control:enabled:checked~.mdc-checkbox__background,.mdc-checkbox__native-control:enabled:indeterminate~.mdc-checkbox__background{border-color:var(--mdc-checkbox-selected-icon-color);background-color:var(--mdc-checkbox-selected-icon-color)}.mdc-checkbox--disabled .mdc-checkbox__background{border-color:var(--mdc-checkbox-disabled-unselected-icon-color)}.mdc-checkbox__native-control:disabled:checked~.mdc-checkbox__background,.mdc-checkbox__native-control:disabled:indeterminate~.mdc-checkbox__background{background-color:var(--mdc-checkbox-disabled-selected-icon-color);border-color:rgba(0,0,0,0)}.mdc-checkbox:hover .mdc-checkbox__native-control:not(:checked)~.mdc-checkbox__background,.mdc-checkbox:hover .mdc-checkbox__native-control:not(:indeterminate)~.mdc-checkbox__background{border-color:var(--mdc-checkbox-unselected-hover-icon-color);background-color:rgba(0,0,0,0)}.mdc-checkbox:hover .mdc-checkbox__native-control:checked~.mdc-checkbox__background,.mdc-checkbox:hover .mdc-checkbox__native-control:indeterminate~.mdc-checkbox__background{border-color:var(--mdc-checkbox-selected-hover-icon-color);background-color:var(--mdc-checkbox-selected-hover-icon-color)}.mdc-checkbox__native-control:focus:focus:not(:checked)~.mdc-checkbox__background,.mdc-checkbox__native-control:focus:focus:not(:indeterminate)~.mdc-checkbox__background{border-color:var(--mdc-checkbox-unselected-focus-icon-color)}.mdc-checkbox__native-control:focus:focus:checked~.mdc-checkbox__background,.mdc-checkbox__native-control:focus:focus:indeterminate~.mdc-checkbox__background{border-color:var(--mdc-checkbox-selected-focus-icon-color);background-color:var(--mdc-checkbox-selected-focus-icon-color)}.mdc-checkbox__checkmark{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;opacity:0;transition:opacity 180ms cubic-bezier(0.4, 0, 0.6, 1);color:var(--mdc-checkbox-selected-checkmark-color)}.mdc-checkbox--disabled .mdc-checkbox__checkmark{color:var(--mdc-checkbox-disabled-selected-checkmark-color)}.mdc-checkbox__checkmark-path{transition:stroke-dashoffset 180ms cubic-bezier(0.4, 0, 0.6, 1);stroke:currentColor;stroke-width:3.12px;stroke-dashoffset:29.7833385;stroke-dasharray:29.7833385}.mdc-checkbox__mixedmark{width:100%;height:0;transform:scaleX(0) rotate(0deg);border-width:1px;border-style:solid;opacity:0;transition:opacity 90ms cubic-bezier(0.4, 0, 0.6, 1),transform 90ms cubic-bezier(0.4, 0, 0.6, 1);border-color:var(--mdc-checkbox-selected-checkmark-color)}.cdk-high-contrast-active .mdc-checkbox__mixedmark{margin:0 1px}.mdc-checkbox--disabled .mdc-checkbox__mixedmark{border-color:var(--mdc-checkbox-disabled-selected-checkmark-color)}.mdc-checkbox--anim-unchecked-checked .mdc-checkbox__background,.mdc-checkbox--anim-unchecked-indeterminate .mdc-checkbox__background,.mdc-checkbox--anim-checked-unchecked .mdc-checkbox__background,.mdc-checkbox--anim-indeterminate-unchecked .mdc-checkbox__background{animation-duration:180ms;animation-timing-function:linear}.mdc-checkbox--anim-unchecked-checked .mdc-checkbox__checkmark-path{animation:mdc-checkbox-unchecked-checked-checkmark-path 180ms linear;transition:none}.mdc-checkbox--anim-unchecked-indeterminate .mdc-checkbox__mixedmark{animation:mdc-checkbox-unchecked-indeterminate-mixedmark 90ms linear;transition:none}.mdc-checkbox--anim-checked-unchecked .mdc-checkbox__checkmark-path{animation:mdc-checkbox-checked-unchecked-checkmark-path 90ms linear;transition:none}.mdc-checkbox--anim-checked-indeterminate .mdc-checkbox__checkmark{animation:mdc-checkbox-checked-indeterminate-checkmark 90ms linear;transition:none}.mdc-checkbox--anim-checked-indeterminate .mdc-checkbox__mixedmark{animation:mdc-checkbox-checked-indeterminate-mixedmark 90ms linear;transition:none}.mdc-checkbox--anim-indeterminate-checked .mdc-checkbox__checkmark{animation:mdc-checkbox-indeterminate-checked-checkmark 500ms linear;transition:none}.mdc-checkbox--anim-indeterminate-checked .mdc-checkbox__mixedmark{animation:mdc-checkbox-indeterminate-checked-mixedmark 500ms linear;transition:none}.mdc-checkbox--anim-indeterminate-unchecked .mdc-checkbox__mixedmark{animation:mdc-checkbox-indeterminate-unchecked-mixedmark 300ms linear;transition:none}.mdc-checkbox__native-control:checked~.mdc-checkbox__background,.mdc-checkbox__native-control:indeterminate~.mdc-checkbox__background{transition:border-color 90ms cubic-bezier(0, 0, 0.2, 1),background-color 90ms cubic-bezier(0, 0, 0.2, 1)}.mdc-checkbox__native-control:checked~.mdc-checkbox__background .mdc-checkbox__checkmark-path,.mdc-checkbox__native-control:indeterminate~.mdc-checkbox__background .mdc-checkbox__checkmark-path{stroke-dashoffset:0}.mdc-checkbox__native-control:checked~.mdc-checkbox__background .mdc-checkbox__checkmark{transition:opacity 180ms cubic-bezier(0, 0, 0.2, 1),transform 180ms cubic-bezier(0, 0, 0.2, 1);opacity:1}.mdc-checkbox__native-control:checked~.mdc-checkbox__background .mdc-checkbox__mixedmark{transform:scaleX(1) rotate(-45deg)}.mdc-checkbox__native-control:indeterminate~.mdc-checkbox__background .mdc-checkbox__checkmark{transform:rotate(45deg);opacity:0;transition:opacity 90ms cubic-bezier(0.4, 0, 0.6, 1),transform 90ms cubic-bezier(0.4, 0, 0.6, 1)}.mdc-checkbox__native-control:indeterminate~.mdc-checkbox__background .mdc-checkbox__mixedmark{transform:scaleX(1) rotate(0deg);opacity:1}@keyframes mdc-checkbox-unchecked-checked-checkmark-path{0%,50%{stroke-dashoffset:29.7833385}50%{animation-timing-function:cubic-bezier(0, 0, 0.2, 1)}100%{stroke-dashoffset:0}}@keyframes mdc-checkbox-unchecked-indeterminate-mixedmark{0%,68.2%{transform:scaleX(0)}68.2%{animation-timing-function:cubic-bezier(0, 0, 0, 1)}100%{transform:scaleX(1)}}@keyframes mdc-checkbox-checked-unchecked-checkmark-path{from{animation-timing-function:cubic-bezier(0.4, 0, 1, 1);opacity:1;stroke-dashoffset:0}to{opacity:0;stroke-dashoffset:-29.7833385}}@keyframes mdc-checkbox-checked-indeterminate-checkmark{from{animation-timing-function:cubic-bezier(0, 0, 0.2, 1);transform:rotate(0deg);opacity:1}to{transform:rotate(45deg);opacity:0}}@keyframes mdc-checkbox-indeterminate-checked-checkmark{from{animation-timing-function:cubic-bezier(0.14, 0, 0, 1);transform:rotate(45deg);opacity:0}to{transform:rotate(360deg);opacity:1}}@keyframes mdc-checkbox-checked-indeterminate-mixedmark{from{animation-timing-function:cubic-bezier(0, 0, 0.2, 1);transform:rotate(-45deg);opacity:0}to{transform:rotate(0deg);opacity:1}}@keyframes mdc-checkbox-indeterminate-checked-mixedmark{from{animation-timing-function:cubic-bezier(0.14, 0, 0, 1);transform:rotate(0deg);opacity:1}to{transform:rotate(315deg);opacity:0}}@keyframes mdc-checkbox-indeterminate-unchecked-mixedmark{0%{animation-timing-function:linear;transform:scaleX(1);opacity:1}32.8%,100%{transform:scaleX(0);opacity:0}}.mat-mdc-checkbox{display:inline-block;position:relative;-webkit-tap-highlight-color:rgba(0,0,0,0)}.mat-mdc-checkbox._mat-animation-noopable .mdc-checkbox *,.mat-mdc-checkbox._mat-animation-noopable .mdc-checkbox *::before{transition:none !important;animation:none !important}.mat-mdc-checkbox .mdc-checkbox__background{-webkit-print-color-adjust:exact;color-adjust:exact}.mat-mdc-checkbox label{cursor:pointer}.mat-mdc-checkbox .mat-internal-form-field{color:var(--mat-checkbox-label-text-color);font-family:var(--mat-checkbox-label-text-font);line-height:var(--mat-checkbox-label-text-line-height);font-size:var(--mat-checkbox-label-text-size);letter-spacing:var(--mat-checkbox-label-text-tracking);font-weight:var(--mat-checkbox-label-text-weight)}.mat-mdc-checkbox.mat-mdc-checkbox-disabled label{cursor:default;color:var(--mat-checkbox-disabled-label-color)}.mat-mdc-checkbox label:empty{display:none}.cdk-high-contrast-active .mat-mdc-checkbox.mat-mdc-checkbox-disabled{opacity:.5}.cdk-high-contrast-active .mat-mdc-checkbox .mdc-checkbox__checkmark{--mdc-checkbox-selected-checkmark-color: CanvasText;--mdc-checkbox-disabled-selected-checkmark-color: CanvasText}.mat-mdc-checkbox .mdc-checkbox__ripple{opacity:0}.mat-mdc-checkbox-ripple,.mdc-checkbox__ripple{top:0;left:0;right:0;bottom:0;position:absolute;border-radius:50%;pointer-events:none}.mat-mdc-checkbox-ripple:not(:empty),.mdc-checkbox__ripple:not(:empty){transform:translateZ(0)}.mat-mdc-checkbox-ripple .mat-ripple-element{opacity:.1}.mat-mdc-checkbox-touch-target{position:absolute;top:50%;left:50%;height:48px;width:48px;transform:translate(-50%, -50%);display:var(--mat-checkbox-touch-target-display)}.mat-mdc-checkbox-ripple::before{border-radius:50%}.mdc-checkbox__native-control:focus~.mat-mdc-focus-indicator::before{content:""}']
+    }]
+  }], () => [{
+    type: ElementRef
+  }, {
+    type: ChangeDetectorRef
+  }, {
+    type: NgZone
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Attribute,
+      args: ["tabindex"]
+    }]
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [ANIMATION_MODULE_TYPE]
+    }]
+  }, {
+    type: void 0,
+    decorators: [{
+      type: Optional
+    }, {
+      type: Inject,
+      args: [MAT_CHECKBOX_DEFAULT_OPTIONS]
+    }]
+  }], {
+    ariaLabel: [{
+      type: Input,
+      args: ["aria-label"]
+    }],
+    ariaLabelledby: [{
+      type: Input,
+      args: ["aria-labelledby"]
+    }],
+    ariaDescribedby: [{
+      type: Input,
+      args: ["aria-describedby"]
+    }],
+    id: [{
+      type: Input
+    }],
+    required: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }],
+    labelPosition: [{
+      type: Input
+    }],
+    name: [{
+      type: Input
+    }],
+    change: [{
+      type: Output
+    }],
+    indeterminateChange: [{
+      type: Output
+    }],
+    value: [{
+      type: Input
+    }],
+    disableRipple: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }],
+    _inputElement: [{
+      type: ViewChild,
+      args: ["input"]
+    }],
+    _labelElement: [{
+      type: ViewChild,
+      args: ["label"]
+    }],
+    tabIndex: [{
+      type: Input,
+      args: [{
+        transform: (value) => value == null ? void 0 : numberAttribute(value)
+      }]
+    }],
+    color: [{
+      type: Input
+    }],
+    ripple: [{
+      type: ViewChild,
+      args: [MatRipple]
+    }],
+    checked: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }],
+    disabled: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }],
+    indeterminate: [{
+      type: Input,
+      args: [{
+        transform: booleanAttribute
+      }]
+    }]
+  });
+})();
+var MAT_CHECKBOX_REQUIRED_VALIDATOR = {
+  provide: NG_VALIDATORS,
+  useExisting: forwardRef(() => MatCheckboxRequiredValidator),
+  multi: true
+};
+var _MatCheckboxRequiredValidator = class _MatCheckboxRequiredValidator extends CheckboxRequiredValidator {
+};
+_MatCheckboxRequiredValidator.\u0275fac = /* @__PURE__ */ (() => {
+  let \u0275MatCheckboxRequiredValidator_BaseFactory;
+  return function MatCheckboxRequiredValidator_Factory(__ngFactoryType__) {
+    return (\u0275MatCheckboxRequiredValidator_BaseFactory || (\u0275MatCheckboxRequiredValidator_BaseFactory = \u0275\u0275getInheritedFactory(_MatCheckboxRequiredValidator)))(__ngFactoryType__ || _MatCheckboxRequiredValidator);
+  };
+})();
+_MatCheckboxRequiredValidator.\u0275dir = /* @__PURE__ */ \u0275\u0275defineDirective({
+  type: _MatCheckboxRequiredValidator,
+  selectors: [["mat-checkbox", "required", "", "formControlName", ""], ["mat-checkbox", "required", "", "formControl", ""], ["mat-checkbox", "required", "", "ngModel", ""]],
+  standalone: true,
+  features: [\u0275\u0275ProvidersFeature([MAT_CHECKBOX_REQUIRED_VALIDATOR]), \u0275\u0275InheritDefinitionFeature]
+});
+var MatCheckboxRequiredValidator = _MatCheckboxRequiredValidator;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatCheckboxRequiredValidator, [{
+    type: Directive,
+    args: [{
+      selector: `mat-checkbox[required][formControlName],
+             mat-checkbox[required][formControl], mat-checkbox[required][ngModel]`,
+      providers: [MAT_CHECKBOX_REQUIRED_VALIDATOR],
+      standalone: true
+    }]
+  }], null, null);
+})();
+var __MatCheckboxRequiredValidatorModule = class __MatCheckboxRequiredValidatorModule {
+};
+__MatCheckboxRequiredValidatorModule.\u0275fac = function _MatCheckboxRequiredValidatorModule_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || __MatCheckboxRequiredValidatorModule)();
+};
+__MatCheckboxRequiredValidatorModule.\u0275mod = /* @__PURE__ */ \u0275\u0275defineNgModule({
+  type: __MatCheckboxRequiredValidatorModule
+});
+__MatCheckboxRequiredValidatorModule.\u0275inj = /* @__PURE__ */ \u0275\u0275defineInjector({});
+var _MatCheckboxRequiredValidatorModule = __MatCheckboxRequiredValidatorModule;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(_MatCheckboxRequiredValidatorModule, [{
+    type: NgModule,
+    args: [{
+      imports: [MatCheckboxRequiredValidator],
+      exports: [MatCheckboxRequiredValidator]
+    }]
+  }], null, null);
+})();
+var _MatCheckboxModule = class _MatCheckboxModule {
+};
+_MatCheckboxModule.\u0275fac = function MatCheckboxModule_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _MatCheckboxModule)();
+};
+_MatCheckboxModule.\u0275mod = /* @__PURE__ */ \u0275\u0275defineNgModule({
+  type: _MatCheckboxModule
+});
+_MatCheckboxModule.\u0275inj = /* @__PURE__ */ \u0275\u0275defineInjector({
+  imports: [MatCheckbox, MatCommonModule, MatCommonModule]
+});
+var MatCheckboxModule = _MatCheckboxModule;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MatCheckboxModule, [{
+    type: NgModule,
+    args: [{
+      imports: [MatCheckbox, MatCommonModule],
+      exports: [MatCheckbox, MatCommonModule]
+    }]
+  }], null, null);
+})();
+
+// src/app/component/dialog/add-tag-dialog/add-tag-dialog.component.ts
+function AddTagDialogComponent_Conditional_3_For_7_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r3 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "li")(1, "mat-checkbox", 5);
+    \u0275\u0275listener("change", function AddTagDialogComponent_Conditional_3_For_7_Template_mat_checkbox_change_1_listener($event) {
+      const \u0275$index_18_r4 = \u0275\u0275restoreView(_r3).$index;
+      const ctx_r1 = \u0275\u0275nextContext(2);
+      return \u0275\u0275resetView(ctx_r1.update($event.checked, \u0275$index_18_r4));
+    });
+    \u0275\u0275text(2);
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const subtask_r5 = ctx.$implicit;
+    \u0275\u0275advance();
+    \u0275\u0275property("checked", subtask_r5.completed);
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", subtask_r5.name, " ");
+  }
+}
+function AddTagDialogComponent_Conditional_3_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r1 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "section")(1, "span")(2, "mat-checkbox", 4);
+    \u0275\u0275listener("change", function AddTagDialogComponent_Conditional_3_Template_mat_checkbox_change_2_listener($event) {
+      \u0275\u0275restoreView(_r1);
+      const ctx_r1 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r1.update($event.checked));
+    });
+    \u0275\u0275text(3);
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(4, "span")(5, "ul");
+    \u0275\u0275repeaterCreate(6, AddTagDialogComponent_Conditional_3_For_7_Template, 3, 2, "li", null, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    const taskSignal_r6 = ctx;
+    const ctx_r1 = \u0275\u0275nextContext();
+    \u0275\u0275advance(2);
+    \u0275\u0275property("checked", taskSignal_r6.completed)("indeterminate", ctx_r1.partiallyComplete());
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", taskSignal_r6.name, " ");
+    \u0275\u0275advance(3);
+    \u0275\u0275repeater(taskSignal_r6.subtasks);
+  }
+}
+var _AddTagDialogComponent = class _AddTagDialogComponent {
+  constructor() {
+    this.tags = inject(MAT_DIALOG_DATA);
+    this.dialogRef = inject(MatDialogRef);
+    this.taskSignal = signal({
+      name: "Check all",
+      completed: false,
+      subtasks: this.tags.map((value) => {
+        return {
+          reference: value,
+          name: value.tagConfigurationMetadata.tagConfigurationName,
+          completed: false,
+          subtasks: []
+        };
+      })
+    });
+    this.partiallyComplete = computed(() => {
+      const task = this.taskSignal();
+      if (!task.subtasks) {
+        return false;
+      }
+      return task.subtasks.some((checkbox) => checkbox.completed) && !task.subtasks.every((checkbox) => checkbox.completed);
+    });
+  }
+  update(completed, index) {
+    this.taskSignal.update((task) => {
+      if (index === void 0) {
+        task.completed = completed;
+        for (const subtask of task.subtasks) {
+          subtask.completed = completed;
+        }
+      } else {
+        task.subtasks[index].completed = completed;
+        task.completed = task.subtasks.every((checkbox) => checkbox.completed) ?? true;
+      }
+      return __spreadValues({}, task);
+    });
+  }
+  submit() {
+    const tagCheckbox = this.taskSignal();
+    const selected = tagCheckbox.subtasks.filter((checkbox) => checkbox.completed).map((checkbox) => checkbox.reference).filter(Boolean);
+    this.dialogRef.close(selected);
+  }
+};
+_AddTagDialogComponent.\u0275fac = function AddTagDialogComponent_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _AddTagDialogComponent)();
+};
+_AddTagDialogComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _AddTagDialogComponent, selectors: [["app-add-tag-dialog"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 9, vars: 1, consts: [["mat-dialog-title", ""], ["align", "end"], ["mat-button", "", "mat-dialog-close", ""], ["mat-button", "", "cdkFocusInitial", "", 3, "click"], [3, "change", "checked", "indeterminate"], [3, "change", "checked"]], template: function AddTagDialogComponent_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "h2", 0);
+    \u0275\u0275text(1, "Add tags");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(2, "mat-dialog-content");
+    \u0275\u0275template(3, AddTagDialogComponent_Conditional_3_Template, 8, 3, "section");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "mat-dialog-actions", 1)(5, "button", 2);
+    \u0275\u0275text(6, "Cancel");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(7, "button", 3);
+    \u0275\u0275listener("click", function AddTagDialogComponent_Template_button_click_7_listener() {
+      return ctx.submit();
+    });
+    \u0275\u0275text(8, "Select");
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    let tmp_0_0;
+    \u0275\u0275advance(3);
+    \u0275\u0275conditional((tmp_0_0 = ctx.taskSignal()) ? 3 : -1, tmp_0_0);
+  }
+}, dependencies: [
+  MatCheckboxModule,
+  MatCheckbox,
+  MatButton,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogTitle,
+  ReactiveFormsModule
+], styles: ["\n\nul[_ngcontent-%COMP%] {\n  list-style-type: none;\n}\n/*# sourceMappingURL=add-tag-dialog.component.css.map */"] });
+var AddTagDialogComponent = _AddTagDialogComponent;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AddTagDialogComponent, { className: "AddTagDialogComponent", filePath: "src\\app\\component\\dialog\\add-tag-dialog\\add-tag-dialog.component.ts", lineNumber: 47 });
+})();
+
+// src/app/component/form/task-edit-form/task-edit-form.component.ts
+function TaskEditFormComponent_For_5_For_4_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "mat-form-field", 3)(1, "mat-label");
+    \u0275\u0275text(2, "hours");
+    \u0275\u0275elementEnd();
+    \u0275\u0275element(3, "input", 5);
+    \u0275\u0275elementStart(4, "mat-hint");
+    \u0275\u0275text(5);
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const hourControl_r1 = ctx.$implicit;
+    const ctx_r1 = \u0275\u0275nextContext(2);
+    \u0275\u0275advance(3);
+    \u0275\u0275property("formControl", hourControl_r1.controls.duration);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(ctx_r1.formatDanishDate(hourControl_r1.controls.date.value));
+  }
+}
+function TaskEditFormComponent_For_5_Conditional_5_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r3 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "button", 6);
+    \u0275\u0275listener("click", function TaskEditFormComponent_For_5_Conditional_5_Template_button_click_0_listener() {
+      \u0275\u0275restoreView(_r3);
+      const \u0275$index_8_r4 = \u0275\u0275nextContext().$index;
+      const ctx_r1 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r1.removeTag(\u0275$index_8_r4));
+    });
+    \u0275\u0275elementStart(1, "mat-icon");
+    \u0275\u0275text(2, "close");
+    \u0275\u0275elementEnd()();
+  }
+}
+function TaskEditFormComponent_For_5_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "span");
+    \u0275\u0275text(1);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(2, "div", 2);
+    \u0275\u0275repeaterCreate(3, TaskEditFormComponent_For_5_For_4_Template, 6, 2, "mat-form-field", 3, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275template(5, TaskEditFormComponent_For_5_Conditional_5_Template, 3, 0, "button", 4);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const dayFormArray_r5 = ctx.$implicit;
+    const \u0275$index_8_r4 = ctx.$index;
+    const ctx_r1 = \u0275\u0275nextContext();
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate(ctx_r1.getTagNames(dayFormArray_r5));
+    \u0275\u0275advance(2);
+    \u0275\u0275repeater(dayFormArray_r5.controls.dayRegistrations.controls);
+    \u0275\u0275advance(2);
+    \u0275\u0275conditional(!(\u0275$index_8_r4 === 0) ? 5 : -1);
+  }
+}
+var _TaskEditFormComponent = class _TaskEditFormComponent {
+  constructor() {
+    this.taskByTagRegistrationsOutput = new EventEmitter();
+    this.tagRegistrationFormArray = new FormArray([]);
+    this.dialog = inject(MatDialog);
+    this.formBuilder = inject(FormBuilder);
+  }
+  ngOnInit() {
+    this.buildForm();
+    this.taskByTagRegistrationsOutput.emit(this.tagRegistrationFormArray);
+  }
+  buildForm() {
+    const dailyRegistrations = this.task.dailyRegistrations || [];
+    this.availableTasks = this.getAvailableTagsConfigurations(dailyRegistrations);
+    const dayRegistrationsByTask = this.buildTags(dailyRegistrations);
+    this.addDays(dayRegistrationsByTask);
+    this.attachTimeRegistrations(dayRegistrationsByTask, dailyRegistrations);
+    this.tagRegistrationFormArray = this.formBuilder.array(dayRegistrationsByTask.map((value) => {
+      return this.formBuilder.group({
+        tags: this.formBuilder.control(value.tags),
+        dayRegistrations: this.formBuilder.array(value.dayRegistrations.map((dayRegistration) => {
+          const duration = dayRegistration.timeRegistration?.duration;
+          const humanDuration = duration ? DurationConverter.convertToHumanDuration(duration) : null;
+          return this.formBuilder.group({
+            date: this.formBuilder.control(dayRegistration.date),
+            timeRegistration: this.formBuilder.control(dayRegistration.timeRegistration ?? this.getTimeRegistration(value.tags)),
+            duration: this.formBuilder.control(humanDuration)
+          });
+        }))
+      });
+    }));
+  }
+  getTaskName() {
+    const taskByRegistration = this.task;
+    if (!taskByRegistration) {
+      return "-";
+    }
+    if (taskByRegistration.task) {
+      return taskByRegistration.task.taskName;
+    }
+    return taskByRegistration.taskDescription || "-";
+  }
+  formatDanishDate(isoDate) {
+    if (!isoDate) {
+      return "";
+    }
+    return DateTime.fromISO(isoDate).toFormat("dd/MM");
+  }
+  getAvailableTagsConfigurations(dailyRegistrations) {
+    return dailyRegistrations.reduce((tagRegistrations, currentValue) => {
+      for (const currentTimeRegistration of currentValue.timeRegistrations) {
+        for (const currentTag of currentTimeRegistration.tags) {
+          const hasTag = tagRegistrations.some((existingTag) => existingTag.tagConfigurationMetadata.tagConfigurationId === currentTag.tagConfigurationMetadata.tagConfigurationId);
+          if (!hasTag) {
+            tagRegistrations.push(currentTag);
+          }
+        }
+      }
+      return tagRegistrations;
+    }, []);
+  }
+  buildTags(dailyRegistrations) {
+    return dailyRegistrations.reduce((tagRegistration, currentValue) => {
+      for (const currentValueElement of currentValue.timeRegistrations) {
+        const tagKey = this.getTagKey(currentValueElement.tags);
+        if (!tagRegistration.some((value) => value.tagKey)) {
+          tagRegistration.push({
+            tagKey,
+            tags: currentValueElement.tags,
+            dayRegistrations: []
+          });
+        }
+      }
+      return tagRegistration;
+    }, []);
+  }
+  addDays(existingTags) {
+    for (const existingTag of existingTags) {
+      existingTag.dayRegistrations = this.createDayRegistrations();
+    }
+  }
+  attachTimeRegistrations(existingTags, dailyRegistrations) {
+    for (const existingTag of existingTags) {
+      for (const dayRegistration of existingTag.dayRegistrations) {
+        const foundDayRegistration = dailyRegistrations.find((value) => value.date === dayRegistration.date);
+        if (foundDayRegistration) {
+          for (const timeRegistration of foundDayRegistration.timeRegistrations) {
+            if (this.getTagKey(timeRegistration.tags) === existingTag.tagKey) {
+              dayRegistration.timeRegistration = timeRegistration;
+            }
+          }
+        }
+      }
+    }
+  }
+  getTagKey(tags) {
+    return tags.map((tag) => tag.tagConfigurationMetadata.tagConfigurationId).join(", ");
+  }
+  getTagNames(formGroup) {
+    const tagRegistration = formGroup.controls.tags.value;
+    if (tagRegistration) {
+      return tagRegistration.map((value) => value.tagConfigurationMetadata.tagConfigurationName).join(", ");
+    }
+    return "";
+  }
+  createDayRegistrations() {
+    return (this.task.dailyRegistrations || []).map((value) => {
+      return {
+        date: value.date
+      };
+    });
+  }
+  showKnownTags() {
+    return __async(this, null, function* () {
+      const dialogRef = this.dialog.open(AddTagDialogComponent, { data: this.availableTasks, width: "800px" });
+      const tags = yield firstValueFrom(dialogRef.afterClosed());
+      if (tags) {
+        const formGroups = this.createDayRegistrations().map((value) => {
+          return this.formBuilder.group({
+            date: this.formBuilder.control(value.date),
+            timeRegistration: this.formBuilder.control(this.getTimeRegistration(tags)),
+            duration: this.formBuilder.control(null)
+          });
+        });
+        this.tagRegistrationFormArray.push(this.formBuilder.group({
+          tags: this.formBuilder.control(tags),
+          dayRegistrations: this.formBuilder.array(formGroups)
+        }));
+      }
+    });
+  }
+  removeTag(index) {
+    this.tagRegistrationFormArray.removeAt(index);
+  }
+  getTimeRegistration(tags, duration) {
+    return {
+      tags,
+      duration
+    };
+  }
+};
+_TaskEditFormComponent.\u0275fac = function TaskEditFormComponent_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _TaskEditFormComponent)();
+};
+_TaskEditFormComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _TaskEditFormComponent, selectors: [["app-task-edit-form"]], inputs: { task: "task" }, outputs: { taskByTagRegistrationsOutput: "taskByTagRegistrationsOutput" }, standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 8, vars: 1, consts: [[1, "flex-column"], ["mat-flat-button", "", 3, "click"], [1, "flex-row"], ["subscriptSizing", "dynamic"], ["mat-icon-button", "", "aria-label", "Remove", "matTooltip", "Remove"], ["matInput", "", "placeholder", "hh,mm", 3, "formControl"], ["mat-icon-button", "", "aria-label", "Remove", "matTooltip", "Remove", 3, "click"]], template: function TaskEditFormComponent_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 0)(1, "strong");
+    \u0275\u0275text(2);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(3, "div", 0);
+    \u0275\u0275repeaterCreate(4, TaskEditFormComponent_For_5_Template, 6, 2, null, null, \u0275\u0275repeaterTrackByIdentity);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(6, "button", 1);
+    \u0275\u0275listener("click", function TaskEditFormComponent_Template_button_click_6_listener() {
+      return ctx.showKnownTags();
+    });
+    \u0275\u0275text(7, "Add registration");
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate1(" ", ctx.getTaskName(), " ");
+    \u0275\u0275advance(2);
+    \u0275\u0275repeater(ctx.tagRegistrationFormArray.controls);
+  }
+}, dependencies: [
+  MatFormField,
+  MatHint,
+  MatInput,
+  MatLabel,
+  ReactiveFormsModule,
+  DefaultValueAccessor,
+  NgControlStatus,
+  FormControlDirective,
+  MatButton,
+  MatCheckboxModule,
+  MatIcon,
+  MatIconButton,
+  MatTooltip
+], styles: ["\n\nmat-form-field[_ngcontent-%COMP%] {\n  width: 5rem;\n}\n/*# sourceMappingURL=task-edit-form.component.css.map */"] });
+var TaskEditFormComponent = _TaskEditFormComponent;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TaskEditFormComponent, { className: "TaskEditFormComponent", filePath: "src\\app\\component\\form\\task-edit-form\\task-edit-form.component.ts", lineNumber: 54 });
+})();
+
+// src/app/component/dialog/task-edit-dialog/task-edit-dialog.component.ts
+var _TaskEditDialogComponent = class _TaskEditDialogComponent {
+  constructor() {
+    this.task = inject(MAT_DIALOG_DATA);
+    this.dialogRef = inject(MatDialogRef);
+  }
+  editTask() {
+    if (this.tagRegistrationFormGroup) {
+      if (this.tagRegistrationFormGroup.valid) {
+        const returnValue = this.convertFormGroupToTask(this.tagRegistrationFormGroup.value);
+        this.dialogRef.close(returnValue);
+        return;
+      }
+    }
+    this.dialogRef.close(void 0);
+  }
+  taskRegistration(tagRegistrationFormGroup) {
+    this.tagRegistrationFormGroup = tagRegistrationFormGroup;
+  }
+  convertFormGroupToTask(value) {
+    return value.map((form) => (form.dayRegistrations || []).map((dayRegistration) => this.getTimeRegistration(dayRegistration)).filter(Boolean)).flat();
+  }
+  getTimeRegistration(dayRegistration) {
+    if (dayRegistration.timeRegistration?.timeRegistrationId) {
+      if (!dayRegistration.duration) {
+        return {
+          type: "delete",
+          timeRegistrationId: dayRegistration.timeRegistration.timeRegistrationId
+        };
+      } else {
+        return {
+          type: "update",
+          timeRegistrationId: dayRegistration.timeRegistration.timeRegistrationId,
+          duration: DurationConverter.convertToISO8601Duration(dayRegistration.duration)
+        };
+      }
+    } else {
+      const isoDuration2 = DurationConverter.convertToISO8601Duration(dayRegistration.duration || "");
+      if (isoDuration2 && dayRegistration.date) {
+        return {
+          type: "create",
+          tags: this.getTimeRegistrationRequest(dayRegistration.timeRegistration?.tags),
+          duration: isoDuration2,
+          date: dayRegistration.date,
+          taskId: this.task.task?.taskId,
+          description: this.task.task?.taskDescription
+        };
+      }
+    }
+    return void 0;
+  }
+  getTimeRegistrationRequest(tags) {
+    if (!tags) {
+      return void 0;
+    }
+    return tags.map((tag) => {
+      return {
+        tagConfigurationId: tag.tagConfigurationMetadata.tagConfigurationId,
+        value: tag.tagRegistration?.tagValue || ""
+      };
+    });
+  }
+};
+_TaskEditDialogComponent.\u0275fac = function TaskEditDialogComponent_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || _TaskEditDialogComponent)();
+};
+_TaskEditDialogComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _TaskEditDialogComponent, selectors: [["app-task-edit-dialog"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 9, vars: 1, consts: [["mat-dialog-title", ""], [3, "taskByTagRegistrationsOutput", "task"], ["align", "end"], ["mat-button", "", "mat-dialog-close", ""], ["mat-button", "", "cdkFocusInitial", "", 3, "click"]], template: function TaskEditDialogComponent_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "h2", 0);
+    \u0275\u0275text(1, "Advanced Edit");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(2, "mat-dialog-content")(3, "app-task-edit-form", 1);
+    \u0275\u0275listener("taskByTagRegistrationsOutput", function TaskEditDialogComponent_Template_app_task_edit_form_taskByTagRegistrationsOutput_3_listener($event) {
+      return ctx.taskRegistration($event);
+    });
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(4, "mat-dialog-actions", 2)(5, "button", 3);
+    \u0275\u0275text(6, "Cancel");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(7, "button", 4);
+    \u0275\u0275listener("click", function TaskEditDialogComponent_Template_button_click_7_listener() {
+      return ctx.editTask();
+    });
+    \u0275\u0275text(8, "Create");
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    \u0275\u0275advance(3);
+    \u0275\u0275property("task", ctx.task);
+  }
+}, dependencies: [
+  TaskEditFormComponent,
+  MatButton,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogTitle,
+  ReactiveFormsModule
+] });
+var TaskEditDialogComponent = _TaskEditDialogComponent;
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TaskEditDialogComponent, { className: "TaskEditDialogComponent", filePath: "src\\app\\component\\dialog\\task-edit-dialog\\task-edit-dialog.component.ts", lineNumber: 49 });
+})();
+
 // src/app/component/task-registration/task-registration.component.ts
 function TaskRegistrationComponent_Conditional_3_Template(rf, ctx) {
   if (rf & 1) {
@@ -44043,44 +45194,72 @@ var _TaskRegistrationComponent = class _TaskRegistrationComponent {
     return typeof this.task.taskDescription === "string";
   }
   openAssociateTaskDialog() {
-    const dialogRef = this.dialog.open(AssociateTaskDialogComponent, { width: "800px" });
-    dialogRef.afterClosed().subscribe({
-      next: (taskId) => __async(this, null, function* () {
-        if (taskId) {
-          for (const dayTimeRegistrations of this.task.dailyRegistrations || []) {
-            for (const { timeRegistrationId, tags } of dayTimeRegistrations.timeRegistrations) {
-              const timeRegistrationTags = tags.reduce((sum, tag) => {
-                if (tag.tagRegistration) {
-                  sum.push({
-                    tagConfigurationId: tag.tagConfigurationMetadata.tagConfigurationId,
-                    value: tag.tagRegistration.tagValue
-                  });
-                }
-                return sum;
-              }, []);
-              yield firstValueFrom(this.timeRegistrationService.associateTimeRegistrationWithTask({
-                taskId,
-                timeRegistrationId,
-                tags: timeRegistrationTags
-              }));
-            }
+    return __async(this, null, function* () {
+      const dialogRef = this.dialog.open(AssociateTaskDialogComponent, { width: "800px" });
+      const taskId = yield firstValueFrom(dialogRef.afterClosed());
+      if (taskId) {
+        for (const dayTimeRegistrations of this.task.dailyRegistrations || []) {
+          for (const { timeRegistrationId, tags } of dayTimeRegistrations.timeRegistrations) {
+            const timeRegistrationTags = tags.reduce((sum, tag) => {
+              if (tag.tagRegistration) {
+                sum.push({
+                  tagConfigurationId: tag.tagConfigurationMetadata.tagConfigurationId,
+                  value: tag.tagRegistration.tagValue
+                });
+              }
+              return sum;
+            }, []);
+            yield firstValueFrom(this.timeRegistrationService.associateTimeRegistrationWithTask({
+              taskId,
+              timeRegistrationId,
+              tags: timeRegistrationTags
+            }));
           }
         }
-      })
+      }
+    });
+  }
+  openEditTaskDialog() {
+    return __async(this, null, function* () {
+      const dialogRef = this.dialog.open(TaskEditDialogComponent, {
+        minWidth: "800px",
+        width: "800px",
+        data: this.task
+      });
+      const extendedCruds = yield firstValueFrom(dialogRef.afterClosed());
+      if (extendedCruds) {
+        for (const crud of extendedCruds) {
+          switch (crud.type) {
+            case "create":
+              yield firstValueFrom(this.timeRegistrationService.addTimeRegistrationForUser(crud));
+              break;
+            case "update":
+              yield firstValueFrom(this.timeRegistrationService.updateTimeRegistrationForUser(crud.timeRegistrationId, crud));
+              break;
+            case "delete":
+              yield firstValueFrom(this.timeRegistrationService.deleteTimeRegistration(crud.timeRegistrationId));
+              break;
+          }
+        }
+      }
     });
   }
 };
 _TaskRegistrationComponent.\u0275fac = function TaskRegistrationComponent_Factory(__ngFactoryType__) {
   return new (__ngFactoryType__ || _TaskRegistrationComponent)();
 };
-_TaskRegistrationComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _TaskRegistrationComponent, selectors: [["app-task-registration"]], inputs: { task: "task" }, standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 13, vars: 2, consts: [[1, "flex-column", 2, "margin-top", "1rem"], [1, "flex-row", "justify-space-between", "align-items-center"], ["mat-icon-button", "", "aria-label", "Associate task", "matTooltip", "Associate task"], ["mat-icon-button", "", "aria-label", "Advanced edit", "matTooltip", "Advanced edit"], [1, "flex-row", "flex-wrap-wrap", "align-items-center"], [3, "task", "dayTimeRegistrations"], ["mat-icon-button", "", "aria-label", "Associate task", "matTooltip", "Associate task", 3, "click"]], template: function TaskRegistrationComponent_Template(rf, ctx) {
+_TaskRegistrationComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _TaskRegistrationComponent, selectors: [["app-task-registration"]], inputs: { task: "task" }, standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 13, vars: 2, consts: [[1, "flex-column", 2, "margin-top", "1rem"], [1, "flex-row", "justify-space-between", "align-items-center"], ["mat-icon-button", "", "aria-label", "Associate task", "matTooltip", "Associate task"], ["mat-icon-button", "", "aria-label", "Advanced edit", "matTooltip", "Advanced edit", 3, "click"], [1, "flex-row", "flex-wrap-wrap", "align-items-center"], [3, "task", "dayTimeRegistrations"], ["mat-icon-button", "", "aria-label", "Associate task", "matTooltip", "Associate task", 3, "click"]], template: function TaskRegistrationComponent_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275elementStart(0, "div", 0)(1, "div", 1)(2, "strong");
     \u0275\u0275template(3, TaskRegistrationComponent_Conditional_3_Template, 1, 1)(4, TaskRegistrationComponent_Conditional_4_Template, 1, 1);
     \u0275\u0275elementEnd();
     \u0275\u0275elementStart(5, "div");
     \u0275\u0275template(6, TaskRegistrationComponent_Conditional_6_Template, 3, 0, "button", 2);
-    \u0275\u0275elementStart(7, "button", 3)(8, "mat-icon");
+    \u0275\u0275elementStart(7, "button", 3);
+    \u0275\u0275listener("click", function TaskRegistrationComponent_Template_button_click_7_listener() {
+      return ctx.openEditTaskDialog();
+    });
+    \u0275\u0275elementStart(8, "mat-icon");
     \u0275\u0275text(9, "edit");
     \u0275\u0275elementEnd()()()();
     \u0275\u0275elementStart(10, "div", 4);
@@ -44107,7 +45286,7 @@ _TaskRegistrationComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineCompone
 ], styles: ["\n\n.ml-1[_ngcontent-%COMP%] {\n  margin-left: 1rem;\n}\n.ml-2[_ngcontent-%COMP%] {\n  margin-left: 2rem;\n}\n.ml-3[_ngcontent-%COMP%] {\n  margin-left: 3rem;\n}\n.ml-4[_ngcontent-%COMP%] {\n  margin-left: 4rem;\n}\n.ml-5[_ngcontent-%COMP%] {\n  margin-left: 5rem;\n}\n/*# sourceMappingURL=task-registration.component.css.map */"] });
 var TaskRegistrationComponent = _TaskRegistrationComponent;
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TaskRegistrationComponent, { className: "TaskRegistrationComponent", filePath: "src\\app\\component\\task-registration\\task-registration.component.ts", lineNumber: 34 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(TaskRegistrationComponent, { className: "TaskRegistrationComponent", filePath: "src\\app\\component\\task-registration\\task-registration.component.ts", lineNumber: 36 });
 })();
 
 // src/app/component/dialog/create-task-dialog/create-task-dialog.component.ts
@@ -44236,14 +45415,14 @@ var CreateTaskDialogComponent = _CreateTaskDialogComponent;
 })();
 
 // node_modules/@angular/material/fesm2022/tabs.mjs
-var _c010 = ["*"];
+var _c011 = ["*"];
 function MatTab_ng_template_0_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275projection(0);
   }
 }
-var _c18 = ["tabListContainer"];
-var _c25 = ["tabList"];
+var _c19 = ["tabListContainer"];
+var _c26 = ["tabList"];
 var _c35 = ["tabListInner"];
 var _c45 = ["nextPaginator"];
 var _c54 = ["previousPaginator"];
@@ -44515,7 +45694,7 @@ _MatTab.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
     provide: MAT_TAB,
     useExisting: _MatTab
   }]), \u0275\u0275InputTransformsFeature, \u0275\u0275NgOnChangesFeature, \u0275\u0275StandaloneFeature],
-  ngContentSelectors: _c010,
+  ngContentSelectors: _c011,
   decls: 1,
   vars: 0,
   template: function MatTab_Template(rf, ctx) {
@@ -45282,8 +46461,8 @@ _MatTabHeader.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
   },
   viewQuery: function MatTabHeader_Query(rf, ctx) {
     if (rf & 1) {
-      \u0275\u0275viewQuery(_c18, 7);
-      \u0275\u0275viewQuery(_c25, 7);
+      \u0275\u0275viewQuery(_c19, 7);
+      \u0275\u0275viewQuery(_c26, 7);
       \u0275\u0275viewQuery(_c35, 7);
       \u0275\u0275viewQuery(_c45, 5);
       \u0275\u0275viewQuery(_c54, 5);
@@ -45309,7 +46488,7 @@ _MatTabHeader.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
   },
   standalone: true,
   features: [\u0275\u0275InputTransformsFeature, \u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
-  ngContentSelectors: _c010,
+  ngContentSelectors: _c011,
   decls: 13,
   vars: 10,
   consts: [["previousPaginator", ""], ["tabListContainer", ""], ["tabList", ""], ["tabListInner", ""], ["nextPaginator", ""], ["aria-hidden", "true", "type", "button", "mat-ripple", "", "tabindex", "-1", 1, "mat-mdc-tab-header-pagination", "mat-mdc-tab-header-pagination-before", 3, "click", "mousedown", "touchend", "matRippleDisabled", "disabled"], [1, "mat-mdc-tab-header-pagination-chevron"], [1, "mat-mdc-tab-label-container", 3, "keydown"], ["role", "tablist", 1, "mat-mdc-tab-list", 3, "cdkObserveContent"], [1, "mat-mdc-tab-labels"], ["aria-hidden", "true", "type", "button", "mat-ripple", "", "tabindex", "-1", 1, "mat-mdc-tab-header-pagination", "mat-mdc-tab-header-pagination-after", 3, "mousedown", "click", "touchend", "matRippleDisabled", "disabled"]],
@@ -46137,7 +47316,7 @@ _MatTabGroup.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
     provide: MAT_TAB_GROUP,
     useExisting: _MatTabGroup
   }]), \u0275\u0275InputTransformsFeature, \u0275\u0275StandaloneFeature],
-  ngContentSelectors: _c010,
+  ngContentSelectors: _c011,
   decls: 9,
   vars: 6,
   consts: [["tabHeader", ""], ["tabBodyWrapper", ""], ["tabNode", ""], [3, "indexFocused", "selectFocusedIndex", "selectedIndex", "disableRipple", "disablePagination"], ["role", "tab", "matTabLabelWrapper", "", "cdkMonitorElementFocus", "", 1, "mdc-tab", "mat-mdc-tab", "mat-mdc-focus-indicator", 3, "id", "mdc-tab--active", "class", "disabled", "fitInkBarToContent"], [1, "mat-mdc-tab-body-wrapper"], ["role", "tabpanel", 3, "id", "mat-mdc-tab-body-active", "class", "content", "position", "origin", "animationDuration", "preserveContent"], ["role", "tab", "matTabLabelWrapper", "", "cdkMonitorElementFocus", "", 1, "mdc-tab", "mat-mdc-tab", "mat-mdc-focus-indicator", 3, "click", "cdkFocusChange", "id", "disabled", "fitInkBarToContent"], [1, "mdc-tab__ripple"], ["mat-ripple", "", 1, "mat-mdc-tab-ripple", 3, "matRippleTrigger", "matRippleDisabled"], [1, "mdc-tab__content"], [1, "mdc-tab__text-label"], [3, "cdkPortalOutlet"], ["role", "tabpanel", 3, "_onCentered", "_onCentering", "id", "content", "position", "origin", "animationDuration", "preserveContent"]],
@@ -46314,7 +47493,7 @@ var MatTabGroup = _MatTabGroup;
 })();
 var MatTabChangeEvent = class {
 };
-var nextUniqueId4 = 0;
+var nextUniqueId5 = 0;
 var _MatTabNav = class _MatTabNav extends MatPaginatedTabHeader {
   /** Whether the ink bar should fit its width to the size of the tab label content. */
   get fitInkBarToContent() {
@@ -46414,8 +47593,8 @@ _MatTabNav.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
   },
   viewQuery: function MatTabNav_Query(rf, ctx) {
     if (rf & 1) {
-      \u0275\u0275viewQuery(_c18, 7);
-      \u0275\u0275viewQuery(_c25, 7);
+      \u0275\u0275viewQuery(_c19, 7);
+      \u0275\u0275viewQuery(_c26, 7);
       \u0275\u0275viewQuery(_c35, 7);
       \u0275\u0275viewQuery(_c45, 5);
       \u0275\u0275viewQuery(_c54, 5);
@@ -46451,7 +47630,7 @@ _MatTabNav.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
   standalone: true,
   features: [\u0275\u0275InputTransformsFeature, \u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
   attrs: _c102,
-  ngContentSelectors: _c010,
+  ngContentSelectors: _c011,
   decls: 13,
   vars: 8,
   consts: [["previousPaginator", ""], ["tabListContainer", ""], ["tabList", ""], ["tabListInner", ""], ["nextPaginator", ""], ["aria-hidden", "true", "type", "button", "mat-ripple", "", "tabindex", "-1", 1, "mat-mdc-tab-header-pagination", "mat-mdc-tab-header-pagination-before", 3, "click", "mousedown", "touchend", "matRippleDisabled", "disabled"], [1, "mat-mdc-tab-header-pagination-chevron"], [1, "mat-mdc-tab-link-container", 3, "keydown"], [1, "mat-mdc-tab-list", 3, "cdkObserveContent"], [1, "mat-mdc-tab-links"], ["aria-hidden", "true", "type", "button", "mat-ripple", "", "tabindex", "-1", 1, "mat-mdc-tab-header-pagination", "mat-mdc-tab-header-pagination-after", 3, "mousedown", "click", "touchend", "matRippleDisabled", "disabled"]],
@@ -46699,7 +47878,7 @@ var _MatTabLink = class _MatTabLink extends InkBarItem {
     this.disabled = false;
     this.disableRipple = false;
     this.tabIndex = 0;
-    this.id = `mat-tab-link-${nextUniqueId4++}`;
+    this.id = `mat-tab-link-${nextUniqueId5++}`;
     this.rippleConfig = globalRippleOptions || {};
     this.tabIndex = parseInt(tabIndex) || 0;
     if (animationMode === "NoopAnimations") {
@@ -46796,7 +47975,7 @@ _MatTabLink.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
   standalone: true,
   features: [\u0275\u0275InputTransformsFeature, \u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
   attrs: _c11,
-  ngContentSelectors: _c010,
+  ngContentSelectors: _c011,
   decls: 5,
   vars: 2,
   consts: [[1, "mdc-tab__ripple"], ["mat-ripple", "", 1, "mat-mdc-tab-ripple", 3, "matRippleTrigger", "matRippleDisabled"], [1, "mdc-tab__content"], [1, "mdc-tab__text-label"]],
@@ -46906,7 +48085,7 @@ var MatTabLink = _MatTabLink;
 })();
 var _MatTabNavPanel = class _MatTabNavPanel {
   constructor() {
-    this.id = `mat-tab-nav-panel-${nextUniqueId4++}`;
+    this.id = `mat-tab-nav-panel-${nextUniqueId5++}`;
   }
 };
 _MatTabNavPanel.\u0275fac = function MatTabNavPanel_Factory(__ngFactoryType__) {
@@ -46928,7 +48107,7 @@ _MatTabNavPanel.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
   exportAs: ["matTabNavPanel"],
   standalone: true,
   features: [\u0275\u0275StandaloneFeature],
-  ngContentSelectors: _c010,
+  ngContentSelectors: _c011,
   decls: 1,
   vars: 0,
   template: function MatTabNavPanel_Template(rf, ctx) {
@@ -47542,7 +48721,7 @@ var _AsyncAnimationRendererFactory = class _AsyncAnimationRendererFactory {
    * @internal
    */
   loadImpl() {
-    const moduleImpl = this.moduleImpl ?? import("./chunk-IFECP5V5.js").then((m) => m);
+    const moduleImpl = this.moduleImpl ?? import("./chunk-ME6BZTFV.js").then((m) => m);
     return moduleImpl.catch((e) => {
       throw new RuntimeError(5300, (typeof ngDevMode === "undefined" || ngDevMode) && "Async loading for animations package was enabled, but loading failed. Angular falls back to using regular rendering. No animations will be displayed and their styles won't be applied.");
     }).then(({
@@ -47770,9 +48949,9 @@ var appConfig = {
 };
 
 // node_modules/@angular/material/fesm2022/sidenav.mjs
-var _c011 = ["*"];
-var _c19 = ["content"];
-var _c26 = [[["mat-drawer"]], [["mat-drawer-content"]], "*"];
+var _c012 = ["*"];
+var _c110 = ["content"];
+var _c27 = [[["mat-drawer"]], [["mat-drawer-content"]], "*"];
 var _c36 = ["mat-drawer", "mat-drawer-content", "*"];
 function MatDrawerContainer_Conditional_0_Template(rf, ctx) {
   if (rf & 1) {
@@ -47884,7 +49063,7 @@ _MatDrawerContent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
     provide: CdkScrollable,
     useExisting: _MatDrawerContent
   }]), \u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
-  ngContentSelectors: _c011,
+  ngContentSelectors: _c012,
   decls: 1,
   vars: 0,
   template: function MatDrawerContent_Template(rf, ctx) {
@@ -48275,7 +49454,7 @@ _MatDrawer.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
   selectors: [["mat-drawer"]],
   viewQuery: function MatDrawer_Query(rf, ctx) {
     if (rf & 1) {
-      \u0275\u0275viewQuery(_c19, 5);
+      \u0275\u0275viewQuery(_c110, 5);
     }
     if (rf & 2) {
       let _t;
@@ -48316,7 +49495,7 @@ _MatDrawer.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
   exportAs: ["matDrawer"],
   standalone: true,
   features: [\u0275\u0275StandaloneFeature],
-  ngContentSelectors: _c011,
+  ngContentSelectors: _c012,
   decls: 3,
   vars: 0,
   consts: [["content", ""], ["cdkScrollable", "", 1, "mat-drawer-inner-container"]],
@@ -48732,7 +49911,7 @@ _MatDrawerContainer.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
   consts: [[1, "mat-drawer-backdrop", 3, "mat-drawer-shown"], [1, "mat-drawer-backdrop", 3, "click"]],
   template: function MatDrawerContainer_Template(rf, ctx) {
     if (rf & 1) {
-      \u0275\u0275projectionDef(_c26);
+      \u0275\u0275projectionDef(_c27);
       \u0275\u0275template(0, MatDrawerContainer_Conditional_0_Template, 1, 2, "div", 0);
       \u0275\u0275projection(1);
       \u0275\u0275projection(2, 1);
@@ -48849,7 +50028,7 @@ _MatSidenavContent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
     provide: CdkScrollable,
     useExisting: _MatSidenavContent
   }]), \u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
-  ngContentSelectors: _c011,
+  ngContentSelectors: _c012,
   decls: 1,
   vars: 0,
   template: function MatSidenavContent_Template(rf, ctx) {
@@ -48958,7 +50137,7 @@ _MatSidenav.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
   exportAs: ["matSidenav"],
   standalone: true,
   features: [\u0275\u0275InheritDefinitionFeature, \u0275\u0275StandaloneFeature],
-  ngContentSelectors: _c011,
+  ngContentSelectors: _c012,
   decls: 3,
   vars: 0,
   consts: [["content", ""], ["cdkScrollable", "", 1, "mat-drawer-inner-container"]],
@@ -49140,8 +50319,8 @@ var MatSidenavModule = _MatSidenavModule;
 })();
 
 // node_modules/@angular/material/fesm2022/toolbar.mjs
-var _c012 = ["*", [["mat-toolbar-row"]]];
-var _c110 = ["*", "mat-toolbar-row"];
+var _c013 = ["*", [["mat-toolbar-row"]]];
+var _c111 = ["*", "mat-toolbar-row"];
 var _MatToolbarRow = class _MatToolbarRow {
 };
 _MatToolbarRow.\u0275fac = function MatToolbarRow_Factory(__ngFactoryType__) {
@@ -49221,12 +50400,12 @@ _MatToolbar.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({
   exportAs: ["matToolbar"],
   standalone: true,
   features: [\u0275\u0275StandaloneFeature],
-  ngContentSelectors: _c110,
+  ngContentSelectors: _c111,
   decls: 2,
   vars: 0,
   template: function MatToolbar_Template(rf, ctx) {
     if (rf & 1) {
-      \u0275\u0275projectionDef(_c012);
+      \u0275\u0275projectionDef(_c013);
       \u0275\u0275projection(0);
       \u0275\u0275projection(1, 1);
     }
@@ -49322,15 +50501,7 @@ var LogoutService = _LogoutService;
 var _AppComponent = class _AppComponent {
   constructor() {
     this.title = "TriRegAngular";
-    this.router = inject(Router);
-    this.loginService = inject(LoginService);
     this.logoutService = inject(LogoutService);
-  }
-  login() {
-    return __async(this, null, function* () {
-      console.log("start login");
-      yield firstValueFrom(this.loginService.login());
-    });
   }
   logout() {
     return __async(this, null, function* () {
@@ -49342,7 +50513,7 @@ var _AppComponent = class _AppComponent {
 _AppComponent.\u0275fac = function AppComponent_Factory(__ngFactoryType__) {
   return new (__ngFactoryType__ || _AppComponent)();
 };
-_AppComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _AppComponent, selectors: [["app-root"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 19, vars: 0, consts: [[1, "example-container", 2, "height", "100%"], ["mode", "side"], ["mat-icon-button", ""], [1, "flex-spacer"], ["mat-icon-button", "", 3, "click"]], template: function AppComponent_Template(rf, ctx) {
+_AppComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _AppComponent, selectors: [["app-root"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 16, vars: 0, consts: [[1, "example-container", 2, "height", "100%"], ["mode", "side"], ["mat-icon-button", ""], [1, "flex-spacer"], ["mat-icon-button", "", "matTooltip", "Logout", 3, "click"]], template: function AppComponent_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275elementStart(0, "mat-drawer-container", 0)(1, "mat-drawer", 1);
     \u0275\u0275text(2, "Drawer content");
@@ -49356,26 +50527,19 @@ _AppComponent.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _A
     \u0275\u0275element(10, "span", 3);
     \u0275\u0275elementStart(11, "button", 4);
     \u0275\u0275listener("click", function AppComponent_Template_button_click_11_listener() {
-      return ctx.login();
-    });
-    \u0275\u0275elementStart(12, "mat-icon");
-    \u0275\u0275text(13, "login");
-    \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(14, "button", 4);
-    \u0275\u0275listener("click", function AppComponent_Template_button_click_14_listener() {
       return ctx.logout();
     });
-    \u0275\u0275elementStart(15, "mat-icon");
-    \u0275\u0275text(16, "logout");
+    \u0275\u0275elementStart(12, "mat-icon");
+    \u0275\u0275text(13, "logout");
     \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(17, "main");
-    \u0275\u0275element(18, "router-outlet");
+    \u0275\u0275elementStart(14, "main");
+    \u0275\u0275element(15, "router-outlet");
     \u0275\u0275elementEnd()()();
   }
-}, dependencies: [RouterOutlet, MatSidenavModule, MatDrawer, MatDrawerContainer, MatDrawerContent, MatToolbarModule, MatToolbar, MatIconModule, MatIcon, MatButtonModule, MatIconButton], styles: ["\n\n[_nghost-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n}\nmain[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  flex-grow: 1;\n  min-height: calc(100% - 4rem);\n}\nmat-drawer[_ngcontent-%COMP%] {\n  min-width: 18rem;\n  position: fixed;\n}\nmat-drawer[_ngcontent-%COMP%]   .drawer-inner[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  justify-content: space-between;\n}\nmat-drawer[_ngcontent-%COMP%]   .drawer-inner[_ngcontent-%COMP%]   .side-nav-header[_ngcontent-%COMP%] {\n  display: flex;\n  padding-left: 1.5rem;\n  gap: 1rem;\n  align-items: center;\n  height: 4rem;\n}\nmat-drawer[_ngcontent-%COMP%]   .drawer-inner[_ngcontent-%COMP%]    > .drawer-inner-footer[_ngcontent-%COMP%] {\n  display: flex;\n  padding: 1.5rem 1rem;\n}\n/*# sourceMappingURL=app.component.css.map */"] });
+}, dependencies: [RouterOutlet, MatSidenavModule, MatDrawer, MatDrawerContainer, MatDrawerContent, MatToolbarModule, MatToolbar, MatIconModule, MatIcon, MatButtonModule, MatIconButton, MatTooltip], styles: ["\n\n[_nghost-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n}\nmain[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  flex-grow: 1;\n  min-height: calc(100% - 4rem);\n}\nmat-drawer[_ngcontent-%COMP%] {\n  min-width: 18rem;\n  position: fixed;\n}\nmat-drawer[_ngcontent-%COMP%]   .drawer-inner[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  justify-content: space-between;\n}\nmat-drawer[_ngcontent-%COMP%]   .drawer-inner[_ngcontent-%COMP%]   .side-nav-header[_ngcontent-%COMP%] {\n  display: flex;\n  padding-left: 1.5rem;\n  gap: 1rem;\n  align-items: center;\n  height: 4rem;\n}\nmat-drawer[_ngcontent-%COMP%]   .drawer-inner[_ngcontent-%COMP%]    > .drawer-inner-footer[_ngcontent-%COMP%] {\n  display: flex;\n  padding: 1.5rem 1rem;\n}\n/*# sourceMappingURL=app.component.css.map */"] });
 var AppComponent = _AppComponent;
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent", filePath: "src\\app\\app.component.ts", lineNumber: 18 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent", filePath: "src\\app\\app.component.ts", lineNumber: 19 });
 })();
 
 // src/main.ts

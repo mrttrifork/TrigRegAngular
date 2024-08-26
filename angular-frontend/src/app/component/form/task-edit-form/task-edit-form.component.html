@@ -1,0 +1,25 @@
+<div class="flex-column">
+  <strong>
+    {{ getTaskName() }}
+  </strong>
+  <div class="flex-column">
+    @for (dayFormArray of tagRegistrationFormArray.controls; track dayFormArray; let index = $index; let first = $first) {
+      <span>{{ getTagNames(dayFormArray) }}</span>
+      <div class="flex-row">
+        @for (hourControl of dayFormArray.controls.dayRegistrations.controls; track hourControl) {
+          <mat-form-field subscriptSizing="dynamic">
+            <mat-label>hours</mat-label>
+            <input matInput placeholder="hh,mm" [formControl]="hourControl.controls.duration">
+            <mat-hint>{{formatDanishDate(hourControl.controls.date.value)}}</mat-hint>
+          </mat-form-field>
+        }
+        @if(!first) {
+          <button mat-icon-button aria-label="Remove" matTooltip="Remove" (click)="removeTag(index)">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </div>
+    }
+  </div>
+  <button mat-flat-button (click)="showKnownTags()">Add registration</button>
+</div>

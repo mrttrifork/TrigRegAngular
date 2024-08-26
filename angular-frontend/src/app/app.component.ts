@@ -7,25 +7,19 @@ import {MatButtonModule} from "@angular/material/button";
 import {firstValueFrom} from "rxjs/internal/firstValueFrom";
 import {LoginService} from "./generated";
 import {LogoutService} from "./service/logout.service";
+import {MatTooltip} from "@angular/material/tooltip";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, MatSidenavModule, MatToolbarModule, MatIconModule, MatButtonModule],
+  imports: [RouterOutlet, MatSidenavModule, MatToolbarModule, MatIconModule, MatButtonModule, MatTooltip],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
   title = 'TriRegAngular';
 
-  private readonly router = inject(Router);
-  private readonly loginService = inject(LoginService);
   private readonly logoutService = inject(LogoutService);
-
-  async login(): Promise<void> {
-    console.log('start login');
-    await firstValueFrom(this.loginService.login());
-  }
 
   async logout(): Promise<void> {
     console.log('start logoff');
