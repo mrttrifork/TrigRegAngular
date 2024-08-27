@@ -6,6 +6,7 @@
 /out-tsc
 /bazel-out
 */target/**
+spring-server/src/main/resources/public
 
 # Node
 */node_modules/**

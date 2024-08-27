@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/component/dialog/add-tag-dialog/add-tag-dialog.component.scss"],
-  "sourcesContent": ["ul {\r\n  list-style-type: none;\r\n}\r\n"],
-  "mappings": ";AAAA;AACE,mBAAA;;",
-  "names": []
-}

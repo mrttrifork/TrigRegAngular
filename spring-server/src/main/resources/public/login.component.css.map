@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/component/login/login.component.scss"],
-  "sourcesContent": [":host {\r\n  width: 100%;\r\n  gap: 1rem;\r\n  display: flex;\r\n  flex-direction: column;\r\n  flex-grow: 1;\r\n  align-items: center;\r\n  margin-top: 10dvh;\r\n}\r\n\r\nmat-icon {\r\n  width: 128px;\r\n  height: 128px;\r\n  font-size: 128px\r\n}\r\n\r\n.header-paragraph {\r\n  display: flex;\r\n  flex-direction: column;\r\n  align-items: center;\r\n\r\n  > h2 {\r\n    margin-bottom: 0\r\n  }\r\n}\r\n"],
-  "mappings": ";AAAA;AACE,SAAA;AACA,OAAA;AACA,WAAA;AACA,kBAAA;AACA,aAAA;AACA,eAAA;AACA,cAAA;;AAGF;AACE,SAAA;AACA,UAAA;AACA,aAAA;;AAGF,CAAA;AACE,WAAA;AACA,kBAAA;AACA,eAAA;;AAEA,CALF,iBAKE,EAAA;AACE,iBAAA;;",
-  "names": []
-}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/component/task-registration/task-registration.component.scss"],
-  "sourcesContent": [".ml-1 {\r\n  margin-left: 1rem;\r\n}\r\n\r\n.ml-2 {\r\n  margin-left: 2rem;\r\n}\r\n\r\n.ml-3 {\r\n  margin-left: 3rem;\r\n}\r\n\r\n.ml-4 {\r\n  margin-left: 4rem;\r\n}\r\n\r\n.ml-5 {\r\n  margin-left: 5rem;\r\n}\r\n"],
-  "mappings": ";AAAA,CAAA;AACE,eAAA;;AAGF,CAAA;AACE,eAAA;;AAGF,CAAA;AACE,eAAA;;AAGF,CAAA;AACE,eAAA;;AAGF,CAAA;AACE,eAAA;;",
-  "names": []
-}
